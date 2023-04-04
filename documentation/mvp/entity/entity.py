@@ -19,6 +19,13 @@ class OccupancyDTO(TypeDTO):
 # Enum
 
 
+class AchivmentRelatedWithEnum(str, Enum):
+    TASK = "TASK"
+    SUBSCRIPTION = "SUBSCRIPTION"
+    MISSION = "MISSION"
+    NUMBER_OF_USERS = "NUMBER_OF_USERS"
+
+
 class VariableTypeEnum(Enum):
     STR = str
     INT = int
@@ -107,12 +114,12 @@ class UserContactTypeDTO(TypeDTO):
 class UserContactDTO:
     value: str
     active: bool
-    type: ContactTypeDTO
+    type: UserContactTypeDTO
 
 
 @dataclass
 class UserContactListDTO:
-    contacts: List[ContactDTO]
+    contacts: List[UserContactDTO]
 
     def __getattr__(self, request_type: str):
         tmp = None
@@ -256,8 +263,42 @@ class ScoreCommunityDTO(ScoreBaseDTO):
 
 
 @dataclass
+class NotificationType(TypeDTO):
+    """"""
+
+
+@dataclass
+class Notification:
+    id: int
+    active: bool
+    type: NotificationType
+
+
+@dataclass
+class Language:
+    language_code: str
+    language_name: str
+
+
+@dataclass
+class Setting:
+    name: str
+    notification: Notification
+    language: Language
+
+
+@dataclass
 class AchievementCategoryDTO(TypeDTO):
     """"""
+
+
+@dataclass
+class AchievementProgress:
+    related_achiev_id: int
+    point_counter: int
+    active_status: bool
+    entity_id: int
+    entity_name: str
 
 
 @dataclass
@@ -267,6 +308,7 @@ class AchievementBase:
     category: AchievementCategoryDTO
     status: AchievementStatusEnum
     related: RelatedEnum = field(init=False)
+    total: int
 
 
 @dataclass
@@ -279,3 +321,6 @@ class AchievementCommunity(AchievementBase):
 class AchievementUser(AchievementBase):
     def __post_init__(self):
         self.related = RelatedEnum.USER
+
+
+

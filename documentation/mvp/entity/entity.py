@@ -276,12 +276,12 @@ class Notification:
 
 @dataclass
 class Language:
-    language_code: str
-    language_name: str
+    name: str
+    code: str
 
 
 @dataclass
-class Setting:
+class Settings:
     name: str
     notification: Notification
     language: Language
@@ -294,33 +294,30 @@ class AchievementCategoryDTO(TypeDTO):
 
 @dataclass
 class AchievementProgress:
-    related_achiev_id: int
-    point_counter: int
-    active_status: bool
+    achievement_id: int
     entity_id: int
     entity_name: str
-
+    counter: int
+    active: bool
 
 @dataclass
 class AchievementBase:
     name: str
     description: str
     category: AchievementCategoryDTO
-    status: AchievementStatusEnum
-    related: RelatedEnum = field(init=False)
     total: int
 
 
-@dataclass
-class AchievementCommunity(AchievementBase):
-    def __post_init__(self):
-        self.related = RelatedEnum.COMMUNITY
+# @dataclass
+# class AchievementCommunity(AchievementBase):
+#     entity_id: CommunityID
+#     entity_name: str = field(init=False)
+#     def __post_init__(self):
+#         self.entity_name = "Community"
+#         self.related = RelatedEnum.COMMUNITY
 
 
-@dataclass
-class AchievementUser(AchievementBase):
-    def __post_init__(self):
-        self.related = RelatedEnum.USER
-
-
-
+# @dataclass
+# class AchievementUser(AchievementBase):
+#     def __post_init__(self):
+#         self.related = RelatedEnum.USER

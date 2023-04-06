@@ -2,6 +2,8 @@ from dataclasses import dataclass, field
 from typing import List, Union
 from enum import Enum
 
+""" MYPY ругается, что есть и файл, и директория с названием entity, поэтому переименовал этот файл под documentation_entity.py """
+
 
 # BASE DTO
 
@@ -299,6 +301,7 @@ class AchievementProgress:
     entity_name: str
     counter: int
     active: bool
+
 
 @dataclass
 class AchievementBase:

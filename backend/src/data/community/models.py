@@ -1,5 +1,5 @@
 from sqlalchemy import Text, Boolean, ForeignKey, Integer
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.src.data.base.base_models import BaseUniquePrimaryKeyName
 
@@ -35,4 +35,6 @@ class Community:
     active: Mapped[bool] = mapped_column(Boolean)
 
     type: Mapped[str] = mapped_column(ForeignKey("community_privacy.name"))
-    total_score: Mapped[int] = mapped_column(ForeignKey(""))
+    total_score: Mapped[int] = mapped_column(ForeignKey("community_score.value"))
+
+    users = relationship('User')

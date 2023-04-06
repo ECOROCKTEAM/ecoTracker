@@ -20,6 +20,7 @@ class Constrains(BaseUniquePrimaryKeyName):
 
 
 class SubscriptionTypeConstrains():
+    id: Mapped[int] = mapped_column
     name: Mapped[str] = mapped_column(ForeignKey("subscription_type.name"))
     contrains: Mapped[str] = mapped_column(ForeignKey("constrains.name"))
 
@@ -47,20 +48,15 @@ class SubscriptionPeriod(BaseUniquePrimaryKeyName):
 class Subscription(BaseUniquePrimaryKeyName):
     __tablename__ = "subscription"
 
-    subscription_type_name: Mapped[str] = mapped_column(
-        ForeignKey("subscription_type.name"))
-    subscription_period: Mapped[str] = mapped_column(
-        ForeignKey("subscription_period.name"))
-
-    subscription_user: Mapped["SubscriptionUser"] = relationship()
+    subscription_type_name: Mapped[str] = mapped_column(ForeignKey("subscription_type.name"))
+    subscription_period: Mapped[str] = mapped_column(ForeignKey("subscription_period.name"))
 
 
 class SubscriptionUser():
     __tablename__ = "subscription_user"
 
     username: Mapped[str] = mapped_column(ForeignKey("user.username"))
+    subscription_name: Mapped[str] = mapped_column(ForeignKey("subscription.name"))
     canceled: Mapped[bool] = mapped_column(Boolean)
     until_date: Mapped[datetime] = mapped_column(DateTime)
-
-    subscription_name: Mapped[str] = mapped_column(
-        ForeignKey("subscription.name"))
+    

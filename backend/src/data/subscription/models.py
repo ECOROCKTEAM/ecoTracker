@@ -3,10 +3,7 @@ from datetime import datetime
 from sqlalchemy import String, ForeignKey, Integer, Boolean, DateTime
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
-
-class BaseUniquePrimaryKeyName():
-
-    name: Mapped[str] = mapped_column(String(30), unique=True, primary_key=True)
+from backend.src.data.base.base_models import BaseUniquePrimaryKeyName
 
 
 class ConstrainsVariableType(BaseUniquePrimaryKeyName):

@@ -1,5 +1,7 @@
 from sqlalchemy import String, Integer, ForeignKey, Text
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy.orm import mapped_column, Mapped, relationship
+
+from backend.src.data.base.base_models import OccupancyType
 
 
 class TranslateMission:
@@ -18,4 +20,7 @@ class Mission:
     id: Mapped[int] = mapped_column(Integer, index=True, primary_key=True)
     author: Mapped[str] = mapped_column(String)
     score: Mapped[int] = mapped_column(Integer)
-    occupancy_type: Mapped[int] = mapped_column(ForeignKey("occupancy_type.id"))
+    occupancy_type_id: Mapped[int] = mapped_column(ForeignKey("occupancy_type.id"))
+
+    occupancy_type: Mapped['OccupancyType'] = relationship()
+    translate: Mapped['TranslateMission'] = relationship()

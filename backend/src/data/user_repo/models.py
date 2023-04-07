@@ -1,9 +1,12 @@
+from typing import List
+
 from sqlalchemy import String, Boolean, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.src.data.base.base_models import BaseUniquePrimaryKeyName
 from backend.src.data.subscription.models import SubscriptionUser
+from backend.src.data.mission.models import Mission
 from backend.src.data.community.models import Community
+from backend.src.data.language.models import Language
 
 
 """ После настроек по подключению БД добавить к классам наследование """
@@ -21,6 +24,8 @@ class ContactType:
     __tablename__ = "contact_type"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    language_name: Mapped[str] = mapped_column(ForeignKey("language.name"))
+    language: Mapped['Language'] = relationship(foreign_keys=[language_name])
 
 
 class Contact:
@@ -28,6 +33,8 @@ class Contact:
 
     value: Mapped[str] = mapped_column(String, unique=True)
     contact_type: Mapped[str] = mapped_column(ForeignKey("contact_type.name"))
+
+    user_contact: Mapped['UserContact'] = relationship(back_populates="contacts")
 
 
 class UserContact:
@@ -38,8 +45,8 @@ class UserContact:
     contact: Mapped[str] = mapped_column(ForeignKey("contact.value"))
     active: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    contacts: Mapped["Contact"] = relationship()
-    users: Mapped["User"] = relationship()
+    contacts: Mapped["Contact"] = relationship(back_populates="user_contact")
+    user: Mapped["User"] = relationship(back_populates="contacts")
 
 
 class UserMission:
@@ -49,16 +56,18 @@ class UserMission:
     mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
     status: Mapped[bool] = mapped_column(ForeignKey("occupancy_status.name"))
 
+    mission: Mapped['Mission'] = relationship()
+    users: Mapped[List['User']] = relationship(back_populates="user_missions")
 
-class User():
+
+class User:
     __tablename__ = "user"
 
     username: Mapped[str] = mapped_column(String(25), primary_key=True, unique=True)
     password: Mapped[str] = mapped_column(String(30))
     active: Mapped[bool] = mapped_column(Boolean, default=False)
-    subscription: Mapped[str] = mapped_column(ForeignKey("subscription.name"))
 
-    user_contacts: Mapped["UserContact"] = relationship()
-    subscription_user: Mapped["SubscriptionUser"] = relationship()
-    community: Mapped["Community"] = relationship()
-
+    subscription_user: Mapped['SubscriptionUser'] = relationship(back_populates="users")
+    user_missions: Mapped[List['UserMission']] = relationship(back_populates="users")
+    contacts: Mapped[List['UserContact']] = relationship(back_populates="user")
+    communityes: Mapped[List['Community']] = relationship(back_populates="users", secondary="community_user")

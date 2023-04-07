@@ -32,6 +32,14 @@ class UserContact:
     users: Mapped["User"] = relationship()
 
 
+class UserMission:
+    __tablename__ = "user_mission"
+    
+    username: Mapped[str] = mapped_column(ForeignKey("user.username"))
+    mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
+    status: Mapped[bool] = mapped_column(ForeignKey("occupancy_status.name"))
+
+
 class User():
     __tablename__ = "user"
 

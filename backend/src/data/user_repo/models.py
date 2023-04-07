@@ -43,3 +43,4 @@ class User():
     user_contacts: Mapped["UserContact"] = relationship()
     subscription_user: Mapped["SubscriptionUser"] = relationship()
     community: Mapped["Community"] = relationship()
+

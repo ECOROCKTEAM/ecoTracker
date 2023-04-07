@@ -9,8 +9,18 @@ from backend.src.data.community.models import Community
 """ После настроек по подключению БД добавить к классам наследование """
 
 
-class ContactType(BaseUniquePrimaryKeyName):
+class TranslateContactType:
+    __tablename__ = "translate_contact_type"
+
+    contact_type_id: Mapped[int] = mapped_column(ForeignKey("contact_type.id"))
+    name: Mapped[str] = mapped_column(String)
+    language: Mapped[str] = mapped_column(ForeignKey("language.name"))
+
+
+class ContactType:
     __tablename__ = "contact_type"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
 
 class Contact:

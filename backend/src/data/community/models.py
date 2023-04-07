@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Text, Boolean, ForeignKey, Integer, DateTime
+from sqlalchemy import Text, Boolean, ForeignKey, Integer, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.src.data.base.base_models import BaseUniquePrimaryKeyName
@@ -18,8 +18,19 @@ class CommunityScore:
     operation: Mapped[str] = mapped_column(ForeignKey("score_operation.name"))
 
 
-class CommunityRole(BaseUniquePrimaryKeyName):
+class TranslateCommunityRole:
+    __tablename__ = "translate_community_role"
+
+    community_role_id: Mapped[int] = mapped_column(ForeignKey("community_role.id"))
+    name: Mapped[str] = mapped_column(String)
+    language: Mapped[str] = mapped_column(ForeignKey("language.name"))
+
+
+
+class CommunityRole:
     __tablename__ = "community_role"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
 
 class CommunityUser:
@@ -27,7 +38,7 @@ class CommunityUser:
 
     username: Mapped[str] = mapped_column(ForeignKey("user.username"))
     community_name: Mapped[str] = mapped_column(ForeignKey("community_name"))
-    role: Mapped[str] = mapped_column(ForeignKey("community_role.name"))
+    role: Mapped[int] = mapped_column(ForeignKey("community_role.id"))
 
 
 class CommunityMission:

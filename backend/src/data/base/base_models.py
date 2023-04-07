@@ -17,3 +17,5 @@ class OccupancyType(BaseUniquePrimaryKeyName):
 
 class OccupancyStatus(BaseUniquePrimaryKeyName):
     __tablename__ = "occupancy_status"
+
+    

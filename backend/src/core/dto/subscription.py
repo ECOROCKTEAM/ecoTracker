@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from src.core.dto.base import TypeDTO
 from src.core.enum.base import VariableTypeEnum
-from src.core.mixin.base import VariableTypeCastMixin, VariableValueType
+from src.core.types.types import VariableTypeCastMixin, VariableValueType
 
 
 @dataclass

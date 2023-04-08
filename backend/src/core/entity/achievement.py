@@ -5,16 +5,17 @@ from src.core.dto.achievement import AchievementCategoryDTO
 
 @dataclass
 class AchievementProgress:
-    achievement_id: int
-    entity_id: int
-    entity_name: str
+    achievement_name: str
     counter: int
     active: bool
+    entity_id: int
+    entity_name: str
 
 
 @dataclass
-class AchievementBase:
+class Achievement:
     name: str
     description: str
     category: AchievementCategoryDTO
     total: int
+    status: bool

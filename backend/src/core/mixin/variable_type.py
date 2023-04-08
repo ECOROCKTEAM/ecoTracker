@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from backend.src.core.enum.base import VariableTypeEnum
-from backend.src.core.mixin.base import VariableValueType
+from backend.src.core.types.types import VariableValueType
 
 
 @dataclass

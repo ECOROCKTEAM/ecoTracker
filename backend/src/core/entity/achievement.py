@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from backend.src.core.dto.achievement import AchievementCategoryDTO
+from src.core.dto.achievement import AchievementCategoryDTO
 
 
 @dataclass

@@ -4,9 +4,9 @@ from typing import List
 from sqlalchemy import Text, Boolean, ForeignKey, Integer, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.src.data.user_repo.models import User
-from backend.src.data.mission.models import Mission
-from backend.src.data.language.models import Language
+from src.data.user_repo.models import User
+from src.data.mission.models import Mission
+from src.data.language.models import Language
 
 
 class TranslateCommunityPrivacy:
@@ -14,6 +14,7 @@ class TranslateCommunityPrivacy:
     
     community_privacy_id: Mapped[int] = mapped_column(ForeignKey("community_privacy.id"))
     name: Mapped[str] = mapped_column(String)
+
     language_name: Mapped[str] = mapped_column(ForeignKey("language.name"))
     language: Mapped['Language'] = relationship(foreign_keys=[language_name])
 
@@ -22,6 +23,7 @@ class CommunityPrivacy():
     __tablename__ = "community_privacy"
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
     translate: Mapped['TranslateCommunityPrivacy'] = relationship()
 
 
@@ -85,4 +87,6 @@ class Community:
     total_score: Mapped[int] = mapped_column(ForeignKey("community_score.value"))
 
     community_missions: Mapped[List["CommunityMission"]] = relationship()
-    users: Mapped[List['User']] = relationship(secondary="community_user", back_populates="communityes")
+    
+    # users: Mapped[List["User"]] = relationship(secondary="community_user", back_populates="communityes")
+    users = relationship('User')

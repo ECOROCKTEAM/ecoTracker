@@ -1,8 +1,7 @@
 from typing import List
 
 from dataclasses import dataclass
-from backend.src.core.dto.base import ScoreBaseDTO, TypeDTO
-from backend.src.core.enum.base import RelatedEnum
+from src.core.dto.base import  TypeDTO
 
 
 @dataclass
@@ -31,8 +30,3 @@ class UserContactListDTO:
             raise Exception("Not found")
         return tmp
 
-
-@dataclass
-class ScoreUserDTO(ScoreBaseDTO):
-    def __post_init__(self):
-        self.related = RelatedEnum.USER

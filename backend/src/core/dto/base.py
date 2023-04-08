@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from backend.src.core.enum.base import RelatedEnum
+from src.core.enum.base import RelatedEnum
 
 
 @dataclass

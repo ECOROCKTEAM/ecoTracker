@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from backend.src.core.enum.mission import PrivacyEnum
+from backend.src.core.enum.community import PrivacyEnum
 
 
 @dataclass

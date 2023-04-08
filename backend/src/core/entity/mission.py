@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
-from backend.src.core.dto.tasks import OccupancyCategoryDTO
+from src.core.dto.tasks import OccupancyCategoryDTO
 
-from backend.src.core.enum.base import RelatedEnum
-from backend.src.core.enum.category import OccupancyStatusEnum
+from src.core.enum.base import RelatedEnum
+from backend.src.core.enum.occupancy import OccupancyStatusEnum
 
 
 @dataclass

@@ -5,9 +5,9 @@ from datetime import datetime
 from sqlalchemy import String, ForeignKey, Integer, Boolean, DateTime
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
-from backend.src.data.base.base_models import BaseUniquePrimaryKeyName
-from backend.src.data.user_repo.models import User
-from backend.src.data.language.models import Language
+from src.data.base.base_models import BaseUniquePrimaryKeyName
+from src.data.user_repo.models import User
+from src.data.language.models import Language
 
 
 class VariableType(BaseUniquePrimaryKeyName):

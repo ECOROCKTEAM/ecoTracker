@@ -1,15 +1,14 @@
 from typing import List
 from dataclasses import dataclass
 
-from backend.src.core.dto.base import TypeDTO
-from backend.src.core.enum.base import VariableTypeEnum
-from backend.src.core.mixin.base import VariableTypeCastMixin, VariableValueType
+from src.core.dto.base import TypeDTO
+from src.core.enum.base import VariableTypeEnum
+from src.core.mixin.base import VariableTypeCastMixin, VariableValueType
 
 
 @dataclass
 class SubscriptionPeriodTypeDTO(TypeDTO):
-    name: str
-
+    """ """
 
 @dataclass
 class SubscriptionPeriodDTO:
@@ -27,6 +26,9 @@ class SubscriptionConstrainsDTO(VariableTypeCastMixin):
     @property
     def value(self) -> VariableValueType:
         return self._cast_type(value=self._raw_value, to_type=self.type)
+    
+    def __repr__(self) -> str:
+        return f'{self.__class__}(name={self.name}, _raw_value={self._raw_value}, type={self.type}, value={self.value})'
 
 
 @dataclass
@@ -36,5 +38,5 @@ class SubscriptionListConstrainsDTO:
 
 
 @dataclass
-class SubscriptionTypeDTO:
-    name: str
+class SubscriptionTypeDTO(TypeDTO):
+    """ """

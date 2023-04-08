@@ -1,11 +1,7 @@
 from sqlalchemy import String, Integer, ForeignKey
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.src.data.language.models import Language
-
-
-class BaseClass(DeclarativeBase):
-    pass
+from src.data.language.models import Language
 
 
 class BaseUniquePrimaryKeyName:

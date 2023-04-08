@@ -6,8 +6,8 @@ class AchievementStatusEnum(str, Enum):
     UNCOMPLETED = "UNCOMPLETED"
 
 
-class AchivmentRelatedWithEnum(str, Enum):
-    TASK = "TASK"
-    SUBSCRIPTION = "SUBSCRIPTION"
-    MISSION = "MISSION"
-    NUMBER_OF_USERS = "NUMBER_OF_USERS"
+# class AchivmentRelatedWithEnum(str, Enum):
+#     TASK = "TASK"
+#     SUBSCRIPTION = "SUBSCRIPTION"
+#     MISSION = "MISSION"
+#     NUMBER_OF_USERS = "NUMBER_OF_USERS"

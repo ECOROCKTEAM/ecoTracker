@@ -4,5 +4,11 @@ from src.core.dto.base import TypeDTO
 
 
 @dataclass
-class AchievementCategoryDTO(TypeDTO):
+class OccupancyCategoryDTO:
+    id: int
+    name: str
+
+
+@dataclass
+class OccupancyDTO(TypeDTO):
     """"""

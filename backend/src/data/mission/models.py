@@ -1,7 +1,7 @@
 from sqlalchemy import String, Integer, ForeignKey, Text
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
-from backend.src.data.base.base_models import OccupancyType
+from src.data.base.base_models import OccupancyType
 
 
 class TranslateMission:

@@ -3,10 +3,10 @@ from typing import List
 from sqlalchemy import String, Boolean, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.src.data.subscription.models import SubscriptionUser
-from backend.src.data.mission.models import Mission
-from backend.src.data.community.models import Community
-from backend.src.data.language.models import Language
+from src.data.subscription.models import SubscriptionUser
+from src.data.mission.models import Mission
+from src.data.community.models import Community
+from src.data.language.models import Language
 
 
 """ После настроек по подключению БД добавить к классам наследование """
@@ -70,4 +70,5 @@ class User:
     subscription_user: Mapped['SubscriptionUser'] = relationship(back_populates="users")
     user_missions: Mapped[List['UserMission']] = relationship(back_populates="users")
     contacts: Mapped[List['UserContact']] = relationship(back_populates="user")
+    
     communityes: Mapped[List['Community']] = relationship(back_populates="users", secondary="community_user")

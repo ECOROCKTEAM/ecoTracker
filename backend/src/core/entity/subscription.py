@@ -1,6 +1,7 @@
+from datetime import datetime
 from dataclasses import dataclass
 
-from backend.src.core.dto.subscription import SubscriptionPeriodDTO, SubscriptionTypeDTO
+from src.core.dto.subscription import SubscriptionPeriodDTO, SubscriptionTypeDTO
 
 
 @dataclass
@@ -10,3 +11,5 @@ class Subscription:
     name: str
     type: SubscriptionTypeDTO
     period: SubscriptionPeriodDTO
+    canceled: bool
+    untildate: datetime

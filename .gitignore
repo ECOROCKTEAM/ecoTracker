@@ -8,3 +8,4 @@ __pycache__/
 
 # Poetry
 backend/poetry.lock
+backend/venv/*

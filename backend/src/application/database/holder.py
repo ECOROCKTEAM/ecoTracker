@@ -1,7 +1,7 @@
 from typing import Optional
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.asyncio import (
-    create_async_engine, async_sessionmaker, AsyncSession
+    create_async_engine, async_sessionmaker, AsyncSession, AsyncEngine
 )
 
 
@@ -13,6 +13,7 @@ class Database:
         self.__echo = echo
         
         self._session_factory: Optional[async_sessionmaker[AsyncSession]] = None
+        self.__engine: Optional[AsyncEngine] = None
 
     @property
     def url(self) -> str:
@@ -33,18 +34,23 @@ class Database:
                 await session.rollback()
             finally:
                 await session.close()
-    
-    def _setup(self):
-        engine = create_async_engine(
+
+    @property
+    def engine(self) -> AsyncEngine:
+        if self.__engine is None:
+            raise Exception("Database holder not setup!")
+        return self.__engine
+
+    def setup(self):
+        self.__engine = create_async_engine(
             url=self.__url,
             echo=self.__echo,
         )
         self._session_factory = async_sessionmaker(
-            bind=engine,
+            bind=self.__engine,
             expire_on_commit=False,
         )
 
-
-
 class Base(DeclarativeBase):
-    pass
+
+    __allow_unmapped__ = True

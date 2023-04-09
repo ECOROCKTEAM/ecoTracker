@@ -9,6 +9,7 @@ from alembic import context
 
 from src.application.settings import get_settings
 from src.application.database.holder import Base
+from src.data.models import *
 
 settings = get_settings()
 

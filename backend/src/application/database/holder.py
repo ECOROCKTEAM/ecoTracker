@@ -1,8 +1,13 @@
-from typing import Optional
+from typing import Optional, AsyncIterator
+from contextlib import asynccontextmanager
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.asyncio import (
     create_async_engine, async_sessionmaker, AsyncSession, AsyncEngine
 )
+
+from src.application.settings import get_settings
+
+settings = get_settings()
 
 
 
@@ -24,9 +29,9 @@ class Database:
         if self._session_factory is None:
             raise Exception("Database holder not setup!")
         return self._session_factory
-    
-    @property
-    async def session(self) -> AsyncSession: # type: ignore
+
+    @asynccontextmanager
+    async def session(self) -> AsyncIterator[AsyncSession]:
         async with self.session_factory() as session:
             try:
                 yield session

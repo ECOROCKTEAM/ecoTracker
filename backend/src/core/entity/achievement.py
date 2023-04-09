@@ -10,6 +10,7 @@ class AchievementProgress:
     active: bool
     entity_id: int
     entity_name: str
+    status: bool
 
 
 @dataclass
@@ -18,4 +19,3 @@ class Achievement:
     description: str
     category: AchievementCategoryDTO
     total: int
-    status: bool

@@ -2,7 +2,10 @@ from typing import Optional, AsyncIterator
 from contextlib import asynccontextmanager
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.asyncio import (
-    create_async_engine, async_sessionmaker, AsyncSession, AsyncEngine
+    create_async_engine,
+    async_sessionmaker,
+    AsyncSession,
+    AsyncEngine,
 )
 
 from src.application.settings import get_settings
@@ -10,20 +13,18 @@ from src.application.settings import get_settings
 settings = get_settings()
 
 
-
 class Database:
-
     def __init__(self, database_url: str, echo: bool = False) -> None:
         self.__url = database_url
         self.__echo = echo
-        
+
         self._session_factory: Optional[async_sessionmaker[AsyncSession]] = None
         self.__engine: Optional[AsyncEngine] = None
 
     @property
     def url(self) -> str:
         return self.__url
-    
+
     @property
     def session_factory(self) -> async_sessionmaker[AsyncSession]:
         if self._session_factory is None:
@@ -56,6 +57,6 @@ class Database:
             expire_on_commit=False,
         )
 
-class Base(DeclarativeBase):
 
+class Base(DeclarativeBase):
     __allow_unmapped__ = True

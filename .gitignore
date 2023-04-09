@@ -1,4 +1,10 @@
-venv
+# Python garbage
+__pycache__/
+*.py[cod]
+*$py.class
 
 # Env files
 *.env
+
+# Poetry
+backend/poetry.lock

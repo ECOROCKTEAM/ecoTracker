@@ -12,3 +12,11 @@ class Task:
     score: int
     category: OccupancyCategoryDTO
     status: OccupancyStatusEnum
+
+
+@dataclass
+class CreateTaskDTO:
+    name: str
+    description: str
+    score: int
+    category: OccupancyCategoryDTO

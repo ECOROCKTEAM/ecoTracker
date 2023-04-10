@@ -23,88 +23,88 @@ class OneBigAbstractRepo(ABC):
 
     # Tasks chapter
     @abstractmethod
-    def create_task(self, new_task: CreateTaskDTO) -> Task: #usecase +
+    def create_task(self, new_task: CreateTaskDTO) -> Task: 
         pass
 
     @abstractmethod
-    def get_task(self, name: str) -> Task:#usecase +
+    def get_task(self, name: str) -> Task:
         pass
 
     @abstractmethod
-    def list_of_tasks(self) -> List[Task]:#usecase +
+    def list_of_tasks(self) -> List[Task]:
         pass
 
     @abstractmethod
-    def sorted_task_by_category(self, category_name: str) -> List[Task]:  #usecase +
+    def sorted_task_by_category(self, category_name: str) -> List[Task]:  
         pass
 
     @abstractmethod
-    def change_task_status(self, task_name: str) -> Task:  #usecase +
+    def change_task_status(self, task_name: str) -> Task:  
         pass
 
     @abstractmethod
-    def patch_task(self, updated_task: CreateTaskDTO) -> Task: #usecase +
+    def patch_task(self, updated_task: CreateTaskDTO) -> Task: 
         pass
 
     @abstractmethod
-    def delete_task(self, name: str) -> bool:  #usecase +
+    def delete_task(self, name: str) -> bool:  
         pass
 
     # Mission chapter
 
     @abstractmethod
-    def create_mission(self, new_mission: CreateMissionDTO, username: str) -> MissionBase: #usecase +
+    def create_mission(self, new_mission: CreateMissionDTO, username: str) -> MissionBase: 
         pass
 
     @abstractmethod
-    def get_one_mission(self, mission_name: str) -> MissionBase:  #usecase +
+    def get_one_mission(self, mission_name: str) -> MissionBase:  
         pass
 
     @abstractmethod
-    def get_missions(self) -> List[MissionBase]: #usecase + 
+    def get_missions(self) -> List[MissionBase]: 
         pass
 
     @abstractmethod
-    def change_mission_status(self, status_name:str, mission_name: str) -> MissionBase:  #usecase +
+    def change_mission_status(self, status_name:str, mission_name: str) -> MissionBase:  
         pass
 
     @abstractmethod
-    def sorted_missions_by_category(self, category_name: str) -> List[MissionBase]: #usecase +
+    def sorted_missions_by_category(self, category_name: str) -> List[MissionBase]: 
         pass
 
     # Community chapter
     @abstractmethod
-    def create_community(self, new_community: CreateCommunityDTO) -> Community:
+    def create_community(self, new_community: CreateCommunityDTO) -> Community: 
         pass
 
     @abstractmethod
-    def deactivate_community(self, community_name: str) -> bool:
+    def change_community_status(self, community_name: str) -> Community: 
         pass
 
     @abstractmethod
-    def get_one_community(self, community_name: str) -> Community:
+    def get_one_community(self, community_name: str) -> Community:  
         pass
 
     @abstractmethod
-    def get_communities(self) -> List[Community]:
+    def get_communities(self) -> List[Community]: 
         pass
 
     # User chapter
 
     @abstractmethod
-    def create_user(self, new_user: CreateUserDTO) -> User:
+    def create_user(self, new_user: CreateUserDTO) -> User: 
         pass
 
     @abstractmethod
-    def delete_user(self, username: str) -> bool:
+    def delete_user(self, username: str) -> bool: 
         pass
 
     @abstractmethod
-    def get_one_user(self, username: str) -> User:
+    def get_one_user(self, username: str) -> User: 
         pass
 
     @abstractmethod
-    def list_of_community_users(self, community_name: str) -> List[User]:
+    def list_of_community_users(self, community_name: str) -> List[User]: 
         pass
 
     @abstractmethod

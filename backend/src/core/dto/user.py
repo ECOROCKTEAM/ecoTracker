@@ -30,3 +30,8 @@ class UserContactListDTO:
             raise Exception("Not found")
         return tmp
 
+
+@dataclass
+class CreateUserDTO:
+    username: str
+    password: str

@@ -18,8 +18,8 @@ class FailResult:
 
 class ScoreUserGetUC:
 
-    def __init__(self):
-        self.repo = BaseAbstractRepo
+    def __init__(self, repo: BaseAbstractRepo):
+        self.repo = repo
 
     def realization(self, *, username: str) -> Union[SuccessResult, FailResult]:
 

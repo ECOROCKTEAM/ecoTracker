@@ -14,7 +14,6 @@ class NotificationDTO:
     type: NotificationType
 
 
-
 @dataclass
 class LanguageDTO:
     name: str
@@ -26,5 +25,3 @@ class SettingsDTO:
     name: str
     notification: NotificationDTO
     language: LanguageDTO
-
-

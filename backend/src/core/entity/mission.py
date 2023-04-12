@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
+from core.dto.occupancy import OccupancyCategoryDTO
 
-from src.core.dto.occypancy import OccupancyCategoryDTO
+from src.core.dto.occupancy import OccupancyCategoryDTO
 from src.core.enum.base import RelatedEnum
 from src.core.enum.occupancy import OccupancyStatusEnum
 
@@ -25,7 +26,6 @@ class MisssionUser(MissionBase):
 
 @dataclass
 class MissionCommunity(MissionBase):
-
     place: str
     meeting_date: int
     people_required: int

@@ -18,8 +18,20 @@ from src.core.entity.community import Community
 from src.core.dto.user import CreateUserDTO
 from src.core.entity.user import User
 
+#score imports
+from src.core.dto.score import ScoreUserGetDTO
+
 
 class BaseAbstractRepo(ABC):
+
+    # ContactUser chapter
+
+    # ScoreUser chapter
+
+    @abstractmethod
+    def score_user_get(self, *, username: str) -> ScoreUserGetDTO:
+        pass
+
 
     # Tasks chapter
     @abstractmethod

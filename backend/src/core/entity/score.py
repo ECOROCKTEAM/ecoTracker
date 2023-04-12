@@ -4,23 +4,20 @@ from src.core.enum.base import RelatedEnum
 
 
 @dataclass
-class ScoreBaseDTO:
+class ScoreBase: 
     value: int
     related: RelatedEnum = field(init=False)
 
 
 @dataclass
-class ScoreCommunityDTO(ScoreBaseDTO):
-    def __post_init__(self):
-        self.related = RelatedEnum.COMMUNITY
+class ScoreUser(ScoreBase):
 
-
-@dataclass
-class ScoreUserDTO(ScoreBaseDTO):
     def __post_init__(self):
         self.related = RelatedEnum.USER
 
 
 @dataclass
-class ScoreUserGetDTO(ScoreUserDTO):
-    """ """
+class ScoreCommunity(ScoreBase):
+
+    def __post_init__(self):
+        self.related = RelatedEnum.COMMUNITY

@@ -7,7 +7,7 @@ from src.core.dto.tasks import CreateTaskDTO, UpdateTaskDTO
 from src.core.entity.task import Task
 
 # Mission imports
-from src.core.dto.mission import CreateMissionBaseDTO, CreateMissionCommunityDTO
+from src.core.dto.mission import CreateMissionBaseDTO, CreateMissionCommunityDTO, UpdateMissionCommunityDTO
 from src.core.entity.mission import MissionBase, MissionCommunity
 
 # Community imports
@@ -39,10 +39,6 @@ class BaseAbstractRepo(ABC):
         pass
 
     @abstractmethod
-    def task_update(self, *, some_update_obj: str) -> Task: #finish
-        pass
-
-    @abstractmethod
     def task_update(self, *, updated_task: UpdateTaskDTO) -> Task: #find how to update fields
         pass
 
@@ -53,18 +49,18 @@ class BaseAbstractRepo(ABC):
     # Base Mission chapter
 
     @abstractmethod
-    def mission_base_create(self, *, new_mission: CreateMissionBaseDTO) -> MissionBase: # +
+    def mission_base_create(self, *, new_mission: CreateMissionBaseDTO) -> MissionBase: 
         pass
 
     @abstractmethod
-    def mission_base_get(self, *, mission_name: str) -> MissionBase: # +
+    def mission_base_get(self, *, mission_name: str) -> MissionBase: 
         pass
 
     @abstractmethod
     def missions_base_list(self, *,
-                   sorting_obj: str = None, 
-                   paggination_obj: str = None, 
-                   filter_obj: str = None,
+                           sorting_obj: str = None, 
+                           paggination_obj: str = None, 
+                           filter_obj: str = None,
                 ) -> List[MissionBase]: # +
         pass
 
@@ -73,8 +69,39 @@ class BaseAbstractRepo(ABC):
         pass
 
     @abstractmethod
-    def mission_base_delete(self, *, mission_name: str) -> bool: # +
+    def mission_base_delete(self, *, mission_name: str) -> bool: 
         pass
+
+    # Mission Community chapter
+    @abstractmethod
+    def mission_comminuty_create(self, *, new_mission=CreateMissionCommunityDTO) -> MissionCommunity:
+        pass
+
+    @abstractmethod
+    def mission_community_get(self, *, name: str) -> MissionCommunity:
+        pass
+
+    @abstractmethod
+    def mission_community_delete(self, *, name: str) -> MissionCommunity:
+        pass
+
+    @abstractmethod
+    def mission_community_list(self, *, 
+                               sorting_obj: str = None, 
+                               paggination_obj: str = None, 
+                               filter_obj: str = None,
+                            ) -> List[MissionCommunity]:
+        pass
+
+    @abstractmethod
+    def mission_community_update(self, *
+                                 new_mission_obj: UpdateMissionCommunityDTO
+                        ) -> MissionCommunity: # finish: fix mission usecase
+        pass
+
+    # Mission User Chapter
+
+    """ Realize after description Use Cases """
 
     # Community chapter
     @abstractmethod
@@ -82,7 +109,7 @@ class BaseAbstractRepo(ABC):
         pass
 
     @abstractmethod
-    def community_update(self, *, find_some_info: str) -> Community: # Finish
+    def community_update(self, *, find_some_info: str) -> Community: # finish: fix mission usecase
         pass
 
     @abstractmethod
@@ -100,7 +127,7 @@ class BaseAbstractRepo(ABC):
     # User chapter
 
     @abstractmethod
-    def user_create(self, *, new_user: CreateUserDTO) -> User: # add some update fields in arguments
+    def user_create(self, *, new_user: CreateUserDTO) -> User:
         pass
 
     @abstractmethod
@@ -116,6 +143,6 @@ class BaseAbstractRepo(ABC):
                    sorting_obj: str = None, 
                    paggination_obj: str = None, 
                    filter_obj: str = None,
-                ) -> List[User]: #finish: implement sorting
+                ) -> List[User]: 
         pass
 

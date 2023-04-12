@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Union
 
+from src.core.enum.contact import ContactEnum
 from src.core.interfaces.base import BaseAbstractRepo
 from src.core.entity.user import User
 from src.core.dto.user import CreateUserDTO
@@ -25,6 +26,8 @@ class UseCase:
     def realization(self,
                     username: str,
                     password: str,
+                    contact: str,
+                    contact_type: ContactEnum,
         ) -> Union[SuccessResult, FailOperation]:
 
         user = CreateUserDTO(username=username, password=password)

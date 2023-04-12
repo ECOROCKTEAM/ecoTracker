@@ -34,3 +34,8 @@ class CreateMissionCommunityDTO:
 
     def __post_init__(self):
         self.related = RelatedEnum.COMMUNITY
+
+
+@dataclass
+class UpdateMissionCommunityDTO(CreateMissionCommunityDTO):
+    """ """

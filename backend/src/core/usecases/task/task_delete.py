@@ -24,7 +24,7 @@ class UseCase:
     def realization(self, name: str) -> Union[SuccessResult, FailOperation]:
         
         try:
-            self.repo.task_delete(name=name)
+            _ = self.repo.task_delete(name=name)
         except RepoError as e:
             return FailOperation(message=e)
         

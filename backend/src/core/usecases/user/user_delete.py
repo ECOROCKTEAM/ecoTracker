@@ -8,7 +8,7 @@ from src.core.exeption.base import RepoError
 
 @dataclass
 class SuccessResult:
-    item: User
+    result: bool
 
 
 @dataclass
@@ -28,5 +28,5 @@ class UseCase:
         except RepoError as e:
             return FailOperation(message=e)
         
-        return SuccessResult(item=delete)
+        return SuccessResult(result=True)
     

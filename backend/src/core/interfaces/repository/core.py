@@ -1,6 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import List
-from src.core.dto.community import CommunityIncludeUserFilter, CommunityListFilter
+from src.core.dto.community import (
+    CommunityIncludeUserFilter,
+    CommunityInviteCreateDTO,
+    CommunityInviteDTO,
+    CommunityInviteUpdateDTO,
+    CommunityListFilter,
+)
 from src.core.dto.community_role import CommunityRoleCreateDTO, CommunityRoleDTO
 from src.core.dto.privacy import PrivacyCreateDTO, PrivacyDTO
 from src.core.dto.shared import UserCommunityDTO, UserCommunityCreateDTO
@@ -87,14 +93,14 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_delete(self, *, id: str) -> int:
+    async def community_deactivate(self, *, id: str) -> str:
         """Удалить сообщество
 
         Args:
             id (str): Id сообщества
 
         Returns:
-            int: Id удалённого сообщества
+            str: Id удалённого сообщества
 
         Raises:
             RepoError: Ошибка операции
@@ -102,7 +108,9 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_user_ids(self, *, id: str, filter: CommunityIncludeUserFilter) -> list[str]:
+    async def community_user_ids(
+        self, *, id: str, filter: CommunityIncludeUserFilter
+    ) -> list[str]:
         """Получить список ID пользователей входящих в сообщество
 
         Args:
@@ -142,7 +150,9 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_role_create(self, *, obj: CommunityRoleCreateDTO) -> CommunityRoleDTO:
+    async def community_role_create(
+        self, *, obj: CommunityRoleCreateDTO
+    ) -> CommunityRoleDTO:
         """Создать роль для сообщества
 
         Args:
@@ -167,7 +177,9 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_add_user(self, *, obj: UserCommunityCreateDTO) -> UserCommunityDTO:
+    async def community_add_user(
+        self, *, obj: UserCommunityCreateDTO
+    ) -> UserCommunityDTO:
         """Добавить пользователя в сообщество
 
         Args:
@@ -175,6 +187,55 @@ class IRepositoryCore(ABC):
 
         Returns:
             UserCommunityDTO: Объект связи пользователя и сообщества
+
+        Raises:
+            RepoError: Ошибка операции
+        """
+
+    @abstractmethod
+    async def community_invite_link_create(
+        self, *, obj: CommunityInviteCreateDTO
+    ) -> CommunityInviteDTO:
+        """Создать инвайт ссылку сообщества
+
+        Args:
+            obj (CommunityInviteCreateDTO): DTO объект создания ссылки для сообщества
+
+        Returns:
+            CommunityInviteDTO: DTO объект ссылки сообщества
+
+        Raises:
+            RepoError: Ошибка операции
+        """
+
+    @abstractmethod
+    async def community_invite_link_get(
+        self, *, community_id: str
+    ) -> CommunityInviteDTO:
+        """Получить инвайт ссылку
+
+        Args:
+            str (community_id): Id сообщества
+
+        Returns:
+            CommunityInviteDTO: DTO объект ссылки сообщества
+
+        Raises:
+            RepoError: Ошибка операции
+            CommunityInviteLinkNotFoundError: Ссылка не найдена
+        """
+
+    @abstractmethod
+    async def community_invite_link_update(
+        self, *, obj: CommunityInviteUpdateDTO
+    ) -> CommunityInviteDTO:
+        """Обновить инвайт ссылку на сообщество
+
+        Args:
+            obj (CommunityInviteUpdateDTO): DTO объект обновления ссылки для сообщества
+
+        Returns:
+            CommunityInviteDTO: DTO объект ссылки сообщества
 
         Raises:
             RepoError: Ошибка операции

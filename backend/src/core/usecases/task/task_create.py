@@ -18,29 +18,26 @@ class FailOperation:
 
 
 class UseCase:
-
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
-
-    def realization(self, 
-                    name: str,
-                    description: str,
-                    score: int,
-                    category: str,
-                ) -> Union[SuccessResult, FailOperation]:
-        
+    def realization(
+        self,
+        name: str,
+        description: str,
+        score: int,
+        category: str,
+    ) -> Union[SuccessResult, FailOperation]:
         task = CreateTaskDTO(
             name=name,
             description=description,
             score=score,
             category=category,
         )
-        
+
         try:
             new_task = self.repo.task_create(new_task=task)
         except RepoError as e:
             return FailOperation(message=e)
-        
+
         return SuccessResult(item=new_task)
-        

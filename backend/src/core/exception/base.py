@@ -5,6 +5,7 @@ class BaseError(Exception):
         self.msg = self.msg_template.format(**kwargs)
         super().__init__(self.msg)
 
+
 class DomainError(BaseError):
     """"""
 

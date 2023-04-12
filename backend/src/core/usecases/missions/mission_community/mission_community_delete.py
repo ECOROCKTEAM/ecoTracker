@@ -16,12 +16,10 @@ class FailOperation:
 
 
 class MissionCommunityDeleteUC:
-
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
     def realization(self, *, name: str) -> Union[SuccessResult, FailOperation]:
-
         try:
             _ = self.repo.mission_community_delete(name=name)
         except RepoError as e:

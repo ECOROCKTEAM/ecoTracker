@@ -25,7 +25,7 @@ class CreateMissionUserDTO:
 
 @dataclass
 class CreateMissionCommunityDTO:
-    author: str 
+    author: str
     meeting_date: datetime
     people_required: int
     people_max: int

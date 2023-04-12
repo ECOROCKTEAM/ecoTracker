@@ -20,12 +20,10 @@ class UseCase:
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
-
     def realization(self, name: str) -> Union[SuccessResult, FailOperation]:
-
         try:
             task = self.repo.task_get(name=name)
         except RepoError as e:
             return FailOperation(message=e)
-        
+
         return SuccessResult(item=task)

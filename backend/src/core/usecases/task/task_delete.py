@@ -16,16 +16,13 @@ class FailOperation:
 
 
 class UseCase:
-
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
-
     def realization(self, name: str) -> Union[SuccessResult, FailOperation]:
-        
         try:
             _ = self.repo.task_delete(name=name)
         except RepoError as e:
             return FailOperation(message=e)
-        
+
         return SuccessResult(result=True)

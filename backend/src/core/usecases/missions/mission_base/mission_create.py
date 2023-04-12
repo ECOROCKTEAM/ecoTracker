@@ -21,20 +21,19 @@ class FailOperation:
 
 
 class MissionBaseCreateUC:
-
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
-    def realization(self,
-                    name: str,
-                    description: str,
-                    instruction: str,
-                    score: int,
-                    category: OccupancyCategoryDTO, # или передавать DTO????
-                    status: OccupancyStatusEnum,
-                    related: RelatedEnum = field(init=False),
-                    ) -> Union[SuccessResult, FailOperation]:
-                            
+    def realization(
+        self,
+        name: str,
+        description: str,
+        instruction: str,
+        score: int,
+        category: OccupancyCategoryDTO,  # или передавать DTO????
+        status: OccupancyStatusEnum,
+        related: RelatedEnum = field(init=False),
+    ) -> Union[SuccessResult, FailOperation]:
         mission = CreateMissionBaseDTO(
             name=name,
             description=description,
@@ -44,11 +43,10 @@ class MissionBaseCreateUC:
             status=status,
             related=related,
         )
-        
+
         try:
             new_mission = self.repo.mission_base_create(new_mission=mission)
         except RepoError as e:
             return FailOperation(message=e)
-        
+
         return SuccessResult(item=new_mission)
-    

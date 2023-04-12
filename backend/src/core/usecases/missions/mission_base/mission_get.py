@@ -17,16 +17,13 @@ class FailOperation:
 
 
 class MissionBaseGetUC:
-
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
     def realization(self, mission_name: str) -> Union[SuccessResult, FailOperation]:
-
         try:
             mission = self.repo.mission_base_get(mission_name=mission_name)
         except RepoError as e:
             return FailOperation(message=e)
-        
+
         return SuccessResult(item=mission)
-    

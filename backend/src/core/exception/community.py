@@ -2,11 +2,15 @@ from src.core.exception.base import DomainError, RepoError
 
 
 class CommunityError(DomainError):
-    msg_template = "community_id={community_id} problem"
+    msg_template = "community={community_id} problem"
+
+
+class CommunityDeactivatedError(CommunityError):
+    msg_template = "community={community_id} deactivated"
 
 
 class CommunityPrivacyError(CommunityError):
-    msg_template = "community_id={community_id} problem"
+    msg_template = "community={community_id} problem"
 
 
 class CommunityCreateError(CommunityError, RepoError):
@@ -22,4 +26,8 @@ class CommunityDeleteError(CommunityError, RepoError):
 
 
 class CommunityNotFoundError(CommunityError, RepoError):
-    msg_template = "Community with id={user_id} not found"
+    msg_template = "Community with id={community_id} not found"
+
+
+class CommunityInviteLinkNotFoundError(CommunityError, RepoError):
+    msg_template = "Invite link for Community with id={community_id} not found"

@@ -1,10 +1,10 @@
-import asyncio
 from dataclasses import dataclass
+from src.core.entity.user import User
 
 from src.core.exception.user import UserIsNotPremiumError
 from src.core.interfaces.repository.core import IRepositoryCore
 from src.core.dto.community import CommunityListFilter
-from src.core.entity.community import Community, CommunityCreateDTO
+from src.core.entity.community import Community
 
 
 @dataclass
@@ -16,9 +16,8 @@ class CommunityListUsecase:
     def __init__(self, *, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user_id: str, filter_obj: CommunityListFilter) -> Result:
-        user =await self.repo.user_get(id=user_id)
+    async def __call__(self, *, user: User, filter_obj: CommunityListFilter) -> Result:
         if not user.is_premium:
-            raise UserIsNotPremiumError(user_id=user_id)
+            raise UserIsNotPremiumError(username=user.username)
         community_list = await self.repo.community_list(obj=filter_obj)
         return Result(item=community_list)

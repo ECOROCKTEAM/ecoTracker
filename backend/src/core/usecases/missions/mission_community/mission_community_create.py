@@ -19,26 +19,26 @@ class FailOperation:
 
 
 class MissionCommunityCreateUC:
-
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
-    def realization(self, *,
-                    username: str,
-                    meeting_date: datetime,
-                    people_required: int,
-                    people_max: int,
-                    place: str,
-                    comment: str,
-                    ) -> Union[SuccessResult, FailOperation]:
-
+    def realization(
+        self,
+        *,
+        username: str,
+        meeting_date: datetime,
+        people_required: int,
+        people_max: int,
+        place: str,
+        comment: str,
+    ) -> Union[SuccessResult, FailOperation]:
         mission = CreateMissionCommunityDTO(
             author=username,
             meeting_date=meeting_date,
             people_required=people_required,
             people_max=people_max,
             place=place,
-            comment=comment
+            comment=comment,
         )
 
         try:

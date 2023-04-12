@@ -1,6 +1,6 @@
-import asyncio
 from dataclasses import dataclass
 from src.core.dto.community_role import CommunityRoleCreateDTO, CommunityRoleDTO
+from src.core.entity.user import User
 
 from src.core.exception.user import UserPermissionError
 from src.core.interfaces.repository.core import IRepositoryCore
@@ -15,10 +15,10 @@ class CommunityRoleCreateUsecase:
     def __init__(self, *, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user_id: str, create_obj: CommunityRoleCreateDTO) -> Result:
-        user_task = asyncio.create_task(self.repo.user_get(id=user_id))
-        user = await user_task
+    async def __call__(
+        self, *, user: User, create_obj: CommunityRoleCreateDTO
+    ) -> Result:
         if not user.application_role.ADMIN:
-            raise UserPermissionError(user_id=user_id)
+            raise UserPermissionError(username=user.username)
         role = await self.repo.community_role_create(obj=create_obj)
         return Result(item=role)

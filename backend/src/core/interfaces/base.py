@@ -7,7 +7,11 @@ from src.core.dto.tasks import CreateTaskDTO, UpdateTaskDTO
 from src.core.entity.task import Task
 
 # Mission imports
-from src.core.dto.mission import CreateMissionBaseDTO, CreateMissionCommunityDTO, UpdateMissionCommunityDTO
+from src.core.dto.mission import (
+    CreateMissionBaseDTO,
+    CreateMissionCommunityDTO,
+    UpdateMissionCommunityDTO,
+)
 from src.core.entity.mission import MissionBase, MissionCommunity
 
 # Community imports
@@ -20,10 +24,9 @@ from src.core.entity.user import User
 
 
 class BaseAbstractRepo(ABC):
-
     # Tasks chapter
     @abstractmethod
-    def task_create(self, *, new_task: CreateTaskDTO) -> Task: 
+    def task_create(self, *, new_task: CreateTaskDTO) -> Task:
         pass
 
     @abstractmethod
@@ -31,50 +34,60 @@ class BaseAbstractRepo(ABC):
         pass
 
     @abstractmethod
-    def tasks_list(self, *,
-                   sorting_obj: str = None, 
-                   paggination_obj: str = None, 
-                   filter_obj: str = None,
-                ) -> List[Task]: 
+    def tasks_list(
+        self,
+        *,
+        sorting_obj: str = None,
+        paggination_obj: str = None,
+        filter_obj: str = None,
+    ) -> List[Task]:
         pass
 
     @abstractmethod
-    def task_update(self, *, updated_task: UpdateTaskDTO) -> Task: #find how to update fields
+    def task_update(
+        self, *, updated_task: UpdateTaskDTO
+    ) -> Task:  # find how to update fields
         pass
 
     @abstractmethod
-    def task_delete(self, *, name: str) -> bool:  
+    def task_delete(self, *, name: str) -> bool:
         pass
 
     # Base Mission chapter
 
     @abstractmethod
-    def mission_base_create(self, *, new_mission: CreateMissionBaseDTO) -> MissionBase: 
+    def mission_base_create(self, *, new_mission: CreateMissionBaseDTO) -> MissionBase:
         pass
 
     @abstractmethod
-    def mission_base_get(self, *, mission_name: str) -> MissionBase: 
+    def mission_base_get(self, *, mission_name: str) -> MissionBase:
         pass
 
     @abstractmethod
-    def missions_base_list(self, *,
-                           sorting_obj: str = None, 
-                           paggination_obj: str = None, 
-                           filter_obj: str = None,
-                ) -> List[MissionBase]: # +
+    def missions_base_list(
+        self,
+        *,
+        sorting_obj: str = None,
+        paggination_obj: str = None,
+        filter_obj: str = None,
+    ) -> List[MissionBase]:  # +
         pass
 
     @abstractmethod
-    def mission_base_update(self, *, find_some_info: str) -> MissionBase: # finish: fix mission usecase
+    def mission_base_update(
+        self, *, find_some_info: str
+    ) -> MissionBase:  # finish: fix mission usecase
         pass
 
     @abstractmethod
-    def mission_base_delete(self, *, mission_name: str) -> bool: 
+    def mission_base_delete(self, *, mission_name: str) -> bool:
         pass
 
     # Mission Community chapter
     @abstractmethod
-    def mission_comminuty_create(self, *, new_mission=CreateMissionCommunityDTO) -> MissionCommunity:
+    def mission_comminuty_create(
+        self, *, new_mission=CreateMissionCommunityDTO
+    ) -> MissionCommunity:
         pass
 
     @abstractmethod
@@ -86,17 +99,19 @@ class BaseAbstractRepo(ABC):
         pass
 
     @abstractmethod
-    def mission_community_list(self, *, 
-                               sorting_obj: str = None, 
-                               paggination_obj: str = None, 
-                               filter_obj: str = None,
-                            ) -> List[MissionCommunity]:
+    def mission_community_list(
+        self,
+        *,
+        sorting_obj: str = None,
+        paggination_obj: str = None,
+        filter_obj: str = None,
+    ) -> List[MissionCommunity]:
         pass
 
     @abstractmethod
-    def mission_community_update(self, *
-                                 new_mission_obj: UpdateMissionCommunityDTO
-                        ) -> MissionCommunity: # finish: fix mission usecase
+    def mission_community_update(
+        self, *new_mission_obj: UpdateMissionCommunityDTO
+    ) -> MissionCommunity:  # finish: fix mission usecase
         pass
 
     # Mission User Chapter
@@ -105,23 +120,27 @@ class BaseAbstractRepo(ABC):
 
     # Community chapter
     @abstractmethod
-    def community_create(self, *, new_community: CreateCommunityDTO) -> Community: 
+    def community_create(self, *, new_community: CreateCommunityDTO) -> Community:
         pass
 
     @abstractmethod
-    def community_update(self, *, find_some_info: str) -> Community: # finish: fix mission usecase
+    def community_update(
+        self, *, find_some_info: str
+    ) -> Community:  # finish: fix mission usecase
         pass
 
     @abstractmethod
-    def community_get(self, *, community_name: str) -> Community:  
+    def community_get(self, *, community_name: str) -> Community:
         pass
 
     @abstractmethod
-    def communities_list(self, *,
-                   sorting_obj: str = None, 
-                   paggination_obj: str = None, 
-                   filter_obj: str = None,
-                ) -> List[Community]: 
+    def communities_list(
+        self,
+        *,
+        sorting_obj: str = None,
+        paggination_obj: str = None,
+        filter_obj: str = None,
+    ) -> List[Community]:
         pass
 
     # User chapter
@@ -131,18 +150,19 @@ class BaseAbstractRepo(ABC):
         pass
 
     @abstractmethod
-    def user_delete(self, *, username: str) -> bool: 
+    def user_delete(self, *, username: str) -> bool:
         pass
 
     @abstractmethod
-    def user_get(self, *, username: str) -> User: 
+    def user_get(self, *, username: str) -> User:
         pass
 
     @abstractmethod
-    def users_list(self, *,
-                   sorting_obj: str = None, 
-                   paggination_obj: str = None, 
-                   filter_obj: str = None,
-                ) -> List[User]: 
+    def users_list(
+        self,
+        *,
+        sorting_obj: str = None,
+        paggination_obj: str = None,
+        filter_obj: str = None,
+    ) -> List[User]:
         pass
-

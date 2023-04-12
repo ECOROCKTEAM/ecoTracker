@@ -17,16 +17,13 @@ class FailOperation:
 
 
 class MissionBaseDeleteUC:
-
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
     def realization(self, mission_name: str) -> Union[SuccessResult, FailOperation]:
-
         try:
             _ = self.repo.mission_base_delete(mission_name=mission_name)
         except RepoError as e:
             return FailOperation(message=e)
-        
+
         return SuccessResult(result=True)
-    

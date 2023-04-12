@@ -13,7 +13,6 @@ class UserCommunityDTO:
 
 @dataclass
 class UserCommunityCreateDTO:
-    id: int
     user_id: str
     community_id: str
     role: CommunityRoleEnum = CommunityRoleEnum.USER

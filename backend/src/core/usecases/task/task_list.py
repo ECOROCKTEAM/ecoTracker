@@ -17,16 +17,13 @@ class FailOperation:
 
 
 class UseCase:
-
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
-        
 
     def realization(self) -> Union[SuccessResult, FailOperation]:
-        
         try:
             list_of_tasks = self.repo.tasks_list()
         except RepoError as e:
             return FailOperation(message=e)
-        
+
         return SuccessResult(items=list_of_tasks)

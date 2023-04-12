@@ -8,7 +8,6 @@ from src.core.enum.role import ApplicationRoleEnum
 class User:
     """User entity"""
 
-    id: int
     username: str
     password: str
     active: bool

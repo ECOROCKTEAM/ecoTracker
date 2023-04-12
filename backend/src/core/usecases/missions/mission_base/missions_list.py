@@ -17,16 +17,15 @@ class FailOperation:
 
 
 class MissionBaseListUC:
-
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
-    def realization(self,
-                    sorting_obj: str = None,
-                    paggination_obj: str = None,
-                    filter_obj: str = None,
-                    ) -> Union[SuccessResult, FailOperation]:
-
+    def realization(
+        self,
+        sorting_obj: str = None,
+        paggination_obj: str = None,
+        filter_obj: str = None,
+    ) -> Union[SuccessResult, FailOperation]:
         try:
             missions = self.repo.missions_base_list(
                 sorting_obj=sorting_obj,

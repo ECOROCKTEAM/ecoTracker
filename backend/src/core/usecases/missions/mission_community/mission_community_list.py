@@ -17,21 +17,21 @@ class FailOperation:
 
 
 class MissionCommunityListUC:
-
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
-    def realization(self, *,
-                    sorting_obj: str = None, 
-                    paggination_obj: str = None, 
-                    filter_obj: str = None,                    
-                    ) -> Union[SuccessResult, FailOperation]:
-
+    def realization(
+        self,
+        *,
+        sorting_obj: str = None,
+        paggination_obj: str = None,
+        filter_obj: str = None,
+    ) -> Union[SuccessResult, FailOperation]:
         try:
             mission_list = self.repo.mission_community_list(
                 sorting_obj=sorting_obj,
                 paggination_obj=paggination_obj,
-                filter_obj=filter_obj
+                filter_obj=filter_obj,
             )
         except RepoError as e:
             return FailOperation(message=e)

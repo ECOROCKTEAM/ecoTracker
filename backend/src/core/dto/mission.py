@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import datetime
 
 from src.core.dto.occypancy import OccupancyCategoryDTO
 from src.core.enum.base import RelatedEnum
@@ -17,12 +18,19 @@ class CreateMissionBaseDTO:
 
 
 @dataclass
-class CreateMissionUserDTO(CreateMissionBaseDTO):
+class CreateMissionUserDTO:
     def __post_init__(self):
         self.related = RelatedEnum.USER
 
 
 @dataclass
-class CreateMissionCommunityDTO(CreateMissionBaseDTO):
+class CreateMissionCommunityDTO:
+    author: str 
+    meeting_date: datetime
+    people_required: int
+    people_max: int
+    place: str
+    comment: str
+
     def __post_init__(self):
         self.related = RelatedEnum.COMMUNITY

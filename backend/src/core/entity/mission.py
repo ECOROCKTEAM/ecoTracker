@@ -12,7 +12,6 @@ class MissionBase:
     description: str
     instruction: str
     score: int
-    author: str  # user.username
     category: OccupancyCategoryDTO
     status: OccupancyStatusEnum
     related: RelatedEnum = field(init=False)
@@ -32,6 +31,7 @@ class MissionCommunity(MissionBase):
     people_required: int
     people_max: int
     comment: str
+    author: str  # user.username
 
     def __post_init__(self):
         self.related = RelatedEnum.COMMUNITY

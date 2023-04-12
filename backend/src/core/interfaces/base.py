@@ -7,8 +7,8 @@ from src.core.dto.tasks import CreateTaskDTO, UpdateTaskDTO
 from src.core.entity.task import Task
 
 # Mission imports
-from src.core.dto.mission import CreateMissionDTO
-from src.core.entity.mission import MissionBase
+from src.core.dto.mission import CreateMissionBaseDTO, CreateMissionCommunityDTO
+from src.core.entity.mission import MissionBase, MissionCommunity
 
 # Community imports
 from src.core.dto.community import CreateCommunityDTO
@@ -50,26 +50,30 @@ class BaseAbstractRepo(ABC):
     def task_delete(self, *, name: str) -> bool:  
         pass
 
-    # Mission chapter
+    # Base Mission chapter
 
     @abstractmethod
-    def mission_create(self, *, new_mission: CreateMissionDTO, username: str) -> MissionBase: 
+    def mission_base_create(self, *, new_mission: CreateMissionBaseDTO) -> MissionBase: # +
         pass
 
     @abstractmethod
-    def mission_get(self, *, mission_name: str) -> MissionBase:  
+    def mission_base_get(self, *, mission_name: str) -> MissionBase: # +
         pass
 
     @abstractmethod
-    def missions_list(self, *,
+    def missions_base_list(self, *,
                    sorting_obj: str = None, 
                    paggination_obj: str = None, 
                    filter_obj: str = None,
-                ) -> List[MissionBase]: # add sorting
+                ) -> List[MissionBase]: # +
         pass
 
     @abstractmethod
-    def mission_update(self, *, find_some_info: str) -> MissionBase: # finish: fix mission usecase
+    def mission_base_update(self, *, find_some_info: str) -> MissionBase: # finish: fix mission usecase
+        pass
+
+    @abstractmethod
+    def mission_base_delete(self, *, mission_name: str) -> bool: # +
         pass
 
     # Community chapter

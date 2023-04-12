@@ -16,17 +16,18 @@ class FailOperation:
     message: str
 
 
-class UseCase:
+class MissionBaseUpdateUC:
 
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
-    def realization(self, mission_name: str) -> Union[SuccessResult, FailOperation]:
-
+    def realization(self, status_name: str, mission_name: str) -> Union[SuccessResult, FailOperation]:
+                            
+        
         try:
-            mission = self.repo.mission_get(mission_name=mission_name)
+            change = self.repo.mission_base_update(status_name=status_name, mission_name=mission_name)
         except RepoError as e:
             return FailOperation(message=e)
         
-        return SuccessResult(item=mission)
+        return SuccessResult(item=change)
     

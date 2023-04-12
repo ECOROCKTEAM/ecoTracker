@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Union
 
 from src.core.interfaces.base import BaseAbstractRepo
@@ -8,7 +8,7 @@ from src.core.exeption.base import RepoError
 
 @dataclass
 class SuccessResult:
-    items: list[MissionBase] = field(default_factory=list)
+    item: MissionBase
 
 
 @dataclass
@@ -16,18 +16,17 @@ class FailOperation:
     message: str
 
 
-class UseCase:
+class MissionBaseGetUC:
 
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
-    def realization(self) -> Union[SuccessResult, FailOperation]:
-                            
-        
+    def realization(self, mission_name: str) -> Union[SuccessResult, FailOperation]:
+
         try:
-            missions = self.repo.missions_list()
+            mission = self.repo.mission_base_get(mission_name=mission_name)
         except RepoError as e:
             return FailOperation(message=e)
         
-        return SuccessResult(item=missions)
+        return SuccessResult(item=mission)
     

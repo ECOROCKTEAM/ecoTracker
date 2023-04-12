@@ -8,7 +8,7 @@ from src.core.exeption.base import RepoError
 
 @dataclass
 class SuccessResult:
-    item: MissionBase
+    item: bool
 
 
 @dataclass
@@ -16,18 +16,17 @@ class FailOperation:
     message: str
 
 
-class UseCase:
+class MissionBaseDeleteUC:
 
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
-    def realization(self, status_name: str, mission_name: str) -> Union[SuccessResult, FailOperation]:
-                            
-        
+    def realization(self, mission_name: str) -> Union[SuccessResult, FailOperation]:
+
         try:
-            change = self.repo.mission_update(status_name=status_name, mission_name=mission_name)
+            mission = self.repo.mission_base_delete(mission_name=mission_name)
         except RepoError as e:
             return FailOperation(message=e)
         
-        return SuccessResult(item=change)
+        return SuccessResult(result=True)
     

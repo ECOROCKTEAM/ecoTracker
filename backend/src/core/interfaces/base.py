@@ -23,6 +23,7 @@ from src.core.dto.score import ScoreUserGetDTO
 
 # contact imports
 from src.core.entity.contact import ContactType
+from src.core.dto.contact import ContactTypeCreateDTO
 
 
 class BaseAbstractRepo(ABC):
@@ -30,7 +31,7 @@ class BaseAbstractRepo(ABC):
     # ContactUser chapter
 
     @abstractmethod
-    def contact_type_create(self, *, name: str) -> ContactType:
+    def contact_type_create(self, *, name: ContactTypeCreateDTO) -> ContactType:
         pass
 
     # ScoreUser chapter

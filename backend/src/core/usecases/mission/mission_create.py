@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Union
 
-from src.core.interfaces.base import OneBigAbstractRepo
+from src.core.interfaces.base import BaseAbstractRepo
 from src.core.entity.mission import MissionBase
 from src.core.exeption.base import RepoError
 from src.core.dto.mission import CreateMissionDTO
@@ -19,7 +19,7 @@ class FailOperation:
 
 class UseCase:
 
-    def __init__(self, repo: OneBigAbstractRepo) -> None:
+    def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
     def realization(self,
@@ -44,7 +44,7 @@ class UseCase:
         )
         
         try:
-            new_mission = self.repo.create_mission(new_mission=mission, username=username)
+            new_mission = self.repo.mission_create(new_mission=mission, username=username)
         except RepoError as e:
             return FailOperation(message=e)
         

@@ -3,7 +3,7 @@ from typing import List
 from abc import ABC, abstractmethod
 
 # Tasks imports
-from src.core.dto.tasks import CreateTaskDTO
+from src.core.dto.tasks import CreateTaskDTO, UpdateTaskDTO
 from src.core.entity.task import Task
 
 # Mission imports
@@ -19,95 +19,99 @@ from src.core.dto.user import CreateUserDTO
 from src.core.entity.user import User
 
 
-class OneBigAbstractRepo(ABC):
+class BaseAbstractRepo(ABC):
 
     # Tasks chapter
     @abstractmethod
-    def create_task(self, new_task: CreateTaskDTO) -> Task: 
+    def task_create(self, *, new_task: CreateTaskDTO) -> Task: 
         pass
 
     @abstractmethod
-    def get_task(self, name: str) -> Task:
+    def task_get(self, *, name: str) -> Task:
         pass
 
     @abstractmethod
-    def list_of_tasks(self) -> List[Task]:
+    def tasks_list(self, *,
+                   sorting_obj: str = None, 
+                   paggination_obj: str = None, 
+                   filter_obj: str = None,
+                ) -> List[Task]: 
         pass
 
     @abstractmethod
-    def sorted_task_by_category(self, category_name: str) -> List[Task]:  
+    def task_update(self, *, some_update_obj: str) -> Task: #finish
         pass
 
     @abstractmethod
-    def change_task_status(self, task_name: str) -> Task:  
+    def task_update(self, *, updated_task: UpdateTaskDTO) -> Task: #find how to update fields
         pass
 
     @abstractmethod
-    def patch_task(self, updated_task: CreateTaskDTO) -> Task: 
-        pass
-
-    @abstractmethod
-    def delete_task(self, name: str) -> bool:  
+    def task_delete(self, *, name: str) -> bool:  
         pass
 
     # Mission chapter
 
     @abstractmethod
-    def create_mission(self, new_mission: CreateMissionDTO, username: str) -> MissionBase: 
+    def mission_create(self, *, new_mission: CreateMissionDTO, username: str) -> MissionBase: 
         pass
 
     @abstractmethod
-    def get_one_mission(self, mission_name: str) -> MissionBase:  
+    def mission_get(self, *, mission_name: str) -> MissionBase:  
         pass
 
     @abstractmethod
-    def get_missions(self) -> List[MissionBase]: 
+    def missions_list(self, *,
+                   sorting_obj: str = None, 
+                   paggination_obj: str = None, 
+                   filter_obj: str = None,
+                ) -> List[MissionBase]: # add sorting
         pass
 
     @abstractmethod
-    def change_mission_status(self, status_name:str, mission_name: str) -> MissionBase:  
-        pass
-
-    @abstractmethod
-    def sorted_missions_by_category(self, category_name: str) -> List[MissionBase]: 
+    def mission_update(self, *, find_some_info: str) -> MissionBase: # finish: fix mission usecase
         pass
 
     # Community chapter
     @abstractmethod
-    def create_community(self, new_community: CreateCommunityDTO) -> Community: 
+    def community_create(self, *, new_community: CreateCommunityDTO) -> Community: 
         pass
 
     @abstractmethod
-    def change_community_status(self, community_name: str) -> Community: 
+    def community_update(self, *, find_some_info: str) -> Community: # Finish
         pass
 
     @abstractmethod
-    def get_one_community(self, community_name: str) -> Community:  
+    def community_get(self, *, community_name: str) -> Community:  
         pass
 
     @abstractmethod
-    def get_communities(self) -> List[Community]: 
+    def communities_list(self, *,
+                   sorting_obj: str = None, 
+                   paggination_obj: str = None, 
+                   filter_obj: str = None,
+                ) -> List[Community]: 
         pass
 
     # User chapter
 
     @abstractmethod
-    def create_user(self, new_user: CreateUserDTO) -> User: 
+    def user_create(self, *, new_user: CreateUserDTO) -> User: # add some update fields in arguments
         pass
 
     @abstractmethod
-    def delete_user(self, username: str) -> bool: 
+    def user_delete(self, *, username: str) -> bool: 
         pass
 
     @abstractmethod
-    def get_one_user(self, username: str) -> User: 
+    def user_get(self, *, username: str) -> User: 
         pass
 
     @abstractmethod
-    def list_of_community_users(self, community_name: str) -> List[User]: 
-        pass
-
-    @abstractmethod
-    def get_premiun_users(self, subscription_name: str) -> List[User]:
+    def users_list(self, *,
+                   sorting_obj: str = None, 
+                   paggination_obj: str = None, 
+                   filter_obj: str = None,
+                ) -> List[User]: #finish: implement sorting
         pass
 

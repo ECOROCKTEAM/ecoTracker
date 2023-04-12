@@ -1,14 +1,14 @@
 from dataclasses import dataclass, field
-from typing import Union, List
+from typing import Union
 
-from src.core.interfaces.base import OneBigAbstractRepo
-from src.core.entity.mission import MissionBase
+from src.core.interfaces.base import BaseAbstractRepo
+from src.core.entity.community import Community
 from src.core.exeption.base import RepoError
 
 
 @dataclass
 class SuccessResult:
-    items: List[MissionBase] = field(default_factory=List)
+    items: list[Community] = field(default_factory=list)
 
 
 @dataclass
@@ -18,16 +18,15 @@ class FailOperation:
 
 class UseCase:
 
-    def __init__(self, repo: OneBigAbstractRepo) -> None:
+    def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
     def realization(self) -> Union[SuccessResult, FailOperation]:
-                            
-        
+                        
         try:
-            missions = self.repo.get_missions()
+            communities = self.repo.communities_list()
         except RepoError as e:
             return FailOperation(message=e)
         
-        return SuccessResult(item=missions)
+        return SuccessResult(items=communities)
     

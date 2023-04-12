@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Union
 
-from src.core.interfaces.base import OneBigAbstractRepo
+from src.core.interfaces.base import BaseAbstractRepo
 from src.core.exeption.base import RepoError
 
 
@@ -17,14 +17,14 @@ class FailOperation:
 
 class UseCase:
 
-    def __init__(self, repo: OneBigAbstractRepo) -> None:
+    def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
 
     def realization(self, name: str) -> Union[SuccessResult, FailOperation]:
         
         try:
-            self.repo.delete_task(name=name)
+            self.repo.task_delete(name=name)
         except RepoError as e:
             return FailOperation(message=e)
         

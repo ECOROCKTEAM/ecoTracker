@@ -2,7 +2,7 @@ from typing import Union
 from dataclasses import dataclass
 
 from src.core.dto.tasks import CreateTaskDTO
-from src.core.interfaces.base import OneBigAbstractRepo
+from src.core.interfaces.base import BaseAbstractRepo
 from src.core.entity.task import Task
 from src.core.exeption.base import RepoError
 
@@ -19,7 +19,7 @@ class FailOperation:
 
 class UseCase:
 
-    def __init__(self, repo: OneBigAbstractRepo) -> None:
+    def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
 
@@ -38,7 +38,7 @@ class UseCase:
         )
         
         try:
-            new_task = self.repo.create_task(new_task=task)
+            new_task = self.repo.task_create(new_task=task)
         except RepoError as e:
             return FailOperation(message=e)
         

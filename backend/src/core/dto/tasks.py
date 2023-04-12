@@ -9,3 +9,8 @@ class CreateTaskDTO:
     description: str
     score: int
     category: OccupancyCategoryDTO
+
+
+@dataclass
+class UpdateTaskDTO:
+    """"""

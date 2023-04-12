@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Union
 
-from src.core.dto.tasks import CreateTaskDTO
-from src.core.interfaces.base import OneBigAbstractRepo
+from src.core.dto.tasks import UpdateTaskDTO
+from src.core.interfaces.base import BaseAbstractRepo
 from src.core.entity.task import Task
 from src.core.exeption.base import RepoError
 
@@ -19,7 +19,7 @@ class FailOperation:
 
 class UseCase:
 
-    def __init__(self, repo: OneBigAbstractRepo) -> None:
+    def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
     def realization(self,
@@ -29,7 +29,7 @@ class UseCase:
                     category: str,
                     ) -> Union[SuccessResult, FailOperation]:
         
-        task = CreateTaskDTO(
+        task = UpdateTaskDTO(
             name=name,
             description=description,
             score=score,
@@ -37,7 +37,7 @@ class UseCase:
         )
         
         try:
-            pathed_task = self.repo.patch_task(updated_task=task)
+            pathed_task = self.repo.task_update(updated_task=task)
         except RepoError as e:
             return FailOperation(message=e)
         

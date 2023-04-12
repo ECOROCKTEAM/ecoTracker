@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Union
 
-from src.core.interfaces.base import OneBigAbstractRepo
+from src.core.interfaces.base import BaseAbstractRepo
 from src.core.entity.user import User
 from src.core.dto.user import CreateUserDTO
 from src.core.exeption.base import RepoError
@@ -19,7 +19,7 @@ class FailOperation:
 
 class UseCase:
 
-    def __init__(self, repo: OneBigAbstractRepo) -> None:
+    def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
     def realization(self,
@@ -30,7 +30,7 @@ class UseCase:
         user = CreateUserDTO(username=username, password=password)
                 
         try:
-            new_user = self.repo.create_user(new_user=user)
+            new_user = self.repo.user_create(new_user=user)
         except RepoError as e:
             return FailOperation(message=e)
         

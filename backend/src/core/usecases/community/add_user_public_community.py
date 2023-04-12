@@ -15,7 +15,7 @@ class Result:
     item: UserCommunityDTO
 
 
-class UserCommunityPublicCreateUsecase:
+class AddUserPublicCommunityCreateUsecase:
     def __init__(self, *, repo: IRepositoryCore) -> None:
         self.repo = repo
 

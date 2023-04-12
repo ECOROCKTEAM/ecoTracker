@@ -19,8 +19,8 @@ class CommunityInviteLinkUsecase:
     def __init__(self, *, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user_id: str, community_id: int) -> Result:
-        tasks: Tuple[asyncio.Task[User], asyncio.Task[list[int]]] = (
+    async def __call__(self, *, user_id: str, community_id: str) -> Result:
+        tasks: Tuple[asyncio.Task[User], asyncio.Task[list[str]]] = (
             asyncio.create_task(self.repo.user_get(id=user_id)),
             asyncio.create_task(
                 self.repo.community_user_ids(

@@ -57,11 +57,11 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def community_update(self, *, id: int, obj: CommunityUpdateDTO) -> Community:
+    async def community_update(self, *, id: str, obj: CommunityUpdateDTO) -> Community:
         """Обновить поля сообщества
 
         Args:
-            id (int): Id сообщества
+            id (str): Id сообщества
             obj (CommunityUpdateDTO): DTO обновления сообщества
 
         Returns:
@@ -87,11 +87,11 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_delete(self, *, id: int) -> int:
+    async def community_delete(self, *, id: str) -> int:
         """Удалить сообщество
 
         Args:
-            id (int): Id сообщества
+            id (str): Id сообщества
 
         Returns:
             int: Id удалённого сообщества
@@ -102,11 +102,11 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_user_ids(self, *, id: int, filter: CommunityIncludeUserFilter) -> list[int]:
+    async def community_user_ids(self, *, id: str, filter: CommunityIncludeUserFilter) -> list[str]:
         """Получить список ID пользователей входящих в сообщество
 
         Args:
-            id (int): ID сообщества
+            id (str): ID сообщества
             filter (CommunityIncludeUserListFilter): DTO объект фильтрации
 
         Returns:
@@ -175,4 +175,7 @@ class IRepositoryCore(ABC):
 
         Returns:
             UserCommunityDTO: Объект связи пользователя и сообщества
+
+        Raises:
+            RepoError: Ошибка операции
         """

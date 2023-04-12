@@ -21,6 +21,5 @@ class CommunityDeleteError(CommunityError, RepoError):
     msg_template = "id={id}"
 
 
-
 class CommunityNotFoundError(CommunityError, RepoError):
     msg_template = "Community with id={user_id} not found"

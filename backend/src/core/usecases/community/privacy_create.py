@@ -16,8 +16,7 @@ class CommunityPrivacyCreateUsecase:
         self.repo = repo
 
     async def __call__(self, *, user_id: str, create_obj: PrivacyCreateDTO) -> Result:
-        user_task = asyncio.create_task(self.repo.user_get(id=user_id))
-        user = await user_task
+        user = await self.repo.user_get(id=user_id)
         if not user.application_role.ADMIN:
             raise UserPermissionError(user_id=user_id)
         privacy = await self.repo.community_privacy_create(obj=create_obj)

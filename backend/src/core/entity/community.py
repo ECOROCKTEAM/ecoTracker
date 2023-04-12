@@ -25,6 +25,6 @@ class CommunityCreateDTO:
 @dataclass
 class CommunityUpdateDTO:
     name: Optional[str] = None
-    privacy: Optional[PrivacyEnum] = None
     description: Optional[str] = None
     active: Optional[bool] = None
+    privacy: Optional[PrivacyEnum] = None

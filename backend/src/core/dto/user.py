@@ -1,7 +1,12 @@
 from typing import List
 
 from dataclasses import dataclass
+<<<<<<< HEAD
+from src.core.enum.contact import ContactEnum
+from src.core.dto.base import  TypeDTO
+=======
 from src.core.dto.base import TypeDTO
+>>>>>>> fabfd75ad109dc623b1541a22c5297633fe648d0
 
 
 @dataclass
@@ -29,3 +34,11 @@ class UserContactListDTO:
         else:
             raise Exception("Not found")
         return tmp
+
+
+@dataclass
+class CreateUserDTO:
+    username: str
+    password: str
+    contact: str
+    contact_type: ContactEnum

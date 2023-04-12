@@ -4,7 +4,7 @@ from typing import Union
 from src.core.dto.tasks import UpdateTaskDTO
 from src.core.interfaces.base import BaseAbstractRepo
 from src.core.entity.task import Task
-from src.core.exeption.base import RepoError
+from src.core.exception.base import RepoError
 
 
 @dataclass

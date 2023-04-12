@@ -1,10 +1,19 @@
 from dataclasses import dataclass
 
-from src.core.enum.role import RoleEnum
+from src.core.enum.role import CommunityRoleEnum
 
 
 @dataclass
-class UserCommunityRoleDTO:
-    user_pointer: str
-    community_pointer: str
-    role: RoleEnum
+class UserCommunityDTO:
+    id: int
+    user_id: str
+    community_id: str
+    role: CommunityRoleEnum
+
+
+@dataclass
+class UserCommunityCreateDTO:
+    id: int
+    user_id: str
+    community_id: str
+    role: CommunityRoleEnum = CommunityRoleEnum.USER

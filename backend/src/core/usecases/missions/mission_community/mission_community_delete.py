@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Union
 
 from src.core.interfaces.base import BaseAbstractRepo
-from src.core.exeption.base import RepoError
+from src.core.exception.base import RepoError
 
 
 @dataclass

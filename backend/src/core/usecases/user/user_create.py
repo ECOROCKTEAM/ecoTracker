@@ -5,7 +5,7 @@ from src.core.enum.contact import ContactEnum
 from src.core.interfaces.base import BaseAbstractRepo
 from src.core.entity.user import User
 from src.core.dto.user import CreateUserDTO
-from src.core.exeption.base import RepoError
+from src.core.exception.base import RepoError
 
 
 @dataclass

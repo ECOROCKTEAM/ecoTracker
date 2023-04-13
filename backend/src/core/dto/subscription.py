@@ -1,7 +1,7 @@
 from typing import List
 from dataclasses import dataclass
 
-from src.core.enum.subscription import PeriodUnitEnum
+from src.core.enum.subscription import PeriodUnitEnum, SubscriptionTypeEnum
 from src.core.enum.language import LanguageEnum
 from src.core.dto.base import TypeDTO
 from src.core.enum.base import VariableTypeEnum
@@ -162,6 +162,50 @@ class SubscriptionPeriodDTO:
     unit: PeriodUnitEnum
     languages: list[SubscriptionPeriodCreateTranslate]
     valid: bool
+
+    def __post_init__(self):
+        translated_subscription_periods = [item.language for item in self.languages]
+        available_languages = [language for language in LanguageEnum]
+        diff = set(available_languages) - set(translated_subscription_periods)
+        if diff != 0:
+            self.valid = False
+
+
+# Subscription DTO
+
+@dataclass
+class SubscriptionTranslateDTO:
+    subscription_id: int
+    name: str
+    language: LanguageEnum
+
+
+@dataclass
+class SubscriptionTranslateCreateDTO:
+    name: str
+    language: LanguageEnum
+
+
+@dataclass
+class SubscriptionCreateDTO:
+    subscription_type: SubscriptionTypeEnum
+    subscription_period: PeriodUnitEnum
+    languages: list[SubscriptionTranslateCreateDTO]
+
+    def __post_init__(self):
+        translated_subscription_periods = [item.language for item in self.languages]
+        available_languages = [language for language in LanguageEnum]
+        diff = set(available_languages) - set(translated_subscription_periods)
+        if diff != 0:
+            raise TranslateError
+        
+
+@dataclass
+class SubscriptionDTO:
+    id: int
+    subscription_type: SubscriptionTypeEnum
+    subscription_period: PeriodUnitEnum
+    languages: list[SubscriptionTranslateCreateDTO]
 
     def __post_init__(self):
         translated_subscription_periods = [item.language for item in self.languages]

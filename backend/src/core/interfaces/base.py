@@ -1,6 +1,14 @@
 from abc import ABC, abstractmethod
 
-from src.core.dto.subscription import SubscriptionPeriodCreateDTO, SubscriptionPeriodDTO, SubscriptionPeriodUnitCreateDTO, SubscriptionPeriodUnitDTO, SubscriptionTypeCreateDTO, SubscriptionTypeDTO
+from src.core.dto.subscription import (SubscriptionCreateDTO, 
+                                       SubscriptionDTO, 
+                                       SubscriptionPeriodCreateDTO, 
+                                       SubscriptionPeriodDTO, 
+                                       SubscriptionPeriodUnitCreateDTO, 
+                                       SubscriptionPeriodUnitDTO, 
+                                       SubscriptionTypeCreateDTO, 
+                                       SubscriptionTypeDTO)
+
 from src.core.dto.misc import SubscriptionTypeConstraintCreateDTO
 from src.core.entity.subscription import Constraint
 from src.core.dto.contact import ContactTypeCreateDTO, ContactTypeDTO
@@ -110,5 +118,17 @@ class IRepositoryCore(ABC):
 
         Returns:
             SubscriptionPeriodDTO: New period
+        """
+        pass
+
+    @abstractmethod
+    async def subscription_create(self, *, new_obj: SubscriptionCreateDTO) -> SubscriptionDTO:
+        """create new subscription
+
+        Args:
+            new_obj (SubscriptionCreateDTO): DTO for creating subscription
+
+        Returns:
+            SubscriptionDTO: New subscription
         """
         pass

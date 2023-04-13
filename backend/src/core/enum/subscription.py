@@ -8,5 +8,5 @@ class SubscriptionTypeEnum(str, Enum):
 
 
 class PeriodUnitEnum(str, Enum):
-    DAY = timedelta(days=1)
-    THIRTY_DAYS = timedelta(days=30)
+    DAY = "DAY"
+    THIRTY_DAYS = "THIRTY_DAYS"

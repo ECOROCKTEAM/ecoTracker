@@ -95,6 +95,8 @@ class SubscriptionPeriodTranslateCreateDTO:
 
 @dataclass
 class SubscriptionPeriodCreateDTO:
+
+    value: str
     languages: list[SubscriptionPeriodTranslateCreateDTO]
 
     def __post_init__(self):
@@ -107,6 +109,7 @@ class SubscriptionPeriodCreateDTO:
 @dataclass
 class SubscriptionPeriodDTO:
     id: int
+    value: str
     languages: list[SubscriptionPeriodTranslateCreateDTO]
     valid: bool
 

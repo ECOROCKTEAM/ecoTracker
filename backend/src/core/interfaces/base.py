@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from src.core.dto.subscription import SubscriptionTypeCreateDTO, SubscriptionTypeDTO
 from src.core.dto.misc import SubscriptionTypeConstraintCreateDTO
 from src.core.entity.subscription import Constraint
 from src.core.dto.contact import ContactTypeCreateDTO, ContactTypeDTO
@@ -22,6 +23,18 @@ class IRepositoryCore(ABC):
 
         Raises:
 
+        """
+        pass
+
+    @abstractmethod
+    async def subscription_type_translate_create(self, *, new_obj: SubscriptionTypeCreateDTO) -> SubscriptionTypeDTO:
+        """We'll create subscription_type if for it will be all translate.
+
+        Args:
+            new_obj (SubscriptionTypeCreateDTO): DTO for creating a new subscription type
+
+        Returns:
+            SubscriptionTypeDTO: subscription type
         """
         pass
 

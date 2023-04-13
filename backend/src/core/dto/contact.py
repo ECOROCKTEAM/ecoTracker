@@ -36,8 +36,8 @@ class ContactTypeDTO:
     valid: bool
 
     def __post_init__(self):
-        translated_contact_type = [item.language for item in self.translations]
+        translated_contact_types = [item.language for item in self.translations]
         available_languages = [lang for lang in LanguageEnum]
-        difference = set(translated_contact_type) - set(available_languages)
+        difference = set(translated_contact_types) - set(available_languages)
         if len(difference) != 0:
             self.valid = False

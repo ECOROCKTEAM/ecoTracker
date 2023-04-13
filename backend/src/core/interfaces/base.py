@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.core.dto.subscription import SubscriptionPeriodCreateDTO, SubscriptionPeriodDTO, SubscriptionTypeCreateDTO, SubscriptionTypeDTO
+from src.core.dto.subscription import SubscriptionPeriodUnitCreateDTO, SubscriptionPeriodUnitDTO, SubscriptionTypeCreateDTO, SubscriptionTypeDTO
 from src.core.dto.misc import SubscriptionTypeConstraintCreateDTO
 from src.core.entity.subscription import Constraint
 from src.core.dto.contact import ContactTypeCreateDTO, ContactTypeDTO
@@ -91,7 +91,7 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def subscription_period_create(self, *, new_obj: SubscriptionPeriodCreateDTO) -> SubscriptionPeriodDTO:
+    async def subscription_period_create(self, *, new_obj: SubscriptionPeriodUnitCreateDTO) -> SubscriptionPeriodUnitDTO:
         """creating subscription period
 
         Args:

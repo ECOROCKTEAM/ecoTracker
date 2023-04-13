@@ -4,6 +4,7 @@ import os
 import binascii
 from dataclasses import dataclass
 from typing import Tuple
+from src.core.dto.shared import UserCommunityDTO
 from src.core.entity.user import User
 from src.core.enum.role import CommunityRoleEnum
 from src.core.exception.community import (
@@ -35,10 +36,12 @@ class CommunityGetInviteLinkUsecase:
         self.repo = repo
 
     async def __call__(self, *, user: User, community_id: str) -> Result:
-        tasks: Tuple[asyncio.Task[Community], asyncio.Task[list[str]]] = (
+        if not user.is_premium:
+            raise UserIsNotPremiumError(username=user.username)
+        tasks: Tuple[asyncio.Task[Community], asyncio.Task[list[UserCommunityDTO]]] = (
             asyncio.create_task(self.repo.community_get(id=community_id)),
             asyncio.create_task(
-                self.repo.community_user_ids(
+                self.repo.community_user_list(
                     id=community_id,
                     filter=CommunityIncludeUserFilter(
                         role_list=[CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN]
@@ -46,11 +49,10 @@ class CommunityGetInviteLinkUsecase:
                 )
             ),
         )
-        community, head_user_ids = await asyncio.gather(*tasks)
-        if not user.is_premium:
-            raise UserIsNotPremiumError(username=user.username)
+        community, link_list = await asyncio.gather(*tasks)
         if not community.active:
             raise CommunityDeactivatedError(community_id=community.name)
+        head_user_ids = [l.user_id for l in link_list]
         if not user.username in head_user_ids:
             raise UserIsNotCommunityAdminUserError(
                 username=user.username, community_id=community_id

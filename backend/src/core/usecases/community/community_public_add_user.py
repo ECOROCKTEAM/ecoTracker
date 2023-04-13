@@ -15,7 +15,7 @@ class Result:
     item: UserCommunityDTO
 
 
-class AddUserPublicCommunityCreateUsecase:
+class CommunityPublicAddUserUsecase:
     def __init__(self, *, repo: IRepositoryCore) -> None:
         self.repo = repo
 
@@ -32,5 +32,5 @@ class AddUserPublicCommunityCreateUsecase:
             raise CommunityDeactivatedError(community_id=community_id)
         if not community.privacy.PUBLICK:
             raise CommunityPrivacyError(community_id=community_id)
-        link = await self.repo.community_add_user(obj=create_obj)
+        link = await self.repo.community_user_add(obj=create_obj)
         return Result(item=link)

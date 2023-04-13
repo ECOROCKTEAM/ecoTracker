@@ -20,12 +20,13 @@ class CommunityDeleteUsecase:
         self.repo = repo
 
     async def __call__(self, *, user: User, community_id: str) -> Result:
-        super_user_ids = await self.repo.community_user_ids(
+        if not user.is_premium:
+            raise UserIsNotPremiumError(username=user.username)
+        link_list = await self.repo.community_user_list(
             id=community_id,
             filter=CommunityIncludeUserFilter(role_list=[CommunityRoleEnum.SUPERUSER]),
         )
-        if not user.is_premium:
-            raise UserIsNotPremiumError(username=user.username)
+        super_user_ids = [l.user_id for l in link_list]
         if not user.username in super_user_ids:
             raise UserIsNotCommunitySuperUserError(
                 username=user.username, community_id=community_id

@@ -9,7 +9,7 @@ from src.core.dto.community import (
 )
 from src.core.dto.community_role import CommunityRoleCreateDTO, CommunityRoleDTO
 from src.core.dto.privacy import PrivacyCreateDTO, PrivacyDTO
-from src.core.dto.shared import UserCommunityDTO, UserCommunityCreateDTO
+from src.core.dto.shared import UserCommunityDTO, UserCommunityCreateDTO, UserCommunityUpdateDTO
 
 from src.core.entity.user import User
 from src.core.entity.community import Community, CommunityCreateDTO, CommunityUpdateDTO
@@ -108,23 +108,6 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_user_ids(
-        self, *, id: str, filter: CommunityIncludeUserFilter
-    ) -> list[str]:
-        """Получить список ID пользователей входящих в сообщество
-
-        Args:
-            id (str): ID сообщества
-            filter (CommunityIncludeUserListFilter): DTO объект фильтрации
-
-        Returns:
-            List[int]: Список ID пользователей
-
-        Raises:
-            RepoError: Ошибка операции
-        """
-
-    @abstractmethod
     async def community_privacy_create(self, *, obj: PrivacyCreateDTO) -> PrivacyDTO:
         """Добавить тип приватности для сообщества
 
@@ -177,7 +160,7 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_add_user(
+    async def community_user_add(
         self, *, obj: UserCommunityCreateDTO
     ) -> UserCommunityDTO:
         """Добавить пользователя в сообщество
@@ -191,7 +174,56 @@ class IRepositoryCore(ABC):
         Raises:
             RepoError: Ошибка операции
         """
+    
+    @abstractmethod
+    async def community_user_get(self, *, id: int) -> UserCommunityDTO:
+        """Получить связь сообщество-пользователь
 
+        Args:
+            id (int): Id связи
+
+        Returns:
+            UserCommunityDTO: Объект связи пользователя и сообщества
+        
+        Raises:
+            RepoError: Ошибка операции
+            CommunityUserNotFoundError: Связь не найдена
+        """
+    
+    @abstractmethod
+    async def community_user_list(
+        self, *, id: str, filter: CommunityIncludeUserFilter
+    ) -> list[UserCommunityDTO]:
+        """Получить список ID пользователей входящих в сообщество
+
+        Args:
+            id (str): ID сообщества
+            filter (CommunityIncludeUserListFilter): DTO объект фильтрации
+
+        Returns:
+            List[UserCommunityDTO]: Список связей пользователей
+
+        Raises:
+            RepoError: Ошибка операции
+        """
+
+    @abstractmethod
+    async def community_user_role_update(
+        self, *, obj: UserCommunityUpdateDTO
+    ) -> UserCommunityDTO:
+        """Обновить роль пользователя в сообществе
+
+        Args:
+            obj (UserCommunityUpdateDTO): DTO объект обновления роли пользователя в сообществе
+
+        Returns:
+            UserCommunityDTO: Объект связи пользователя и сообщества
+
+        Raises:
+            RepoError: Ошибка операции
+            CommunityUserNotFoundError: Связь не найдена
+        """
+    
     @abstractmethod
     async def community_invite_link_create(
         self, *, obj: CommunityInviteCreateDTO

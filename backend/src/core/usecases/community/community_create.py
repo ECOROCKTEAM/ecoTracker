@@ -21,7 +21,7 @@ class CommunityCreateUsecase:
         if not user.is_premium:
             raise UserIsNotPremiumError(username=user.username)
         community = await self.repo.community_create(obj=create_obj)
-        await self.repo.community_add_user(
+        await self.repo.community_user_add(
             obj=UserCommunityCreateDTO(
                 user_id=user.username,
                 community_id=community.name,

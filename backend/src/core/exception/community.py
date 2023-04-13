@@ -29,5 +29,8 @@ class CommunityNotFoundError(CommunityError, RepoError):
     msg_template = "Community with id={community_id} not found"
 
 
+class CommunityUserNotFoundError(CommunityError, RepoError):
+    msg_template = "CommunityUser with id={link_id} not found"
+
 class CommunityInviteLinkNotFoundError(CommunityError, RepoError):
     msg_template = "Invite link for Community with id={community_id} not found"

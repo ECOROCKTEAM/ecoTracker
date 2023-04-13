@@ -10,6 +10,12 @@ class UserCommunityDTO:
     community_id: str
     role: CommunityRoleEnum
 
+@dataclass
+class UserCommunityUpdateDTO:
+    id: int
+    user_id: str
+    community_id: str
+    role: CommunityRoleEnum
 
 @dataclass
 class UserCommunityCreateDTO:

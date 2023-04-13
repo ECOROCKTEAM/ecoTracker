@@ -78,4 +78,41 @@ class SubscriptionTypeDTO:
         diff = set(available_languages) - set(translated_subscription_types)
         if diff != 0:
             self.available = False
-            
+
+
+@dataclass
+class SubscriptionPeriodTranslateDTO:
+    id: int
+    name: str
+    language: LanguageEnum
+
+
+@dataclass
+class SubscriptionPeriodTranslateCreateDTO:
+    name: str
+    language: LanguageEnum
+
+
+@dataclass
+class SubscriptionPeriodCreateDTO:
+    languages: list[SubscriptionPeriodTranslateCreateDTO]
+
+    def __post_init__(self):
+        translated_subscription_periods = [item.language for item in self.languages]
+        available_languages = [language for language in LanguageEnum]
+        diff = set(available_languages) - set(translated_subscription_periods)
+        if diff != 0:
+            raise TranslateError
+        
+@dataclass
+class SubscriptionPeriodDTO:
+    id: int
+    languages: list[SubscriptionPeriodTranslateCreateDTO]
+    valid: bool
+
+    def __post_init__(self):
+        translated_subscription_periods = [item.language for item in self.languages]
+        available_languages = [language for language in LanguageEnum]
+        diff = set(available_languages) - set(translated_subscription_periods)
+        if diff != 0:
+            self.valid = False

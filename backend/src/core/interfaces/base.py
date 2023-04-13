@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.core.dto.subscription import SubscriptionTypeCreateDTO, SubscriptionTypeDTO
+from src.core.dto.subscription import SubscriptionPeriodCreateDTO, SubscriptionPeriodDTO, SubscriptionTypeCreateDTO, SubscriptionTypeDTO
 from src.core.dto.misc import SubscriptionTypeConstraintCreateDTO
 from src.core.entity.subscription import Constraint
 from src.core.dto.contact import ContactTypeCreateDTO, ContactTypeDTO
@@ -89,3 +89,14 @@ class IRepositoryCore(ABC):
             int: id of deleted constraint
         """
         pass
+
+    @abstractmethod
+    async def subscription_period_create(self, *, new_obj: SubscriptionPeriodCreateDTO) -> SubscriptionPeriodDTO:
+        """creating subscription period
+
+        Args:
+            new_obj (SubscriptionPeriodCreateDTO): DTO for creating subscription period
+
+        Returns:
+            SubscriptionPeriodDTO: New subscription period
+        """

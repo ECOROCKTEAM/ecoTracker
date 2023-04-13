@@ -1,34 +1,30 @@
 from dataclasses import dataclass
-from typing import Union
 
-from src.core.exeption.base import RepoError
-from src.core.dto.contact import ContactTypeCreateDTO
-from src.core.entity.contact import ContactType
-from src.core.interfaces.base import BaseAbstractRepo
+from src.core.entity.user import User
+from src.core.exception.base import PermissionError
+from src.core.dto.contact import ContactTypeCreateDTO, ContactTypeDTO
+from src.core.interfaces.base import IRepositoryCore
 
 
 @dataclass
 class SuccessResult:
-    item: ContactType
+    item: ContactTypeDTO
 
-
-@dataclass
-class FailOperation:
-    message: str
 
 
 class ContactTypeCreateUC:
 
-    def __init__(self, repo: BaseAbstractRepo) -> None:
+    def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    def realization(self, name: str) -> Union[SuccessResult, FailOperation]:
+    async def realization(self, *,
+                          user: User,
+                          new_contact_type: ContactTypeCreateDTO) -> SuccessResult:
+        
+        if not user.application_role.ADMIN:
+            raise PermissionError(user.username)
+        
+        contact_type = await self.repo.contact_type_create(new_type=new_contact_type)
 
-        contact_type = ContactTypeCreateDTO(name=name)
+        return SuccessResult(item=contact_type)
 
-        try:
-            new_contact_type = self.repo.contact_type_create(contact_type=contact_type)
-        except RepoError as e:
-            return FailOperation(message=e)
-
-        return SuccessResult(item=new_contact_type)

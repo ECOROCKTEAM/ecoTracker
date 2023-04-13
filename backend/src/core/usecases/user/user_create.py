@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from typing import Union
 
-from src.core.enum.contact import ContactEnum
-from src.core.interfaces.base import BaseAbstractRepo
+from src.core.interfaces.base import IRepositoryCore
 from src.core.entity.user import User
 from src.core.dto.user import CreateUserDTO
-from src.core.exeption.base import RepoError
+from src.core.exception.user import CreateUserError
+from src.core.enum.subscription import SubscriptionTypeEnum
 
 
 @dataclass
@@ -13,29 +12,17 @@ class SuccessResult:
     item: User
 
 
-@dataclass
-class FailOperation:
-    message: str
-
-
-class UseCase:
-
-    def __init__(self, repo: BaseAbstractRepo) -> None:
+class UserCreateUseCase:
+    
+    def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    def realization(self,
-                    username: str,
-                    password: str,
-                    contact: str,
-                    contact_type: ContactEnum,
-        ) -> Union[SuccessResult, FailOperation]:
+    async def __call__(self, *, new_user: CreateUserDTO) -> SuccessResult:
 
-        user = CreateUserDTO(username=username, password=password)
-                
-        try:
-            new_user = self.repo.user_create(new_user=user)
-        except RepoError as e:
-            return FailOperation(message=e)
+        if not all([new_user.username, new_user.password]):
+            raise CreateUserError(username=new_user.username, password=new_user.password)
         
-        return SuccessResult(item=new_user)
-    
+        user = await self.repo.user_create(new_user=new_user)
+        user_with_sub = await self.repo.user_subscription_assignment(user=user, subscription_type=SubscriptionTypeEnum.USUAL)
+
+        return SuccessResult(item=user_with_sub)

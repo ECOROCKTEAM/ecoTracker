@@ -19,7 +19,7 @@ class SubscriptionConstraintCreateUseCase:
     async def __call__(self, user: User, new_constraint: SubscriptionTypeConstraintCreateDTO) -> SuccessResult:
 
         if not user.application_role.ADMIN:
-            raise PermissionError
+            raise PermissionError(username=user.username)
 
         constraint = await self.repo.subscription_type_constraint_create(new_obj=new_constraint)
 

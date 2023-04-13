@@ -17,7 +17,7 @@ class SubscriptionConstraintDeleteUseCase:
     async def __call__(self, user: User, constraint_name: str) -> SuccessResult:
 
         if not user.application_role.ADMIN:
-            raise PermissionError
+            raise PermissionError(username=user.username)
 
         constraint_id = await self.repo.subscription_type_constraint_delete(constraint_name=constraint_name)
 

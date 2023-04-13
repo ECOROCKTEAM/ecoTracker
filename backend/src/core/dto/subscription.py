@@ -10,16 +10,16 @@ from src.core.typing.base import VariableValueType
 from src.core.exception.language import TranslateError
 
 
-@dataclass
-class SubscriptionPeriodTypeDTO(TypeDTO):
-    """ """
+# @dataclass
+# class SubscriptionPeriodTypeDTO(TypeDTO):
+#     """ """
 
 
-@dataclass
-class SubscriptionPeriodDTO:
-    name: str
-    value: int
-    type: SubscriptionPeriodTypeDTO
+# @dataclass
+# class SubscriptionPeriodDTO:
+#     name: str
+#     value: int
+#     type: SubscriptionPeriodTypeDTO
 
 
 @dataclass
@@ -80,6 +80,8 @@ class SubscriptionTypeDTO:
         if diff != 0:
             self.available = False
 
+# Period Unit
+
 
 @dataclass
 class SubscriptionPeriodUnitTranslateDTO:
@@ -107,7 +109,7 @@ class SubscriptionPeriodUnitCreateDTO:
         if diff != 0:
             raise TranslateError
         
-        
+
 @dataclass
 class SubscriptionPeriodUnitDTO:
     id: int
@@ -124,3 +126,46 @@ class SubscriptionPeriodUnitDTO:
         if diff != 0:
             self.valid = False
 
+#Subscription Period
+
+
+@dataclass
+class SubscriptionPeriodTranslateDTO:
+    subscription_period_id: int
+    name: str
+    language: LanguageEnum
+
+
+@dataclass
+class SubscriptionPeriodCreateTranslate:
+    name: str
+    language: LanguageEnum
+
+
+@dataclass
+class SubscriptionPeriodCreateDTO:
+    value: str
+    languages: list[SubscriptionPeriodCreateTranslate]
+
+    def __post_init__(self):
+        translated_subscription_periods = [item.language for item in self.languages]
+        available_languages = [language for language in LanguageEnum]
+        diff = set(available_languages) - set(translated_subscription_periods)
+        if diff != 0:
+            raise TranslateError
+
+
+@dataclass
+class SubscriptionPeriodDTO:
+    id: int
+    value: str
+    unit: PeriodUnitEnum
+    languages: list[SubscriptionPeriodCreateTranslate]
+    valid: bool
+
+    def __post_init__(self):
+        translated_subscription_periods = [item.language for item in self.languages]
+        available_languages = [language for language in LanguageEnum]
+        diff = set(available_languages) - set(translated_subscription_periods)
+        if diff != 0:
+            self.valid = False

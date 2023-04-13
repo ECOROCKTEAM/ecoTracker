@@ -21,6 +21,8 @@ class UserCreateUseCase:
 
         if not all([new_user.username, new_user.password]):
             raise CreateUserError(username=new_user.username, password=new_user.password)
+    
+        
         
         user = await self.repo.user_create(new_user=new_user)
         user_with_sub = await self.repo.user_subscription_assignment(user=user, subscription_type=SubscriptionTypeEnum.USUAL)

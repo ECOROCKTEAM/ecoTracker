@@ -8,7 +8,7 @@ from src.core.exception.base import RepoError
 
 
 @dataclass
-class SuccessResult:
+class Result:
     item: Task
 
 
@@ -28,7 +28,7 @@ class UseCase:
                     description: str,
                     score: int,
                     category: str,
-                ) -> Union[SuccessResult, FailOperation]:
+                ) -> Union[Result, FailOperation]:
         
         task = CreateTaskDTO(
             name=name,
@@ -42,5 +42,5 @@ class UseCase:
         except RepoError as e:
             return FailOperation(message=e)
         
-        return SuccessResult(item=new_task)
+        return Result(item=new_task)
         

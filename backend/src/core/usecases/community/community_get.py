@@ -7,7 +7,7 @@ from src.core.exception.base import RepoError
 
 
 @dataclass
-class SuccessResult:
+class Result:
     item: Community
 
 
@@ -21,12 +21,12 @@ class UseCase:
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
-    def realization(self, community_name: str) -> Union[SuccessResult, FailOperation]:
+    def realization(self, community_name: str) -> Union[Result, FailOperation]:
                         
         try:
             community = self.repo.community_get(community_name=community_name)
         except RepoError as e:
             return FailOperation(message=e)
         
-        return SuccessResult(item=community)
+        return Result(item=community)
     

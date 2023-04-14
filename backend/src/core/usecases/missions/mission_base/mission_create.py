@@ -11,7 +11,7 @@ from src.core.dto.mission import CreateMissionBaseDTO
 
 
 @dataclass
-class SuccessResult:
+class Result:
     item: MissionBase
 
 
@@ -33,7 +33,7 @@ class MissionBaseCreateUC:
                     category: OccupancyCategoryDTO, # или передавать DTO????
                     status: OccupancyStatusEnum,
                     related: RelatedEnum = field(init=False),
-                    ) -> Union[SuccessResult, FailOperation]:
+                    ) -> Union[Result, FailOperation]:
                             
         mission = CreateMissionBaseDTO(
             name=name,
@@ -50,5 +50,5 @@ class MissionBaseCreateUC:
         except RepoError as e:
             return FailOperation(message=e)
         
-        return SuccessResult(item=new_mission)
+        return Result(item=new_mission)
     

@@ -9,4 +9,5 @@ class SubscriptionTypeEnum(str, Enum):
 
 class PeriodUnitEnum(str, Enum):
     DAY = "DAY"
-    THIRTY_DAYS = "THIRTY_DAYS"
+    WEEK = "WEEK"
+    MONTH = "MONTH"

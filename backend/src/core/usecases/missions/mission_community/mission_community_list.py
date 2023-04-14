@@ -7,7 +7,7 @@ from src.core.exception.base import RepoError
 
 
 @dataclass
-class SuccessResult:
+class Result:
     items: list[MissionCommunity] = field(default_factory=list)
 
 
@@ -25,7 +25,7 @@ class MissionCommunityListUC:
                     sorting_obj: str = None, 
                     paggination_obj: str = None, 
                     filter_obj: str = None,                    
-                    ) -> Union[SuccessResult, FailOperation]:
+                    ) -> Union[Result, FailOperation]:
 
         try:
             mission_list = self.repo.mission_community_list(
@@ -36,4 +36,4 @@ class MissionCommunityListUC:
         except RepoError as e:
             return FailOperation(message=e)
 
-        return SuccessResult(items=mission_list)
+        return Result(items=mission_list)

@@ -9,7 +9,7 @@ from src.core.dto.mission import CreateMissionCommunityDTO
 
 
 @dataclass
-class SuccessResult:
+class Result:
     item: MissionCommunity
 
 
@@ -30,7 +30,7 @@ class MissionCommunityCreateUC:
                     people_max: int,
                     place: str,
                     comment: str,
-                    ) -> Union[SuccessResult, FailOperation]:
+                    ) -> Union[Result, FailOperation]:
 
         mission = CreateMissionCommunityDTO(
             author=username,
@@ -46,4 +46,4 @@ class MissionCommunityCreateUC:
         except RepoError as e:
             return FailOperation(message=e)
 
-        return SuccessResult(item=new_mission)
+        return Result(item=new_mission)

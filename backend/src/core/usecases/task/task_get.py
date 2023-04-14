@@ -7,7 +7,7 @@ from src.core.exception.base import RepoError
 
 
 @dataclass
-class SuccessResult:
+class Result:
     item: Task
 
 
@@ -21,11 +21,11 @@ class UseCase:
         self.repo = repo
 
 
-    def realization(self, name: str) -> Union[SuccessResult, FailOperation]:
+    def realization(self, name: str) -> Union[Result, FailOperation]:
 
         try:
             task = self.repo.task_get(name=name)
         except RepoError as e:
             return FailOperation(message=e)
         
-        return SuccessResult(item=task)
+        return Result(item=task)

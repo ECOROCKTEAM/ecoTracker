@@ -6,7 +6,7 @@ from src.core.exception.base import RepoError
 
 
 @dataclass
-class SuccessResult:
+class Result:
     result: bool
 
 
@@ -20,11 +20,11 @@ class MissionCommunityDeleteUC:
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
-    def realization(self, *, name: str) -> Union[SuccessResult, FailOperation]:
+    def realization(self, *, name: str) -> Union[Result, FailOperation]:
 
         try:
             _ = self.repo.mission_community_delete(name=name)
         except RepoError as e:
             return FailOperation(message=e)
 
-        return SuccessResult(result=True)
+        return Result(result=True)

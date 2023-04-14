@@ -8,7 +8,7 @@ from src.core.exception.base import RepoError
 
 
 @dataclass
-class SuccessResult:
+class Result:
     item: Community
 
 
@@ -26,7 +26,7 @@ class UseCase:
                     name: str,
                     description: str,
                     privacy: str
-                ) -> Union[SuccessResult, FailOperation]:
+                ) -> Union[Result, FailOperation]:
                             
         community = CreateCommunityDTO(
             name=name,
@@ -39,5 +39,5 @@ class UseCase:
         except RepoError as e:
             return FailOperation(message=e)
         
-        return SuccessResult(item=new_community)
+        return Result(item=new_community)
     

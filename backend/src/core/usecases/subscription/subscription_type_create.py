@@ -7,7 +7,7 @@ from src.core.interfaces.base import IRepositoryCore
 
 
 @dataclass
-class SuccessResult:
+class Result:
     item: SubscriptionTypeDTO
 
 
@@ -16,11 +16,11 @@ class SubscriptionTypeCreateUseCase:
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    async def __call__(self, user: User, new_type: SubscriptionTypeTranslateCreateDTO) -> SuccessResult:
+    async def __call__(self, user: User, create_obj: SubscriptionTypeTranslateCreateDTO) -> Result:
 
         if not user.application_role.ADMIN:
             raise PermissionError(username=user.username)
 
-        constraint = await self.repo.subscription_type_translate_create(new_obj=new_type)
+        subscription_type = await self.repo.subscription_type_translate_create(obj=create_obj)
 
-        return SuccessResult(item=constraint)
+        return Result(item=subscription_type)

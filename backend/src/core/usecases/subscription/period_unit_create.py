@@ -7,7 +7,7 @@ from src.core.exception.base import PermissionError
 
 
 @dataclass
-class SuccessResult:
+class Result:
     item: SubscriptionPeriodUnitDTO
 
 
@@ -16,11 +16,11 @@ class SubscriptionPeriodUnitCreateUseCase:
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    async def __call__(self, *, new_obj: SubscriptionPeriodUnitCreateDTO, user: User) -> SuccessResult:
+    async def __call__(self, *, user: User, create_obj: SubscriptionPeriodUnitCreateDTO) -> Result:
 
         if not user.application_role.ADMIN:
             raise PermissionError(username=user.username)
         
-        period = await self.repo.subscription_period_unit_create(new_obj=new_obj)
+        period = await self.repo.subscription_period_unit_create(obj=create_obj)
 
-        return SuccessResult(item=period)
+        return Result(item=period)

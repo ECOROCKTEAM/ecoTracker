@@ -7,7 +7,7 @@ from src.core.exception.base import RepoError
 
 
 @dataclass
-class SuccessResult:
+class Result:
     item: MissionBase
 
 
@@ -21,12 +21,12 @@ class MissionBaseGetUC:
     def __init__(self, repo: BaseAbstractRepo) -> None:
         self.repo = repo
 
-    def realization(self, mission_name: str) -> Union[SuccessResult, FailOperation]:
+    def realization(self, mission_name: str) -> Union[Result, FailOperation]:
 
         try:
             mission = self.repo.mission_base_get(mission_name=mission_name)
         except RepoError as e:
             return FailOperation(message=e)
         
-        return SuccessResult(item=mission)
+        return Result(item=mission)
     

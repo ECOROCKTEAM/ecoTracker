@@ -1,30 +1,33 @@
 from abc import ABC, abstractmethod
 
-from src.core.dto.subscription import (SubscriptionCreateDTO, 
-                                       SubscriptionDTO, 
-                                       SubscriptionPeriodCreateDTO, 
-                                       SubscriptionPeriodDTO, 
-                                       SubscriptionPeriodUnitCreateDTO, 
-                                       SubscriptionPeriodUnitDTO, 
-                                       SubscriptionTypeCreateDTO, 
-                                       SubscriptionTypeDTO)
+from src.core.enum.subscription import SubscriptionTypeEnum
+from src.core.dto.subscription import (
+    SubscriptionCreateDTO,
+    SubscriptionDTO,
+    SubscriptionPeriodCreateDTO,
+    SubscriptionPeriodDTO,
+    SubscriptionPeriodUnitCreateDTO,
+    SubscriptionPeriodUnitDTO,
+    SubscriptionTypeCreateDTO,
+    SubscriptionTypeDTO
+)
 
 from src.core.dto.misc import SubscriptionTypeConstraintCreateDTO
 from src.core.entity.subscription import Constraint
 from src.core.dto.contact import ContactTypeCreateDTO, ContactTypeDTO
-from src.core.entity.user import User
-from src.core.enum.subscription import SubscriptionTypeEnum
-from src.core.dto.user import BaseUserContactDTO, BaseUserContactIdDTO
+from src.core.entity.user import UserSubscription, User
+from src.core.dto.user import UserContactDTO
 
 
 class IRepositoryCore(ABC):
 
     @abstractmethod
-    async def user_create(self, *, new_user: BaseUserContactDTO) -> BaseUserContactIdDTO:
+    async def user_create(self, *, user: UserContactDTO, subscription: SubscriptionTypeEnum) -> User:
         """_summary_
 
         Args:
-            new_user (CreateUserDTO): DTO для создания\регистрации пользователя
+            user (CreateUserDTO): DTO for creating user
+            subscription (SubscriptionTypeEnum): Enum, Usual type of subscription which assigned user in the moment creation
 
         Returns:
             User: Сущность пользователя + по дефолту присвоенный ему обычный тип подписки
@@ -35,11 +38,11 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def subscription_type_translate_create(self, *, new_obj: SubscriptionTypeCreateDTO) -> SubscriptionTypeDTO:
+    async def subscription_type_translate_create(self, *, obj: SubscriptionTypeCreateDTO) -> SubscriptionTypeDTO:
         """We'll create subscription_type if for it will be all translate.
 
         Args:
-            new_obj (SubscriptionTypeCreateDTO): DTO for creating a new subscription type
+            obj (SubscriptionTypeCreateDTO): DTO for creating a new subscription type
 
         Returns:
             SubscriptionTypeDTO: subscription type
@@ -47,19 +50,17 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def user_subscription_assignment(self, *,
-                                           username: str = None,
-                                           user: User = None,
-                                           subscription_type: SubscriptionTypeEnum) -> User:
-        """ If user just registrating we can't get his User entity, just his username.
-        Otherwise we can get User entity
+    async def user_subscription_add(self, *,
+                                    user_id: str,
+                                    subscription_id: int) -> UserSubscription:
+        """ Adds a subscription to user.
 
         Args:
-            user (BaseUserContactIdDTO): User wich take subscription
-            subscription_type (SubscriptionTypeEnum): Subscription type
+            user_id (str): User identify
+            subscription_id (int): Subscription identify
 
         Returns:
-            User: Сущность юзера
+            UserSubscription: Relation between user and subscription.
         """
         pass
 
@@ -76,18 +77,18 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def subscription_type_constraint_create(self, *, new_obj: SubscriptionTypeConstraintCreateDTO) -> Constraint:
+    async def subscription_type_constraint_create(self, *, obj: SubscriptionTypeConstraintCreateDTO) -> Constraint:
         """Create constraint for Subscription
 
         Args:
-            new_obj (SubscriptionTypeConstraintCreate): DTO for create  new constrains
+            obj (SubscriptionTypeConstraintCreate): DTO for create  new constrains
 
         Returns:
             Constraint: Constraint entity
         """
 
     @abstractmethod
-    async def subscription_type_constraint_delete(self, *, constraint_name: str) -> int:
+    async def subscription_type_constraint_delete(self, *, constraint_id: int) -> int:
         """Delete constraint for Subscription
 
         Args:
@@ -99,22 +100,22 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def subscription_period_unit_create(self, *, new_obj: SubscriptionPeriodUnitCreateDTO) -> SubscriptionPeriodUnitDTO:
+    async def subscription_period_unit_create(self, *, obj: SubscriptionPeriodUnitCreateDTO) -> SubscriptionPeriodUnitDTO:
         """creating subscription period
 
         Args:
-            new_obj (SubscriptionPeriodCreateDTO): DTO for creating subscription period
+            obj (SubscriptionPeriodCreateDTO): DTO for creating subscription period
 
         Returns:
             SubscriptionPeriodDTO: New subscription period
         """
 
     @abstractmethod
-    async def subscription_period_create(self, *, new_obj: SubscriptionPeriodCreateDTO) -> SubscriptionPeriodDTO:
+    async def subscription_period_create(self, *, obj: SubscriptionPeriodCreateDTO) -> SubscriptionPeriodDTO:
         """Creating new period for subscriptios
 
         Args:
-            new_obj (SubscriptionPeriodCreateDTO): DTO object for create period for subscriptions
+            obj (SubscriptionPeriodCreateDTO): DTO object for create period for subscriptions
 
         Returns:
             SubscriptionPeriodDTO: New period
@@ -122,11 +123,11 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def subscription_create(self, *, new_obj: SubscriptionCreateDTO) -> SubscriptionDTO:
+    async def subscription_create(self, *, obj: SubscriptionCreateDTO) -> SubscriptionDTO:
         """create new subscription
 
         Args:
-            new_obj (SubscriptionCreateDTO): DTO for creating subscription
+            obj (SubscriptionCreateDTO): DTO for creating subscription
 
         Returns:
             SubscriptionDTO: New subscription

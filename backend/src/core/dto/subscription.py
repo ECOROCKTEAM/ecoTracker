@@ -3,23 +3,10 @@ from dataclasses import dataclass
 
 from src.core.enum.subscription import PeriodUnitEnum, SubscriptionTypeEnum
 from src.core.enum.language import LanguageEnum
-from src.core.dto.base import TypeDTO
 from src.core.enum.base import VariableTypeEnum
 from src.core.mixin.variable_type import VariableTypeCastMixin
 from src.core.typing.base import VariableValueType
 from src.core.exception.language import TranslateError
-
-
-# @dataclass
-# class SubscriptionPeriodTypeDTO(TypeDTO):
-#     """ """
-
-
-# @dataclass
-# class SubscriptionPeriodDTO:
-#     name: str
-#     value: int
-#     type: SubscriptionPeriodTypeDTO
 
 
 @dataclass
@@ -188,8 +175,8 @@ class SubscriptionTranslateCreateDTO:
 
 @dataclass
 class SubscriptionCreateDTO:
-    subscription_type: SubscriptionTypeEnum
-    subscription_period: PeriodUnitEnum
+    type: SubscriptionTypeEnum
+    period: PeriodUnitEnum
     languages: list[SubscriptionTranslateCreateDTO]
 
     def __post_init__(self):
@@ -203,8 +190,8 @@ class SubscriptionCreateDTO:
 @dataclass
 class SubscriptionDTO:
     id: int
-    subscription_type: SubscriptionTypeEnum
-    subscription_period: PeriodUnitEnum
+    type: SubscriptionTypeEnum
+    period: PeriodUnitEnum
     languages: list[SubscriptionTranslateCreateDTO]
 
     def __post_init__(self):

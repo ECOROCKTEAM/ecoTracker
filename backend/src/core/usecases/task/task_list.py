@@ -7,7 +7,7 @@ from src.core.exception.base import RepoError
 
 
 @dataclass
-class SuccessResult:
+class Result:
     items: list[Task] = field(default_factory=list)
 
 
@@ -22,11 +22,11 @@ class UseCase:
         self.repo = repo
         
 
-    def realization(self) -> Union[SuccessResult, FailOperation]:
+    def realization(self) -> Union[Result, FailOperation]:
         
         try:
             list_of_tasks = self.repo.tasks_list()
         except RepoError as e:
             return FailOperation(message=e)
         
-        return SuccessResult(items=list_of_tasks)
+        return Result(items=list_of_tasks)

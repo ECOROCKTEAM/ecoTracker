@@ -17,7 +17,9 @@ from src.core.entity.user import UserSubscription, User
 from src.core.entity.subscription import Constraint
 from src.core.entity.contact import UserContact
 
+from src.core.dto.occupancy import OccupancyTypeCreateDTO, OccupancyTypeDTO, OccupancyStatusCreateDTO, OccupancyStatusDTO
 from src.core.dto.score import ScoreUserDTO
+from src.core.dto.tasks import TaskCreateDTO, TaskDTO
 from src.core.dto.misc import SubscriptionTypeConstraintCreateDTO
 from src.core.dto.contact import ContactDeleteDTO, ContactTypeCreateDTO, ContactTypeDTO, ContactCreateDTO
 from src.core.dto.user import UserContactDTO
@@ -25,7 +27,43 @@ from src.core.dto.user import UserContactDTO
 
 class IRepositoryCore(ABC):
 
-    @abstractmethod #Проверить логику
+    @abstractmethod
+    async def occupancy_status_create(self, *, obj: OccupancyStatusCreateDTO) -> OccupancyStatusDTO:
+        """ Create occupancy status
+
+        Args:
+            obj (OccupancyStatusCreateDTO): DTO for creating occupancy status
+
+        Returns:
+            OccupancyStatusDTO: DTO of occupancy status
+        """
+        pass
+
+    @abstractmethod
+    async def occupancy_type_create(self, *, obj: OccupancyTypeCreateDTO) -> OccupancyTypeDTO:
+        """ Create occupancy type
+
+        Args:
+            obj (OccupancyTypeCreateDTO): DTO of creating occupancy type
+
+        Returns:
+            OccupancyTypeDTO: DTO occupancy type
+        """
+        pass
+
+    @abstractmethod
+    async def task_create(self, *, obj: TaskCreateDTO) -> TaskDTO:
+        """create task
+
+        Args:
+            obj (TaskCreateDTO): DTO for creating task
+
+        Returns:
+            TaskDTO: task DTO
+        """
+        pass
+
+    @abstractmethod #Проверить логику вывода
     async def score_user_list(self, *, username: str = None, sorting_obj: str = None) -> Union[List[ScoreUserDTO], List[List[ScoreUserDTO], int]]: 
         """ Get user score list.
 

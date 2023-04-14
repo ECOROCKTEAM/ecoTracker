@@ -1,9 +1,12 @@
 from dataclasses import dataclass
 
+from src.core.enum.contact import ContactEnum
 from src.core.dto.base import TypeDTO
 from src.core.enum.language import LanguageEnum
 from src.core.exception.language import TranslateError
 
+
+#Contact Type
 
 @dataclass
 class ContactTypeTranslateDTO(TypeDTO):
@@ -41,3 +44,16 @@ class ContactTypeDTO:
         difference = set(translated_contact_types) - set(available_languages)
         if len(difference) != 0:
             self.valid = False
+
+
+# Contact
+
+@dataclass
+class ContactCreateDTO:
+    value: str
+    type: ContactEnum
+
+
+@dataclass
+class ContactDeleteDTO(ContactCreateDTO):
+    """"""

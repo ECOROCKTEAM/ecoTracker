@@ -11,20 +11,18 @@ class Result:
     item: ContactTypeDTO
 
 
-
 class ContactTypeCreateUC:
 
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    async def realization(self, *,
-                          user: User,
-                          new_contact_type: ContactTypeCreateDTO) -> Result:
-        
+    async def __call__(self, *,
+                       user: User,
+                       obj: ContactTypeCreateDTO) -> Result:
+
         if not user.application_role.ADMIN:
             raise PermissionError(user.username)
-        
-        contact_type = await self.repo.contact_type_create(new_type=new_contact_type)
+
+        contact_type = await self.repo.contact_type_create(obj=obj)
 
         return Result(item=contact_type)
-

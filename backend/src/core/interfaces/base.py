@@ -12,10 +12,12 @@ from src.core.dto.subscription import (
     SubscriptionTypeDTO
 )
 
-from src.core.dto.misc import SubscriptionTypeConstraintCreateDTO
-from src.core.entity.subscription import Constraint
-from src.core.dto.contact import ContactTypeCreateDTO, ContactTypeDTO
 from src.core.entity.user import UserSubscription, User
+from src.core.entity.subscription import Constraint
+from src.core.entity.contact import UserContact
+
+from src.core.dto.misc import SubscriptionTypeConstraintCreateDTO
+from src.core.dto.contact import ContactDeleteDTO, ContactTypeCreateDTO, ContactTypeDTO, ContactCreateDTO
 from src.core.dto.user import UserContactDTO
 
 
@@ -65,16 +67,42 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def contact_type_create(self, *, new_type: ContactTypeCreateDTO) -> ContactTypeDTO:
+    async def contact_type_create(self, *, obj: ContactTypeCreateDTO) -> ContactTypeDTO:
         """ Creating contact type. This can only be done by application administrator 
 
         Args:
-            new_type (ContactTypeCreateDTO): DTO contact type for creating
+            create_obj (ContactTypeCreateDTO): DTO contact type for creating
 
         Returns:
-            ContactTypeBaseDTO: New contact type
+            ContactTypeDTO: New contact type
         """
         pass
+
+    @abstractmethod
+    async def contact_create(self, *, user_id: str, obj: ContactCreateDTO) -> UserContact:
+        """contact creating by user for himself
+
+        Args:
+            user_id (str): user identify
+            create_obj (ContactCreateDTO): DTO for new user contact
+
+        Returns:
+            UserContact: Relation between user and his new contact
+        """
+        pass
+
+    @abstractmethod
+    async def contact_delete(self, *, user_id: str, obj: ContactDeleteDTO) -> int:
+        """delete contact from user contact list
+
+        Args:
+            user_id (str): user identify
+            obj (ContactDeleteDTO): DTO for deleting user contact
+
+        Returns:
+            int: id of deleted contact
+        """
+
 
     @abstractmethod
     async def subscription_type_constraint_create(self, *, obj: SubscriptionTypeConstraintCreateDTO) -> Constraint:

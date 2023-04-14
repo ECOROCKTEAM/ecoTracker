@@ -1,4 +1,8 @@
-from src.core.exception import DomainError
+from src.core.exception import DomainError, PermissionError
 
 class CreateUserError(DomainError):
-    msg = "username={username} of password={password} problem"
+    msg = "username={username} or password={password} problem"
+
+
+class UserIsNotPremiumError(PermissionError):
+    msg = "username={username} is not premium"

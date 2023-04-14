@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List, Union
 
 from src.core.enum.subscription import SubscriptionTypeEnum
 from src.core.dto.subscription import (
@@ -16,12 +17,39 @@ from src.core.entity.user import UserSubscription, User
 from src.core.entity.subscription import Constraint
 from src.core.entity.contact import UserContact
 
+from src.core.dto.score import ScoreUserDTO
 from src.core.dto.misc import SubscriptionTypeConstraintCreateDTO
 from src.core.dto.contact import ContactDeleteDTO, ContactTypeCreateDTO, ContactTypeDTO, ContactCreateDTO
 from src.core.dto.user import UserContactDTO
 
 
 class IRepositoryCore(ABC):
+
+    @abstractmethod #Проверить логику
+    async def score_user_list(self, *, username: str = None, sorting_obj: str = None) -> Union[List[ScoreUserDTO], List[List[ScoreUserDTO], int]]: 
+        """ Get user score list.
+
+        Args:
+            username (str, optional): if username -> we'll get rating user in this list. Defaults to None.
+            sorting_obj (str, optional): object for list sorting. Defaults to None.
+
+        Returns:
+            List[ScoreUserDTO]: If username: return user rating and list of DTO user score
+                                else: return list of DTO user score
+        """
+        pass
+
+    @abstractmethod
+    async def score_user_get(self, *, username: str) -> ScoreUserDTO:
+        """ Get score for user
+
+        Args:
+            username (str): user identify
+
+        Returns:
+            ScoreUserDTO: DTO for user score
+        """
+    
 
     @abstractmethod
     async def user_create(self, *, user: UserContactDTO, subscription: SubscriptionTypeEnum) -> User:

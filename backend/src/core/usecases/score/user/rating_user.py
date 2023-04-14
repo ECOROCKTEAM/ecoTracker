@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+from typing import List
 
+from src.core.exception.user import UserIsNotPremiumError
 from src.core.dto.score import ScoreUserDTO
 from src.core.exception.base import DomainError
 from src.core.interfaces.base import IRepositoryCore
@@ -8,7 +10,7 @@ from src.core.entity.user import User
 
 @dataclass
 class Result:
-    item: ScoreUserDTO
+    items: List[List[ScoreUserDTO], int]
 
 
 class ScoreUserGetUC:
@@ -20,7 +22,9 @@ class ScoreUserGetUC:
 
         if not user.active:
             raise DomainError(username=user.username, deactivated=user.active)
+        if not user.is_premium:
+            raise UserIsNotPremiumError(username=user.username)
         
         score = await self.repo.score_user_get(username=user.username)
         
-        return Result(item=score)
+        return Result(items=score)

@@ -5,8 +5,12 @@ class CreateUserError(DomainError):
 
 
 class UserIsNotPremiumError(PermissionError):
-    msg = "username={username} is not premium"
+    msg = "username={username} isn't premium"
 
 
 class UserIsNotApplicationAdminError(PermissionError):
     msg = "username={username} isn't admin of application"
+
+
+class UserIsNotActivateError(PermissionError, DomainError):
+    msg = "username={username} isn't activate"

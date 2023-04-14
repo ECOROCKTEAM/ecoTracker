@@ -28,3 +28,10 @@ class UserSubscription:
     subscription_id: int
     cancelled: bool
     until_date: datetime
+
+
+@dataclass
+class UserTask:
+    username: str
+    task_id: int
+    occupancy_status_id: int

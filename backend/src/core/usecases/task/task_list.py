@@ -1,9 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Union, List
 
-from src.core.interfaces.base import BaseAbstractRepo
+from src.core.interfaces.base import IRepositoryCore
 from src.core.entity.task import Task
-from src.core.exception.base import RepoError
 
 
 @dataclass
@@ -11,22 +9,24 @@ class Result:
     items: list[Task] = field(default_factory=list)
 
 
-@dataclass
-class FailOperation:
-    message: str
+class TaskListUseCase:
 
-
-class UseCase:
-
-    def __init__(self, repo: BaseAbstractRepo) -> None:
+    def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
-        
 
-    def realization(self) -> Union[Result, FailOperation]:
+    async def __call__(
+            self, *,
+            sorting_obj: str = None, 
+            paggination_obj: str = None, 
+            filter_obj: str = None
+            ) -> Result:
         
-        try:
-            list_of_tasks = self.repo.tasks_list()
-        except RepoError as e:
-            return FailOperation(message=e)
+        # хз что тут можно даже проверить перед началом...
+
+        task_list = await self.repo.task_list(
+            sorting_obj=sorting_obj,
+            paggination_obj=paggination_obj,
+            filter_obj=filter_obj
+        )
         
-        return Result(items=list_of_tasks)
+        return Result(items=task_list)

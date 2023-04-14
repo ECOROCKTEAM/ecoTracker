@@ -13,7 +13,7 @@ from src.core.dto.subscription import (
     SubscriptionTypeDTO
 )
 
-from src.core.entity.user import UserSubscription, User
+from src.core.entity.user import UserSubscription, User, UserTask
 from src.core.entity.subscription import Constraint
 from src.core.entity.contact import UserContact
 
@@ -26,6 +26,51 @@ from src.core.dto.user import UserContactDTO
 
 
 class IRepositoryCore(ABC):
+
+    @abstractmethod
+    async def user_task_delete(self, *, user_id: str, task_id: int) -> int:
+        """ Deleting task to user task list
+
+        Args:
+            user_id (str): user identify
+            task_id (int): task identify
+
+        Returns:
+            int: deleted task id from user task list
+        """
+        pass
+
+    @abstractmethod
+    async def user_task_add(self, *, user_id: str, task_id: int) -> UserTask:
+        """ Adding task to user task list
+
+        Args:
+            user_id (str): user identify
+            task_id (int): task identify
+
+        Returns:
+            UserTask: User entity and Task entity relation
+        """
+        pass
+
+    @abstractmethod
+    async def task_list(
+                        self, *, 
+                        sorting_obj: str = None, 
+                        paggination_obj: str = None, 
+                        filter_obj: str = None
+                        ) -> List[TaskDTO]:
+        """ List of tasks
+
+        Args:
+            sorting_obj (str): sorting object
+            paggination_obj (str): paggination object
+            filter_obj (str): filter object
+
+        Returns:
+            List[TaskDTO]: List of DTO task object
+        """
+        pass
 
     @abstractmethod
     async def occupancy_status_create(self, *, obj: OccupancyStatusCreateDTO) -> OccupancyStatusDTO:

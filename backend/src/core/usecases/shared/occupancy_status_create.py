@@ -11,7 +11,7 @@ class Result:
     item: OccupancyStatusDTO
 
 
-class OccupancyStatusUseCase:
+class OccupancyStatusCreateUseCase:
 
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo

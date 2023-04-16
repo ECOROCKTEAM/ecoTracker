@@ -49,6 +49,12 @@ class ContactTypeDTO:
 # Contact
 
 @dataclass
+class ContactDTO:
+    value: str
+    type: ContactEnum
+
+
+@dataclass
 class ContactCreateDTO:
     value: str
     type: ContactEnum
@@ -57,3 +63,15 @@ class ContactCreateDTO:
 @dataclass
 class ContactDeleteDTO(ContactCreateDTO):
     """"""
+
+
+@dataclass
+class ContactUpdateDTO(ContactCreateDTO):
+    """"""
+
+@dataclass
+class ContactUserUpdateDTO:
+    username: str
+    updating_contact_id: str
+    contact: str
+    type: ContactEnum

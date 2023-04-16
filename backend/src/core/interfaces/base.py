@@ -27,7 +27,7 @@ from src.core.dto.occupancy import OccupancyTypeCreateDTO, OccupancyTypeDTO, Occ
 from src.core.dto.score import ScoreUserDTO
 from src.core.dto.tasks import TaskCreateDTO, TaskDTO
 from src.core.dto.misc import SubscriptionTypeConstraintCreateDTO
-from src.core.dto.contact import ContactDeleteDTO, ContactTypeCreateDTO, ContactTypeDTO, ContactCreateDTO
+from src.core.dto.contact import ContactDTO, ContactDeleteDTO, ContactTypeCreateDTO, ContactTypeDTO, ContactCreateDTO, ContactUserUpdateDTO
 from src.core.dto.user import UserCreateDTO
 
 
@@ -233,6 +233,18 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
+    async def contact_update(self, *, obj: ContactUserUpdateDTO) -> UserContact:
+        """updating user contact
+
+        Args:
+            obj (ContactUserUpdateDTO): DTO with user_id, updating contact identify and new data for update
+
+        Returns:
+            UserContact: UserContact entity
+        """
+        pass
+
+    @abstractmethod
     async def contact_delete(self, *, user_id: str, obj: ContactDeleteDTO) -> int:
         """delete contact from user contact list
 
@@ -243,7 +255,41 @@ class IRepositoryCore(ABC):
         Returns:
             int: id of deleted contact
         """
+    pass
 
+    @abstractmethod
+    async def contact_list(
+        self, *, 
+        user_id: str, 
+        filter_obj: ObjectPlug, 
+        sorting_obj: ObjectPlug, 
+        order_obj: ObjectPlug
+                           ) -> list[ContactDTO]:
+        """contact list
+
+        Args:
+            user_id (str): user identify
+            filter_obj (ObjectPlug): Some filter item
+            sorting_obj (ObjectPlug): Some sorting obj
+            order_obj (ObjectPlug): Some order obj
+
+        Returns:
+            list[ContactDTO]: list of DTO contact
+        """
+        pass
+
+    @abstractmethod
+    async def contact_get(self, *, user_id: str, contact_id: str) -> UserContact:
+        """get one contact
+
+        Args:
+            user_id (str): user identify
+            contact_id (str): contact identify
+
+        Returns:
+            UserContact: UserContact entity
+        """
+        pass
 
     @abstractmethod
     async def subscription_type_constraint_create(self, *, obj: SubscriptionTypeConstraintCreateDTO) -> Constraint:

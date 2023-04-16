@@ -12,7 +12,7 @@ class Result:
     items: List[List[ScoreUserDTO], int]
 
 
-class ScoreUserGetUseCase:
+class RatingUserUseCase:
 
     def __init__(self, repo: IRepositoryCore):
         self.repo = repo

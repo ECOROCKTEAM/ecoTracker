@@ -6,7 +6,7 @@ from src.core.enum.language import LanguageEnum
 from src.core.enum.base import VariableTypeEnum
 from src.core.mixin.variable_type import VariableTypeCastMixin
 from src.core.typing.base import VariableValueType
-from src.core.exception.language import TranslateError
+from backend.src.core.exception.translate import TranslateError
 
 
 @dataclass
@@ -57,7 +57,7 @@ class SubscriptionTypeCreateDTO:
 @dataclass
 class SubscriptionTypeDTO:
     id: int
-    languages: list[SubscriptionTypeTranslateCreateDTO]
+    languages: list[SubscriptionListConstrainsDTO]
     available: bool
 
     def __post_init__(self):
@@ -102,7 +102,7 @@ class SubscriptionPeriodUnitDTO:
     id: int
     value: str
     period_unit: PeriodUnitEnum
-    languages: list[SubscriptionPeriodUnitTranslateCreateDTO]
+    languages: list[SubscriptionPeriodUnitTranslateDTO]
     valid: bool
 
 
@@ -147,7 +147,7 @@ class SubscriptionPeriodDTO:
     id: int
     value: str
     unit: PeriodUnitEnum
-    languages: list[SubscriptionPeriodCreateTranslate]
+    languages: list[SubscriptionPeriodTranslateDTO]
     valid: bool
 
     def __post_init__(self):
@@ -192,7 +192,7 @@ class SubscriptionDTO:
     id: int
     type: SubscriptionTypeEnum
     period: PeriodUnitEnum
-    languages: list[SubscriptionTranslateCreateDTO]
+    languages: list[SubscriptionTranslateDTO]
 
     def __post_init__(self):
         translated_subscription_periods = [item.language for item in self.languages]

@@ -1,16 +1,29 @@
-from src.core.exception import DomainError, PermissionError
-
-class CreateUserError(DomainError):
-    msg = "username={username} or password={password} problem"
+from src.core.exception.base import DomainError, RepoError, PermissionError
 
 
-class UserIsNotPremiumError(PermissionError):
-    msg = "username={username} isn't premium"
+class UserError(DomainError):
+    msg_template = "username={username} problem"
 
 
-class UserIsNotApplicationAdminError(PermissionError):
-    msg = "username={username} isn't admin of application"
+class UserPermissionError(UserError, PermissionError):
+    msg_template = "username={username} permission problem"
 
 
-class UserIsNotActivateError(PermissionError, DomainError):
+class UserIsNotCommunitySuperUserError(UserPermissionError):
+    msg_template = "User with username={username} is not super user in community with community={community_id}"
+
+
+class UserIsNotCommunityAdminUserError(UserPermissionError):
+    msg_template = "User with username={username} is not admin user in community with community={community_id}"
+
+
+class UserIsNotPremiumError(UserPermissionError):
+    msg_template = "User with username={username} not have Premium subscription"
+
+
+class UserNotFoundError(UserError, RepoError):
+    msg_template = "User with username={username} not found"
+
+
+class UserIsNotActivateError(UserError):
     msg = "username={username} isn't activate"

@@ -1,7 +1,14 @@
 from dataclasses import dataclass, field
 
-from src.core.enum.score import ScoreOPerationEnum
-from src.core.enum.base import RelatedEnum
+from src.core.enum.score import ScoreOperationEnum
+# from src.core.enum.base import RelatedEnum
+
+
+@dataclass 
+class ScoreUserDTO:
+    username: str
+    value: int
+    operation: ScoreOperationEnum
 
 
 # @dataclass
@@ -26,10 +33,3 @@ from src.core.enum.base import RelatedEnum
 # @dataclass
 # class ScoreUserGetDTO(ScoreUserDTO):
 #     """ """
-
-
-@dataclass 
-class ScoreUserDTO:
-    username: str
-    value: int
-    operation: ScoreOPerationEnum

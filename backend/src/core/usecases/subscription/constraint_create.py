@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.exception.base import PermissionError
+from src.core.exception.user import UserPermissionError
 from src.core.entity.user import User
 from src.core.dto.misc import SubscriptionTypeConstraintCreateDTO
 from src.core.interfaces.base import IRepositoryCore
@@ -19,7 +19,7 @@ class SubscriptionConstraintCreateUseCase:
     async def __call__(self, user: User, create_obj: SubscriptionTypeConstraintCreateDTO) -> Result:
 
         if not user.application_role.ADMIN:
-            raise PermissionError(username=user.username)
+            raise UserPermissionError(username=user.username)
 
         constraint = await self.repo.subscription_type_constraint_create(obj=create_obj)
 

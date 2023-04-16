@@ -1,6 +1,7 @@
 from typing import List
 from dataclasses import dataclass
 
+from src.core.enum.subscription import SubscriptionTypeEnum
 from src.core.enum.contact import ContactEnum
 from src.core.dto.base import  TypeDTO
 
@@ -45,10 +46,11 @@ class UserContactDTO(UserDTO):
 
 
 @dataclass
-class UserContactCreateDTO(UserContactDTO):
-    """"""
+class UserCreateDTO:
+    username: str
+    password: str
+    contact: str
+    type: ContactEnum
+    subscription: SubscriptionTypeEnum
 
 
-@dataclass
-class UserContactIdDTO(UserContactDTO):
-    id: int

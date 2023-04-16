@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.exception.base import PermissionError
+from src.core.exception.user import UserPermissionError
 from src.core.entity.user import User
 from src.core.interfaces.base import IRepositoryCore
 
@@ -17,7 +17,7 @@ class SubscriptionConstraintDeleteUseCase:
     async def __call__(self, user: User, id: int) -> Result:
 
         if not user.application_role.ADMIN:
-            raise PermissionError(username=user.username)
+            raise UserPermissionError(username=user.username)
 
         constraint_id = await self.repo.subscription_type_constraint_delete(constraint_name=id)
 

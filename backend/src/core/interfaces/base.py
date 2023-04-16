@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Union
 
-from src.core.enum.subscription import SubscriptionTypeEnum
 from src.core.dto.subscription import (
     SubscriptionCreateDTO,
     SubscriptionDTO,
@@ -17,12 +16,13 @@ from src.core.entity.user import UserSubscription, User, UserTask
 from src.core.entity.subscription import Constraint
 from src.core.entity.contact import UserContact
 
+from src.core.dto.plugs import ObjectPlug
 from src.core.dto.occupancy import OccupancyTypeCreateDTO, OccupancyTypeDTO, OccupancyStatusCreateDTO, OccupancyStatusDTO
 from src.core.dto.score import ScoreUserDTO
 from src.core.dto.tasks import TaskCreateDTO, TaskDTO
 from src.core.dto.misc import SubscriptionTypeConstraintCreateDTO
 from src.core.dto.contact import ContactDeleteDTO, ContactTypeCreateDTO, ContactTypeDTO, ContactCreateDTO
-from src.core.dto.user import UserContactDTO
+from src.core.dto.user import UserCreateDTO
 
 
 class IRepositoryCore(ABC):
@@ -56,9 +56,9 @@ class IRepositoryCore(ABC):
     @abstractmethod
     async def task_list(
                         self, *, 
-                        sorting_obj: str = None, 
-                        paggination_obj: str = None, 
-                        filter_obj: str = None
+                        sorting_obj: ObjectPlug, 
+                        paggination_obj: ObjectPlug, 
+                        filter_obj: ObjectPlug
                         ) -> List[TaskDTO]:
         """ List of tasks
 
@@ -135,7 +135,7 @@ class IRepositoryCore(ABC):
     
 
     @abstractmethod
-    async def user_create(self, *, user: UserContactDTO, subscription: SubscriptionTypeEnum) -> User:
+    async def user_create(self, *, user: UserCreateDTO) -> User:
         """_summary_
 
         Args:
@@ -163,7 +163,7 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def user_subscription_add(self, *,
+    async def user_subscription_update(self, *,
                                     user_id: str,
                                     subscription_id: int) -> UserSubscription:
         """ Adds a subscription to user.

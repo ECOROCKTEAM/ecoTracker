@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from src.core.enum.contact import ContactEnum
 from src.core.dto.base import TypeDTO
 from src.core.enum.language import LanguageEnum
-from src.core.exception.language import TranslateError
+from backend.src.core.exception.translate import TranslateError
 
 
 #Contact Type

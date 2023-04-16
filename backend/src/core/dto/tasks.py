@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.exception.language import TranslateError
+from backend.src.core.exception.translate import TranslateError
 from src.core.enum.language import LanguageEnum
 from src.core.dto.occupancy import OccupancyCategoryDTO
 
@@ -50,7 +50,7 @@ class TaskCreateDTO:
 class TaskDTO:
     id: int
     score: int
-    languages: list[TaskTranslateCreateDTO]
+    languages: list[TaskTranslateDTO]
     valid: bool
 
     def __post_init__(self):

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.dto.score import ScoreUserDTO
-from src.core.exception.base import DomainError
+from src.core.exception.user import UserIsNotActivateError
 from src.core.interfaces.base import IRepositoryCore
 from src.core.entity.user import User
 
@@ -11,7 +11,7 @@ class Result:
     item: ScoreUserDTO
 
 
-class ScoreUserGetUC:
+class ScoreUserGetUseCase:
 
     def __init__(self, repo: IRepositoryCore):
         self.repo = repo
@@ -19,7 +19,7 @@ class ScoreUserGetUC:
     async def __call__(self, *, user: User) -> Result:
 
         if not user.active:
-            raise DomainError(username=user.username, deactivated=user.active)
+            raise UserIsNotActivateError(username=user.username, deactivated=user.active)
         
         score = await self.repo.score_user_get(username=user.username)
         

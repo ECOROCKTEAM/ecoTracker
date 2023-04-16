@@ -35,3 +35,9 @@ class UserTask:
     username: str
     task_id: int
     occupancy_status_id: int
+
+
+@dataclass
+class UserRoleApplication:
+    username: str
+    role: ApplicationRoleEnum

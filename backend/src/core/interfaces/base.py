@@ -16,6 +16,12 @@ from src.core.entity.user import UserSubscription, User, UserTask
 from src.core.entity.subscription import Constraint
 from src.core.entity.contact import UserContact
 
+from src.core.dto.application_role import (
+    ApplicationRoleCreateDTO, 
+    ApplicationRoleDTO, 
+    UserApplicationRoleDTO, 
+    UserApplicationRoleUpdateDTO
+)
 from src.core.dto.plugs import ObjectPlug
 from src.core.dto.occupancy import OccupancyTypeCreateDTO, OccupancyTypeDTO, OccupancyStatusCreateDTO, OccupancyStatusDTO
 from src.core.dto.score import ScoreUserDTO
@@ -26,6 +32,30 @@ from src.core.dto.user import UserCreateDTO
 
 
 class IRepositoryCore(ABC):
+
+    @abstractmethod
+    async def user_role_application_update(self, *, obj: UserApplicationRoleUpdateDTO) -> UserApplicationRoleDTO:
+        """User application role update
+
+        Args:
+            obj (UserApplicationRoleUpdateDTO): DTO which contains user identify for update him and updating role
+
+        Returns:
+            UserApplicationRoleDTO: DTO of user identify and application role
+        """
+        pass
+
+    @abstractmethod
+    async def user_role_application_create(self, *, obj: ApplicationRoleCreateDTO) -> ApplicationRoleDTO:
+        """ Creating application role
+
+        Args:
+            obj (str): DTO representation of new application role object
+
+        Returns:
+            UserRoleApplication: DTO of new application role
+        """
+        pass
 
     @abstractmethod
     async def user_task_delete(self, *, user_id: str, task_id: int) -> int:

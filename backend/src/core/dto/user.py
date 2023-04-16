@@ -1,6 +1,7 @@
 from typing import List
 from dataclasses import dataclass
 
+from src.core.enum.role import ApplicationRoleEnum
 from src.core.enum.subscription import SubscriptionTypeEnum
 from src.core.enum.contact import ContactEnum
 from src.core.dto.base import  TypeDTO
@@ -52,5 +53,6 @@ class UserCreateDTO:
     contact: str
     type: ContactEnum
     subscription: SubscriptionTypeEnum
+    application_role: ApplicationRoleEnum
 
 

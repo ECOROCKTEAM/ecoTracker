@@ -59,7 +59,7 @@ class CommunityChangeUserRoleUsecase:
             raise UserIsNotCommunityAdminUserError(username=user.username, community_id=community_id)
 
         # ADMIN can't change role for SUPERUSER
-        if target_user_link and target_user_link.role.SUPERUSER and current_user_link.role.ADMIN:
+        if target_user_link and target_user_link.role.enum.SUPERUSER and current_user_link.role.enum.ADMIN:
             raise UserIsNotCommunitySuperUserError(
                 username=current_user_link.user_id, community_id=current_user_link.community_id
             )

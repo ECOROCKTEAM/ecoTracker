@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from src.core.dto.privacy import PrivacyDTO
+from src.core.dto.community.privacy import PrivacyDTO
 from src.core.entity.user import User
 
 from src.core.exception.user import UserIsNotPremiumError

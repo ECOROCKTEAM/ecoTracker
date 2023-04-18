@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from src.core.dto.community_role import CommunityRoleCreateDTO, CommunityRoleDTO
+from src.core.dto.community.role import CommunityRoleCreateDTO, CommunityRoleDTO
 from src.core.entity.user import User
 
 from src.core.exception.user import UserPermissionError

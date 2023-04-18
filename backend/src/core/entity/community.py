@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from src.core.enum.community import PrivacyEnum
+from src.core.dto.community.privacy import PrivacyDTO
 
 
 @dataclass
@@ -11,13 +11,13 @@ class Community:
     name: str
     description: str
     active: bool
-    privacy: PrivacyEnum
+    privacy: PrivacyDTO
 
 
 @dataclass
 class CommunityCreateDTO:
     name: str
-    privacy: PrivacyEnum
+    privacy_id: int
     description: str = ""
     active: bool = True
 
@@ -27,4 +27,4 @@ class CommunityUpdateDTO:
     name: Optional[str] = None
     description: Optional[str] = None
     active: Optional[bool] = None
-    privacy: Optional[PrivacyEnum] = None
+    privacy_id: Optional[int] = None

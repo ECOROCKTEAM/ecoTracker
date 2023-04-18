@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.dto.shared import UserCommunityCreateDTO, UserCommunityDTO
+from src.core.dto.m2m.user_community import UserCommunityCreateDTO, UserCommunityDTO
 from src.core.entity.user import User
 from src.core.exception.community import (
     CommunityDeactivatedError,
@@ -30,7 +30,7 @@ class CommunityPublicAddUserUsecase:
             raise UserIsNotPremiumError(username=user.username)
         if not community.active:
             raise CommunityDeactivatedError(community_id=community_id)
-        if not community.privacy.PUBLICK:
+        if not community.privacy.enum.PUBLICK:
             raise CommunityPrivacyError(community_id=community_id)
         link = await self.repo.community_user_add(obj=create_obj)
         return Result(item=link)

@@ -3,7 +3,7 @@ from src.core.entity.user import User
 
 from src.core.exception.user import UserIsNotPremiumError
 from src.core.interfaces.repository.core import IRepositoryCore
-from src.core.dto.community import CommunityListFilter
+from src.core.dto.community.filters import CommunityListFilter
 from src.core.entity.community import Community
 
 

@@ -4,9 +4,9 @@ import os
 import binascii
 from dataclasses import dataclass
 from typing import Tuple
-from src.core.dto.shared import UserCommunityDTO
+from src.core.dto.m2m.user_community import UserCommunityDTO
 from src.core.entity.user import User
-from src.core.enum.role import CommunityRoleEnum
+from src.core.enum.community.role import CommunityRoleEnum
 from src.core.exception.community import (
     CommunityDeactivatedError,
     CommunityInviteLinkNotFoundError,
@@ -17,8 +17,8 @@ from src.core.exception.user import (
     UserIsNotPremiumError,
 )
 from src.core.interfaces.repository.core import IRepositoryCore
-from src.core.dto.community import (
-    CommunityIncludeUserFilter,
+from src.core.dto.community.filters import CommunityIncludeUserFilter
+from src.core.dto.community.invite import (
     CommunityInviteCreateDTO,
     CommunityInviteDTO,
     CommunityInviteUpdateDTO,

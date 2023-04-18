@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.entity.subscription import Subscription
-from src.core.enum.role import ApplicationRoleEnum
+from src.core.enum.application.role import ApplicationRoleEnum
 
 
 @dataclass

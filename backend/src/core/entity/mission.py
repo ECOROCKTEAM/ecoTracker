@@ -1,9 +1,10 @@
 from dataclasses import dataclass, field
-from core.dto.occupancy import OccupancyCategoryDTO
+from src.core.dto.challenges.mission.mission import MissionCreateTranslateDTO
 
-from src.core.dto.occupancy import OccupancyCategoryDTO
-from src.core.enum.base import RelatedEnum
-from src.core.enum.occupancy import OccupancyStatusEnum
+from src.core.dto.challenges.type import OccupancyTypeDTO
+from src.core.dto.challenges.status import OccupancyStatusDTO
+from src.core.enum.challenges.related import RelatedEnum
+from src.core.mixin.validators.translations import TranslationMixin
 
 
 @dataclass
@@ -13,9 +14,19 @@ class MissionBase:
     description: str
     instruction: str
     score: int
-    category: OccupancyCategoryDTO
-    status: OccupancyStatusEnum
+    type: OccupancyTypeDTO
+    status: OccupancyStatusDTO
     related: RelatedEnum = field(init=False)
+
+
+@dataclass
+class MissionBaseCreateDTO(TranslationMixin):
+    score: int
+    occupancy_type_id: int
+    translations: list[MissionCreateTranslateDTO]
+
+    def __post_init__(self):
+        self._validate_translations(seq=self.translations)
 
 
 @dataclass

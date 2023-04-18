@@ -1,14 +1,16 @@
 from abc import ABC, abstractmethod
-from src.core.dto.community import (
+from src.core.dto.community.filters import (
     CommunityIncludeUserFilter,
+    CommunityListFilter,
+)
+from src.core.dto.community.invite import (
     CommunityInviteCreateDTO,
     CommunityInviteDTO,
     CommunityInviteUpdateDTO,
-    CommunityListFilter,
 )
-from src.core.dto.community_role import CommunityRoleCreateDTO, CommunityRoleDTO
-from src.core.dto.privacy import PrivacyCreateDTO, PrivacyDTO
-from src.core.dto.shared import UserCommunityDTO, UserCommunityCreateDTO, UserCommunityUpdateDTO
+from src.core.dto.community.role import CommunityRoleCreateDTO, CommunityRoleDTO
+from src.core.dto.community.privacy import PrivacyCreateDTO, PrivacyDTO
+from src.core.dto.m2m.user_community import UserCommunityDTO, UserCommunityCreateDTO, UserCommunityUpdateDTO
 
 from src.core.entity.user import User
 from src.core.entity.community import Community, CommunityCreateDTO, CommunityUpdateDTO

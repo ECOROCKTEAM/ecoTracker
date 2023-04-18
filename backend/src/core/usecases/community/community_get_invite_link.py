@@ -67,8 +67,8 @@ class CommunityGetInviteLinkUsecase:
             pass
 
         random_hex = binascii.hexlify(os.urandom(16)).decode()
-        current_time = datetime.now() + timedelta(weeks=1)
-        expire_time = int(current_time.timestamp())
+        next_time = datetime.now() + timedelta(weeks=1)
+        expire_time = int(next_time.timestamp())
 
         if link is None:
             create_obj = CommunityInviteCreateDTO(

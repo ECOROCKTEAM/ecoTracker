@@ -35,6 +35,18 @@ from src.core.dto.user import UserCreateDTO
 class IRepositoryCore(ABC):
 
     @abstractmethod
+    async def user_task_done(self, *, obj: UserTask) -> bool: 
+        """User task complite
+
+        Args:
+            obj (UserTask): UserTask complited object
+
+        Returns:
+            bool: boolean 
+        """
+        pass
+
+    @abstractmethod
     async def user_role_application_update(self, *, obj: UserApplicationRoleUpdateDTO) -> UserApplicationRoleDTO:
         """User application role update
 

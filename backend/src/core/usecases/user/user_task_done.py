@@ -6,7 +6,7 @@ from src.core.entity.user import UserTask
 
 @dataclass
 class Result:
-    item: UserTask
+    item: bool
 
 
 """
@@ -21,8 +21,8 @@ class UserTaskDoneUseCase:
 
     async def __call__(self, *, user_task: UserTask) -> Result:
 
-        #Ухожу. Доделать
+        
 
-        add = await self.repo.user_task_done(user_id=user_task.username, task_id=user_task.task_id)
+        add = await self.repo.user_task_done(obj=user_task)
 
         return Result(item=add)

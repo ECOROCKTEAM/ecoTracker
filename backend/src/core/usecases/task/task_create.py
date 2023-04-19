@@ -1,14 +1,15 @@
 from dataclasses import dataclass
 
-from src.core.dto.tasks import TaskCreateDTO, TaskDTO
+from src.core.dto.tasks import TaskCreateDTO
 from src.core.interfaces.base import IRepositoryCore
 from src.core.entity.user import User
+from src.core.entity.task import Task
 from src.core.exception.user import UserPermissionError
 
 
 @dataclass
 class Result:
-    item: TaskDTO
+    item: Task
 
 
 class TaskCreateUseCase:

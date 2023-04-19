@@ -1,31 +1,28 @@
-# from dataclasses import dataclass
-# from typing import Union
+from dataclasses import dataclass
 
-# from src.core.interfaces.base import BaseAbstractRepo
-# from src.core.entity.task import Task
-# from src.core.exception.base import RepoError
-
-
-# @dataclass
-# class Result:
-#     item: Task
+from src.core.dto.tasks import TaskCreateDTO
+from src.core.entity.task import Task
+from src.core.interfaces.base import IRepositoryCore
+from src.core.entity.user import User
+from src.core.exception.user import UserIsNotActivateError
 
 
-# @dataclass
-# class FailOperation:
-#     message: str
+@dataclass
+class Result:
+    item: Task
 
 
-# class UseCase:
-#     def __init__(self, repo: BaseAbstractRepo) -> None:
-#         self.repo = repo
+class TaskGetUseCase:
 
+    def __init__(self, repo: IRepositoryCore) -> None:
+        self.repo = repo
 
-#     def realization(self, name: str) -> Union[Result, FailOperation]:
-
-#         try:
-#             task = self.repo.task_get(name=name)
-#         except RepoError as e:
-#             return FailOperation(message=e)
+    async def __call__(self, *, user: User, obj: TaskCreateDTO) -> Result:
         
-#         return Result(item=task)
+        if not user.active:
+            raise UserIsNotActivateError(username=user.username)
+
+        task = await self.repo.task_get(obj=obj)
+
+        return Result(item=task)
+        

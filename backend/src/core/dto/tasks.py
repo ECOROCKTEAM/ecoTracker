@@ -14,7 +14,11 @@ class CreateTaskDTO:
 
 
 @dataclass
-class UpdateTaskDTO:
+class TaskUpdateDTO:
+    """"""
+
+@dataclass
+class TaskGetDTO:
     """"""
 
 
@@ -39,9 +43,9 @@ class TaskCreateDTO:
     languages: list[TaskTranslateCreateDTO]
 
     def __post_init__(self):
-        translated_contact_type = [item.language for item in self.translations]
+        used_language = [item.language for item in self.translations]
         available_languages = [lang for lang in LanguageEnum]
-        difference = set(translated_contact_type) - set(available_languages)
+        difference = set(used_language) - set(available_languages)
         if len(difference) != 0:
             raise TranslateError(languages=difference)
         
@@ -54,8 +58,8 @@ class TaskDTO:
     valid: bool
 
     def __post_init__(self):
-        translated_contact_types = [item.language for item in self.translations]
+        used_languages = [item.language for item in self.translations]
         available_languages = [lang for lang in LanguageEnum]
-        difference = set(translated_contact_types) - set(available_languages)
+        difference = set(used_languages) - set(available_languages)
         if len(difference) != 0:
             self.valid = False

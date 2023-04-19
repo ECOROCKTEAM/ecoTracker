@@ -23,6 +23,5 @@ class TaskCreateUseCase:
         
         task = await self.repo.task_create(obj=obj)
 
-
         return Result(item=task)
         

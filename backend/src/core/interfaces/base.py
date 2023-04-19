@@ -12,6 +12,7 @@ from src.core.dto.subscription import (
     SubscriptionTypeDTO
 )
 
+from src.core.entity.task import Task
 from src.core.entity.user import UserSubscription, User, UserTask
 from src.core.entity.subscription import Constraint
 from src.core.entity.contact import UserContact
@@ -25,7 +26,7 @@ from src.core.dto.application_role import (
 from src.core.dto.plugs import ObjectPlug
 from src.core.dto.occupancy import OccupancyTypeCreateDTO, OccupancyTypeDTO, OccupancyStatusCreateDTO, OccupancyStatusDTO
 from src.core.dto.score import ScoreUserDTO
-from src.core.dto.tasks import TaskCreateDTO, TaskDTO
+from src.core.dto.tasks import TaskCreateDTO, TaskDTO, TaskGetDTO, TaskUpdateDTO
 from src.core.dto.misc import SubscriptionTypeConstraintCreateDTO
 from src.core.dto.contact import ContactDTO, ContactDeleteDTO, ContactTypeCreateDTO, ContactTypeDTO, ContactCreateDTO, ContactUserUpdateDTO
 from src.core.dto.user import UserCreateDTO
@@ -67,6 +68,19 @@ class IRepositoryCore(ABC):
 
         Returns:
             int: deleted task id from user task list
+        """
+        pass
+
+    @abstractmethod
+    async def user_task_get(self, *, user_id: str, task_id: id) -> UserTask:
+        """get task which belong to user
+
+        Args:
+            user_id (str): user identify
+            task_id (int): task identify
+
+        Returns:
+            Task: UserTask entity
         """
         pass
 
@@ -127,6 +141,42 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
+    async def task_get(self, *, obj: TaskGetDTO) -> Task: 
+        """Get task
+
+        Args:
+            obj (TaskGetDTO): DTO for task get method
+
+        Returns:
+            Task: Task entity
+        """
+        pass
+
+    @abstractmethod
+    async def task_update(self, *, obj: TaskUpdateDTO) -> Task:
+        """Task update
+
+        Args:
+            obj (TaskUpdateDTO): DTO for update task method
+
+        Returns:
+            Task: Updated task entity
+        """
+        pass
+
+    @abstractmethod
+    async def task_delete(self, *, obj: Task) -> int:
+        """delete task 
+
+        Args:
+            obj (Task): Task entity
+
+        Returns:
+            int: id of deleted task
+        """
+        pass
+
+    @abstractmethod
     async def task_create(self, *, obj: TaskCreateDTO) -> TaskDTO:
         """create task
 
@@ -177,33 +227,6 @@ class IRepositoryCore(ABC):
 
         Raises:
 
-        """
-        pass
-
-    @abstractmethod
-    async def subscription_type_translate_create(self, *, obj: SubscriptionTypeCreateDTO) -> SubscriptionTypeDTO:
-        """We'll create subscription_type if for it will be all translate.
-
-        Args:
-            obj (SubscriptionTypeCreateDTO): DTO for creating a new subscription type
-
-        Returns:
-            SubscriptionTypeDTO: subscription type
-        """
-        pass
-
-    @abstractmethod
-    async def user_subscription_update(self, *,
-                                    user_id: str,
-                                    subscription_id: int) -> UserSubscription:
-        """ Adds a subscription to user.
-
-        Args:
-            user_id (str): User identify
-            subscription_id (int): Subscription identify
-
-        Returns:
-            UserSubscription: Relation between user and subscription.
         """
         pass
 
@@ -346,5 +369,32 @@ class IRepositoryCore(ABC):
 
         Returns:
             SubscriptionDTO: New subscription
+        """
+        pass
+
+    @abstractmethod
+    async def subscription_type_translate_create(self, *, obj: SubscriptionTypeCreateDTO) -> SubscriptionTypeDTO:
+        """We'll create subscription_type if for it will be all translate.
+
+        Args:
+            obj (SubscriptionTypeCreateDTO): DTO for creating a new subscription type
+
+        Returns:
+            SubscriptionTypeDTO: subscription type
+        """
+        pass
+
+    @abstractmethod
+    async def user_subscription_update(self, *,
+                                    user_id: str,
+                                    subscription_id: int) -> UserSubscription:
+        """ Adds a subscription to user.
+
+        Args:
+            user_id (str): User identify
+            subscription_id (int): Subscription identify
+
+        Returns:
+            UserSubscription: Relation between user and subscription.
         """
         pass

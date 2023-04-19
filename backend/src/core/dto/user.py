@@ -41,6 +41,11 @@ class UserDTO:
 
 
 @dataclass
+class UserUpdateDTO(UserDTO):
+    """"""
+
+
+@dataclass
 class UserContactDTO(UserDTO):
     contact: str
     type: ContactEnum

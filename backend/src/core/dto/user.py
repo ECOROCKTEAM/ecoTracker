@@ -1,12 +1,10 @@
 from typing import List
-
 from dataclasses import dataclass
-<<<<<<< HEAD
+
+from src.core.enum.role import ApplicationRoleEnum
+from src.core.enum.subscription import SubscriptionTypeEnum
 from src.core.enum.contact import ContactEnum
 from src.core.dto.base import  TypeDTO
-=======
-from src.core.dto.base import TypeDTO
->>>>>>> fabfd75ad109dc623b1541a22c5297633fe648d0
 
 
 @dataclass
@@ -37,8 +35,29 @@ class UserContactListDTO:
 
 
 @dataclass
-class CreateUserDTO:
+class UserDTO:
+    username: str
+    password: str
+
+
+@dataclass
+class UserUpdateDTO(UserDTO):
+    """"""
+
+
+@dataclass
+class UserContactDTO(UserDTO):
+    contact: str
+    type: ContactEnum
+
+
+@dataclass
+class UserCreateDTO:
     username: str
     password: str
     contact: str
-    contact_type: ContactEnum
+    type: ContactEnum
+    subscription: SubscriptionTypeEnum
+    application_role: ApplicationRoleEnum
+
+

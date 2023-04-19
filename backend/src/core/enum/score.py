@@ -1,6 +1,6 @@
 from enum import Enum
 
 
-class ScoreOPerationEnum(str, Enum):
+class ScoreOperationEnum(str, Enum):
     PLUS = "PLUS"
     MINUS = "MINUS"

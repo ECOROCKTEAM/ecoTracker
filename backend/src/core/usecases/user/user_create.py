@@ -1,41 +1,23 @@
 from dataclasses import dataclass
-from typing import Union
 
-from src.core.enum.contact import ContactEnum
-from src.core.interfaces.base import BaseAbstractRepo
+from src.core.interfaces.base import IRepositoryCore
 from src.core.entity.user import User
-from src.core.dto.user import CreateUserDTO
-from src.core.exeption.base import RepoError
+from src.core.dto.user import UserContactCreateDTO
+from src.core.enum.subscription import SubscriptionTypeEnum
 
 
 @dataclass
-class SuccessResult:
+class Result:
     item: User
 
 
-@dataclass
-class FailOperation:
-    message: str
-
-
-class UseCase:
-
-    def __init__(self, repo: BaseAbstractRepo) -> None:
+class UserCreateUseCase:
+    
+    def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    def realization(self,
-                    username: str,
-                    password: str,
-                    contact: str,
-                    contact_type: ContactEnum,
-        ) -> Union[SuccessResult, FailOperation]:
-
-        user = CreateUserDTO(username=username, password=password)
-                
-        try:
-            new_user = self.repo.user_create(new_user=user)
-        except RepoError as e:
-            return FailOperation(message=e)
+    async def __call__(self, *, new_user: UserContactCreateDTO) -> Result:
         
-        return SuccessResult(item=new_user)
-    
+        user = await self.repo.user_create(user=new_user, subscription=SubscriptionTypeEnum.USUAL)
+
+        return Result(item=user)

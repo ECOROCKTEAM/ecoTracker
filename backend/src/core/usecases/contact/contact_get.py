@@ -1,28 +1,27 @@
 from dataclasses import dataclass
 
-from src.core.dto.tasks import TaskCreateDTO
-from src.core.entity.task import Task
 from src.core.interfaces.base import IRepositoryCore
+from src.core.entity.contact import UserContact
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError
 
 
+
 @dataclass
 class Result:
-    item: Task
+    item: UserContact
 
 
-class TaskUpdateUseCase:
+class ContactGetUseCase:
 
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user: User, obj: TaskCreateDTO) -> Result:
+    async def __call__(self, *, user: User, obj_id: str) -> Result:
         
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
-
-        task = await self.repo.task_update(obj=obj)
-
-        return Result(item=task)
         
+        contact = await self.repo.contact_get(user_id=user.username, obj_id=obj_id)
+
+        return Result(item=contact)

@@ -1,6 +1,7 @@
 from datetime import datetime
 from dataclasses import dataclass
 
+from src.core.enum.base import VariableTypeEnum
 from src.core.dto.subscription import SubscriptionPeriodDTO, SubscriptionTypeDTO
 
 
@@ -13,3 +14,11 @@ class Subscription:
     period: SubscriptionPeriodDTO
     canceled: bool
     untildate: datetime
+
+
+@dataclass
+class Constraint:
+    id: str
+    name: str
+    value: str
+    value_type: VariableTypeEnum

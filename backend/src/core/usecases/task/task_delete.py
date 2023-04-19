@@ -1,31 +1,27 @@
 from dataclasses import dataclass
-from typing import Union
 
-from src.core.interfaces.base import BaseAbstractRepo
-from src.core.exeption.base import RepoError
-
-
-@dataclass
-class SuccessResult:
-    result: bool
+from src.core.dto.tasks import TaskCreateDTO
+from src.core.interfaces.base import IRepositoryCore
+from src.core.entity.user import User
+from src.core.exception.user import UserPermissionError
 
 
 @dataclass
-class FailOperation:
-    message: str
+class Result:
+    item_id: int
 
 
-class UseCase:
+class TaskDeleteUseCase:
 
-    def __init__(self, repo: BaseAbstractRepo) -> None:
+    def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
+    async def __call__(self, *, user: User = None, obj: TaskCreateDTO) -> Result:
+        
+        if not user.application_role.ADMIN:
+            raise UserPermissionError(username=user.username)
 
-    def realization(self, name: str) -> Union[SuccessResult, FailOperation]:
+        task = await self.repo.task_delete(obj=obj)
+
+        return Result(item=task)
         
-        try:
-            _ = self.repo.task_delete(name=name)
-        except RepoError as e:
-            return FailOperation(message=e)
-        
-        return SuccessResult(result=True)

@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from src.core.dto.tasks import TaskCreateDTO
-from src.core.entity.task import Task
 from src.core.interfaces.base import IRepositoryCore
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError
@@ -9,20 +7,19 @@ from src.core.exception.user import UserIsNotActivateError
 
 @dataclass
 class Result:
-    item: Task
+    task_id: int
 
 
-class TaskUpdateUseCase:
+class UserTaskDeleteUseCase:
 
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user: User, obj: TaskCreateDTO) -> Result:
-        
+    async def __call__(self, *, user: User, task_id: int) -> Result:
+
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
 
-        task = await self.repo.task_update(obj=obj)
+        add = await self.repo.user_task_delete(user_id=user.username, task_id=task_id)
 
-        return Result(item=task)
-        
+        return Result(task_id=add)

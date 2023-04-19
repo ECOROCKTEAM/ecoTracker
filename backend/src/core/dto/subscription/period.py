@@ -19,6 +19,7 @@ class SubscriptionPeriodCreateTranslate:
     period_id: int
     language: LanguageEnum
 
+
 @dataclass
 class SubscriptionPeriodDTO(TranslationMixin):
     id: int
@@ -28,6 +29,7 @@ class SubscriptionPeriodDTO(TranslationMixin):
 
     def __post_init__(self):
         self._validate_translations(seq=self.translations)
+
 
 @dataclass
 class SubscriptionPeriodCreateDTO(TranslationMixin):

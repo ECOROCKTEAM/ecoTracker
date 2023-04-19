@@ -12,14 +12,10 @@ class Result:
 
 
 class ContactTypeCreateUseCase:
-
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    async def __call__(self, *,
-                       user: User,
-                       obj: ContactTypeCreateDTO) -> Result:
-
+    async def __call__(self, *, user: User, obj: ContactTypeCreateDTO) -> Result:
         if not user.application_role.ADMIN:
             raise UserPermissionError(user.username)
 

@@ -17,7 +17,12 @@ from src.core.entity.user import UserSubscription, User, UserTask
 from src.core.entity.subscription import Constraint
 from src.core.entity.contact import UserContact
 
-from src.core.dto.user.role import UserRoleCreateDTO, UserRoleDTO, UserUserRoleDTO, UserUserRoleUpdateDTO
+from src.core.dto.user.role import (
+    UserRoleCreateDTO,
+    UserRoleDTO,
+    UserUserRoleDTO,
+    UserUserRoleUpdateDTO,
+)
 from src.core.dto.plugs import ObjectPlug
 from src.core.dto.occupancy import (
     OccupancyTypeCreateDTO,
@@ -53,7 +58,9 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def user_role_application_update(self, *, obj: UserUserRoleUpdateDTO) -> UserUserRoleDTO:
+    async def user_role_application_update(
+        self, *, obj: UserUserRoleUpdateDTO
+    ) -> UserUserRoleDTO:
         """User application role update
 
         Args:
@@ -65,7 +72,9 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def user_role_application_create(self, *, obj: UserRoleCreateDTO) -> UserRoleDTO:
+    async def user_role_application_create(
+        self, *, obj: UserRoleCreateDTO
+    ) -> UserRoleDTO:
         """Creating application role
 
         Args:
@@ -117,7 +126,11 @@ class IRepositoryCore(ABC):
 
     @abstractmethod
     async def task_list(
-        self, *, sorting_obj: ObjectPlug, paggination_obj: ObjectPlug, filter_obj: ObjectPlug
+        self,
+        *,
+        sorting_obj: ObjectPlug,
+        paggination_obj: ObjectPlug,
+        filter_obj: ObjectPlug
     ) -> List[TaskDTO]:
         """List of tasks
 
@@ -132,7 +145,9 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def occupancy_status_create(self, *, obj: OccupancyStatusCreateDTO) -> OccupancyStatusDTO:
+    async def occupancy_status_create(
+        self, *, obj: OccupancyStatusCreateDTO
+    ) -> OccupancyStatusDTO:
         """Create occupancy status
 
         Args:
@@ -144,7 +159,9 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def occupancy_type_create(self, *, obj: OccupancyTypeCreateDTO) -> OccupancyTypeDTO:
+    async def occupancy_type_create(
+        self, *, obj: OccupancyTypeCreateDTO
+    ) -> OccupancyTypeDTO:
         """Create occupancy type
 
         Args:
@@ -243,7 +260,9 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def contact_create(self, *, user_id: str, obj: ContactCreateDTO) -> UserContact:
+    async def contact_create(
+        self, *, user_id: str, obj: ContactCreateDTO
+    ) -> UserContact:
         """contact creating by user for himself
 
         Args:
@@ -279,10 +298,14 @@ class IRepositoryCore(ABC):
             int: id of deleted contact
         """
 
-
     @abstractmethod
     async def contact_list(
-        self, *, user_id: str, filter_obj: ObjectPlug, sorting_obj: ObjectPlug, order_obj: ObjectPlug
+        self,
+        *,
+        user_id: str,
+        filter_obj: ObjectPlug,
+        sorting_obj: ObjectPlug,
+        order_obj: ObjectPlug
     ) -> list[ContactDTO]:
         """contact list
 
@@ -311,7 +334,9 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def subscription_type_constraint_create(self, *, obj: SubscriptionTypeConstraintCreateDTO) -> Constraint:
+    async def subscription_type_constraint_create(
+        self, *, obj: SubscriptionTypeConstraintCreateDTO
+    ) -> Constraint:
         """Create constraint for Subscription
 
         Args:
@@ -347,7 +372,9 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def subscription_period_create(self, *, obj: SubscriptionPeriodCreateDTO) -> SubscriptionPeriodDTO:
+    async def subscription_period_create(
+        self, *, obj: SubscriptionPeriodCreateDTO
+    ) -> SubscriptionPeriodDTO:
         """Creating new period for subscriptios
 
         Args:
@@ -359,7 +386,9 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def subscription_create(self, *, obj: SubscriptionCreateDTO) -> SubscriptionDTO:
+    async def subscription_create(
+        self, *, obj: SubscriptionCreateDTO
+    ) -> SubscriptionDTO:
         """create new subscription
 
         Args:
@@ -371,7 +400,9 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def subscription_type_translate_create(self, *, obj: SubscriptionTypeCreateDTO) -> SubscriptionTypeDTO:
+    async def subscription_type_translate_create(
+        self, *, obj: SubscriptionTypeCreateDTO
+    ) -> SubscriptionTypeDTO:
         """We'll create subscription_type if for it will be all translate.
 
         Args:
@@ -383,7 +414,9 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def user_subscription_update(self, *, user_id: str, subscription_id: int) -> UserSubscription:
+    async def user_subscription_update(
+        self, *, user_id: str, subscription_id: int
+    ) -> UserSubscription:
         """Adds a subscription to user.
 
         Args:

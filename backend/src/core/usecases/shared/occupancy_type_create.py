@@ -12,12 +12,10 @@ class Result:
 
 
 class OccupancyTypeCreateUseCase:
-
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
     async def __call__(self, *, user: User, obj: OccupancyTypeCreateDTO) -> Result:
-
         if not user.application_role.ADMIN:
             raise UserPermissionError(username=user.username)
 

@@ -13,16 +13,13 @@ class Result:
 
 
 class TaskUpdateUseCase:
-
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
     async def __call__(self, *, user: User, obj: TaskCreateDTO) -> Result:
-        
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
 
         task = await self.repo.task_update(obj=obj)
 
         return Result(item=task)
-        

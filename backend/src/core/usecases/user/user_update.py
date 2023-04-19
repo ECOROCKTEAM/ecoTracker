@@ -11,12 +11,10 @@ class Result:
 
 
 class UserUpdateUseCase:
-    
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
     async def __call__(self, *, user: User, obj: UserUpdateDTO) -> Result:
-        
         """
         Тут по идее не на что не проверяем, даже на active. Вдруг мы хотим из active = Fasle сделать True.
         Тогда вопрос следующем: Может ли юзер сам себя активировать? Это во-первых. Во-вторых: а если захотим забанить чела?

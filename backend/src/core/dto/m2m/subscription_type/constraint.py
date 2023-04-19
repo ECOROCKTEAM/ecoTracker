@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class SubscriptionTypeConstrainDTO:
     type_id: int

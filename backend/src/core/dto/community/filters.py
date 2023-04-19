@@ -3,6 +3,7 @@ from typing import Optional
 
 from src.core.enum.community.role import CommunityRoleEnum
 
+
 @dataclass
 class CommunityListFilter:
     name: Optional[str] = None

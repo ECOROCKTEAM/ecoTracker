@@ -12,25 +12,24 @@ class Result:
 
 
 class TaskListUseCase:
-
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
     async def __call__(
-            self, *,
-            sorting_obj: str = None, 
-            paggination_obj: str = None, 
-            filter_obj: str = None,
-            user: User,
-            ) -> Result:
-        
+        self,
+        *,
+        sorting_obj: str = None,
+        paggination_obj: str = None,
+        filter_obj: str = None,
+        user: User,
+    ) -> Result:
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
 
         task_list = await self.repo.task_list(
             sorting_obj=sorting_obj,
             paggination_obj=paggination_obj,
-            filter_obj=filter_obj
+            filter_obj=filter_obj,
         )
-        
+
         return Result(items=task_list)

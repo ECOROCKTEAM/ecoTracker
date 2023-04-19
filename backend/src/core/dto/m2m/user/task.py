@@ -9,11 +9,13 @@ class UserTaskDTO:
     task_id: int
     occupancy: OccupancyStatusDTO
 
+
 @dataclass
 class UserTaskCreateDTO:
     username: str
     task_id: int
     occupancy: OccupancyStatusDTO
+
 
 @dataclass
 class UserTaskUpdateDTO:

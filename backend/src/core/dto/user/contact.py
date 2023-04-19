@@ -6,6 +6,7 @@ from src.core.mixin.validators.translations import TranslationMixin
 
 # ContactType
 
+
 @dataclass
 class ContactTypeTranslateDTO:
     id: int
@@ -38,7 +39,9 @@ class ContactTypeDTO(TranslationMixin):
     def __post_init__(self):
         self._validate_translations(seq=self.translations)
 
+
 # Contact
+
 
 @dataclass
 class ContactDTO:
@@ -57,4 +60,3 @@ class ContactCreateDTO:
 class ContactUpdateDTO:
     id: int
     value: str
-

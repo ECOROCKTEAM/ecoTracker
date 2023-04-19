@@ -10,12 +10,14 @@ class UserCommunityDTO:
     community_id: str
     role: CommunityRoleDTO
 
+
 @dataclass
 class UserCommunityUpdateDTO:
     id: int
     user_id: str
     community_id: str
     role_id: int
+
 
 @dataclass
 class UserCommunityCreateDTO:

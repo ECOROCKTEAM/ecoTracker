@@ -4,6 +4,7 @@ from src.core.enum.challenges.type import OccupancyTypeEnum
 from src.core.enum.application.language import LanguageEnum
 from src.core.mixin.validators.translations import TranslationMixin
 
+
 @dataclass
 class OccupancyTypeTranslateDTO:
     id: int

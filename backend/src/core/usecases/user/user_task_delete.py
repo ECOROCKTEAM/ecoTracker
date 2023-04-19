@@ -11,12 +11,10 @@ class Result:
 
 
 class UserTaskDeleteUseCase:
-
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
     async def __call__(self, *, user: User, task_id: int) -> Result:
-
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
 

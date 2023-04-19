@@ -41,8 +41,8 @@ class CommunityUpdateUsecase:
             ),
         )
         community, link_list = await asyncio.gather(*tasks)
-        head_user_ids = [l.user_id for l in link_list]
-        if not user.username in head_user_ids:
+        head_user_ids = [link.user_id for link in link_list]
+        if user.username not in head_user_ids:
             raise UserIsNotCommunityAdminUserError(
                 username=user.username, community_id=community_id
             )

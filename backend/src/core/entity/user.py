@@ -32,7 +32,7 @@ class UserCreateDTO:
 
 @dataclass
 class UserUpdateDTO:
-    user_id: str # username reference
+    user_id: str  # username reference
     username: Optional[str] = None
     password: Optional[str] = None
     active: Optional[bool] = None

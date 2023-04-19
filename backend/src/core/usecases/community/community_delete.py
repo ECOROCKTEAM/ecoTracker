@@ -26,8 +26,8 @@ class CommunityDeleteUsecase:
             id=community_id,
             filter=CommunityIncludeUserFilter(role_list=[CommunityRoleEnum.SUPERUSER]),
         )
-        super_user_ids = [l.user_id for l in link_list]
-        if not user.username in super_user_ids:
+        super_user_ids = [link.user_id for link in link_list]
+        if user.username not in super_user_ids:
             raise UserIsNotCommunitySuperUserError(
                 username=user.username, community_id=community_id
             )

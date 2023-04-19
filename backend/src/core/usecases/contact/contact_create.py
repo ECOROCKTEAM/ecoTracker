@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.dto.contact import ContactCreateDTO
+from src.core.dto.user.contact import ContactCreateDTO
 from src.core.interfaces.base import IRepositoryCore
 from src.core.entity.contact import UserContact
 from src.core.entity.user import User

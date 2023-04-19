@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from src.core.entity.user import User
 from src.core.exception.user import UserPermissionError
-from src.core.dto.contact import ContactTypeCreateDTO, ContactTypeDTO
+from src.core.dto.user.contact import ContactTypeCreateDTO, ContactTypeDTO
 from src.core.interfaces.base import IRepositoryCore
 
 

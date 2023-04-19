@@ -10,9 +10,9 @@ from src.core.dto.community.invite import (
 )
 from src.core.dto.community.role import CommunityRoleCreateDTO, CommunityRoleDTO
 from src.core.dto.community.privacy import PrivacyCreateDTO, PrivacyDTO
-from src.core.dto.m2m.user_community import UserCommunityDTO, UserCommunityCreateDTO, UserCommunityUpdateDTO
+from src.core.dto.m2m.user.community import UserCommunityDTO, UserCommunityCreateDTO, UserCommunityUpdateDTO
 
-from src.core.entity.user import User
+from src.core.entity.user import User, UserUpdateDTO, UserCreateDTO
 from src.core.entity.community import Community, CommunityCreateDTO, CommunityUpdateDTO
 
 
@@ -30,6 +30,43 @@ class IRepositoryCore(ABC):
         Raises:
             RepoError: Ошибка операции
             UserNotFoundError: Пользователь не найден
+        """
+
+    @abstractmethod
+    async def user_update(self, *, obj: UserUpdateDTO) -> User:
+        """Обновить пользователя
+
+        Args:
+            obj (UserUpdateDTO): DTO обновления пользователя
+
+        Returns:
+            User: Сущность пользователя
+
+        Raises:
+            RepoError: Ошибка операции
+            UserNotFoundError: Пользователь не найден
+        """
+
+    @abstractmethod
+    async def user_create(self, *, obj: UserCreateDTO) -> User:
+        """Создать пользователя
+
+        Args:
+            obj (UserCreateDTO): DTO создания пользователя
+
+        Returns:
+            User: Сущность пользователя
+        """
+
+    @abstractmethod
+    async def user_deactivate(self, *, id: int) -> str:
+        """Удалить пользователя (Soft delete)
+
+        Args:
+            id (int): Id пользователя
+
+        Returns:
+            str: Id пользователя
         """
 
     @abstractmethod
@@ -95,7 +132,7 @@ class IRepositoryCore(ABC):
 
     @abstractmethod
     async def community_deactivate(self, *, id: str) -> str:
-        """Удалить сообщество
+        """Удалить сообщество (Soft delete)
 
         Args:
             id (str): Id сообщества
@@ -134,9 +171,7 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_role_create(
-        self, *, obj: CommunityRoleCreateDTO
-    ) -> CommunityRoleDTO:
+    async def community_role_create(self, *, obj: CommunityRoleCreateDTO) -> CommunityRoleDTO:
         """Создать роль для сообщества
 
         Args:
@@ -161,9 +196,7 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_user_add(
-        self, *, obj: UserCommunityCreateDTO
-    ) -> UserCommunityDTO:
+    async def community_user_add(self, *, obj: UserCommunityCreateDTO) -> UserCommunityDTO:
         """Добавить пользователя в сообщество
 
         Args:
@@ -175,7 +208,7 @@ class IRepositoryCore(ABC):
         Raises:
             RepoError: Ошибка операции
         """
-    
+
     @abstractmethod
     async def community_user_get(self, *, id: int) -> UserCommunityDTO:
         """Получить связь сообщество-пользователь
@@ -185,16 +218,14 @@ class IRepositoryCore(ABC):
 
         Returns:
             UserCommunityDTO: Объект связи пользователя и сообщества
-        
+
         Raises:
             RepoError: Ошибка операции
-            CommunityUserNotFoundError: Связь не найдена
+            UserNotInCommunity: Связь не найдена
         """
-    
+
     @abstractmethod
-    async def community_user_list(
-        self, *, id: str, filter: CommunityIncludeUserFilter
-    ) -> list[UserCommunityDTO]:
+    async def community_user_list(self, *, id: str, filter: CommunityIncludeUserFilter) -> list[UserCommunityDTO]:
         """Получить список ID пользователей входящих в сообщество
 
         Args:
@@ -209,9 +240,7 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_user_role_update(
-        self, *, obj: UserCommunityUpdateDTO
-    ) -> UserCommunityDTO:
+    async def community_user_role_update(self, *, obj: UserCommunityUpdateDTO) -> UserCommunityDTO:
         """Обновить роль пользователя в сообществе
 
         Args:
@@ -222,13 +251,11 @@ class IRepositoryCore(ABC):
 
         Raises:
             RepoError: Ошибка операции
-            CommunityUserNotFoundError: Связь не найдена
+            UserNotInCommunity: Связь не найдена
         """
-    
+
     @abstractmethod
-    async def community_invite_link_create(
-        self, *, obj: CommunityInviteCreateDTO
-    ) -> CommunityInviteDTO:
+    async def community_invite_link_create(self, *, obj: CommunityInviteCreateDTO) -> CommunityInviteDTO:
         """Создать инвайт ссылку сообщества
 
         Args:
@@ -242,9 +269,7 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_invite_link_get(
-        self, *, community_id: str
-    ) -> CommunityInviteDTO:
+    async def community_invite_link_get(self, *, community_id: str) -> CommunityInviteDTO:
         """Получить инвайт ссылку
 
         Args:
@@ -259,9 +284,7 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_invite_link_update(
-        self, *, obj: CommunityInviteUpdateDTO
-    ) -> CommunityInviteDTO:
+    async def community_invite_link_update(self, *, obj: CommunityInviteUpdateDTO) -> CommunityInviteDTO:
         """Обновить инвайт ссылку на сообщество
 
         Args:

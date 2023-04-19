@@ -16,7 +16,7 @@ class UserCreateUseCase:
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    async def __call__(self, *, new_user: UserContactCreateDTO) -> Result:
+    async def __call__(self, *, new_user: UserCreateDTO) -> Result:
         
         user = await self.repo.user_create(user=new_user, subscription=SubscriptionTypeEnum.USUAL)
 

@@ -15,8 +15,4 @@ class RepoError(BaseError):
 
 
 class PermissionError(Exception):
-<<<<<<< HEAD
     """"""
-=======
-    """"""
->>>>>>> origin/develop

@@ -4,7 +4,7 @@ import os
 import binascii
 from dataclasses import dataclass
 from typing import Tuple
-from src.core.dto.m2m.user_community import UserCommunityDTO
+from src.core.dto.m2m.user.community import UserCommunityDTO
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
 from src.core.exception.community import (

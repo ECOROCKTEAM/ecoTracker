@@ -1,7 +1,7 @@
 import asyncio
 from typing import Tuple
 from dataclasses import dataclass
-from src.core.dto.m2m.user_community import UserCommunityDTO
+from src.core.dto.m2m.user.community import UserCommunityDTO
 
 from src.core.entity.community import Community, CommunityUpdateDTO
 from src.core.entity.user import User

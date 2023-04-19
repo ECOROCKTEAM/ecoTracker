@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from src.core.dto.contact import ContactDTO
+from src.core.dto.user.contact import ContactDTO
 from src.core.interfaces.base import IRepositoryCore
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError

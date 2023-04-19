@@ -1,23 +1,16 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
-from src.core.enum.base import RelatedEnum
+from src.core.enum.score import ScoreOperationEnum
 
 
-@dataclass
-class ScoreBase: 
+@dataclass 
+class ScoreUserDTO:
+    username: str
     value: int
-    related: RelatedEnum = field(init=False)
-
-
-@dataclass
-class ScoreUser(ScoreBase):
-
-    def __post_init__(self):
-        self.related = RelatedEnum.USER
-
+    operation: ScoreOperationEnum
 
 @dataclass
-class ScoreCommunity(ScoreBase):
-
-    def __post_init__(self):
-        self.related = RelatedEnum.COMMUNITY
+class ScoreCommunityDTO:
+    username: str
+    value: int
+    operation: ScoreOperationEnum

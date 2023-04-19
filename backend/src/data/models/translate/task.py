@@ -2,7 +2,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.application.database.holder import Base
-from src.core.enum.language import LanguageEnum
+from src.core.enum.application.language import LanguageEnum
 
 
 class TaskTranslateModel(Base):

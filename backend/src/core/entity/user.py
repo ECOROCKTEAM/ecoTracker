@@ -1,9 +1,8 @@
 from dataclasses import dataclass
-from datetime import datetime
+from typing import Optional
 
-from src.core.enum.role import ApplicationRoleEnum
 from src.core.entity.subscription import Subscription
-from src.core.enum.application.role import ApplicationRoleEnum
+from src.core.dto.user.role import UserRoleDTO
 
 
 @dataclass
@@ -14,35 +13,28 @@ class User:
     password: str
     active: bool
     subscription: Subscription
-    application_role: ApplicationRoleEnum
+    role: UserRoleDTO
 
     @property
     def is_premium(self) -> bool:
         # TODO implement!
-<<<<<<< HEAD
         raise NotImplementedError
-=======
-        raise NotImplementedError
-    
-
-@dataclass
-class UserSubscription:
-
-    username: str
-    subscription_id: int
-    cancelled: bool
-    until_date: datetime
 
 
 @dataclass
-class UserTask:
+class UserCreateDTO:
     username: str
-    task_id: int
-    occupancy_status_id: int
+    password: str
+    active: bool
+    subscription: Subscription
+    role: UserRoleDTO
 
 
 @dataclass
-class UserRoleApplication:
-    username: str
-    role: ApplicationRoleEnum
->>>>>>> origin/develop
+class UserUpdateDTO:
+    user_id: str # username reference
+    username: Optional[str] = None
+    password: Optional[str] = None
+    active: Optional[bool] = None
+    subscription: Optional[Subscription] = None
+    role: Optional[UserRoleDTO] = None

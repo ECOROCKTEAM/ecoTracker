@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from src.core.enum.community import CommunityRoleEnum
+from src.core.enum.community.role import CommunityRoleEnum
 
 @dataclass
 class CommunityListFilter:

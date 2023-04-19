@@ -1,6 +1,6 @@
 from enum import Enum
 
+
 class ContactEnum(str, Enum):
-    TELEPHONE = "TELEPHONE"
+    PHONE = "PHONE"
     MAIL = "MAIL"
-    

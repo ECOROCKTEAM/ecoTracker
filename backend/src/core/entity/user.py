@@ -3,6 +3,7 @@ from datetime import datetime
 
 from src.core.enum.role import ApplicationRoleEnum
 from src.core.entity.subscription import Subscription
+from src.core.enum.application.role import ApplicationRoleEnum
 
 
 @dataclass
@@ -18,6 +19,9 @@ class User:
     @property
     def is_premium(self) -> bool:
         # TODO implement!
+<<<<<<< HEAD
+        raise NotImplementedError
+=======
         raise NotImplementedError
     
 
@@ -41,3 +45,4 @@ class UserTask:
 class UserRoleApplication:
     username: str
     role: ApplicationRoleEnum
+>>>>>>> origin/develop

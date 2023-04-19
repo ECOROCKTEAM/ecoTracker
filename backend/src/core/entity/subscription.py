@@ -1,6 +1,10 @@
-from datetime import datetime
 from dataclasses import dataclass
 
+<<<<<<< HEAD
+@dataclass
+class Subscription:
+    """"""
+=======
 from src.core.enum.base import VariableTypeEnum
 from src.core.dto.subscription import SubscriptionPeriodDTO, SubscriptionTypeDTO
 
@@ -22,3 +26,4 @@ class Constraint:
     name: str
     value: str
     value_type: VariableTypeEnum
+>>>>>>> origin/develop

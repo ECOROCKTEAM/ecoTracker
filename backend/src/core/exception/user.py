@@ -23,7 +23,10 @@ class UserIsNotPremiumError(UserPermissionError):
 
 class UserNotFoundError(UserError, RepoError):
     msg_template = "User with username={username} not found"
+<<<<<<< HEAD
+=======
 
 
 class UserIsNotActivateError(UserError):
     msg = "username={username} isn't activate"
+>>>>>>> origin/develop

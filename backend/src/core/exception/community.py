@@ -33,4 +33,8 @@ class CommunityUserNotFoundError(CommunityError, RepoError):
     msg_template = "CommunityUser with id={link_id} not found"
 
 class CommunityInviteLinkNotFoundError(CommunityError, RepoError):
+<<<<<<< HEAD
     msg_template = "Invite link for Community with id={community_id} not found"
+=======
+    msg_template = "Invite link for Community with id={community_id} not found"
+>>>>>>> origin/develop

@@ -21,6 +21,6 @@ class TaskCreateUseCase:
         if not user.application_role.ADMIN:
             raise UserPermissionError(username=user.username)
 
-        app_role = await self.repo.user_role_application_create(obj=obj)
+        app_role = await self.repo.application_create(obj=obj)
 
         return Result(item=app_role)

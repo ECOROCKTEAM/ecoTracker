@@ -1,110 +1,112 @@
 from abc import ABC, abstractmethod
+from backend.src.core.dto.subscription.period import SubscriptionPeriodCreateDTO, SubscriptionPeriodDTO
+from backend.src.core.dto.subscription.type import SubscriptionTypeCreateDTO, SubscriptionTypeDTO
 
+from src.core.dto.subscription.period_unit import SubscriptionPeriodUnitCreateDTO, SubscriptionPeriodUnitDTO
+from src.core.dto.m2m.subscription_type.constraint import SubscriptionTypeConstrainCreateDTO, SubscriptionTypeConstrainDTO
+from src.core.entity.subscription import Subscription, SubscriptionCreateDTO
 from src.core.dto.mock import MockObj
 
 class ISubscriptionRepository(ABC):
 
-
     @abstractmethod
-    async def subscription_create(self, *, obj: SubscriptionCreateDTO) -> SubscriptionDTO:
+    async def create(self, *, obj: SubscriptionCreateDTO) -> Subscription:
         """Create subscription
 
         Args:
             obj (SubscriptionCreateDTO): DTO for creating subscription
 
         Returns:
-            SubscriptionDTO: DTO of subscription object
+            Subscription: Subscription entity
         """
 
     @abstractmethod
-    async def subscription_delete(self, *, subscription_id: int) -> int:
+    async def delete(self, *, id: int) -> int:
         """Delete subscription
 
         Args:
-            subscription_id (int): subscruption identify
+            id (int): subscruption identify
 
         Returns:
             int: id of deleted subscription
         """
 
     @abstractmethod
-    async def subscription_get(self, *, subscription_id: int) -> SubscriptionDTO:
+    async def get(self, *, id: int) -> Subscription:
         """Get one subscription
 
-        Args:
-            subscription_id (int): subscruption identify
+        Args:SubscriptionTypeConstraintCreateDTO
+            id (int): subscruption identify
 
         Returns:
-            SubscriptionDTO: DTO of subscription object
+            Subscription: Subscription entity
         """
 
     @abstractmethod # не думаю, что у нас много подписок будет, чтобы их фильтровать, сортировать и тп. Хотя исключать бесплатную можно, наверное...
-    async def subscription_list(self, *, order_obj: MockObj = None) -> list[SubscriptionDTO]:
+    async def list(self, *, filter_obj: MockObj = None) -> list[Subscription]:
         """List of subscriptions
 
         Args:
-            order_obj (MockObj, optional): order object. Defaults to None.
+            filter_obj (MockObj, optional): filter object. Defaults to None.
 
         Returns:
-            list[SubscriptionDTO]: _description_
+            list[SubscriptionDTO]: list of Subscription entity
         """
 
 
     @abstractmethod
-    async def subscription_type_constraint_create(self, *, obj: SubscriptionTypeConstraintCreateDTO) -> Constraint:
+    async def subscription_type_constraint_create(self, *, obj: SubscriptionTypeConstrainCreateDTO) -> SubscriptionTypeConstrainDTO:
         """Create constraint for Subscription
 
         Args:
-            obj (SubscriptionTypeConstraintCreate): DTO for create  new constrains
+            obj (SubscriptionTypeConstrainCreateDTO): DTO for create new subscription type constraint object
 
         Returns:
-            Constraint: Constraint entity
+            SubscriptionTypeConstrainDTO: DTO of subscription type constraint object
         """
 
     @abstractmethod
-    async def subscription_type_constraint_delete(self, *, constraint_id: int) -> int:
+    async def subscription_type_constraint_delete(self, *, id: int) -> int:
         """Delete constraint for Subscription
 
         Args:
-            constraint_name (str): Name of delete constraint
+            id (int): id of delete constraint
 
         Returns:
             int: id of deleted constraint
         """
-        pass
 
     @abstractmethod
     async def subscription_period_unit_create(self, *, obj: SubscriptionPeriodUnitCreateDTO) -> SubscriptionPeriodUnitDTO:
-        """creating subscription period
+        """Subscription unit period create
 
         Args:
-            obj (SubscriptionPeriodCreateDTO): DTO for creating subscription period
+            obj (SubscriptionPeriodUnitCreateDTO): DTO for creating subscription unit period
 
         Returns:
-            SubscriptionPeriodDTO: New subscription period
+            SubscriptionPeriodUnitDTO: DTO of subscription unit period
         """
 
     @abstractmethod
     async def subscription_period_create(self, *, obj: SubscriptionPeriodCreateDTO) -> SubscriptionPeriodDTO:
-        """Creating new period for subscriptios
+        """Subscription period create
 
         Args:
-            obj (SubscriptionPeriodCreateDTO): DTO object for create period for subscriptions
+            obj (SubscriptionPeriodCreateDTO): DTO for create subscriptions period
 
         Returns:
-            SubscriptionPeriodDTO: New period
+            SubscriptionPeriodDTO: DTO of subscription period
         """
-        pass
+        
 
 
     @abstractmethod
-    async def subscription_type_translate_create(self, *, obj: SubscriptionTypeCreateDTO) -> SubscriptionTypeDTO:
-        """We'll create subscription_type if for it will be all translate.
+    async def subscription_type_create(self, *, obj: SubscriptionTypeCreateDTO) -> SubscriptionTypeDTO:
+        """ Subscription type create
 
         Args:
-            obj (SubscriptionTypeCreateDTO): DTO for creating a new subscription type
+            obj (SubscriptionTypeCreateDTO): DTO for creating new subscription type object 
 
         Returns:
-            SubscriptionTypeDTO: subscription type
+            SubscriptionTypeDTO: DTO of subscription type object
         """
-        pass

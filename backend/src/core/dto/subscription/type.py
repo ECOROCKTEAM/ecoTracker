@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from src.core.enum.subscription.subscription import SubscriptionTypeEnum
 from src.core.dto.subscription.constraint import SubscriptionConstraintDTO
 from src.core.enum.application.language import LanguageEnum
 from src.core.mixin.validators.translations import TranslationMixin
@@ -22,7 +23,7 @@ class SubscriptionTypeTranslateCreateDTO:
 
 @dataclass
 class SubscriptionTypeCreateDTO(TranslationMixin):
-    name: str
+    enum: SubscriptionTypeEnum
     translations: list[SubscriptionTypeTranslateDTO]
 
     def __post_init__(self):
@@ -32,6 +33,7 @@ class SubscriptionTypeCreateDTO(TranslationMixin):
 @dataclass
 class SubscriptionTypeDTO(TranslationMixin):
     id: int
+    enum: SubscriptionTypeEnum
     translations: list[SubscriptionTypeTranslateDTO]
     constrains: list[SubscriptionConstraintDTO]
 

@@ -1,14 +1,19 @@
 from abc import abstractmethod, ABC
 
+from src.core.entity.task import Task, TaskCreateDTO
+from src.core.dto.mock import MockObj
+from src.core.entity.task import TaskUpdateDTO
+
+
 class ITaskRepository(ABC):
 
     @abstractmethod
-    async def task_list(
-                        self, *, 
-                        sorting_obj: MockObj, 
-                        paggination_obj: MockObj, 
-                        filter_obj: MockObj
-                        ) -> List[TaskDTO]:
+    async def list(
+        self, *,
+        sorting_obj: MockObj,
+        paggination_obj: MockObj,
+        filter_obj: MockObj
+    ) -> list[Task]:
         """ List of tasks
 
         Args:
@@ -17,52 +22,51 @@ class ITaskRepository(ABC):
             filter_obj (str): filter object
 
         Returns:
-            List[TaskDTO]: List of DTO task objects
+            list[Task]: list of Task entities
         """
 
     @abstractmethod
-    async def task_get(self, *, task_id: int) -> TaskDTO: 
+    async def get(self, *, id: int) -> Task:
         """Get task
 
         Args:
-            task_id (int): task identify
+            id (int): task identify
 
         Returns:
-            TaskDTO: DTO of task object
+            Task: Task entity
         """
         pass
 
     @abstractmethod
-    async def task_update(self, *, task_id: int, obj: TaskUpdateDTO) -> TaskDTO:
+    async def update(self, *, obj: TaskUpdateDTO) -> Task:
         """Task update
 
         Args:
-            task_id (int): task identify
             obj (TaskUpdateDTO): DTO for update task method
 
         Returns:
-            TaskDTO: DTO of task object
+            Task: Task entity
         """
 
     @abstractmethod
-    async def task_delete(self, *, task_id: int) -> int:
+    async def delete(self, *, id: int) -> int:
         """delete task 
 
         Args:
-            task_id (int): task identify
+            id (int): task identify
 
         Returns:
             int: id of deleted task
         """
 
     @abstractmethod
-    async def task_create(self, *, obj: TaskCreateDTO) -> TaskDTO:
+    async def create(self, *, obj: TaskCreateDTO) -> Task:
         """Create task
 
         Args:
             obj (TaskCreateDTO): DTO for creating task
 
         Returns:
-            TaskDTO: DTO of task object
+            Task: Task entity
         """
         pass

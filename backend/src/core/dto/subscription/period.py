@@ -21,22 +21,21 @@ class SubscriptionPeriodCreateTranslate:
 
 
 @dataclass
-class SubscriptionPeriodDTO(TranslationMixin):
-    id: int
+class SubscriptionPeriodCreateDTO(TranslationMixin):
     value: str
     unit: SubscriptionPeriodUnitDTO
-    translations: list[SubscriptionPeriodTranslateDTO]
+    translations: list[SubscriptionPeriodCreateTranslate]
 
     def __post_init__(self):
         self._validate_translations(seq=self.translations)
 
 
 @dataclass
-class SubscriptionPeriodCreateDTO(TranslationMixin):
-    unit_id: int
+class SubscriptionPeriodDTO(TranslationMixin):
+    id: int
     value: str
     unit: SubscriptionPeriodUnitDTO
-    translations: list[SubscriptionPeriodCreateTranslate]
+    translations: list[SubscriptionPeriodTranslateDTO]
 
     def __post_init__(self):
         self._validate_translations(seq=self.translations)

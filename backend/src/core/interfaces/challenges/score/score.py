@@ -1,5 +1,8 @@
 from abc import abstractmethod, ABC
 
+from src.core.dto.mock import MockObj
+from src.core.dto.user.score import UserBoundOffsetDTO, UserScoreDTO
+
 
 class IScoreRepository(ABC):
 
@@ -14,22 +17,18 @@ class IScoreRepository(ABC):
             UserScoreDTO: DTO for user score
         """
 
-    # @abstractmethod # подумаю в конце
-    # async def user_score_list(
-    #     self, *, 
-    #     username: str = None, 
-    #     sorting_obj: str = None,
-        
-    #     ) -> Union[List[ScoreUserDTO], List[List[ScoreUserDTO], int]]: 
-    #     """ Get user score list.
+    @abstractmethod
+    async def user_rating(
+        self, *, 
+        obj: UserBoundOffsetDTO = None,
+        order_obj: MockObj,
+        ) -> list[UserScoreDTO]:
+        """Get user rating
 
-    #     Args:
-    #         username (str, optional): if username -> we'll get rating user in this list. Defaults to None.
-    #         sorting_obj (str, optional): object for list sorting. Defaults to None.
-
-    #     Returns:
-    #         List[ScoreUserDTO]: If username: return user rating and list of DTO user score
-    #                             else: return list of DTO user score
-    #     """
-    #     pass
-
+        Args:
+            obj (UserBoundOffsetDTO, optional): DTO for specific user. Defaults to None. If None -> rating of all users.
+            order_obj (MockObj): Order for score value 
+            
+        Returns:
+            list[UserScore]: List of DTO user score objects
+        """

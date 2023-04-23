@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+
+from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.dto.challenges.status import OccupancyStatusDTO
 
 
@@ -11,10 +13,16 @@ class UserTaskDTO:
 
 
 @dataclass
+class UserTaskDeleteDTO:
+    user_id: str
+    task_id: int
+
+
+@dataclass
 class UserTaskCreateDTO:
     username: str
     task_id: int
-    occupancy: OccupancyStatusDTO
+    occupancy: OccupancyStatusDTO = OccupancyStatusEnum.ACTIVE
 
 
 @dataclass

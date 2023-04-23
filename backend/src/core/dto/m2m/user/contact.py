@@ -17,3 +17,10 @@ class ContactUserUpdateDTO:
     id: int
     contact: Optional[ContactDTO] = None
     active: Optional[bool] = None
+
+
+@dataclass
+class ContactUserDTO:
+    username: str
+    contact: ContactDTO
+    active: bool

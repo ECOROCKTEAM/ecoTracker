@@ -51,12 +51,14 @@ class ContactDTO:
 
 
 @dataclass
-class ContactCreateDTO:
+class ContactUserCreateDTO:
+    user_id: str
     value: str
     type: ContactTypeDTO
 
 
 @dataclass
-class ContactUpdateDTO:
+class ContactUserUpdateDTO:
     id: int
     value: str
+    type: ContactTypeDTO

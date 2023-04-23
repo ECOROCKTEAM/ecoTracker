@@ -1,35 +1,40 @@
 from abc import abstractmethod, ABC
 
-class iContactRepository(ABC):
+from src.core.dto.mock import MockObj
+from src.core.dto.m2m.user.contact import ContactUserDTO
+from src.core.dto.user.contact import ContactTypeCreateDTO, ContactTypeDTO, ContactUserCreateDTO, ContactUserUpdateDTO
+
+
+class iUserContactRepository(ABC):
+
     @abstractmethod
-    async def user_contact_create(self, *, obj: UserContactCreateDTO) -> UserContactDTO:
+    async def user_contact_create(self, *, obj: ContactUserCreateDTO) -> ContactUserDTO:
         """Contact creating by user for himself
 
         Args:
-            obj (UserContactCreateDTO): DTO for create user contact object
+            obj (ContactUserCreateDTO): DTO for create user contact object
 
         Returns:
-            UserContactDTO: DTO of user contact object
+            ContactUserDTO: DTO of user contact object
         """
 
     @abstractmethod
-    async def user_contact_update(self, *, user_contact: UserContactDTO, obj: UserContactUpdateDTO) -> UserContactDTO:
-        """updating user contact
+    async def user_contact_update(self, *, obj: ContactUserUpdateDTO) -> ContactUserDTO:
+        """Updating user contact
 
         Args:
-            user_contact (UserContactDTO): DTO of user contact object
-            obj (UserContactUpdateDTO): DTO for update user contact object
+            obj (ContactUserUpdateDTO): DTO for update user contact object
 
         Returns:
-            UserContactDTO: DTO of user contact object
+            ContactUserDTO: DTO of user contact object
         """
 
-    @abstractmethod # возможно в нашей m2m модели будет поле id и в таком случае будет проще искать... наверное
-    async def user_contact_delete(self, *, obj: UserContactDeleteDTO) -> int:
-        """delete contact from user contact list
+    @abstractmethod
+    async def user_contact_delete(self, *, contact_id: int) -> int:
+        """Delete contact from user contact list
 
         Args:
-            obj (UserContactDeleteDTO): DTO for delete user contact object
+            contact_id: int of user contact object
 
         Returns:
             int: id of deleted contact
@@ -43,7 +48,7 @@ class iContactRepository(ABC):
         filter_obj: MockObj, 
         sorting_obj: MockObj, 
         order_obj: MockObj
-                           ) -> list[UserContactDTO]:
+                           ) -> list[ContactUserDTO]:
         """User contact list
 
         Args:
@@ -53,19 +58,19 @@ class iContactRepository(ABC):
             order_obj (MockObj): Some order obj
 
         Returns:
-            list[UserContactDTO]: list of DTO user contact objects
+            list[ContactUserDTO]: List of DTO user contact objects
         """
         pass
 
     @abstractmethod
-    async def user_contact_get(self, *, obj: UserContactGetDTO) -> UserContactDTO:
-        """get one contact
+    async def user_contact_get(self, *, id: int) -> ContactUserDTO:
+        """Get one contact
 
         Args:
-            obj (UserContactGetDTO): DTO for get one user contact object
+            id (int): int of user contact 
 
         Returns:
-            UserContactDTO: DTO of user contact object
+            ContactUserDTO: DTO of user contact object
         """
 
     @abstractmethod

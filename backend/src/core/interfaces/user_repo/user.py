@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from src.core.dto.m2m.user.subscription import UserSubscriptionDTO, UserSubscriptionUpdateDTO
+from src.core.dto.m2m.user.task import UserTaskCreateDTO, UserTaskDTO, UserTaskDeleteDTO, UserTaskGetDTO, UserTaskUpdateDTO
 from src.core.entity.user import User, UserCreateDTO, UserUpdateDTO
 from src.core.dto.mock import MockObj
 
@@ -7,11 +9,11 @@ from src.core.dto.mock import MockObj
 class IUserRepository(ABC):
 
     @abstractmethod
-    async def user_create(self, *, obj: UserCreateDTO) -> User:
+    async def create(self, *, obj: UserCreateDTO) -> User:
         """Create user \ Registration
 
         Args:
-            user (CreateUserDTO): DTO for creating user
+            obj (UserCreateDTO): DTO for creating user object
 
         Returns:
             User: User entity
@@ -22,52 +24,51 @@ class IUserRepository(ABC):
 
         """
 
-    @abstractmethod # Возможно тут можно через этот метод сделать и деактивацию юзера, если в через usecase передавать id и статус юзера для деактивации
-    async def user_update(self, *, obj: UserUpdateDTO) -> User:
+    @abstractmethod 
+    async def update(self, *, obj: UserUpdateDTO) -> User:
         """User update
 
         Args:
             obj (UserUpdateDTO): DTO for update user
 
         Returns:
-            User: Updated user entity
+            User: User entity
         """
 
-    @abstractmethod
-    async def user_task_update(self, *, user_task: UserTaskDTO, obj: UserTaskUpdateDTO) -> UserTaskDTO: 
-        """User task complite
+    @abstractmethod 
+    async def user_task_update(self, *, obj: UserTaskUpdateDTO) -> UserTaskDTO: 
+        """User task update. 
 
         Args:
-            user_task (UserTaskDTO): DTO user task object which will be update
-            obj (UserTaskUpdateDTO): DTO for update user task object. Хз почему я при update методах писал на выходах bool.
+            obj (UserTaskUpdateDTO): DTO for update user task object.
 
         Returns:
             UserTaskDTO: DTO of user task object
         """
 
     @abstractmethod
-    async def user_task_delete(self, *, obj: UserTaskDeleteDTO) -> int:
-        """ Deleting task to user task list
+    async def user_task_delete(self, *, id: int) -> int:
+        """ Deleting task from user task list
 
         Args:
-            obj (UserTaskDeleteDTO): DTO for delete user task object
+            task_id (int): int of user task object
         
         Returns:
             int: id of deleted task from user task list
         """
 
     @abstractmethod
-    async def user_task_get(self, *, UserTaskGetDTO) -> UserTaskDTO:
+    async def user_task_get(self, *, id: int) -> UserTaskDTO:
         """get task which belongs to user
 
         Args:
-            obj (UserTaskGetDTO): DTO to get relation object between user and task
+            id (int): int of user task object
 
         Returns:
             UserTaskDTO: DTO of user task object 
         """
 
-    @abstractmethod # по идее нам не нужен тут ещё и task_id, тк тут у нас лист. Фильтровать эти записи по статусу будем уже в запросе? (status_id)
+    @abstractmethod 
     async def user_task_list(
         self, *, 
         user_id: str,
@@ -87,7 +88,7 @@ class IUserRepository(ABC):
             list[UserTaskDTO]: List of DTO user task objects
         """
 
-    @abstractmethod # было user_task_add. Посчитал, что мы хоть и добавляем таксу в список тасков пользователя, но именно создаём связь, поэтому create
+    @abstractmethod 
     async def user_task_create(self, *, obj: UserTaskCreateDTO) -> UserTaskDTO:
         """ Adding task to user task list
 
@@ -98,17 +99,6 @@ class IUserRepository(ABC):
             UserTaskDTO: DTO of user task object
         """
 
-    @abstractmethod # думаю, что в следующих методах будет достаточно идента юзера
-    async def user_role_application_update(self, *, user_id: str, obj: UserApplicationRoleUpdateDTO) -> UserApplicationRoleDTO:
-        """User application role update
-
-        Args:
-            user_id (str): user identify
-            obj (UserApplicationRoleUpdateDTO): DTO for update user application role
-
-        Returns:
-            UserApplicationRoleDTO: DTO of user application role object
-        """
 
     @abstractmethod
     async def user_subscription_update(self, *, user_id: str, obj: UserSubscriptionUpdateDTO) -> UserSubscriptionDTO:

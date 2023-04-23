@@ -1,3 +1,5 @@
+from datetime import datetime
+from typing import Optional
 from dataclasses import dataclass
 
 
@@ -14,7 +16,7 @@ class UserSubscriptionDTO:
 class UserSubscriptionCreateDTO:
     username: str
     subscription_id: int
-    until_date: int
+    until_date: datetime
     cancelled: bool = True
 
 
@@ -22,3 +24,11 @@ class UserSubscriptionCreateDTO:
 class UserSubscriptionUpdateDTO:
     id: int
     cancelled: bool = True
+
+
+@dataclass
+class UserSubscriptionUpdateDTO:
+    id: int
+    subscription_id: Optional[int] = None
+    cancelled: Optional[bool] = True
+    until_date: Optional[datetime] = None

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.core.dto.m2m.user.subscription import UserSubscriptionDTO, UserSubscriptionUpdateDTO
-from src.core.dto.m2m.user.task import UserTaskCreateDTO, UserTaskDTO, UserTaskDeleteDTO, UserTaskGetDTO, UserTaskUpdateDTO
+from src.core.dto.m2m.user.task import UserTaskCreateDTO, UserTaskDTO, UserTaskUpdateDTO
 from src.core.entity.user import User, UserCreateDTO, UserUpdateDTO
 from src.core.dto.mock import MockObj
 

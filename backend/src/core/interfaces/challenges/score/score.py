@@ -18,11 +18,11 @@ class IScoreRepository(ABC):
         """
 
     @abstractmethod
-    async def user_rating(
+    async def rating_user(
         self, *, 
         obj: UserBoundOffsetDTO = None,
         order_obj: MockObj,
-        ) -> list[UserScoreDTO]:
+        ) -> list[dict([(int, UserScoreDTO)])]:
         """Get user rating
 
         Args:

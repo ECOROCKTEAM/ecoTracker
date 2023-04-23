@@ -2,10 +2,11 @@ from abc import abstractmethod, ABC
 
 from src.core.dto.mock import MockObj
 from src.core.dto.m2m.user.contact import ContactUserDTO
-from src.core.dto.user.contact import ContactTypeCreateDTO, ContactTypeDTO, ContactUserCreateDTO, ContactUserUpdateDTO
+from src.core.dto.user.contact import ContactTypeCreateDTO, ContactTypeDTO
+from src.core.dto.m2m.user.contact import ContactUserCreateDTO, ContactUserUpdateDTO
 
 
-class iUserContactRepository(ABC):
+class IUserContactRepository(ABC):
 
     @abstractmethod
     async def user_contact_create(self, *, obj: ContactUserCreateDTO) -> ContactUserDTO:
@@ -67,7 +68,7 @@ class iUserContactRepository(ABC):
         """Get one contact
 
         Args:
-            id (int): int of user contact 
+            id (int): int of user contact object
 
         Returns:
             ContactUserDTO: DTO of user contact object

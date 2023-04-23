@@ -6,7 +6,7 @@ from src.core.mixin.validators.translations import TranslationMixin
 
 
 @dataclass
-class SubscriptionPeriodTranslateDTO:
+class SubscriptionPeriodTranslate:
     id: int
     period_id: int
     name: str
@@ -14,7 +14,7 @@ class SubscriptionPeriodTranslateDTO:
 
 
 @dataclass
-class SubscriptionPeriodCreateTranslate:
+class SubscriptionPeriodTranslateDTO:
     name: str
     period_id: int
     language: LanguageEnum
@@ -24,7 +24,7 @@ class SubscriptionPeriodCreateTranslate:
 class SubscriptionPeriodCreateDTO(TranslationMixin):
     value: str
     unit: SubscriptionPeriodUnitDTO
-    translations: list[SubscriptionPeriodCreateTranslate]
+    translations: list[SubscriptionPeriodTranslateDTO]
 
     def __post_init__(self):
         self._validate_translations(seq=self.translations)

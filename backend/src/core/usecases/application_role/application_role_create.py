@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.dto.user.role import UserRoleCreateDTO, UserRoleDTO
-from src.core.interfaces.base import IRepositoryCore
+from src.core.interfaces.user.application_role import IApplicationRoleRepository
 from src.core.exception.user import UserPermissionError
 from src.core.entity.user import User
 
@@ -12,11 +12,10 @@ class Result:
 
 
 class TaskCreateUseCase:
-    def __init__(self, repo: IRepositoryCore) -> None:
+    def __init__(self, repo: IApplicationRoleRepository) -> None:
         self.repo = repo
 
     async def __call__(self, *, user: User, obj: UserRoleCreateDTO) -> Result:
-        # Как тогда создать первые роли? Возможно роли приложения надо будет создавать как-то при деплое что ли, я хз.
 
         if not user.application_role.ADMIN:
             raise UserPermissionError(username=user.username)

@@ -34,6 +34,7 @@ class ContactTypeCreateDTO(TranslationMixin):
 @dataclass
 class ContactTypeDTO(TranslationMixin):
     id: int
+    enum: ContactEnum
     translations: list[ContactTypeTranslatedCreateDTO]
 
     def __post_init__(self):
@@ -51,14 +52,12 @@ class ContactDTO:
 
 
 @dataclass
-class ContactUserCreateDTO:
-    user_id: str
+class ContactCreateDTO:
     value: str
     type: ContactTypeDTO
 
 
 @dataclass
-class ContactUserUpdateDTO:
-    id: int
-    value: str
-    type: ContactTypeDTO
+class ContactUpdateDTO:
+    value: str = None
+    active: bool = None

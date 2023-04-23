@@ -16,7 +16,7 @@ class UserSubscriptionDTO:
 class UserSubscriptionCreateDTO:
     username: str
     subscription_id: int
-    until_date: datetime
+    until_date: int
     cancelled: bool = True
 
 
@@ -29,6 +29,6 @@ class UserSubscriptionUpdateDTO:
 @dataclass
 class UserSubscriptionUpdateDTO:
     id: int
-    subscription_id: Optional[int] = None
-    cancelled: Optional[bool] = True
-    until_date: Optional[datetime] = None
+    subscription_id: int
+    cancelled: bool
+    until_date: int

@@ -22,7 +22,7 @@ class UserTaskDeleteDTO:
 class UserTaskCreateDTO:
     username: str
     task_id: int
-    occupancy: OccupancyStatusDTO = OccupancyStatusEnum.ACTIVE
+    occupancy: OccupancyStatusDTO
 
 
 @dataclass

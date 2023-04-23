@@ -7,7 +7,7 @@ from src.core.dto.challenges.type import OccupancyTypeCreateDTO, OccupancyTypeDT
 class IOccupancyRepository(ABC):
 
     @abstractmethod
-    async def occupancy_status_create(self, *, obj: OccupancyStatusCreateDTO) -> OccupancyStatusDTO:
+    async def status_create(self, *, obj: OccupancyStatusCreateDTO) -> OccupancyStatusDTO:
         """ Create occupancy status
 
         Args:
@@ -18,7 +18,7 @@ class IOccupancyRepository(ABC):
         """
 
     @abstractmethod
-    async def occupancy_type_create(self, *, obj: OccupancyTypeCreateDTO) -> OccupancyTypeDTO:
+    async def type_create(self, *, obj: OccupancyTypeCreateDTO) -> OccupancyTypeDTO:
         """ Create occupancy type
 
         Args:

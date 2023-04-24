@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
+from backend.src.core.dto.mock import MockObj
 
 from src.core.dto.community.filters import (
     CommunityIncludeUserFilter,
@@ -70,7 +71,7 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def list(self, *, obj: CommunityListFilter) -> List[Community]:
+    async def list(self, *, obj: CommunityListFilter, order_obj: MockObj, pagination_obj: MockObj) -> List[Community]:
         """Получить список сообществ
 
         Args:

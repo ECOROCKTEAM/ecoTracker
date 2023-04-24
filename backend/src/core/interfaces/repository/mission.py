@@ -17,7 +17,7 @@ from backend.src.core.entity.mission import (
 
 class IRepositoryMission(ABC):
     @abstractmethod
-    def get(self, *, id: int) -> Mission:
+    async def get(self, *, id: int) -> Mission:
         """Получить базовую миссию
 
         Args:
@@ -29,7 +29,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    def update(self, *, obj: MissionUpdateDTO) -> Mission:
+    async def update(self, *, obj: MissionUpdateDTO) -> Mission:
         """Обновить базовую миссию
 
         Args:
@@ -40,7 +40,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    def create(self, *, obj: MissionCreateDTO) -> Mission:
+    async def create(self, *, obj: MissionCreateDTO) -> Mission:
         """Создать базовую миссию
 
         Args:
@@ -51,7 +51,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    def list(self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj) -> List[Mission]:
+    async def list(self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj) -> List[Mission]:
         """Получить список базовых миссий
 
         Args:
@@ -64,7 +64,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    def deactivate(self, *, id: int) -> int:
+    async def deactivate(self, *, id: int) -> int:
         """Удалить миссию (Soft delete)
 
         Args:
@@ -75,7 +75,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    def create_for_user(self, *, obj: MissionUserCreateDTO) -> MisssionUser:
+    async def create_for_user(self, *, obj: MissionUserCreateDTO) -> MisssionUser:
         """Создать миссию для пользователя
 
         Args:
@@ -86,7 +86,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    def update_for_user(self, *, obj: MissionUserUpdateDTO) -> MisssionUser:
+    async def update_for_user(self, *, obj: MissionUserUpdateDTO) -> MisssionUser:
         """Обновить миссию для пользователя
 
         Args:
@@ -97,7 +97,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    def list_for_user(self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj) -> List[MisssionUser]:
+    async def list_for_user(self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj) -> List[MisssionUser]:
         """Получить список миссий пользователя
 
         Args:
@@ -110,7 +110,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    def get_for_user(self, *, id: int) -> MisssionUser:
+    async def get_for_user(self, *, id: int) -> MisssionUser:
         """Получить миссию пользователя
 
         Args:
@@ -121,7 +121,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    def create_for_community(self, *, obj: MissionCommunityCreateDTO) -> MissionCommunity:
+    async def create_for_community(self, *, obj: MissionCommunityCreateDTO) -> MissionCommunity:
         """Создать миссию для сообщест ва
 
         Args:
@@ -132,7 +132,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    def update_for_community(self, *, obj: MissionCommunityUpdateDTO) -> MissionCommunity:
+    async def update_for_community(self, *, obj: MissionCommunityUpdateDTO) -> MissionCommunity:
         """Обновить миссию сообщества
 
         Args:
@@ -143,7 +143,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    def list_for_community(
+    async def list_for_community(
         self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj
     ) -> List[MissionCommunity]:
         """Получить список миссий сообщества
@@ -158,7 +158,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    def get_for_community(self, *, id: int) -> MissionCommunity:
+    async def get_for_community(self, *, id: int) -> MissionCommunity:
         """Получить миссию сообщества
 
         Args:

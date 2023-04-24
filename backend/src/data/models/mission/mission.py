@@ -7,6 +7,7 @@ class MissionModel(Base):
     __tablename__ = "mission"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    active: Mapped[bool] = mapped_column()
     author: Mapped[str] = mapped_column()
     score: Mapped[int] = mapped_column()
     occupancy_id: Mapped[int] = mapped_column(ForeignKey("occupancy_type.id"))

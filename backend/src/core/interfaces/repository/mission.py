@@ -7,7 +7,7 @@ from src.core.entity.mission import (
     MissionUpdateDTO,
     MissionCreateDTO,
     MissionUserCreateDTO,
-    MisssionUser,
+    MissionUser,
     MissionUserUpdateDTO,
     MissionCommunity,
     MissionCommunityCreateDTO,
@@ -75,31 +75,31 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    async def create_for_user(self, *, obj: MissionUserCreateDTO) -> MisssionUser:
+    async def create_for_user(self, *, obj: MissionUserCreateDTO) -> MissionUser:
         """Создать миссию для пользователя
 
         Args:
             obj (MissionUserCreateDTO): Объект создания
 
         Returns:
-            MisssionUser: Сущность миссии пользователя
+            MissionUser: Сущность миссии пользователя
         """
 
     @abstractmethod
-    async def update_for_user(self, *, obj: MissionUserUpdateDTO) -> MisssionUser:
+    async def update_for_user(self, *, obj: MissionUserUpdateDTO) -> MissionUser:
         """Обновить миссию для пользователя
 
         Args:
             obj (MissionUserUpdateDTO): Объект создания
 
         Returns:
-            MisssionUser: Сущность миссии пользователя
+            MissionUser: Сущность миссии пользователя
         """
 
     @abstractmethod
     async def list_for_user(
         self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj
-    ) -> List[MisssionUser]:
+    ) -> List[MissionUser]:
         """Получить список миссий пользователя
 
         Args:
@@ -108,18 +108,18 @@ class IRepositoryMission(ABC):
             pagination_obj (MockObj): Объект пагинации
 
         Returns:
-            List[MisssionUser]: Список сущностей миссии пользователя
+            List[MissionUser]: Список сущностей миссии пользователя
         """
 
     @abstractmethod
-    async def get_for_user(self, *, id: int) -> MisssionUser:
+    async def get_for_user(self, *, id: int) -> MissionUser:
         """Получить миссию пользователя
 
         Args:
             id (int): ID миссии пользователя
 
         Returns:
-            MisssionUser: Сущность миссии пользователя
+            MissionUser: Сущность миссии пользователя
         """
 
     @abstractmethod

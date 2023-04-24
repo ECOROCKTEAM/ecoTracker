@@ -228,14 +228,13 @@ class MissionBase:
 
 
 @dataclass
-class MisssionUser(MissionBase):
+class MissionUser(MissionBase):
     def __post_init__(self):
         self.related = RelatedEnum.USER
 
 
 @dataclass
 class MissionCommunity(MissionBase):
-
     place: str
     meeting_date: int
     people_required: int

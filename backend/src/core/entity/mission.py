@@ -58,7 +58,7 @@ class MissionUserUpdateDTO:
 
 
 @dataclass
-class MisssionUser(Mission):
+class MissionUser(Mission):
     id: int
     username: str
 
@@ -78,6 +78,7 @@ class MissionCommunityCreateDTO:
     people_max: Optional[int] = None
     comment: Optional[str] = None
 
+
 @dataclass
 class MissionCommunityUpdateDTO:
     id: int
@@ -87,6 +88,7 @@ class MissionCommunityUpdateDTO:
     people_required: Optional[int] = None
     people_max: Optional[int] = None
     comment: Optional[str] = None
+
 
 @dataclass
 class MissionCommunity(Mission):

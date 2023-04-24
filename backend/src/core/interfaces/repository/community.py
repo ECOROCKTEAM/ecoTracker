@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from typing import List
+
 from src.core.dto.community.filters import (
     CommunityIncludeUserFilter,
     CommunityListFilter,
@@ -15,66 +17,13 @@ from src.core.dto.m2m.user.community import (
     UserCommunityCreateDTO,
     UserCommunityUpdateDTO,
 )
-
-from src.core.entity.user import User, UserUpdateDTO, UserCreateDTO
 from src.core.entity.community import Community, CommunityCreateDTO, CommunityUpdateDTO
+from src.core.enum.community.role import CommunityRoleEnum
 
-
-class IRepositoryCore(ABC):
-    @abstractmethod
-    async def user_get(self, *, id: str) -> User:
-        """Получить пользователя по id
-
-        Args:
-            id (str): Id пользователя
-
-        Returns:
-            User: Сущность пользователя
-
-        Raises:
-            RepoError: Ошибка операции
-            UserNotFoundError: Пользователь не найден
-        """
+class IRepositoryCommunity(ABC):
 
     @abstractmethod
-    async def user_update(self, *, obj: UserUpdateDTO) -> User:
-        """Обновить пользователя
-
-        Args:
-            obj (UserUpdateDTO): DTO обновления пользователя
-
-        Returns:
-            User: Сущность пользователя
-
-        Raises:
-            RepoError: Ошибка операции
-            UserNotFoundError: Пользователь не найден
-        """
-
-    @abstractmethod
-    async def user_create(self, *, obj: UserCreateDTO) -> User:
-        """Создать пользователя
-
-        Args:
-            obj (UserCreateDTO): DTO создания пользователя
-
-        Returns:
-            User: Сущность пользователя
-        """
-
-    @abstractmethod
-    async def user_deactivate(self, *, id: int) -> str:
-        """Удалить пользователя (Soft delete)
-
-        Args:
-            id (int): Id пользователя
-
-        Returns:
-            str: Id пользователя
-        """
-
-    @abstractmethod
-    async def community_get(self, *, id: str) -> Community:
+    async def get(self, *, id: str) -> Community:
         """Получить сообщество по id
 
         Args:
@@ -89,7 +38,7 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_create(self, *, obj: CommunityCreateDTO) -> Community:
+    async def create(self, *, obj: CommunityCreateDTO) -> Community:
         """Создать сообщество
 
         Args:
@@ -105,7 +54,7 @@ class IRepositoryCore(ABC):
         pass
 
     @abstractmethod
-    async def community_update(self, *, id: str, obj: CommunityUpdateDTO) -> Community:
+    async def update(self, *, id: str, obj: CommunityUpdateDTO) -> Community:
         """Обновить поля сообщества
 
         Args:
@@ -121,21 +70,21 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_list(self, *, obj: CommunityListFilter) -> list[Community]:
+    async def list(self, *, obj: CommunityListFilter) -> List[Community]:
         """Получить список сообществ
 
         Args:
             obj (CommunityListFilter): DTO фильтрации сообщества
 
         Returns:
-            list[Community]: Список сущностей сообщества
+            List[Community]: Список сущностей сообщества
 
         Raises:
             RepoError: Ошибка операции
         """
 
     @abstractmethod
-    async def community_deactivate(self, *, id: str) -> str:
+    async def deactivate(self, *, id: str) -> str:
         """Удалить сообщество (Soft delete)
 
         Args:
@@ -148,9 +97,10 @@ class IRepositoryCore(ABC):
             RepoError: Ошибка операции
             CommunityDeleteError: Ошибка при удалении сообщества
         """
+    
 
     @abstractmethod
-    async def community_privacy_create(self, *, obj: PrivacyCreateDTO) -> PrivacyDTO:
+    async def privacy_create(self, *, obj: PrivacyCreateDTO) -> PrivacyDTO:
         """Добавить тип приватности для сообщества
 
         Args:
@@ -162,20 +112,36 @@ class IRepositoryCore(ABC):
         Raises:
             RepoError: Ошибка операции
         """
-
+    
     @abstractmethod
-    async def community_privacy_list(self) -> list[PrivacyDTO]:
+    async def privacy_list(self) -> List[PrivacyDTO]:
         """Получить список типов приватности для сообщества
 
         Returns:
-            list[PrivacyListDTO]: Список типов приватности для сообщества
+            List[PrivacyListDTO]: Список типов приватности для сообщества
+
+        Raises:
+            RepoError: Ошибка операции
+        """
+    
+    @abstractmethod
+    async def role_get(
+        self, *, enum: CommunityRoleEnum
+    ) -> CommunityRoleDTO:
+        """Получить роль сообщества
+
+        Args:
+            enum (CommunityRoleEnum): Элемент перечисления CommunityRoleEnum
+
+        Returns:
+            CommunityRoleDTO: Роль сообщества
 
         Raises:
             RepoError: Ошибка операции
         """
 
     @abstractmethod
-    async def community_role_create(
+    async def role_create(
         self, *, obj: CommunityRoleCreateDTO
     ) -> CommunityRoleDTO:
         """Создать роль для сообщества
@@ -191,18 +157,18 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_role_list(self) -> list[CommunityRoleDTO]:
+    async def role_list(self) -> List[CommunityRoleDTO]:
         """Получить список ролей для сообщества
 
         Returns:
-            list[CommunityRoleDTO]: Список ролей для сообщества
+            List[CommunityRoleDTO]: Список ролей для сообщества
 
         Raises:
             RepoError: Ошибка операции
         """
 
     @abstractmethod
-    async def community_user_add(
+    async def user_add(
         self, *, obj: UserCommunityCreateDTO
     ) -> UserCommunityDTO:
         """Добавить пользователя в сообщество
@@ -218,7 +184,7 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_user_get(self, *, id: int) -> UserCommunityDTO:
+    async def user_get(self, *, id: int) -> UserCommunityDTO:
         """Получить связь сообщество-пользователь
 
         Args:
@@ -233,9 +199,9 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_user_list(
+    async def user_list(
         self, *, id: str, filter: CommunityIncludeUserFilter
-    ) -> list[UserCommunityDTO]:
+    ) -> List[UserCommunityDTO]:
         """Получить список ID пользователей входящих в сообщество
 
         Args:
@@ -250,7 +216,7 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_user_role_update(
+    async def user_role_update(
         self, *, obj: UserCommunityUpdateDTO
     ) -> UserCommunityDTO:
         """Обновить роль пользователя в сообществе
@@ -267,7 +233,7 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_invite_link_create(
+    async def invite_link_create(
         self, *, obj: CommunityInviteCreateDTO
     ) -> CommunityInviteDTO:
         """Создать инвайт ссылку сообщества
@@ -283,13 +249,13 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_invite_link_get(
-        self, *, community_id: str
+    async def invite_link_get(
+        self, *, id: str
     ) -> CommunityInviteDTO:
         """Получить инвайт ссылку
 
         Args:
-            str (community_id): Id сообщества
+            str (id): Id сообщества
 
         Returns:
             CommunityInviteDTO: DTO объект ссылки сообщества
@@ -300,7 +266,7 @@ class IRepositoryCore(ABC):
         """
 
     @abstractmethod
-    async def community_invite_link_update(
+    async def invite_link_update(
         self, *, obj: CommunityInviteUpdateDTO
     ) -> CommunityInviteDTO:
         """Обновить инвайт ссылку на сообщество

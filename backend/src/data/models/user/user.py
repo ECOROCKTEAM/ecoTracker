@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.core.enum.score import ScoreOPerationEnum
+from src.core.enum.score import ScoreOperationEnum
 
 from src.application.database.holder import Base
 
@@ -67,7 +67,7 @@ class UserScoreModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(ForeignKey("user.username"))
-    operation: Mapped[ScoreOPerationEnum]
+    operation: Mapped[ScoreOperationEnum]
     value: Mapped[int]
 
 

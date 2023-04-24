@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.application.database.holder import Base
-from src.core.enum.base import VariableTypeEnum
+from src.core.enum.variable_type import VariableTypeEnum
 
 
 class ValueTypeModel(Base):

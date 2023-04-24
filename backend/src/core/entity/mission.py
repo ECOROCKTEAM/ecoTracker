@@ -11,6 +11,7 @@ from src.core.mixin.validators.translations import TranslationMixin
 @dataclass
 class Mission(TranslationMixin):
     id: int
+    active: bool
     score: int
     type: OccupancyTypeDTO
     status: OccupancyStatusDTO
@@ -35,6 +36,7 @@ class MissionCreateDTO(TranslationMixin):
 class MissionUpdateDTO(TranslationMixin):
     id: int
     translations: list[MissionCreateTranslateDTO]
+    active: Optional[bool] = None
     score: Optional[int] = None
     occupancy_type_id: Optional[int] = None
 

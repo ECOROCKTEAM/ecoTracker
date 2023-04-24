@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
-from backend.src.core.dto.mock import MockObj
+from src.core.dto.mock import MockObj
 
-from backend.src.core.entity.mission import (
+from src.core.entity.mission import (
     Mission,
     MissionUpdateDTO,
     MissionCreateDTO,
@@ -97,7 +97,9 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    async def list_for_user(self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj) -> List[MisssionUser]:
+    async def list_for_user(
+        self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj
+    ) -> List[MisssionUser]:
         """Получить список миссий пользователя
 
         Args:

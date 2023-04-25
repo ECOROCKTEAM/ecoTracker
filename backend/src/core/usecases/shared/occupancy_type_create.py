@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from src.core.interfaces.base import IRepositoryCore
-from src.core.dto.occupancy import OccupancyTypeCreateDTO, OccupancyTypeDTO
+from src.core.dto.challenges.type import OccupancyTypeCreateDTO, OccupancyTypeDTO
+from src.core.interfaces.challenges.occupancy.occupancy import IOccupancyRepository
 from src.core.entity.user import User
 from src.core.exception.user import UserPermissionError
 
@@ -12,13 +12,12 @@ class Result:
 
 
 class OccupancyTypeCreateUseCase:
-    def __init__(self, repo: IRepositoryCore) -> None:
+    def __init__(self, repo: IOccupancyRepository) -> None:
         self.repo = repo
 
     async def __call__(self, *, user: User, obj: OccupancyTypeCreateDTO) -> Result:
-        if not user.application_role.ADMIN:
+        if not user.role.enum.ADMIN:
             raise UserPermissionError(username=user.username)
 
-        occupancy_type = await self.repo.occupancy_type_create(obj=obj)
-
-        return Result(item=occupancy_type)
+        type = await self.repo.type_create(obj=obj)
+        return Result(item=type)

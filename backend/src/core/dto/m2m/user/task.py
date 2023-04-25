@@ -13,12 +13,6 @@ class UserTaskDTO:
 
 
 @dataclass
-class UserTaskDeleteDTO:
-    user_id: str
-    task_id: int
-
-
-@dataclass
 class UserTaskCreateDTO:
     username: str
     task_id: int

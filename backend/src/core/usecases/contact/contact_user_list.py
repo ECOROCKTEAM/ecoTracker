@@ -1,25 +1,23 @@
 from dataclasses import dataclass, field
-from typing import Optional
 
-from src.core.dto.user.contact import ContactDTO
-from src.core.interfaces.base import IRepositoryCore
+from src.core.dto.m2m.user.contact import ContactUserDTO
+from src.core.interfaces.user.contact import IUserContactRepository
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError
 
 
 @dataclass
 class Result:
-    item: list[ContactDTO] = field(default_factory=list)
+    items: list[ContactUserDTO] = field(default_factory=list)
 
 
-class ContactListUseCase:
-    def __init__(self, repo: IRepositoryCore) -> None:
+class ContactUserListUseCase:
+    def __init__(self, repo: IUserContactRepository) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user: User) -> Optional[Result]:
+    async def __call__(self, *, user: User) -> Result:
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
 
-        contact = await self.repo.contact_list(user_id=user.username)
-
-        return Result(item=contact)
+        contact = await self.repo.list(user_id=user.username)
+        return Result(items=contact)

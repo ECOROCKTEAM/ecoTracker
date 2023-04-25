@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
-from backend.src.core.dto.subscription.period import SubscriptionPeriodCreateDTO, SubscriptionPeriodDTO
-from backend.src.core.dto.subscription.type import SubscriptionTypeCreateDTO, SubscriptionTypeDTO
 
+from src.core.dto.subscription.period import SubscriptionPeriodCreateDTO, SubscriptionPeriodDTO
+from src.core.dto.subscription.type import SubscriptionTypeCreateDTO, SubscriptionTypeDTO
 from src.core.dto.subscription.period_unit import SubscriptionPeriodUnitCreateDTO, SubscriptionPeriodUnitDTO
 from src.core.dto.m2m.subscription_type.constraint import SubscriptionTypeConstrainCreateDTO, SubscriptionTypeConstrainDTO
+from src.core.dto.subscription.constraint import SubscriptionConstraintDTO, SubscriptionConstraintCreateDTO
 from src.core.entity.subscription import Subscription, SubscriptionCreateDTO
 from src.core.dto.mock import MockObj
+
 
 class ISubscriptionRepository(ABC):
 
@@ -53,9 +55,19 @@ class ISubscriptionRepository(ABC):
             list[SubscriptionDTO]: list of Subscription entity
         """
 
+    @abstractmethod
+    async def constraint_create(self, *, obj: SubscriptionConstraintCreateDTO) -> SubscriptionConstraintDTO:
+        """Create constraint
+
+        Args:
+            obj (SubscriptionConstraintCreateDTO): DTO for create constraint object
+
+        Returns:
+            SubscriptionConstraintDTO: DTO of constraint object
+        """
 
     @abstractmethod
-    async def subscription_type_constraint_create(self, *, obj: SubscriptionTypeConstrainCreateDTO) -> SubscriptionTypeConstrainDTO:
+    async def type_constraint_create(self, *, obj: SubscriptionTypeConstrainCreateDTO) -> SubscriptionTypeConstrainDTO:
         """Create constraint for Subscription
 
         Args:
@@ -66,7 +78,7 @@ class ISubscriptionRepository(ABC):
         """
 
     @abstractmethod
-    async def subscription_type_constraint_delete(self, *, id: int) -> int:
+    async def type_constraint_delete(self, *, id: int) -> int:
         """Delete constraint for Subscription
 
         Args:
@@ -77,7 +89,7 @@ class ISubscriptionRepository(ABC):
         """
 
     @abstractmethod
-    async def subscription_period_unit_create(self, *, obj: SubscriptionPeriodUnitCreateDTO) -> SubscriptionPeriodUnitDTO:
+    async def period_unit_create(self, *, obj: SubscriptionPeriodUnitCreateDTO) -> SubscriptionPeriodUnitDTO:
         """Subscription unit period create
 
         Args:
@@ -88,7 +100,7 @@ class ISubscriptionRepository(ABC):
         """
 
     @abstractmethod
-    async def subscription_period_create(self, *, obj: SubscriptionPeriodCreateDTO) -> SubscriptionPeriodDTO:
+    async def period_create(self, *, obj: SubscriptionPeriodCreateDTO) -> SubscriptionPeriodDTO:
         """Subscription period create
 
         Args:
@@ -97,11 +109,9 @@ class ISubscriptionRepository(ABC):
         Returns:
             SubscriptionPeriodDTO: DTO of subscription period
         """
-        
-
 
     @abstractmethod
-    async def subscription_type_create(self, *, obj: SubscriptionTypeCreateDTO) -> SubscriptionTypeDTO:
+    async def type_create(self, *, obj: SubscriptionTypeCreateDTO) -> SubscriptionTypeDTO:
         """ Subscription type create
 
         Args:

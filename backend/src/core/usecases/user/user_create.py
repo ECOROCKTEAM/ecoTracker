@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 
-from src.core.interfaces.base import IRepositoryCore
-from src.core.entity.user import User
-from src.core.dto.user import UserContactCreateDTO
-from src.core.enum.subscription import SubscriptionTypeEnum
+from src.core.interfaces.user.user import IUserRepository
+from src.core.entity.user import User, UserCreateDTO
 
 
 @dataclass
@@ -12,12 +10,10 @@ class Result:
 
 
 class UserCreateUseCase:
-    def __init__(self, repo: IRepositoryCore) -> None:
+    def __init__(self, repo: IUserRepository) -> None:
         self.repo = repo
 
-    async def __call__(self, *, new_user: UserCreateDTO) -> Result:
-        user = await self.repo.user_create(
-            user=new_user, subscription=SubscriptionTypeEnum.USUAL
-        )
+    async def __call__(self, *, obj: UserCreateDTO) -> Result:
 
+        user = await self.repo.create(obj=obj)
         return Result(item=user)

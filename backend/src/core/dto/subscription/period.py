@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 
+from src.core.enum.subscription.subscription import PeriodUnitEnum
 from src.core.dto.subscription.period_unit import SubscriptionPeriodUnitDTO
 from src.core.enum.application.language import LanguageEnum
 from src.core.mixin.validators.translations import TranslationMixin
 
 
 @dataclass
-class SubscriptionPeriodTranslate:
+class SubscriptionPeriodTranslateDTO:
     id: int
     period_id: int
     name: str
@@ -23,7 +24,7 @@ class SubscriptionPeriodTranslateDTO:
 @dataclass
 class SubscriptionPeriodCreateDTO(TranslationMixin):
     value: str
-    unit: SubscriptionPeriodUnitDTO
+    enum: PeriodUnitEnum
     translations: list[SubscriptionPeriodTranslateDTO]
 
     def __post_init__(self):
@@ -34,7 +35,7 @@ class SubscriptionPeriodCreateDTO(TranslationMixin):
 class SubscriptionPeriodDTO(TranslationMixin):
     id: int
     value: str
-    unit: SubscriptionPeriodUnitDTO
+    enum: PeriodUnitEnum
     translations: list[SubscriptionPeriodTranslateDTO]
 
     def __post_init__(self):

@@ -18,10 +18,11 @@ class RatingUserUseCase:
 
     async def __call__(
         self, *,
-        order_obj: MockObj, # сортировка по рейтингу
+        order_obj: MockObj, 
         bound_offset: int = None,
         user: User = None,
     ) -> Result:
+        
         if not user.active:
             raise UserIsNotActivateError(
                 username=user.username, deactivated=user.active

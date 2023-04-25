@@ -1,31 +1,34 @@
 from dataclasses import dataclass
 
-from src.core.interfaces.base import IRepositoryCore
-from src.core.entity.user import User, UserTask
+from src.core.enum.challenges.status import OccupancyStatusEnum
+from src.core.entity.user import User
+from src.core.interfaces.user.task import IUserTaskRepository
+from src.core.dto.m2m.user.task import UserTaskCreateDTO, UserTaskDTO
 from src.core.exception.user import UserIsNotActivateError
-from src.core.exception.task import TaskAlreadyTakenError
 
 
 @dataclass
 class Result:
-    item: UserTask
+    item: UserTaskDTO
 
 
 class UserTaskAddUseCase:
-    def __init__(self, repo: IRepositoryCore) -> None:
+    def __init__(self, repo: IUserTaskRepository) -> None:
         self.repo = repo
 
     async def __call__(self, *, user: User, task_id: int) -> Result:
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
+        
+        obj = UserTaskCreateDTO(
+            username=user.username,
+            task_id=task_id,
+            occupancy=OccupancyStatusEnum.ACTIVE 
+        )
+        # Хардкод? И можно ли так в принципе делать? Я хочу присваивать статус "активный" взятого задания пользователем
+        # Хотел просто, чтобы когда пользователь брал задачу она сразу была активна. Ну это и так понятно. Хз как правильно сделать
 
-        exist_task = self.repo.user_task_get(user_id=user.username, task_id=task_id)
 
-        if exist_task:
-            raise TaskAlreadyTakenError(username=user.username, task=task_id)
-
-        # синхронный код?
-
-        add = await self.repo.user_task_add(user_id=user.username, task_id=task_id)
+        add = await self.repo.create(obj=obj)
 
         return Result(item=add)

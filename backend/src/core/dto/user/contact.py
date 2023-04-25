@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from src.core.enum.user.contact import ContactEnum
 from src.core.enum.application.language import LanguageEnum
@@ -59,5 +60,6 @@ class ContactCreateDTO:
 
 @dataclass
 class ContactUpdateDTO:
-    value: str = None
-    active: bool = None
+    contact_id: int
+    value: Optional[str] = None
+    active: Optional[bool] = None

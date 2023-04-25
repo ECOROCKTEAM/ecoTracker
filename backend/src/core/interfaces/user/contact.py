@@ -9,8 +9,8 @@ from src.core.dto.m2m.user.contact import ContactUserCreateDTO, ContactUserUpdat
 class IUserContactRepository(ABC):
 
     @abstractmethod
-    async def user_contact_create(self, *, obj: ContactUserCreateDTO) -> ContactUserDTO:
-        """Contact creating by user for himself
+    async def create(self, *, obj: ContactUserCreateDTO) -> ContactUserDTO:
+        """Create user contact
 
         Args:
             obj (ContactUserCreateDTO): DTO for create user contact object
@@ -20,9 +20,9 @@ class IUserContactRepository(ABC):
         """
 
     @abstractmethod
-    async def user_contact_update(self, *, obj: ContactUserUpdateDTO) -> ContactUserDTO:
-        """Updating user contact
-
+    async def update(self, *, obj: ContactUserUpdateDTO) -> ContactUserDTO:
+        """Update user contact
+        
         Args:
             obj (ContactUserUpdateDTO): DTO for update user contact object
 
@@ -31,7 +31,7 @@ class IUserContactRepository(ABC):
         """
 
     @abstractmethod
-    async def user_contact_delete(self, *, contact_id: int) -> int:
+    async def delete(self, *, contact_id: int) -> int:
         """Delete contact from user contact list
 
         Args:
@@ -43,7 +43,7 @@ class IUserContactRepository(ABC):
     pass
 
     @abstractmethod
-    async def user_contact_list(
+    async def list(
         self, *, 
         user_id: str, 
         filter_obj: MockObj, 
@@ -64,8 +64,8 @@ class IUserContactRepository(ABC):
         pass
 
     @abstractmethod
-    async def user_contact_get(self, *, id: int) -> ContactUserDTO:
-        """Get one contact
+    async def get(self, *, id: int) -> ContactUserDTO:
+        """Get one user contact
 
         Args:
             id (int): int of user contact object

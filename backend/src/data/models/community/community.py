@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.core.enum.score import ScoreOPerationEnum
+from src.core.enum.score import ScoreOperationEnum
 from src.application.database.holder import Base
 
 
@@ -41,7 +41,7 @@ class CommunityScoreModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     community: Mapped[str] = mapped_column(ForeignKey("community.name"))
-    operation: Mapped[ScoreOPerationEnum]
+    operation: Mapped[ScoreOperationEnum]
     value: Mapped[int]
 
 

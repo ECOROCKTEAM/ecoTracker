@@ -4,7 +4,7 @@ from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.core.enum.score import ScoreOperationEnum
-from src.application.database.holder import Base
+from src.application.database.base import Base
 
 
 class CommunityModel(Base):

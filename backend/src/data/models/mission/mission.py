@@ -1,6 +1,6 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped
-from src.application.database.holder import Base
+from src.application.database.base import Base
 
 
 class MissionModel(Base):

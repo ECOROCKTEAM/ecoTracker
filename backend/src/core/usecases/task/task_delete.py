@@ -19,5 +19,8 @@ class TaskDeleteUseCase:
         if not user.role.enum.ADMIN:
             raise UserPermissionError(username=user.username)
 
+        # Захотим ли мы удалять какой-то таск (к миссиям тоже относится), если этот таск взят пользователем и находится в активном статусе?
+        # Если да, то сделаю проверку. Если нет - оставлю как есть.
+
         task = await self.repo.delete(obj=obj)
         return Result(item=task)

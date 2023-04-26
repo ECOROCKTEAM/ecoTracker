@@ -17,7 +17,7 @@ class OccupancyStatusCreateUseCase:
 
     async def __call__(self, *, user: User, obj: OccupancyStatusCreateDTO) -> Result:
         if not user.role.enum.ADMIN:
-            raise UserPermissionError
+            raise UserPermissionError(user=user.username)
 
         status = await self.repo.status_create(obj=obj)
         return Result(item=status)

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from src.core.interfaces.user.task import IUserTaskRepository
 from src.core.entity.user import User
 from src.core.dto.m2m.user.task import UserTaskDTO, UserTaskUpdateDTO
-
+from src.core.exception.user import UserIsNotActivateError
 
 
 @dataclass
@@ -16,6 +16,8 @@ class UserTaskUpdateUseCase:
         self.repo = repo
 
     async def __call__(self, *, user: User, obj: UserTaskUpdateDTO) -> Result:
+        if not user.active:
+            raise UserIsNotActivateError(username=user.username)
 
         add = await self.repo.update(obj=obj)
         return Result(item=add)

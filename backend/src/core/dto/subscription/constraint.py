@@ -7,6 +7,7 @@ from src.core.typing.base import VariableValueType
 
 @dataclass
 class SubscriptionConstraintDTO(VariableTypeCastMixin):
+    id: int
     name: str
     _raw_value: str
     type: VariableTypeEnum

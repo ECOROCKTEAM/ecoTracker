@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from src.core.dto.m2m.user.task import UserTaskDTO
 from src.core.interfaces.user.task import IUserTaskRepository
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError
@@ -7,18 +8,16 @@ from src.core.exception.user import UserIsNotActivateError
 
 @dataclass
 class Result:
-    task_id: int
+    item: list[UserTaskDTO]
 
 
-class UserTaskDeleteUseCase:
+class UserTaskListUseCase:
     def __init__(self, repo: IUserTaskRepository) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user: User, obj_id: int) -> Result:
+    async def __call__(self, *, user: User) -> Result:
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
 
-        # Подумать на работе над ограничениями при удалении тасков обычному пользователю
-
-        add = await self.repo.delete(id=obj_id)
-        return Result(task_id=add)
+        task = await self.repo.list(user_id=user.username)
+        return Result(item=task)

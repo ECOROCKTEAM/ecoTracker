@@ -39,21 +39,12 @@ class IUserTaskRepository(ABC):
             UserTaskDTO: DTO of user task object 
         """
 
-    @abstractmethod 
-    async def list(
-        self, *, 
-        user_id: str,
-        filter_obj: MockObj = None,
-        sorting_obj: MockObj = None,
-        order_obj: MockObj = None
-                             ) -> list[UserTaskDTO]:
+    @abstractmethod # У нас по идее у всех видов пользователей (подписок) будет 3 задания всего лишь. Думаю, что сорт, фильтр и тп тут не нужно.
+    async def list(self, *, user_id: str) -> list[UserTaskDTO]:
         """List of user tasks
 
         Args:
             user_id (str): user identify
-            filter_obj (MockObj, optional): filter object. Defaults to None.
-            sorting_obj (MockObj, optional): sort object. Defaults to None.
-            order_obj (MockObj, optional): order object. Defaults to None.
 
         Returns:
             list[UserTaskDTO]: List of DTO user task objects

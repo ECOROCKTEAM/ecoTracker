@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.core.dto.subscription.period import SubscriptionPeriodCreateDTO, SubscriptionPeriodDTO
-from src.core.dto.subscription.type import SubscriptionTypeCreateDTO, SubscriptionTypeDTO
+from src.core.dto.subscription.type import SubscriptionTypeConstraintDTO, SubscriptionTypeCreateDTO, SubscriptionTypeDTO
 from src.core.dto.subscription.period_unit import SubscriptionPeriodUnitCreateDTO, SubscriptionPeriodUnitDTO
 from src.core.dto.m2m.subscription_type.constraint import SubscriptionTypeConstrainCreateDTO, SubscriptionTypeConstrainDTO
 from src.core.dto.subscription.constraint import SubscriptionConstraintDTO, SubscriptionConstraintCreateDTO
@@ -53,6 +53,17 @@ class ISubscriptionRepository(ABC):
 
         Returns:
             list[SubscriptionDTO]: list of Subscription entity
+        """
+
+    @abstractmethod
+    async def constraint_get(self, *, id: int) -> SubscriptionConstraintDTO:
+        """Get constraint
+
+        Args:
+            id (int): int of constraint object
+
+        Returns:
+            SubscriptionConstraintDTO: DTO of constraint object
         """
 
     @abstractmethod
@@ -119,4 +130,12 @@ class ISubscriptionRepository(ABC):
 
         Returns:
             SubscriptionTypeDTO: DTO of subscription type object
+        """
+
+    @abstractmethod
+    async def type_constraint_list(self) -> list[SubscriptionTypeConstraintDTO]:
+        """List of type constraint objects
+
+        Returns:
+            list[SubscriptionTypeConstraintDTO]: List of DTO type constraint objects
         """

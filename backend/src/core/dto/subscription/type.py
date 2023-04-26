@@ -39,3 +39,10 @@ class SubscriptionTypeDTO(TranslationMixin):
 
     def __post_init__(self):
         self._validate_translations(seq=self.translations)
+
+
+@dataclass
+class SubscriptionTypeConstraintDTO:
+    id: int
+    type_id: int
+    constraint_id: int

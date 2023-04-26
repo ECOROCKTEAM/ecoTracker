@@ -122,6 +122,44 @@ class ISubscriptionRepository(ABC):
         """
 
     @abstractmethod
+    async def period_get(self, *, id: int) -> SubscriptionPeriodDTO:
+        """Get subscription period
+
+        Args:
+            id (int): int edentify of subscriprion period object
+
+        Returns:
+            SubscriptionPeriodDTO: DTO of subscription period object
+        """
+    
+    @abstractmethod
+    async def period_list(self) -> list[SubscriptionPeriodDTO]:
+        """List of subscription period
+
+        Returns:
+            list[SubscriptionPeriodDTO]: List of DTO subscription period objects
+        """
+
+    @abstractmethod
+    async def type_get(self, *, id: int) -> SubscriptionTypeDTO:
+        """Get subscription type
+
+        Args:
+            id (int): int identify of subscription type object
+
+        Returns:
+            SubscriptionTypeDTO: DTO of subscription type object
+        """
+
+    @abstractmethod
+    async def type_list(self) -> list[SubscriptionTypeDTO]:
+        """Subscription type list
+
+        Returns:
+            list[SubscriptionTypeDTO]: List of subscription type DTO objects
+        """
+
+    @abstractmethod
     async def type_create(self, *, obj: SubscriptionTypeCreateDTO) -> SubscriptionTypeDTO:
         """ Subscription type create
 

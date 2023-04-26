@@ -22,8 +22,6 @@ class SubscriptionСonstraintCreateUserCase:
             obj: SubscriptionConstraintCreateDTO,
             ) -> Result:
         
-        # Допилить
-
         if not user.role.enum.ADMIN:
             raise UserPermissionError(username=user.username)
 

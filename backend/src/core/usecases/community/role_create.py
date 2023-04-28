@@ -18,7 +18,7 @@ class CommunityRoleCreateUsecase:
     async def __call__(
         self, *, user: User, create_obj: CommunityRoleCreateDTO
     ) -> Result:
-        if not user.application_role.ADMIN:
+        if not user.role.enum.ADMIN:
             raise UserPermissionError(username=user.username)
         role = await self.repo.community_role_create(obj=create_obj)
         return Result(item=role)

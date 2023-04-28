@@ -16,7 +16,7 @@ class CommunityPrivacyCreateUsecase:
         self.repo = repo
 
     async def __call__(self, *, user: User, create_obj: PrivacyCreateDTO) -> Result:
-        if not user.application_role.ADMIN:
+        if not user.role.enum.ADMIN:
             raise UserPermissionError(username=user.username)
         privacy = await self.repo.community_privacy_create(obj=create_obj)
         return Result(item=privacy)

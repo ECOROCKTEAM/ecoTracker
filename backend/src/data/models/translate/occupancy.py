@@ -2,7 +2,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped
 
 from src.application.database.holder import Base
-from src.core.enum.language import LanguageEnum
+from src.core.enum.application.language import LanguageEnum
 
 
 class OccupancyTypeTranslateModel(Base):

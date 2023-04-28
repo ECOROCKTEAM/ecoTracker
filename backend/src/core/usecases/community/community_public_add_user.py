@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.dto.m2m.user_community import UserCommunityCreateDTO, UserCommunityDTO
+from src.core.dto.m2m.user.community import UserCommunityCreateDTO, UserCommunityDTO
 from src.core.entity.user import User
 from src.core.exception.community import (
     CommunityDeactivatedError,

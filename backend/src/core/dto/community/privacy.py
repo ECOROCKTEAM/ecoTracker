@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from src.core.enum.language import LanguageEnum
+from src.core.enum.application.language import LanguageEnum
 from src.core.enum.community.privacy import PrivacyEnum
 from src.core.mixin.validators.translations import TranslationMixin
 
@@ -16,6 +16,7 @@ class PrivacyTranslateDTO:
 @dataclass
 class PrivacyCreateTranslateDTO:
     name: str
+    privacy_id: int
     language: LanguageEnum
 
 

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Tuple
 
 from src.core.dto.community.filters import CommunityIncludeUserFilter
-from src.core.dto.m2m.user_community import UserCommunityUpdateDTO, UserCommunityDTO
+from src.core.dto.m2m.user.community import UserCommunityUpdateDTO, UserCommunityDTO
 from src.core.entity.community import Community
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
@@ -27,7 +27,9 @@ class CommunityChangeUserRoleUsecase:
     def __init__(self, *, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user: User, update_obj: UserCommunityUpdateDTO) -> Result:
+    async def __call__(
+        self, *, user: User, update_obj: UserCommunityUpdateDTO
+    ) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(username=user.username)
         community_id = update_obj.community_id
@@ -36,7 +38,9 @@ class CommunityChangeUserRoleUsecase:
             asyncio.create_task(
                 self.repo.community_user_list(
                     id=community_id,
-                    filter=CommunityIncludeUserFilter(role_list=[CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN]),
+                    filter=CommunityIncludeUserFilter(
+                        role_list=[CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN]
+                    ),
                 )
             ),
         )
@@ -56,12 +60,19 @@ class CommunityChangeUserRoleUsecase:
                 target_user_link = _link
         # User role must be ADMIN or SUPERUSER
         if current_user_link is None:
-            raise UserIsNotCommunityAdminUserError(username=user.username, community_id=community_id)
+            raise UserIsNotCommunityAdminUserError(
+                username=user.username, community_id=community_id
+            )
 
         # ADMIN can't change role for SUPERUSER
-        if target_user_link and target_user_link.role.enum.SUPERUSER and current_user_link.role.enum.ADMIN:
+        if (
+            target_user_link
+            and target_user_link.role.enum.SUPERUSER
+            and current_user_link.role.enum.ADMIN
+        ):
             raise UserIsNotCommunitySuperUserError(
-                username=current_user_link.user_id, community_id=current_user_link.community_id
+                username=current_user_link.user_id,
+                community_id=current_user_link.community_id,
             )
 
         link = await self.repo.community_user_role_update(obj=update_obj)

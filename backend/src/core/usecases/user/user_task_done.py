@@ -15,14 +15,10 @@ class Result:
 
 
 class UserTaskDoneUseCase:
-
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
     async def __call__(self, *, user_task: UserTask) -> Result:
-
-        
-
         add = await self.repo.user_task_done(obj=user_task)
 
         return Result(item=add)

@@ -12,15 +12,15 @@ class Result:
 
 
 class SubscriptionCreateUseCase:
-
     def __init__(self, repo: IRepositoryCore) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user: User, create_obj: SubscriptionCreateDTO) -> Result:
-
+    async def __call__(
+        self, *, user: User, create_obj: SubscriptionCreateDTO
+    ) -> Result:
         if not user.application_role.ADMIN:
             raise UserPermissionError(username=user.username)
-        
+
         subscription = await self.repo.subscription_create(obj=create_obj)
 
         return Result(item=subscription)

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.enum.language import LanguageEnum
+from src.core.enum.application.language import LanguageEnum
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.mixin.validators.translations import TranslationMixin
 

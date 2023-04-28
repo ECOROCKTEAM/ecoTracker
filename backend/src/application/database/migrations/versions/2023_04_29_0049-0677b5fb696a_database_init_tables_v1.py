@@ -1,8 +1,8 @@
 """Database init tables v1
 
-Revision ID: 2a600d99580c
-Revises: 1bc066db6725
-Create Date: 2023-04-10 01:08:23.727630
+Revision ID: 0677b5fb696a
+Revises: 
+Create Date: 2023-04-29 00:49:24.571626
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "2a600d99580c"
-down_revision = "1bc066db6725"
+revision = "0677b5fb696a"
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -38,11 +38,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("value", sa.String(), nullable=False),
-        sa.Column(
-            "value_type",
-            sa.Enum("STR", "INT", "BOOL", name="variable_type_enum"),
-            nullable=False,
-        ),
+        sa.Column("value_type", sa.Enum("STR", "INT", "BOOL", name="variabletypeenum"), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("name"),
     )
@@ -53,20 +49,15 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("name"),
     )
+    op.create_table("occupancy_status", sa.Column("id", sa.Integer(), nullable=False), sa.PrimaryKeyConstraint("id"))
+    op.create_table("occupancy_type", sa.Column("id", sa.Integer(), nullable=False), sa.PrimaryKeyConstraint("id"))
     op.create_table(
-        "occupancy_status",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.PrimaryKeyConstraint("id"),
+        "privacy_type", sa.Column("id", sa.Integer(), autoincrement=True, nullable=False), sa.PrimaryKeyConstraint("id")
     )
     op.create_table(
-        "occupancy_type",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_table(
-        "privacy_type",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.PrimaryKeyConstraint("id"),
+        "role_application",
+        sa.Column("role", sa.String(), autoincrement=False, nullable=False),
+        sa.PrimaryKeyConstraint("role"),
     )
     op.create_table(
         "subscription_period_unit",
@@ -108,9 +99,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("category_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["category_id"],
             ["achievement_category.id"],
@@ -122,9 +111,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("status_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["status_id"],
             ["achievement_progress_status.id"],
@@ -149,9 +136,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("type_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["type_id"],
             ["community_role.id"],
@@ -174,9 +159,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("type_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["type_id"],
             ["contact_type.id"],
@@ -186,6 +169,7 @@ def upgrade() -> None:
     op.create_table(
         "mission",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column("active", sa.Boolean(), nullable=False),
         sa.Column("author", sa.String(), nullable=False),
         sa.Column("score", sa.Integer(), nullable=False),
         sa.Column("occupancy_id", sa.Integer(), nullable=False),
@@ -200,9 +184,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("status_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["status_id"],
             ["occupancy_status.id"],
@@ -214,9 +196,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("type_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["type_id"],
             ["occupancy_type.id"],
@@ -228,9 +208,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("type_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["type_id"],
             ["privacy_type.id"],
@@ -253,9 +231,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("type_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["type_id"],
             ["subscription_period_unit.id"],
@@ -282,9 +258,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("type_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["type_id"],
             ["subscription_type.id"],
@@ -303,14 +277,25 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
+        "user_role_application",
+        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column("username", sa.String(), nullable=False),
+        sa.Column("role", sa.String(), nullable=False),
+        sa.ForeignKeyConstraint(
+            ["role"],
+            ["role_application.role"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["username"],
+            ["user.username"],
+        ),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_table(
         "user_score",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("username", sa.String(), nullable=False),
-        sa.Column(
-            "operation",
-            sa.Enum("PLUS", "MINUS", name="score_operation_enum"),
-            nullable=False,
-        ),
+        sa.Column("operation", sa.Enum("PLUS", "MINUS", name="scoreoperationenum"), nullable=False),
         sa.Column("value", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["username"],
@@ -343,12 +328,22 @@ def upgrade() -> None:
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("description", sa.String(), nullable=False),
         sa.Column("achievement_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["achievement_id"],
             ["achievement.id"],
+        ),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_table(
+        "community_invite",
+        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column("community", sa.String(), nullable=False),
+        sa.Column("code", sa.String(), nullable=False),
+        sa.Column("expire_time", sa.DateTime(), nullable=False),
+        sa.ForeignKeyConstraint(
+            ["community"],
+            ["community.name"],
         ),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -381,11 +376,7 @@ def upgrade() -> None:
         "community_score",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("community", sa.String(), nullable=False),
-        sa.Column(
-            "operation",
-            sa.Enum("PLUS", "MINUS", name="score_operation_enum"),
-            nullable=False,
-        ),
+        sa.Column("operation", sa.Enum("PLUS", "MINUS", name="scoreoperationenum"), nullable=False),
         sa.Column("value", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["community"],
@@ -400,9 +391,7 @@ def upgrade() -> None:
         sa.Column("description", sa.String(), nullable=False),
         sa.Column("instruction", sa.String(), nullable=False),
         sa.Column("mission_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["mission_id"],
             ["mission.id"],
@@ -429,9 +418,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("type_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["type_id"],
             ["subscription_period.id"],
@@ -444,9 +431,7 @@ def upgrade() -> None:
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("description", sa.String(), nullable=False),
         sa.Column("task_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["task_id"],
             ["task.id"],
@@ -535,9 +520,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("subscription_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "language", sa.Enum("RU", "EN", name="language_enum"), nullable=False
-        ),
+        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["subscription_id"],
             ["subscription.id"],
@@ -578,9 +561,11 @@ def downgrade() -> None:
     op.drop_table("mission_translate")
     op.drop_table("community_score")
     op.drop_table("community_mission")
+    op.drop_table("community_invite")
     op.drop_table("achievement_translate")
     op.drop_table("achievement_progress")
     op.drop_table("user_score")
+    op.drop_table("user_role_application")
     op.drop_table("task")
     op.drop_table("subscription_type_translate")
     op.drop_table("subscription_type_constraint")
@@ -601,6 +586,7 @@ def downgrade() -> None:
     op.drop_table("user")
     op.drop_table("subscription_type")
     op.drop_table("subscription_period_unit")
+    op.drop_table("role_application")
     op.drop_table("privacy_type")
     op.drop_table("occupancy_type")
     op.drop_table("occupancy_status")
@@ -609,8 +595,4 @@ def downgrade() -> None:
     op.drop_table("community_role")
     op.drop_table("achievement_progress_status")
     op.drop_table("achievement_category")
-
-    op.execute("DROP TYPE variable_type_enum;")
-    op.execute("DROP TYPE language_enum;")
-    op.execute("DROP TYPE score_operation_enum;")
     # ### end Alembic commands ###

@@ -10,12 +10,12 @@ class ContactModel(Base):
     value: Mapped[str] = mapped_column()
     type_id: Mapped[int] = mapped_column(ForeignKey("contact_type.id"))
 
-    type = relationship(
-        "ContactTypeModel",
-        back_populates="contacts",
-        uselist=False,
-    )
-    user = relationship("UserModel", secondary="user_contact", back_populates="contacts")
+    # type = relationship(
+    #     "ContactTypeModel",
+    #     back_populates="contacts",
+    #     uselist=False,
+    # )
+    # user = relationship("UserModel", secondary="user_contact", back_populates="contacts")
 
 
 class ContactTypeModel(Base):
@@ -24,4 +24,4 @@ class ContactTypeModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(unique=True)
 
-    contacts = relationship("ContactTypeModel", back_populates="type", uselist=True)
+    # contacts = relationship("ContactTypeModel", back_populates="type", uselist=True)

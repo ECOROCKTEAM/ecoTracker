@@ -1,5 +1,4 @@
 from typing import Optional, AsyncIterator
-from contextlib import asynccontextmanager
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.asyncio import (
     create_async_engine,
@@ -14,7 +13,7 @@ def build_engine(url: str, echo: bool = False) -> AsyncEngine:
         echo=echo,
     )
 
-def build_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
+def create_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
     return async_sessionmaker(
         bind=engine,
         expire_on_commit=False,
@@ -23,6 +22,6 @@ def build_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSessio
 
 
 
-
 class Base(DeclarativeBase):
     __allow_unmapped__ = True
+    # __table_args__ = {"schema": "public"}

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -5,7 +6,7 @@ from src.core.enum.score import ScoreOperationEnum
 
 from src.application.database.base import Base
 
-
+@dataclass # TODO remove
 class UserModel(Base):
     __tablename__ = "user"
 
@@ -13,10 +14,10 @@ class UserModel(Base):
     password: Mapped[str] = mapped_column()
     active: Mapped[bool] = mapped_column(default=True)
 
-    contacts = relationship(
-        "ContactModel",
-        back_populates="user",
-    )
+    # contacts = relationship(
+    #     "ContactModel",
+    #     back_populates="user",
+    # )
     # role
 
 

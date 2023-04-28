@@ -1,6 +1,6 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.application.database.holder import Base
+from src.application.database.base import Base
 
 
 class ContactModel(Base):
@@ -15,9 +15,7 @@ class ContactModel(Base):
         back_populates="contacts",
         uselist=False,
     )
-    user = relationship(
-        "UserModel", secondary="user_contact", back_populates="contacts"
-    )
+    user = relationship("UserModel", secondary="user_contact", back_populates="contacts")
 
 
 class ContactTypeModel(Base):

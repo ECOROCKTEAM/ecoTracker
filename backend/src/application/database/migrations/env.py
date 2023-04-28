@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from src.application.settings import get_settings
-from src.application.database.holder import Base
+from src.application.database.base import Base
 from src.data.models import *
 
 settings = get_settings()
@@ -25,9 +25,7 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-config.set_section_option(
-    config.config_ini_section, "sqlalchemy.url", settings.DATABASE_URL
-)
+config.set_section_option(config.config_ini_section, "sqlalchemy.url", settings.DATABASE_URL)
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

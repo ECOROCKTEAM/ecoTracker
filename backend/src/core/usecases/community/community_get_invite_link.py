@@ -16,7 +16,7 @@ from src.core.exception.user import (
     UserIsNotCommunityAdminUserError,
     UserIsNotPremiumError,
 )
-from src.core.interfaces.repository.core import IRepositoryCore
+from src.core.interfaces.repository.community import IRepositoryCommunity
 from src.core.dto.community.filters import CommunityIncludeUserFilter
 from src.core.dto.community.invite import (
     CommunityInviteCreateDTO,
@@ -32,20 +32,18 @@ class Result:
 
 
 class CommunityGetInviteLinkUsecase:
-    def __init__(self, *, repo: IRepositoryCore) -> None:
+    def __init__(self, *, repo: IRepositoryCommunity) -> None:
         self.repo = repo
 
     async def __call__(self, *, user: User, community_id: str) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(username=user.username)
         tasks: Tuple[asyncio.Task[Community], asyncio.Task[list[UserCommunityDTO]]] = (
-            asyncio.create_task(self.repo.community_get(id=community_id)),
+            asyncio.create_task(self.repo.get(id=community_id)),
             asyncio.create_task(
-                self.repo.community_user_list(
+                self.repo.user_list(
                     id=community_id,
-                    filter=CommunityIncludeUserFilter(
-                        role_list=[CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN]
-                    ),
+                    filter=CommunityIncludeUserFilter(role_list=[CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN]),
                 )
             ),
         )
@@ -54,15 +52,11 @@ class CommunityGetInviteLinkUsecase:
             raise CommunityDeactivatedError(community_id=community.name)
         head_user_ids = [link.user_id for link in link_list]
         if user.username not in head_user_ids:
-            raise UserIsNotCommunityAdminUserError(
-                username=user.username, community_id=community_id
-            )
+            raise UserIsNotCommunityAdminUserError(username=user.username, community_id=community_id)
 
         link = None
         try:
-            link = await self.repo.community_invite_link_get(
-                community_id=community.name
-            )
+            link = await self.repo.invite_link_get(id=community.name)
         except CommunityInviteLinkNotFoundError:
             pass
 
@@ -71,14 +65,10 @@ class CommunityGetInviteLinkUsecase:
         expire_time = int(next_time.timestamp())
 
         if link is None:
-            create_obj = CommunityInviteCreateDTO(
-                community_id=community_id, code=random_hex, expire_time=expire_time
-            )
-            link = await self.repo.community_invite_link_create(obj=create_obj)
+            create_obj = CommunityInviteCreateDTO(community_id=community_id, code=random_hex, expire_time=expire_time)
+            link = await self.repo.invite_link_create(obj=create_obj)
             return Result(item=link)
 
-        update_obj = CommunityInviteUpdateDTO(
-            community_id=community_id, code=random_hex, expire_time=expire_time
-        )
-        link = await self.repo.community_invite_link_update(obj=update_obj)
+        update_obj = CommunityInviteUpdateDTO(community_id=community_id, code=random_hex, expire_time=expire_time)
+        link = await self.repo.invite_link_update(obj=update_obj)
         return Result(item=link)

@@ -1,0 +1,3 @@
+#!/usr/bin/fish
+
+docker run --name pgadmin -d --network host --env-file=./localpgadmin/localpgadmin.env dpage/pgadmin4

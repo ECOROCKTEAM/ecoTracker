@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.entity.user import User
-from src.core.interfaces.subscription.subscription import ISubscriptionRepository
+from src.core.interfaces.repository.subscription.subscription import ISubscriptionRepository
 from src.core.dto.subscription.period_unit import SubscriptionPeriodUnitCreateDTO, SubscriptionPeriodUnitDTO
 from src.core.exception.user import UserPermissionError
 

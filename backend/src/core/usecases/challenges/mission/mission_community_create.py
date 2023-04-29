@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from src.core.entity.user import User
 
 from src.core.exception.user import UserIsNotPremiumError
-from src.core.interfaces.repository.mission import IRepositoryMission
+from src.core.interfaces.repository.challenges.mission import IRepositoryMission
 from src.core.entity.mission import MissionCommunity, MissionCommunityCreateDTO
 
 

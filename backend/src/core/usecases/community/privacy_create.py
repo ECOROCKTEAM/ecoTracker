@@ -3,7 +3,7 @@ from src.core.dto.community.privacy import PrivacyCreateDTO, PrivacyDTO
 from src.core.entity.user import User
 
 from src.core.exception.user import UserPermissionError
-from src.core.interfaces.repository.community import IRepositoryCommunity
+from src.core.interfaces.repository.community.community import IRepositoryCommunity
 
 
 @dataclass

@@ -16,7 +16,7 @@ from src.core.exception.user import (
     UserIsNotCommunityAdminUserError,
     UserIsNotPremiumError,
 )
-from src.core.interfaces.repository.community import IRepositoryCommunity
+from src.core.interfaces.repository.community.community import IRepositoryCommunity
 from src.core.dto.community.filters import CommunityIncludeUserFilter
 from src.core.dto.community.invite import (
     CommunityInviteCreateDTO,

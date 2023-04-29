@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.entity.user import User
-from src.core.interfaces.subscription.subscription import ISubscriptionRepository
+from src.core.interfaces.repository.subscription.subscription import ISubscriptionRepository
 from src.core.entity.subscription import Subscription
 from src.core.exception.user import UserIsNotActivateError
 
@@ -18,6 +18,6 @@ class SubscriptionGetUseCase:
     async def __call__(self, *, user: User, id: int) -> Result:
         if not user.active:
             raise UserIsNotActivateError(user=user.username)
-        
+
         sub = await self.repo.get(id=id)
         return Result(item=sub)

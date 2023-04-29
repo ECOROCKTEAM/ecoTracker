@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.interfaces.user.task import IUserTaskRepository
+from src.core.interfaces.repository.user.task import IUserTaskRepository
 from src.core.entity.user import User
 from src.core.dto.m2m.user.task import UserTaskDTO, UserTaskUpdateDTO
 from src.core.exception.user import UserIsNotActivateError

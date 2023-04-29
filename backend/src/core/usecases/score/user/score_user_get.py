@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.dto.user.score import UserScoreDTO
-from src.core.interfaces.challenges.score.score import IScoreRepository
+from src.core.interfaces.repository.score.score import IScoreRepository
 from src.core.exception.user import UserIsNotActivateError
 from src.core.entity.user import User
 

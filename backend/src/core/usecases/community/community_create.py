@@ -4,7 +4,7 @@ from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
 
 from src.core.exception.user import UserIsNotPremiumError
-from src.core.interfaces.repository.community import IRepositoryCommunity
+from src.core.interfaces.repository.community.community import IRepositoryCommunity
 from src.core.entity.community import Community, CommunityCreateDTO
 
 

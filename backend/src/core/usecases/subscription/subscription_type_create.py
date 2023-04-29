@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from src.core.exception.user import UserPermissionError
 from src.core.entity.user import User
 from src.core.dto.subscription.type import SubscriptionTypeCreateDTO, SubscriptionTypeDTO
-from src.core.interfaces.subscription.subscription import ISubscriptionRepository
+from src.core.interfaces.repository.subscription.subscription import ISubscriptionRepository
 
 
 @dataclass

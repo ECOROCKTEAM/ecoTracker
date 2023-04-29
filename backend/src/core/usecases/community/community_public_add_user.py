@@ -7,7 +7,7 @@ from src.core.exception.community import (
     CommunityPrivacyError,
 )
 from src.core.exception.user import UserIsNotPremiumError, UserPermissionError
-from src.core.interfaces.repository.community import IRepositoryCommunity
+from src.core.interfaces.repository.community.community import IRepositoryCommunity
 
 
 @dataclass

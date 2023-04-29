@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 from src.core.dto.user.role import UserRoleCreateDTO, UserRoleDTO
 
@@ -6,7 +7,7 @@ from src.core.dto.user.role import UserRoleCreateDTO, UserRoleDTO
 class IApplicationRoleRepository(ABC):
 
     @abstractmethod
-    async def list(self) -> list[UserRoleDTO]:
+    async def list(self) -> List[UserRoleDTO]:
         """List of application role 
 
         Returns:
@@ -14,7 +15,7 @@ class IApplicationRoleRepository(ABC):
         """
 
     @abstractmethod
-    async def create(self, *, obj: UserRoleCreateDTO) -> str:
+    async def create(self, *, obj: UserRoleCreateDTO) -> UserRoleDTO:
         """ Creating application role
 
         Args:

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.dto.challenges.status  import OccupancyStatusCreateDTO, OccupancyStatusDTO
-from src.core.interfaces.challenges.occupancy.occupancy import IOccupancyRepository
+from src.core.interfaces.repository.challenges.occupancy import IOccupancyRepository
 from src.core.entity.user import User
 from src.core.exception.user import UserPermissionError
 

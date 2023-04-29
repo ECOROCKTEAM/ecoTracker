@@ -1,25 +1,23 @@
 from dataclasses import dataclass
 
-from src.core.interfaces.task_repo.task import ITaskRepository
 from src.core.entity.task import TaskCreateDTO
+from backend.src.core.interfaces.repository.challenges.task import ITaskRepository
 from src.core.entity.user import User
-from src.core.entity.task import Task
 from src.core.exception.user import UserPermissionError
 
 
 @dataclass
 class Result:
-    item: Task
+    item: int
 
 
-class TaskCreateUseCase:
+class TaskDeleteUseCase:
     def __init__(self, repo: ITaskRepository) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user: User, obj: TaskCreateDTO) -> Result:
+    async def __call__(self, *, user: User, id: int) -> Result:
         if not user.role.enum.ADMIN:
             raise UserPermissionError(username=user.username)
 
-        task = await self.repo.create(obj=obj)
-
-        return Result(item=task)
+        rm_id = await self.repo.delete(id=id)
+        return Result(item=rm_id)

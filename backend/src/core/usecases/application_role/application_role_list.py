@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.dto.user.role import UserRoleDTO
-from src.core.interfaces.user.application_role import IApplicationRoleRepository
+from src.core.interfaces.repository.user.application_role import IApplicationRoleRepository
 from src.core.exception.user import UserPermissionError
 from src.core.entity.user import User
 

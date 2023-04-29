@@ -3,7 +3,7 @@ from src.core.dto.mock import MockObj
 from src.core.entity.user import User
 
 from src.core.exception.user import UserIsNotPremiumError
-from src.core.interfaces.repository.community import IRepositoryCommunity
+from src.core.interfaces.repository.community.community import IRepositoryCommunity
 from src.core.dto.community.filters import CommunityListFilter
 from src.core.entity.community import Community
 

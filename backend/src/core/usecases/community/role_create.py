@@ -3,7 +3,7 @@ from src.core.dto.community.role import CommunityRoleCreateDTO, CommunityRoleDTO
 from src.core.entity.user import User
 
 from src.core.exception.user import UserPermissionError
-from src.core.interfaces.repository.community import IRepositoryCommunity
+from src.core.interfaces.repository.community.community import IRepositoryCommunity
 
 
 @dataclass

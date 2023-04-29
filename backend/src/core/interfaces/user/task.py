@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
+from src.core.dto.m2m.user.filters import UserTaskFilter
 from src.core.dto.m2m.user.task import UserTaskCreateDTO, UserTaskDTO, UserTaskUpdateDTO
 from src.core.dto.mock import MockObj
 
@@ -40,7 +42,7 @@ class IUserTaskRepository(ABC):
         """
 
     @abstractmethod # У нас по идее у всех видов пользователей (подписок) будет 3 задания всего лишь. Думаю, что сорт, фильтр и тп тут не нужно.
-    async def list(self, *, user_id: str) -> list[UserTaskDTO]:
+    async def list(self, *, user_id: str, filter_obj: Optional[UserTaskFilter] = None) -> list[UserTaskDTO]:
         """List of user tasks
 
         Args:

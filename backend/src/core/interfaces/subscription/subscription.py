@@ -44,7 +44,7 @@ class ISubscriptionRepository(ABC):
             Subscription: Subscription entity
         """
 
-    @abstractmethod # не думаю, что у нас много подписок будет, чтобы их фильтровать, сортировать и тп. Хотя исключать бесплатную можно, наверное...
+    @abstractmethod
     async def list(self, *, filter_obj: MockObj = None) -> list[Subscription]:
         """List of subscriptions
 
@@ -141,17 +141,6 @@ class ISubscriptionRepository(ABC):
         """
 
     @abstractmethod
-    async def type_get(self, *, id: int) -> SubscriptionTypeDTO:
-        """Get subscription type
-
-        Args:
-            id (int): int identify of subscription type object
-
-        Returns:
-            SubscriptionTypeDTO: DTO of subscription type object
-        """
-
-    @abstractmethod
     async def type_list(self) -> list[SubscriptionTypeDTO]:
         """Subscription type list
 
@@ -171,8 +160,11 @@ class ISubscriptionRepository(ABC):
         """
 
     @abstractmethod
-    async def type_constraint_list(self) -> list[SubscriptionTypeConstraintDTO]:
+    async def type_constraint_list(self, *, subscription_type: MockObj = None) -> list[SubscriptionTypeConstraintDTO]:
         """List of type constraint objects
+
+        Args:
+            subscription_type (MockObj): Filter list by subscription type object. Default None.
 
         Returns:
             list[SubscriptionTypeConstraintDTO]: List of DTO type constraint objects

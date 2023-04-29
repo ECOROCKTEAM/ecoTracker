@@ -85,3 +85,22 @@ class IUserContactRepository(ABC):
             ContactTypeDTO: DTO of contact type object
         """
         pass
+
+    @abstractmethod
+    async def contact_type_get(self, *, id: int) -> ContactTypeDTO:
+        """Get contact type
+
+        Args:
+            id (int): int identify of contact type object
+
+        Returns:
+            ContactTypeDTO: DTO of contact type object
+        """
+
+    @abstractmethod
+    async def contact_type_list(self) -> list[ContactTypeDTO]:
+        """List of contact type
+
+        Returns:
+            list[ContactTypeDTO]: List of DTO contact type objects
+        """

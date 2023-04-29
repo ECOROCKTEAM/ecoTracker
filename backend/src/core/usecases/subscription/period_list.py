@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from src.core.entity.user import User
 from src.core.interfaces.subscription.subscription import ISubscriptionRepository
 from src.core.dto.subscription.period import SubscriptionPeriodDTO
-from src.core.exception.user import UserPermissionError
+from src.core.exception.user import UserIsNotActivateError
 
 
 @dataclass
@@ -16,8 +16,8 @@ class SubscriptionPeriodListUseCase:
         self.repo = repo
 
     async def __call__(self, *, user: User) -> Result:
-        if not user.role.enum.ADMIN:
-            raise UserPermissionError
+        if not user.active:
+            raise UserIsNotActivateError(username=user.username)
         
         obj_list = await self.repo.period_list()
         return Result(items=obj_list)

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from src.core.enum.subscription.subscription import PeriodUnitEnum
 from src.core.dto.subscription.period_unit import SubscriptionPeriodUnitDTO
 from src.core.enum.application.language import LanguageEnum
 from src.core.mixin.validators.translations import TranslationMixin
@@ -14,17 +15,16 @@ class SubscriptionPeriodTranslateDTO:
 
 
 @dataclass
-class SubscriptionPeriodCreateTranslate:
+class SubscriptionPeriodTranslateDTO:
     name: str
     period_id: int
     language: LanguageEnum
 
 
 @dataclass
-class SubscriptionPeriodDTO(TranslationMixin):
-    id: int
+class SubscriptionPeriodCreateDTO(TranslationMixin):
     value: str
-    unit: SubscriptionPeriodUnitDTO
+    enum: PeriodUnitEnum
     translations: list[SubscriptionPeriodTranslateDTO]
 
     def __post_init__(self):
@@ -32,11 +32,11 @@ class SubscriptionPeriodDTO(TranslationMixin):
 
 
 @dataclass
-class SubscriptionPeriodCreateDTO(TranslationMixin):
-    unit_id: int
+class SubscriptionPeriodDTO(TranslationMixin):
+    id: int
     value: str
-    unit: SubscriptionPeriodUnitDTO
-    translations: list[SubscriptionPeriodCreateTranslate]
+    enum: PeriodUnitEnum
+    translations: list[SubscriptionPeriodTranslateDTO]
 
     def __post_init__(self):
         self._validate_translations(seq=self.translations)

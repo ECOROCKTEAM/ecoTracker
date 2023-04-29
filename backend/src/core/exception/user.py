@@ -26,4 +26,8 @@ class UserNotFoundError(UserError, RepoError):
 
 
 class UserIsNotActivateError(UserError):
-    msg = "User with username={username} not active"
+    msg_template = "User with username={username} not active"
+
+
+class UserTaskMaxAmountError(UserError, RepoError):
+    msg_template = "User with username={username} has maximum tasks"

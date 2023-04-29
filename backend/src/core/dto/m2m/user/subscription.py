@@ -2,11 +2,10 @@ from dataclasses import dataclass
 
 
 @dataclass
-class UserSubscriptionDTO:
+class UserSubscription:
     id: int
     username: str
     subscription_id: int
-    cancelled: bool
     until_date: int
 
 
@@ -15,10 +14,10 @@ class UserSubscriptionCreateDTO:
     username: str
     subscription_id: int
     until_date: int
-    cancelled: bool = True
 
 
 @dataclass
 class UserSubscriptionUpdateDTO:
     id: int
-    cancelled: bool = True
+    subscription_id: int
+    until_date: int

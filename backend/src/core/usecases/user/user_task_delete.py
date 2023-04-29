@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.interfaces.base import IRepositoryCore
+from src.core.interfaces.user.task import IUserTaskRepository
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError
 
@@ -9,15 +9,17 @@ from src.core.exception.user import UserIsNotActivateError
 class Result:
     task_id: int
 
+# Fix after rebuild tasks architecture
 
 class UserTaskDeleteUseCase:
-    def __init__(self, repo: IRepositoryCore) -> None:
+    def __init__(self, repo: IUserTaskRepository) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user: User, task_id: int) -> Result:
+    async def __call__(self, *, user: User, obj_id: int) -> Result:
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
 
-        add = await self.repo.user_task_delete(user_id=user.username, task_id=task_id)
+        # Подумать на работе над ограничениями при удалении тасков обычному пользователю
 
+        add = await self.repo.delete(id=obj_id)
         return Result(task_id=add)

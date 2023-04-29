@@ -26,7 +26,6 @@ class UserCreateDTO:
     username: str
     password: str
     active: bool
-    subscription: Subscription
     role: UserRoleDTO
 
 
@@ -36,5 +35,5 @@ class UserUpdateDTO:
     username: Optional[str] = None
     password: Optional[str] = None
     active: Optional[bool] = None
-    subscription: Optional[Subscription] = None
     role: Optional[UserRoleDTO] = None
+

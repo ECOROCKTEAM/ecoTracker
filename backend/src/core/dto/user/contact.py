@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from src.core.enum.user.contact import ContactEnum
 from src.core.enum.application.language import LanguageEnum
@@ -34,6 +35,7 @@ class ContactTypeCreateDTO(TranslationMixin):
 @dataclass
 class ContactTypeDTO(TranslationMixin):
     id: int
+    enum: ContactEnum
     translations: list[ContactTypeTranslatedCreateDTO]
 
     def __post_init__(self):
@@ -58,5 +60,6 @@ class ContactCreateDTO:
 
 @dataclass
 class ContactUpdateDTO:
-    id: int
-    value: str
+    contact_id: int
+    value: Optional[str] = None
+    active: Optional[bool] = None

@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 
-from src.core.dto.user import UserUpdateDTO
-from src.core.interfaces.base import IRepositoryCore
-from src.core.entity.user import User
+from src.core.interfaces.user.user import IUserRepository
+from src.core.entity.user import User, UserUpdateDTO
 
 
 @dataclass
@@ -11,23 +10,15 @@ class Result:
 
 
 class UserUpdateUseCase:
-    def __init__(self, repo: IRepositoryCore) -> None:
+    def __init__(self, repo: IUserRepository) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user: User, obj: UserUpdateDTO) -> Result:
-        """
-        Тут по идее не на что не проверяем, даже на active. Вдруг мы хотим из active = Fasle сделать True.
-        Тогда вопрос следующем: Может ли юзер сам себя активировать? Это во-первых. Во-вторых: а если захотим забанить чела?
-        Тогда он сам себе блокировку снимет...
-        В mtv версии у нас по сути и банить наверное будет не за что. Разве что за комментарии в чате миссий сообщества, если таковые будут.
-        Пока сделал так, чтобы сам себе он блокировку не снимал.
-        Можно кстати сделать так, что active пользователя может в False поставить админ приложения. Он же может снять. Если он пользователя
-        деактивирует, то и снимается подписка с него. Сам пользователь может снять диактивацию преобретая подписку
+    async def __call__(self, *, obj: UserUpdateDTO) -> Result:
 
-        Надо обсудить на созвоне
+        # У нас UserUpdateDTO имеет поле subscription. Тут мы обновляем пользователя вместе с подпиской? 
+        # Ведь у нас есть отдельный метод на обновление подписки...
+        # Возможно, что изменение пользователя самого будет происходить в личном кабинете и изменять он будет всё, что касается User, без подписки.
+        # Подписку он будет изменять в разделе "Подписка" в приложении и околотого. Может в UserUpdateDTO убрать в таком случае subscription?
 
-        """
-
-        user = await self.repo.user_update(user=user, obj=obj)
-
+        user = await self.repo.update(obj=obj)
         return Result(item=user)

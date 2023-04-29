@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from src.core.interfaces.base import IRepositoryCore
+from src.core.interfaces.task_repo.task import ITaskRepository
 from src.core.exception.user import UserIsNotActivateError
 from src.core.entity.task import Task
 from src.core.entity.user import User
@@ -12,21 +12,21 @@ class Result:
 
 
 class TaskListUseCase:
-    def __init__(self, repo: IRepositoryCore) -> None:
+    def __init__(self, repo: ITaskRepository) -> None:
         self.repo = repo
 
     async def __call__(
         self,
         *,
+        user: User,
         sorting_obj: str = None,
         paggination_obj: str = None,
         filter_obj: str = None,
-        user: User,
     ) -> Result:
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
 
-        task_list = await self.repo.task_list(
+        task_list = await self.repo.list(
             sorting_obj=sorting_obj,
             paggination_obj=paggination_obj,
             filter_obj=filter_obj,

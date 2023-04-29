@@ -1,8 +1,13 @@
+import asyncio
 from dataclasses import dataclass
+from typing import Tuple
 
+from src.core.exception.subscription import ConstraintDeleteError
+from src.core.dto.subscription.type import SubscriptionTypeConstraintDTO
+from src.core.dto.subscription.constraint import SubscriptionConstraintDTO
 from src.core.exception.user import UserPermissionError
 from src.core.entity.user import User
-from src.core.interfaces.base import IRepositoryCore
+from src.core.interfaces.subscription.subscription import ISubscriptionRepository
 
 
 @dataclass
@@ -11,15 +16,25 @@ class Result:
 
 
 class SubscriptionConstraintDeleteUseCase:
-    def __init__(self, repo: IRepositoryCore) -> None:
+    def __init__(self, repo: ISubscriptionRepository) -> None:
         self.repo = repo
 
-    async def __call__(self, user: User, id: int) -> Result:
-        if not user.application_role.ADMIN:
+    async def __call__(self, user: User, constraint_id: int) -> Result:
+        if not user.role.enum.ADMIN:
             raise UserPermissionError(username=user.username)
+        
+        # По идее было бы неплохо проверить привязано ли ограничение к какой-нибудь подписке прежде, чем удалить её.
+        # Не знаю на каком этапе это делается, но мне кажется, что проверку эту надо делать тут
 
-        constraint_id = await self.repo.subscription_type_constraint_delete(
-            constraint_name=id
+        tasks: Tuple[asyncio.Task[SubscriptionConstraintDTO], asyncio.Task[list[SubscriptionTypeConstraintDTO]]] = (
+            asyncio.create_task(self.repo.constraint_get(id=constraint_id)),
+            asyncio.create_task(self.repo.type_constraint_list())
         )
+        constraint, subscription_type_constraint_list = await asyncio.gather(*tasks)
 
-        return Result(item=constraint_id)
+        for item in subscription_type_constraint_list:
+            if item.constraint_id == constraint.id:
+                raise ConstraintDeleteError(constraint=constraint.name)
+
+        id = await self.repo.type_constraint_delete(id=constraint_id)
+        return Result(item=id)

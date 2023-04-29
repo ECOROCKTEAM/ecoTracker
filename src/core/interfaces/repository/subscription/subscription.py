@@ -3,14 +3,16 @@ from abc import ABC, abstractmethod
 from src.core.dto.subscription.period import SubscriptionPeriodCreateDTO, SubscriptionPeriodDTO
 from src.core.dto.subscription.type import SubscriptionTypeConstraintDTO, SubscriptionTypeCreateDTO, SubscriptionTypeDTO
 from src.core.dto.subscription.period_unit import SubscriptionPeriodUnitCreateDTO, SubscriptionPeriodUnitDTO
-from src.core.dto.m2m.subscription_type.constraint import SubscriptionTypeConstrainCreateDTO, SubscriptionTypeConstrainDTO
+from src.core.dto.m2m.subscription_type.constraint import (
+    SubscriptionTypeConstrainCreateDTO,
+    SubscriptionTypeConstrainDTO,
+)
 from src.core.dto.subscription.constraint import SubscriptionConstraintDTO, SubscriptionConstraintCreateDTO
 from src.core.entity.subscription import Subscription, SubscriptionCreateDTO
 from src.core.dto.mock import MockObj
 
 
 class ISubscriptionRepository(ABC):
-
     @abstractmethod
     async def create(self, *, obj: SubscriptionCreateDTO) -> Subscription:
         """Create subscription
@@ -131,7 +133,7 @@ class ISubscriptionRepository(ABC):
         Returns:
             SubscriptionPeriodDTO: DTO of subscription period object
         """
-    
+
     @abstractmethod
     async def period_list(self) -> list[SubscriptionPeriodDTO]:
         """List of subscription period
@@ -150,10 +152,10 @@ class ISubscriptionRepository(ABC):
 
     @abstractmethod
     async def type_create(self, *, obj: SubscriptionTypeCreateDTO) -> SubscriptionTypeDTO:
-        """ Subscription type create
+        """Subscription type create
 
         Args:
-            obj (SubscriptionTypeCreateDTO): DTO for creating new subscription type object 
+            obj (SubscriptionTypeCreateDTO): DTO for creating new subscription type object
 
         Returns:
             SubscriptionTypeDTO: DTO of subscription type object

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 from src.core.entity.user import User
 
 from src.core.dto.mock import MockObj
@@ -10,7 +9,7 @@ from src.core.entity.mission import Mission
 
 @dataclass
 class Result:
-    item: List[Mission]
+    item: list[Mission]
 
 
 class MissionListUsecase:

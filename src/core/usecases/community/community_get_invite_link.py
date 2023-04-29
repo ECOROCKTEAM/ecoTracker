@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 import os
 import binascii
 from dataclasses import dataclass
-from typing import Tuple
 from src.core.dto.m2m.user.community import UserCommunityDTO
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
@@ -24,6 +23,7 @@ from src.core.dto.community.invite import (
     CommunityInviteUpdateDTO,
 )
 from src.core.entity.community import Community
+import contextlib
 
 
 @dataclass
@@ -38,7 +38,7 @@ class CommunityGetInviteLinkUsecase:
     async def __call__(self, *, user: User, community_id: str) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(username=user.username)
-        tasks: Tuple[asyncio.Task[Community], asyncio.Task[list[UserCommunityDTO]]] = (
+        tasks: tuple[asyncio.Task[Community], asyncio.Task[list[UserCommunityDTO]]] = (
             asyncio.create_task(self.repo.get(id=community_id)),
             asyncio.create_task(
                 self.repo.user_list(
@@ -55,10 +55,9 @@ class CommunityGetInviteLinkUsecase:
             raise UserIsNotCommunityAdminUserError(username=user.username, community_id=community_id)
 
         link = None
-        try:
+        with contextlib.suppress(CommunityInviteLinkNotFoundError):
             link = await self.repo.invite_link_get(id=community.name)
-        except CommunityInviteLinkNotFoundError:
-            pass
+
 
         random_hex = binascii.hexlify(os.urandom(16)).decode()
         next_time = datetime.now() + timedelta(weeks=1)

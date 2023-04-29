@@ -1,5 +1,4 @@
 from abc import abstractmethod, ABC
-from typing import List
 
 from src.core.dto.mock import MockObj
 from src.core.dto.m2m.user.contact import ContactUserDTO
@@ -60,7 +59,7 @@ class IUserContactRepository(ABC):
             order_obj (MockObj): Some order obj
 
         Returns:
-            list[ContactUserDTO]: List of DTO user contact objects
+            list[ContactUserDTO]: list of DTO user contact objects
         """
         pass
 
@@ -99,9 +98,9 @@ class IUserContactRepository(ABC):
         """
 
     @abstractmethod
-    async def contact_type_list(self) -> List[ContactTypeDTO]:
-        """List of contact type
+    async def contact_type_list(self) -> list[ContactTypeDTO]:
+        """list of contact type
 
         Returns:
-            list[ContactTypeDTO]: List of DTO contact type objects
+            list[ContactTypeDTO]: list of DTO contact type objects
         """

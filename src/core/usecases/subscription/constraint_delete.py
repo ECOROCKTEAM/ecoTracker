@@ -1,6 +1,5 @@
 import asyncio
 from dataclasses import dataclass
-from typing import Tuple
 
 from src.core.exception.subscription import ConstraintDeleteError
 from src.core.dto.subscription.type import SubscriptionTypeConstraintDTO
@@ -26,7 +25,7 @@ class SubscriptionConstraintDeleteUseCase:
         # По идее было бы неплохо проверить привязано ли ограничение к какой-нибудь подписке прежде, чем удалить её.
         # Не знаю на каком этапе это делается, но мне кажется, что проверку эту надо делать тут
 
-        tasks: Tuple[asyncio.Task[SubscriptionConstraintDTO], asyncio.Task[list[SubscriptionTypeConstraintDTO]]] = (
+        tasks: tuple[asyncio.Task[SubscriptionConstraintDTO], asyncio.Task[list[SubscriptionTypeConstraintDTO]]] = (
             asyncio.create_task(self.repo.constraint_get(id=constraint_id)),
             asyncio.create_task(self.repo.type_constraint_list()),
         )

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -27,10 +26,10 @@ class CommunityMissionModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     meeting_date: Mapped[datetime] = mapped_column(DateTime(timezone=False))
-    people_required: Mapped[Optional[int]]
-    people_max: Mapped[Optional[int]]
-    place: Mapped[Optional[str]]
-    comment: Mapped[Optional[str]]
+    people_required: Mapped[int | None]
+    people_max: Mapped[int | None]
+    place: Mapped[str | None]
+    comment: Mapped[str | None]
     community: Mapped[str] = mapped_column(ForeignKey("community.name"))
     mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
     status_id: Mapped[bool] = mapped_column(ForeignKey("occupancy_status.id"))

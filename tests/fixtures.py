@@ -1,5 +1,4 @@
 import asyncio
-from cgi import test
 import logging
 import logging.config
 import os
@@ -14,7 +13,7 @@ from sqlalchemy import text
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from src.application.database.base import create_async_engine, create_session_factory
-from testcontainers.postgres import PostgresContainer  # type: ignore
+from testcontainers.postgres import PostgresContainer
 
 ROOT_DIR = Path(os.getcwd())
 BACKUP_PATH = "tests/dumps/backup.sql"

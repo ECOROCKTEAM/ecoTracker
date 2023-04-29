@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from src.core.entity.subscription import Subscription
 from src.core.dto.user.role import UserRoleDTO
@@ -32,8 +31,8 @@ class UserCreateDTO:
 @dataclass
 class UserUpdateDTO:
     user_id: str  # username reference
-    username: Optional[str] = None
-    password: Optional[str] = None
-    active: Optional[bool] = None
-    role: Optional[UserRoleDTO] = None
+    username: str | None = None
+    password: str | None = None
+    active: bool | None = None
+    role: UserRoleDTO | None = None
 

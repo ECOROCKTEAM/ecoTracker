@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Optional
 from src.core.dto.challenges.mission.mission import MissionCreateTranslateDTO, MissionTranslateDTO
 
 from src.core.dto.challenges.type import OccupancyTypeDTO
@@ -36,9 +35,9 @@ class MissionCreateDTO(TranslationMixin):
 class MissionUpdateDTO(TranslationMixin):
     id: int
     translations: list[MissionCreateTranslateDTO]
-    active: Optional[bool] = None
-    score: Optional[int] = None
-    occupancy_type_id: Optional[int] = None
+    active: bool | None = None
+    score: int | None = None
+    occupancy_type_id: int | None = None
 
     def __post_init__(self):
         self._validate_translations(seq=self.translations)
@@ -54,7 +53,7 @@ class MissionUserCreateDTO:
 @dataclass
 class MissionUserUpdateDTO:
     id: int
-    status_id: Optional[int] = None
+    status_id: int | None = None
 
 
 @dataclass
@@ -72,31 +71,31 @@ class MissionCommunityCreateDTO:
     status_id: int
     community_id: str
     author: str
-    place: Optional[str] = None
-    meeting_date: Optional[int] = None
-    people_required: Optional[int] = None
-    people_max: Optional[int] = None
-    comment: Optional[str] = None
+    place: str | None = None
+    meeting_date: int | None = None
+    people_required: int | None = None
+    people_max: int | None = None
+    comment: str | None = None
 
 
 @dataclass
 class MissionCommunityUpdateDTO:
     id: int
-    status_id: Optional[int] = None
-    place: Optional[str] = None
-    meeting_date: Optional[int] = None
-    people_required: Optional[int] = None
-    people_max: Optional[int] = None
-    comment: Optional[str] = None
+    status_id: int | None = None
+    place: str | None = None
+    meeting_date: int | None = None
+    people_required: int | None = None
+    people_max: int | None = None
+    comment: str | None = None
 
 
 @dataclass
 class MissionCommunity(Mission):
-    place: Optional[str]
-    meeting_date: Optional[int]
-    people_required: Optional[int]
-    people_max: Optional[int]
-    comment: Optional[str]
+    place: str | None
+    meeting_date: int | None
+    people_required: int | None
+    people_max: int | None
+    comment: str | None
     author: str  # creator user.username
 
     def __post_init__(self):

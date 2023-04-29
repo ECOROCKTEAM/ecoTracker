@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
 from src.core.enum.subscription.subscription import PeriodUnitEnum
-from src.core.dto.subscription.period_unit import SubscriptionPeriodUnitDTO
 from src.core.enum.application.language import LanguageEnum
 from src.core.mixin.validators.translations import TranslationMixin
 
@@ -15,7 +14,7 @@ class SubscriptionPeriodTranslateDTO:
 
 
 @dataclass
-class SubscriptionPeriodTranslateDTO:
+class SubscriptionPeriodTranslateCreateDTO:
     name: str
     period_id: int
     language: LanguageEnum

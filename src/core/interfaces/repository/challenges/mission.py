@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List
 from src.core.dto.mock import MockObj
 
 from src.core.entity.mission import (
@@ -51,7 +50,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    async def list(self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj) -> List[Mission]:
+    async def list(self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj) -> list[Mission]:
         """Получить список базовых миссий
 
         Args:
@@ -99,7 +98,7 @@ class IRepositoryMission(ABC):
     @abstractmethod
     async def list_for_user(
         self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj
-    ) -> List[MissionUser]:
+    ) -> list[MissionUser]:
         """Получить список миссий пользователя
 
         Args:
@@ -147,7 +146,7 @@ class IRepositoryMission(ABC):
     @abstractmethod
     async def list_for_community(
         self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj
-    ) -> List[MissionCommunity]:
+    ) -> list[MissionCommunity]:
         """Получить список миссий сообщества
 
         Args:

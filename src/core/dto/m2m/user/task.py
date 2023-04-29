@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.dto.challenges.status import OccupancyStatusDTO
 
 

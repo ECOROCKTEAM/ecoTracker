@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from src.core.dto.user.contact import ContactDTO, ContactTypeDTO
 
@@ -15,8 +14,8 @@ class ContactUser:
 @dataclass
 class ContactUserUpdateDTO:
     contact_id: int
-    contact: Optional[ContactDTO] = None
-    active: Optional[bool] = None
+    contact: ContactDTO | None = None
+    active: bool | None = None
 
 
 @dataclass

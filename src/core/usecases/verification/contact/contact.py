@@ -21,7 +21,7 @@ async def contact_value_type_check(*, contact: str, type: ContactTypeDTO) -> boo
 
     if type.enum.PHONE and not contact.startswith("+"):
         raise ContactValueError(value=contact)
-    if type.enum.MAIL and not "@" in contact:
+    if type.enum.MAIL and "@" not in contact:
         raise ContactValueError(value=contact)
     
     return True

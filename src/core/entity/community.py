@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from src.core.dto.community.privacy import PrivacyDTO
 
@@ -24,7 +23,7 @@ class CommunityCreateDTO:
 
 @dataclass
 class CommunityUpdateDTO:
-    name: Optional[str] = None
-    description: Optional[str] = None
-    active: Optional[bool] = None
-    privacy_id: Optional[int] = None
+    name: str | None = None
+    description: str | None = None
+    active: bool | None = None
+    privacy_id: int | None = None

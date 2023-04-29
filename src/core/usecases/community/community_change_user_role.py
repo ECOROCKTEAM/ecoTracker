@@ -1,6 +1,5 @@
 import asyncio
 from dataclasses import dataclass
-from typing import Tuple
 
 from src.core.dto.community.filters import CommunityIncludeUserFilter
 from src.core.dto.m2m.user.community import UserCommunityUpdateDTO, UserCommunityDTO
@@ -31,7 +30,7 @@ class CommunityChangeUserRoleUsecase:
         if not user.is_premium:
             raise UserIsNotPremiumError(username=user.username)
         community_id = update_obj.community_id
-        tasks: Tuple[asyncio.Task[Community], asyncio.Task[list[UserCommunityDTO]]] = (
+        tasks: tuple[asyncio.Task[Community], asyncio.Task[list[UserCommunityDTO]]] = (
             asyncio.create_task(self.repo.get(id=community_id)),
             asyncio.create_task(
                 self.repo.user_list(

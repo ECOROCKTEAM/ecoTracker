@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from sqlalchemy import DateTime, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 from src.core.enum.score import ScoreOperationEnum
 
 from src.application.database.base import Base

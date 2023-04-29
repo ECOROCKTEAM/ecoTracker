@@ -1,5 +1,4 @@
 import asyncio
-from typing import Tuple
 from dataclasses import dataclass
 from src.core.dto.m2m.user.community import UserCommunityDTO
 
@@ -27,7 +26,7 @@ class CommunityUpdateUsecase:
     async def __call__(self, *, user: User, community_id: str, update_obj: CommunityUpdateDTO) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(username=user.username)
-        tasks: Tuple[asyncio.Task[Community], asyncio.Task[list[UserCommunityDTO]]] = (
+        tasks: tuple[asyncio.Task[Community], asyncio.Task[list[UserCommunityDTO]]] = (
             asyncio.create_task(self.repo.get(id=community_id)),
             asyncio.create_task(
                 self.repo.user_list(

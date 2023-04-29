@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List
 from src.core.dto.mock import MockObj
 
 from src.core.dto.community.filters import (
@@ -73,7 +72,7 @@ class IRepositoryCommunity(ABC):
     @abstractmethod
     async def list(
         self, *, filter_obj: CommunityListFilter, order_obj: MockObj, pagination_obj: MockObj
-    ) -> List[Community]:
+    ) -> list[Community]:
         """Получить список сообществ
 
         Args:
@@ -118,7 +117,7 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def privacy_list(self) -> List[PrivacyDTO]:
+    async def privacy_list(self) -> list[PrivacyDTO]:
         """Получить список типов приватности для сообщества
 
         Returns:
@@ -157,7 +156,7 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def role_list(self) -> List[CommunityRoleDTO]:
+    async def role_list(self) -> list[CommunityRoleDTO]:
         """Получить список ролей для сообщества
 
         Returns:
@@ -197,7 +196,7 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def user_list(self, *, id: str, filter: CommunityIncludeUserFilter) -> List[UserCommunityDTO]:
+    async def user_list(self, *, id: str, filter: CommunityIncludeUserFilter) -> list[UserCommunityDTO]:
         """Получить список ID пользователей входящих в сообщество
 
         Args:

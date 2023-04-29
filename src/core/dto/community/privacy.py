@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from src.core.enum.application.language import LanguageEnum
 from src.core.enum.community.privacy import PrivacyEnum

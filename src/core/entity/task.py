@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from src.core.enum.application.language import LanguageEnum
 from src.core.dto.challenges.type import OccupancyTypeDTO
@@ -25,8 +24,8 @@ class TaskTranslateCreateDTO:
 class TaskTranslateUpdateDTO:
     id: int
     language: LanguageEnum
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str | None = None
+    description: str | None = None
 
 
 @dataclass
@@ -53,9 +52,9 @@ class TaskCreateDTO(TranslationMixin):
 @dataclass
 class TaskUpdateDTO(TranslationMixin):
     id: int
-    score: Optional[int] = None
-    type: Optional[OccupancyTypeDTO] = None
-    translations: Optional[list[TaskTranslateDTO]] = None
+    score: int | None = None
+    type: OccupancyTypeDTO | None = None
+    translations: list[TaskTranslateDTO] | None = None
 
     def __post_init__(self):
         if isinstance(self.translations, list):

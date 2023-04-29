@@ -1,4 +1,4 @@
-from src.core.exception.base import DomainError, RepoError
+from src.core.exception.base import DomainError
 
 
 class MissionError(DomainError):

@@ -23,7 +23,8 @@ class ContactUserUpdateUseCase:
         old_obj = await self.repo.get(id=update_obj.contact_id)
         await contact_value_type_check(contact=update_obj.contact.value, type=old_obj.type)
 
-        # Так как тип обновляемого контакта мы не получаем (пользователь его не вводит), то приходится по id брать старый контакт.
+        # Так как тип обновляемого контакта мы не получаем (пользователь его не вводит),
+        # то приходится по id брать старый контакт.
         # Извлекать его тип и отправлять на проверку этот тип старого контакта с новым значением контакта.
 
         obj = await self.repo.update(obj=update_obj)

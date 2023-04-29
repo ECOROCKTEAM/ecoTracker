@@ -3,7 +3,7 @@ from src.core.dto.community.role import CommunityRoleCreateDTO, CommunityRoleDTO
 from src.core.entity.user import User
 
 from src.core.exception.user import UserPermissionError
-from src.core.interfaces.repository.core import IRepositoryCore
+from src.core.interfaces.repository.community.community import IRepositoryCommunity
 
 
 @dataclass
@@ -12,13 +12,11 @@ class Result:
 
 
 class CommunityRoleCreateUsecase:
-    def __init__(self, *, repo: IRepositoryCore) -> None:
+    def __init__(self, *, repo: IRepositoryCommunity) -> None:
         self.repo = repo
 
-    async def __call__(
-        self, *, user: User, create_obj: CommunityRoleCreateDTO
-    ) -> Result:
+    async def __call__(self, *, user: User, create_obj: CommunityRoleCreateDTO) -> Result:
         if not user.role.enum.ADMIN:
             raise UserPermissionError(username=user.username)
-        role = await self.repo.community_role_create(obj=create_obj)
+        role = await self.repo.role_create(obj=create_obj)
         return Result(item=role)

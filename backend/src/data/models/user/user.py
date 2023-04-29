@@ -1,11 +1,12 @@
+from dataclasses import dataclass
 from datetime import datetime
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.core.enum.score import ScoreOPerationEnum
+from src.core.enum.score import ScoreOperationEnum
 
-from src.application.database.holder import Base
+from src.application.database.base import Base
 
-
+@dataclass # TODO remove
 class UserModel(Base):
     __tablename__ = "user"
 
@@ -13,10 +14,10 @@ class UserModel(Base):
     password: Mapped[str] = mapped_column()
     active: Mapped[bool] = mapped_column(default=True)
 
-    contacts = relationship(
-        "ContactModel",
-        back_populates="user",
-    )
+    # contacts = relationship(
+    #     "ContactModel",
+    #     back_populates="user",
+    # )
     # role
 
 
@@ -25,7 +26,7 @@ class UserRoleApplicationModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(ForeignKey("user.username"))
-    role: Mapped[str] = mapped_column(ForeignKey("role_application.name"))
+    role: Mapped[str] = mapped_column(ForeignKey("role_application.role"))
 
 
 class RoleApplicationModel(Base):
@@ -67,7 +68,7 @@ class UserScoreModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(ForeignKey("user.username"))
-    operation: Mapped[ScoreOPerationEnum]
+    operation: Mapped[ScoreOperationEnum]
     value: Mapped[int]
 
 

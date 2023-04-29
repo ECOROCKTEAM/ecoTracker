@@ -1,7 +1,9 @@
+from dataclasses import dataclass
 from sqlalchemy.orm import mapped_column, Mapped
-from src.application.database.holder import Base
+from src.application.database.base import Base
 
 
+@dataclass
 class OccupancyTypeModel(Base):
     __tablename__ = "occupancy_type"
 

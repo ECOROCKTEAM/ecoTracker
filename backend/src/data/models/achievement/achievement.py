@@ -1,15 +1,13 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped
-from src.application.database.holder import Base
+from src.application.database.base import Base
 
 
 class AchievementModel(Base):
     __tablename__ = "achievement"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    category_id: Mapped[int] = mapped_column(
-        ForeignKey("achievement_category.id"), nullable=False
-    )
+    category_id: Mapped[int] = mapped_column(ForeignKey("achievement_category.id"), nullable=False)
     total: Mapped[int] = mapped_column(nullable=False)
 
 

@@ -1,11 +1,8 @@
 from dataclasses import dataclass
 
 from src.core.entity.user import User
-from src.core.interfaces.base import IRepositoryCore
-from src.core.dto.subscription import (
-    SubscriptionPeriodUnitDTO,
-    SubscriptionPeriodUnitCreateDTO,
-)
+from src.core.interfaces.repository.subscription.subscription import ISubscriptionRepository
+from src.core.dto.subscription.period_unit import SubscriptionPeriodUnitCreateDTO, SubscriptionPeriodUnitDTO
 from src.core.exception.user import UserPermissionError
 
 
@@ -15,15 +12,12 @@ class Result:
 
 
 class SubscriptionPeriodUnitCreateUseCase:
-    def __init__(self, repo: IRepositoryCore) -> None:
+    def __init__(self, repo: ISubscriptionRepository) -> None:
         self.repo = repo
 
-    async def __call__(
-        self, *, user: User, create_obj: SubscriptionPeriodUnitCreateDTO
-    ) -> Result:
-        if not user.application_role.ADMIN:
+    async def __call__(self, *, user: User, obj: SubscriptionPeriodUnitCreateDTO) -> Result:
+        if not user.role.enum.ADMIN:
             raise UserPermissionError(username=user.username)
 
-        period = await self.repo.subscription_period_unit_create(obj=create_obj)
-
+        period = await self.repo.period_unit_create(obj=obj)
         return Result(item=period)

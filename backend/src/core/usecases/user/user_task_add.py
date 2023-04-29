@@ -11,6 +11,7 @@ from src.core.exception.user import UserIsNotActivateError, UserTaskMaxAmountErr
 class Result:
     item: UserTaskDTO
 
+# Fix after rebuild tasks architecture
 
 class UserTaskAddUseCase:
     def __init__(self, repo: IUserTaskRepository) -> None:
@@ -20,7 +21,7 @@ class UserTaskAddUseCase:
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
         
-        tasks: list[UserTaskDTO] = await self.repo.list(user_id=user.username)
+        tasks = await self.repo.list(user_id=user.username)
 
         if len(tasks) == 3:
             raise UserTaskMaxAmountError(username=user.username)
@@ -28,10 +29,9 @@ class UserTaskAddUseCase:
         obj = UserTaskCreateDTO(
             username=user.username,
             task_id=task_id,
-            occupancy=OccupancyStatusEnum.ACTIVE 
+            occupancy=OccupancyStatusEnum.ACTIVE
         )
-        # Хардкод? И можно ли так в принципе делать? Я хочу присваивать статус "активный" взятого задания пользователем по дефолту.
-        # Хотел просто, чтобы когда пользователь брал задачу она сразу была активна. Ну это и так понятно. Хз как правильно сделать
+
 
         
 

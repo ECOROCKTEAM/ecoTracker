@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABC
+from typing import Optional
 
 from src.core.dto.mock import MockObj
 from src.core.dto.user.score import UserBoundOffsetDTO, UserScoreDTO
@@ -17,12 +18,13 @@ class IScoreRepository(ABC):
             UserScoreDTO: DTO for user score
         """
 
+# Return хреновый. Подумать, как выводить список пользователей с их местом в рейтинге
     @abstractmethod
     async def rating_user(
         self, *, 
-        obj: UserBoundOffsetDTO = None,
+        obj: Optional[UserBoundOffsetDTO] = None,
         order_obj: MockObj,
-        ) -> list[dict([(int, UserScoreDTO)])]:
+        ) -> list[dict([(int, UserScoreDTO)])]: # type: ignore
         """Get user rating
 
         Args:

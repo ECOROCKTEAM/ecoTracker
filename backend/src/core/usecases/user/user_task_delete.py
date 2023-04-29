@@ -9,6 +9,7 @@ from src.core.exception.user import UserIsNotActivateError
 class Result:
     task_id: int
 
+# Fix after rebuild tasks architecture
 
 class UserTaskDeleteUseCase:
     def __init__(self, repo: IUserTaskRepository) -> None:

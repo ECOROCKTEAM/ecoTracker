@@ -21,7 +21,6 @@ class TaskUpdateUseCase:
         if not user.role.enum.ADMIN:
             raise UserPermissionError(username=user.username)
         
-        # Думаю, что ничего страшного, если мы изменим таск или миссию, будучи взятой какими-то пользователями
 
         task = await self.repo.update(obj=obj)
         return Result(item=task)

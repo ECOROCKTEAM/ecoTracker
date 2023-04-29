@@ -23,11 +23,7 @@ class ContactUserCreateUseCase:
             raise UserIsNotActivateError(username=user.username)
         
         await contact_value_type_check(value=obj.value, type=obj.type)
-
-        # По идее у нас будет такая же проверка (на то, что это действительно телефон или почти) и в update методах.
-        # Можно вынести эти проверки в функцию общую.
-        # Передать туда аргументами тип контакта и значение и там проверять, и райзить ошибки. 
-
+        
         contact = await self.repo.create(
             obj=ContactUserCreateDTO(
                 username=user.username,

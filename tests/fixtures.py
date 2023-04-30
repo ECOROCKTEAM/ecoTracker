@@ -1,7 +1,5 @@
 import asyncio
-import os
-from pathlib import Path
-from typing import AsyncGenerator, Generator, Optional
+from typing import AsyncGenerator, Generator
 import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -9,9 +7,6 @@ from src.application.settings import get_settings
 from src.application.database.base import create_async_engine, create_session_factory
 
 settings = get_settings()
-
-ROOT_DIR = Path(os.getcwd())
-BACKUP_PATH = "tests/dumps/backup.sql"
 
 
 @pytest.fixture(scope="module")

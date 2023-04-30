@@ -7,4 +7,4 @@
     - develop
     - run "make lint" for check code 
     - commit and push
-    
+    - "make tests" for running all tests 

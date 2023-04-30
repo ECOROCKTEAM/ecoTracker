@@ -4,7 +4,7 @@ from src.application.database.base import Base
 
 
 @dataclass
-class OccupancyTypeModel(Base):
+class OccupancyCategoryModel(Base):
     __tablename__ = "occupancy_type"
 
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from backend.src.core.enum.variable_type import VariableTypeEnum
+from src.core.enum.variable_type import VariableTypeEnum
 from src.core.typing.base import VariableValueType
 
 

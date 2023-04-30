@@ -10,15 +10,12 @@ from src.core.dto.community.invite import (
     CommunityInviteDTO,
     CommunityInviteUpdateDTO,
 )
-from src.core.dto.community.role import CommunityRoleCreateDTO, CommunityRoleDTO
-from src.core.dto.community.privacy import PrivacyCreateDTO, PrivacyDTO
 from src.core.dto.m2m.user.community import (
     UserCommunityDTO,
     UserCommunityCreateDTO,
     UserCommunityUpdateDTO,
 )
 from src.core.entity.community import Community, CommunityCreateDTO, CommunityUpdateDTO
-from src.core.enum.community.role import CommunityRoleEnum
 
 
 class IRepositoryCommunity(ABC):
@@ -100,70 +97,6 @@ class IRepositoryCommunity(ABC):
         Raises:
             RepoError: Ошибка операции
             CommunityDeleteError: Ошибка при удалении сообщества
-        """
-
-    @abstractmethod
-    async def privacy_create(self, *, obj: PrivacyCreateDTO) -> PrivacyDTO:
-        """Добавить тип приватности для сообщества
-
-        Args:
-            create_obj (PrivacyCreateDTO): DTO объект создания типа приватности
-
-        Returns:
-            PrivacyDTO: Типов приватности для сообщества
-
-        Raises:
-            RepoError: Ошибка операции
-        """
-
-    @abstractmethod
-    async def privacy_list(self) -> list[PrivacyDTO]:
-        """Получить список типов приватности для сообщества
-
-        Returns:
-            List[PrivacyListDTO]: Список типов приватности для сообщества
-
-        Raises:
-            RepoError: Ошибка операции
-        """
-
-    @abstractmethod
-    async def role_get(self, *, enum: CommunityRoleEnum) -> CommunityRoleDTO:
-        """Получить роль сообщества
-
-        Args:
-            enum (CommunityRoleEnum): Элемент перечисления CommunityRoleEnum
-
-        Returns:
-            CommunityRoleDTO: Роль сообщества
-
-        Raises:
-            RepoError: Ошибка операции
-        """
-
-    @abstractmethod
-    async def role_create(self, *, obj: CommunityRoleCreateDTO) -> CommunityRoleDTO:
-        """Создать роль для сообщества
-
-        Args:
-            obj (CommunityRoleCreateDTO): DTO объект создания роли сообщества
-
-        Returns:
-            CommunityRoleDTO: Роль сообщества
-
-        Raises:
-            RepoError: Ошибка операции
-        """
-
-    @abstractmethod
-    async def role_list(self) -> list[CommunityRoleDTO]:
-        """Получить список ролей для сообщества
-
-        Returns:
-            List[CommunityRoleDTO]: Список ролей для сообщества
-
-        Raises:
-            RepoError: Ошибка операции
         """
 
     @abstractmethod

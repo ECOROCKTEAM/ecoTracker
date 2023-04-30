@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from src.core.enum.application.language import LanguageEnum
-from src.core.dto.challenges.type import OccupancyTypeDTO
+from src.core.enum.language import LanguageEnum
+from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.mixin.validators.translations import TranslationMixin
 
 
@@ -32,7 +32,7 @@ class TaskTranslateUpdateDTO:
 class Task(TranslationMixin):
     id: int
     score: int
-    type: OccupancyTypeDTO
+    category: OccupancyCategoryDTO
     translations: list[TaskTranslateDTO]
 
     def __post_init__(self):
@@ -42,7 +42,7 @@ class Task(TranslationMixin):
 @dataclass
 class TaskCreateDTO(TranslationMixin):
     score: int
-    type: OccupancyTypeDTO
+    category: OccupancyCategoryDTO
     translations: list[TaskTranslateDTO]
 
     def __post_init__(self):
@@ -53,7 +53,7 @@ class TaskCreateDTO(TranslationMixin):
 class TaskUpdateDTO(TranslationMixin):
     id: int
     score: int | None = None
-    type: OccupancyTypeDTO | None = None
+    category: OccupancyCategoryDTO | None = None
     translations: list[TaskTranslateDTO] | None = None
 
     def __post_init__(self):

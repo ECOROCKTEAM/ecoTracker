@@ -1,24 +1,12 @@
 from abc import ABC, abstractmethod
 
-from src.core.dto.challenges.status import OccupancyStatusCreateDTO, OccupancyStatusDTO
-from src.core.dto.challenges.type import OccupancyTypeCreateDTO, OccupancyTypeDTO
+from src.core.dto.challenges.category import OccupancyCategoryCreateDTO, OccupancyCategoryDTO
 
 
 class IOccupancyRepository(ABC):
 
     @abstractmethod
-    async def status_create(self, *, obj: OccupancyStatusCreateDTO) -> OccupancyStatusDTO:
-        """ Create occupancy status
-
-        Args:
-            obj (OccupancyStatusCreateDTO): DTO for creating occupancy status object
-
-        Returns:
-            OccupancyStatusDTO: DTO of occupancy status
-        """
-
-    @abstractmethod
-    async def type_create(self, *, obj: OccupancyTypeCreateDTO) -> OccupancyTypeDTO:
+    async def type_create(self, *, obj: OccupancyCategoryCreateDTO) -> OccupancyCategoryDTO:
         """ Create occupancy type
 
         Args:

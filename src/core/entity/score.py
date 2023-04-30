@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.enum.score import ScoreOperationEnum
+from src.core.enum.score.score import ScoreOperationEnum
 
 
 @dataclass

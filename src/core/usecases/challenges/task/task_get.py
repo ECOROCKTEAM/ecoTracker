@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.entity.task import Task
-from backend.src.core.interfaces.repository.challenges.task import ITaskRepository
+from src.core.interfaces.repository.challenges.task import ITaskRepository
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError
 

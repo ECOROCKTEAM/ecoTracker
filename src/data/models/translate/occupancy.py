@@ -2,10 +2,10 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped
 
 from src.application.database.base import Base
-from src.core.enum.application.language import LanguageEnum
+from src.core.enum.language import LanguageEnum
 
 
-class OccupancyTypeTranslateModel(Base):
+class OccupancyCategoryTranslateModel(Base):
     __tablename__ = "occupancy_type_translate"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.dto.community.privacy import PrivacyDTO
+from src.core.enum.community.privacy import PrivacyEnum
 
 
 @dataclass
@@ -10,7 +10,7 @@ class Community:
     name: str
     description: str
     active: bool
-    privacy: PrivacyDTO
+    privacy: PrivacyEnum
 
 
 @dataclass
@@ -26,4 +26,4 @@ class CommunityUpdateDTO:
     name: str | None = None
     description: str | None = None
     active: bool | None = None
-    privacy_id: int | None = None
+    privacy: PrivacyEnum | None = None

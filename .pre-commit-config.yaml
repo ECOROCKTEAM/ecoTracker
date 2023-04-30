@@ -6,3 +6,8 @@ repos:
         entry: make lint
         language: system
         types: [python]
+      - id: fmt
+        name: fmt
+        entry: make fmt
+        language: system
+        types: [python]

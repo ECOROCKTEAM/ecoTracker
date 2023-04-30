@@ -12,6 +12,10 @@ lint:
 lint-fix:
 	${CMD} ruff --fix .
 
+.PHONY: fmt
+fmt:
+	${CMD} black .
+
 .PHONY: export-deps
 export-deps:
 	poetry export --without-hashes -f requirements.txt --output requirements.txt

@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from backend.src.core.interfaces.repository.challenges.task import ITaskRepository
+from src.core.interfaces.repository.challenges.task import ITaskRepository
 from src.core.exception.user import UserIsNotActivateError
 from src.core.entity.task import Task
 from src.core.entity.user import User

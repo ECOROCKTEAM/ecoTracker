@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.entity.task import Task, TaskUpdateDTO
-from backend.src.core.interfaces.repository.challenges.task import ITaskRepository
+from src.core.interfaces.repository.challenges.task import ITaskRepository
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError, UserPermissionError
 
@@ -20,7 +20,6 @@ class TaskUpdateUseCase:
             raise UserIsNotActivateError(username=user.username)
         if not user.role.enum.ADMIN:
             raise UserPermissionError(username=user.username)
-        
 
         task = await self.repo.update(obj=obj)
         return Result(item=task)

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from src.core.enum.application.language import LanguageEnum
-from src.core.dto.subscription.type import SubscriptionTypeDTO
+from src.core.enum.language import LanguageEnum
+from src.core.enum.subscription.subscription import SubscriptionTypeEnum
 from src.core.dto.subscription.period import SubscriptionPeriodDTO
 from src.core.mixin.validators.translations import TranslationMixin
 
@@ -23,7 +23,7 @@ class SubscriptionTranslateCreateDTO:
 
 @dataclass
 class SubscriptionCreateDTO(TranslationMixin):
-    type: SubscriptionTypeDTO
+    type: SubscriptionTypeEnum
     period: SubscriptionPeriodDTO
     translations: list[SubscriptionTranslateDTO]
 
@@ -34,7 +34,7 @@ class SubscriptionCreateDTO(TranslationMixin):
 @dataclass
 class Subscription(TranslationMixin):
     id: int
-    type: SubscriptionTypeDTO
+    type: SubscriptionTypeEnum
     period: SubscriptionPeriodDTO
     translations: list[SubscriptionTranslateDTO]
 

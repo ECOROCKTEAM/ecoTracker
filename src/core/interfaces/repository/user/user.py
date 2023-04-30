@@ -5,7 +5,6 @@ from src.core.entity.user import User, UserCreateDTO, UserUpdateDTO
 
 
 class IUserRepository(ABC):
-
     @abstractmethod
     async def create(self, *, user_obj: UserCreateDTO, sub_obj: Subscription) -> User:
         """Create user
@@ -22,7 +21,7 @@ class IUserRepository(ABC):
 
         """
 
-    @abstractmethod 
+    @abstractmethod
     async def update(self, *, obj: UserUpdateDTO) -> User:
         """User update
 
@@ -33,7 +32,7 @@ class IUserRepository(ABC):
             User: User entity
         """
 
-    @abstractmethod 
+    @abstractmethod
     async def update_subscription(self, *, user_id: str, sub_id: int) -> User:
         """Update user subscription
 

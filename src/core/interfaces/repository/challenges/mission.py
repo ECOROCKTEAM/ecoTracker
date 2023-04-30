@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from src.core.dto.mock import MockObj
 
 from src.core.entity.mission import (
-    Mission,
+    MissionBase,
     MissionUpdateDTO,
     MissionCreateDTO,
     MissionUserCreateDTO,
@@ -16,41 +16,41 @@ from src.core.entity.mission import (
 
 class IRepositoryMission(ABC):
     @abstractmethod
-    async def get(self, *, id: int) -> Mission:
+    async def get(self, *, id: int) -> MissionBase:
         """Получить базовую миссию
 
         Args:
             id (int): ID базовой миссии
 
         Returns:
-            Mission: Сущность базовой миссии
+            MissionBase: Сущность базовой миссии
 
         """
 
     @abstractmethod
-    async def update(self, *, obj: MissionUpdateDTO) -> Mission:
+    async def update(self, *, obj: MissionUpdateDTO) -> MissionBase:
         """Обновить базовую миссию
 
         Args:
             obj (MissionUpdateDTO): Объект обновления
 
         Returns:
-            Mission: Сущность безовой миссии
+            MissionBase: Сущность безовой миссии
         """
 
     @abstractmethod
-    async def create(self, *, obj: MissionCreateDTO) -> Mission:
+    async def create(self, *, obj: MissionCreateDTO) -> MissionBase:
         """Создать базовую миссию
 
         Args:
             obj (MissionCreateDTO): Объект создания
 
         Returns:
-            Mission: Сущность безовой миссии
+            MissionBase: Сущность безовой миссии
         """
 
     @abstractmethod
-    async def list(self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj) -> list[Mission]:
+    async def list(self, *, filter_obj: MockObj, order_obj: MockObj, pagination_obj: MockObj) -> list[MissionBase]:
         """Получить список базовых миссий
 
         Args:
@@ -59,7 +59,7 @@ class IRepositoryMission(ABC):
             pagination_obj (MockObj): Объект пагинации
 
         Returns:
-            List[Mission]: Список базовых миссий
+            List[MissionBase]: Список базовых миссий
         """
 
     @abstractmethod

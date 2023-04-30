@@ -3,7 +3,7 @@ from src.core.exception.contact import ContactValueError
 
 
 async def contact_value_type_check(*, contact: str, type: ContactTypeDTO) -> bool:
-    """Checking if the value matches the type.  
+    """Checking if the value matches the type.
 
     Args:
         contact (str): string of contact
@@ -23,5 +23,5 @@ async def contact_value_type_check(*, contact: str, type: ContactTypeDTO) -> boo
         raise ContactValueError(value=contact)
     if type.enum.MAIL and "@" not in contact:
         raise ContactValueError(value=contact)
-    
+
     return True

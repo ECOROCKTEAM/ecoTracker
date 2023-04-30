@@ -11,7 +11,9 @@ from src.core.exception.user import UserIsNotActivateError, UserTaskMaxAmountErr
 class Result:
     item: UserTaskDTO
 
+
 # Fix after rebuild tasks architecture
+
 
 class UserTaskAddUseCase:
     def __init__(self, repo: IUserTaskRepository) -> None:
@@ -20,20 +22,17 @@ class UserTaskAddUseCase:
     async def __call__(self, *, user: User, task_id: int) -> Result:
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
-        
+
         tasks = await self.repo.list(user_id=user.username)
 
         if len(tasks) == 3:
             raise UserTaskMaxAmountError(username=user.username)
-        
+
         obj = UserTaskCreateDTO(
             username=user.username,
             task_id=task_id,
-            occupancy=OccupancyStatusEnum.ACTIVE
+            occupancy=OccupancyStatusEnum.ACTIVE,
         )
-
-
-        
 
         add = await self.repo.create(obj=obj)
 

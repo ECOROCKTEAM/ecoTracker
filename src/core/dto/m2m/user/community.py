@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-
-from src.core.dto.community.role import CommunityRoleDTO
+from src.core.enum.community.role import CommunityRoleEnum
 
 
 @dataclass
@@ -8,7 +7,7 @@ class UserCommunityDTO:
     id: int
     user_id: str
     community_id: str
-    role: CommunityRoleDTO
+    role: CommunityRoleEnum
 
 
 @dataclass
@@ -16,11 +15,11 @@ class UserCommunityUpdateDTO:
     id: int
     user_id: str
     community_id: str
-    role_id: int
+    role: CommunityRoleEnum
 
 
 @dataclass
 class UserCommunityCreateDTO:
     user_id: str
     community_id: str
-    role_id: int
+    role: CommunityRoleEnum

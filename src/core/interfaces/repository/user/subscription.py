@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
 
-from src.core.dto.m2m.user.subscription import UserSubscription, UserSubscriptionUpdateDTO, UserSubscriptionCreateDTO
+from src.core.dto.m2m.user.subscription import (
+    UserSubscription,
+    UserSubscriptionUpdateDTO,
+    UserSubscriptionCreateDTO,
+)
 
 
 class IUserSubscriptionRepository(ABC):
-    
     @abstractmethod
     async def create(self, *, obj: UserSubscriptionCreateDTO) -> UserSubscription:
         """Create user subscription object

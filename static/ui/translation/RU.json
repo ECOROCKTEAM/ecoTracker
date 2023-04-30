@@ -1,0 +1,42 @@
+{
+    "enum": {
+        "LanguageEnum": {
+            "RU": "Русский",
+            "EN": "Английский"
+        },
+        "ContactTypeEnum": {
+            "PHONE": "Телефон",
+            "MAIL": "Почта"
+        },
+        "SubscriptionTypeEnum": {
+            "USUAL": "Бесплатный",
+            "PREMIUM": "Премиум"
+        },
+        "SubscriptionPeriodUnitEnum": {
+            "DAY": "День",
+            "WEEK": "Неделя",
+            "MONTH": "Месяц"
+        },
+        "CommunityPrivacyEnum": {
+            "PUBLICK": null,
+            "PRIVATE": null
+        },
+        "CommunityRoleEnum": {
+            "SUPERUSER": null,
+            "ADMIN": null,
+            "USER": null,
+            "BLOCKED": null
+        },
+        "OccupancyStatusEnum": {
+            "ACTIVE": null,
+            "FINISH": null,
+            "REJECT": null,
+            "OVERDUE": null
+        },
+        "AchievementStatusEnum": {
+            "ACTIVE": null,
+            "FINISH": null
+        },
+        "AchievementCategoryEnum": {}
+    }
+}

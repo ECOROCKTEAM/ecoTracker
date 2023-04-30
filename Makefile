@@ -4,6 +4,10 @@ CMD:=poetry run
 setup:
 	poetry install && ${CMD} pre-commit install
 
+.PHONY: clean
+clean:
+	${CMD} pyclean .
+
 .PHONY: lint
 lint:
 	${CMD} ruff .
@@ -19,6 +23,14 @@ fmt:
 .PHONY: export-deps
 export-deps:
 	poetry export --without-hashes -f requirements.txt --output requirements.txt
+
+.PHONY: translate-update
+translate-update:
+	${CMD} python manage.py translate enum
+
+.PHONY: translate-verify
+translate-verify:
+	${CMD} python manage.py translate verify
 
 .PHONY: pre-commit
 pre-commit:

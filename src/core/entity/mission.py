@@ -1,21 +1,21 @@
-from dataclasses import dataclass, field
-from src.core.dto.challenges.mission.mission import MissionCreateTranslateDTO, MissionTranslateDTO
+from dataclasses import dataclass
 
-from src.core.dto.challenges.type import OccupancyTypeDTO
-from src.core.dto.challenges.status import OccupancyStatusDTO
-from src.core.enum.challenges.related import RelatedEnum
+from src.core.dto.challenges.mission.mission import (
+    MissionCreateTranslateDTO,
+    MissionTranslateDTO,
+)
+from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.mixin.validators.translations import TranslationMixin
+from src.core.enum.challenges.status import OccupancyStatusEnum
 
 
 @dataclass
-class Mission(TranslationMixin):
+class MissionBase(TranslationMixin):
     id: int
     active: bool
     score: int
-    type: OccupancyTypeDTO
-    status: OccupancyStatusDTO
+    category: OccupancyCategoryDTO
     translations: list[MissionTranslateDTO]
-    related: RelatedEnum = field(init=False)
 
     def __post_init__(self):
         self._validate_translations(seq=self.translations)
@@ -24,7 +24,7 @@ class Mission(TranslationMixin):
 @dataclass
 class MissionCreateDTO(TranslationMixin):
     score: int
-    occupancy_type_id: int
+    category_id: int
     translations: list[MissionCreateTranslateDTO]
 
     def __post_init__(self):
@@ -37,7 +37,7 @@ class MissionUpdateDTO(TranslationMixin):
     translations: list[MissionCreateTranslateDTO]
     active: bool | None = None
     score: int | None = None
-    occupancy_type_id: int | None = None
+    category_id: int | None = None
 
     def __post_init__(self):
         self._validate_translations(seq=self.translations)
@@ -47,28 +47,26 @@ class MissionUpdateDTO(TranslationMixin):
 class MissionUserCreateDTO:
     username: str
     mission_id: int
-    status_id: int
+    status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
 
 
 @dataclass
 class MissionUserUpdateDTO:
     id: int
-    status_id: int | None = None
+    status: OccupancyStatusEnum | None = None
 
 
 @dataclass
-class MissionUser(Mission):
+class MissionUser(MissionBase):
     id: int
     username: str
-
-    def __post_init__(self):
-        self.related = RelatedEnum.USER
+    status: OccupancyStatusEnum
 
 
 @dataclass
 class MissionCommunityCreateDTO:
     mission_id: int
-    status_id: int
+    status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
     community_id: str
     author: str
     place: str | None = None
@@ -81,7 +79,7 @@ class MissionCommunityCreateDTO:
 @dataclass
 class MissionCommunityUpdateDTO:
     id: int
-    status_id: int | None = None
+    status: OccupancyStatusEnum | None = None
     place: str | None = None
     meeting_date: int | None = None
     people_required: int | None = None
@@ -90,13 +88,11 @@ class MissionCommunityUpdateDTO:
 
 
 @dataclass
-class MissionCommunity(Mission):
+class MissionCommunity(MissionBase):
     place: str | None
     meeting_date: int | None
     people_required: int | None
     people_max: int | None
     comment: str | None
     author: str  # creator user.username
-
-    def __post_init__(self):
-        self.related = RelatedEnum.COMMUNITY
+    status: OccupancyStatusEnum

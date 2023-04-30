@@ -2,23 +2,19 @@ from datetime import datetime
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.core.enum.score import ScoreOperationEnum
 from src.application.database.base import Base
+from src.core.enum.score.operation import ScoreOperationEnum
+from src.core.enum.community.privacy import CommunityPrivacyEnum
+from src.core.enum.challenges.status import OccupancyStatusEnum
 
 
 class CommunityModel(Base):
     __tablename__ = "community"
 
     name: Mapped[str] = mapped_column(primary_key=True, unique=True)
-    description: Mapped[str] = mapped_column()
+    description: Mapped[str]
     active: Mapped[bool] = mapped_column(default=True)
-    privacy_type_id: Mapped[int] = mapped_column(ForeignKey("privacy_type.id"))
-
-
-class CommunityRoleModel(Base):
-    __tablename__ = "community_role"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    privacy: Mapped[CommunityPrivacyEnum]
 
 
 class CommunityMissionModel(Base):
@@ -32,7 +28,7 @@ class CommunityMissionModel(Base):
     comment: Mapped[str | None]
     community: Mapped[str] = mapped_column(ForeignKey("community.name"))
     mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
-    status_id: Mapped[bool] = mapped_column(ForeignKey("occupancy_status.id"))
+    status: Mapped[OccupancyStatusEnum]
 
 
 class CommunityScoreModel(Base):

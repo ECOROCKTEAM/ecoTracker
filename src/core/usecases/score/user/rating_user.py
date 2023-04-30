@@ -17,24 +17,19 @@ class RatingUserUseCase:
         self.repo = repo
 
     async def __call__(
-        self, *,
-        order_obj: MockObj, 
+        self,
+        *,
+        order_obj: MockObj,
         bound_offset: int = None,
         user: User = None,
     ) -> Result:
-        
         if not user.active:
-            raise UserIsNotActivateError(
-                username=user.username, deactivated=user.active
-            )
+            raise UserIsNotActivateError(username=user.username, deactivated=user.active)
         if not user.is_premium:
             raise UserIsNotPremiumError(username=user.username)
 
         if all([bound_offset, user]):
-            bound = UserBoundOffsetDTO(
-                username=user.username,
-                bound_offset=bound_offset
-            )
+            bound = UserBoundOffsetDTO(username=user.username, bound_offset=bound_offset)
             score = await self.repo.rating_user(obj=bound, order_obj=order_obj)
 
         score = await self.repo.rating_user(order_obj)

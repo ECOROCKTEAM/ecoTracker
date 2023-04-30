@@ -58,7 +58,6 @@ class CommunityGetInviteLinkUsecase:
         with contextlib.suppress(CommunityInviteLinkNotFoundError):
             link = await self.repo.invite_link_get(id=community.name)
 
-
         random_hex = binascii.hexlify(os.urandom(16)).decode()
         next_time = datetime.now() + timedelta(weeks=1)
         expire_time = int(next_time.timestamp())

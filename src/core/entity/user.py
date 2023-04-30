@@ -35,4 +35,3 @@ class UserUpdateDTO:
     password: str | None = None
     active: bool | None = None
     role: UserRoleDTO | None = None
-

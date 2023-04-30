@@ -1,6 +1,6 @@
-from enum import Enum
+from src.core.enum.base.translation import TranslationEnum
 
 
-class PrivacyEnum(str, Enum):
+class CommunityPrivacyEnum(str, TranslationEnum):
     PUBLICK = "PUBLICK"
     PRIVATE = "PRIVATE"

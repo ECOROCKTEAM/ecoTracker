@@ -3,12 +3,12 @@ from src.core.entity.user import User
 
 from src.core.exception.user import UserPermissionError
 from src.core.interfaces.repository.challenges.mission import IRepositoryMission
-from src.core.entity.mission import Mission, MissionUpdateDTO
+from src.core.entity.mission import MissionBase, MissionUpdateDTO
 
 
 @dataclass
 class Result:
-    item: Mission
+    item: MissionBase
 
 
 class MissionUpdateUsecase:

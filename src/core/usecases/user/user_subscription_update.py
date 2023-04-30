@@ -2,8 +2,14 @@ from dataclasses import dataclass
 
 from src.core.interfaces.repository.user.user import IUserRepository
 from src.core.dto.mock import MockObj
-from src.core.interfaces.repository.subscription.subscription import ISubscriptionRepository
-from src.core.dto.m2m.user.subscription import UserSubscription, UserSubscriptionUpdateDTO, UserSubscriptionCreateDTO
+from src.core.interfaces.repository.subscription.subscription import (
+    ISubscriptionRepository,
+)
+from src.core.dto.m2m.user.subscription import (
+    UserSubscription,
+    UserSubscriptionUpdateDTO,
+    UserSubscriptionCreateDTO,
+)
 from src.core.interfaces.repository.user.subscription import IUserSubscriptionRepository
 from src.core.entity.user import User
 
@@ -39,7 +45,9 @@ class UserSubscriptionUpdateUseCase:
             # Если нужно -> изменю на _
 
             new_obj = UserSubscriptionCreateDTO(
-                username=user.username, subscription_id=obj.subscription_id, until_date=obj.until_date
+                username=user.username,
+                subscription_id=obj.subscription_id,
+                until_date=obj.until_date,
             )
 
             new_user_paid_sub = await self.user_sub_repo.create(obj=new_obj)
@@ -62,7 +70,9 @@ class UserSubscriptionUpdateUseCase:
             """If user bought premium subscription"""
 
             obj = UserSubscriptionCreateDTO(
-                username=user.username, subscription_id=obj.subscription_id, until_date=obj.until_date
+                username=user.username,
+                subscription_id=obj.subscription_id,
+                until_date=obj.until_date,
             )  # type: ignore
 
             new_paid_sub = await self.user_sub_repo.create(obj=obj)  # type: ignore

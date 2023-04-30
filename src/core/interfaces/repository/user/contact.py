@@ -7,7 +7,6 @@ from src.core.dto.m2m.user.contact import ContactUserCreateDTO, ContactUserUpdat
 
 
 class IUserContactRepository(ABC):
-
     @abstractmethod
     async def create(self, *, obj: ContactUserCreateDTO) -> ContactUserDTO:
         """Create user contact
@@ -22,7 +21,7 @@ class IUserContactRepository(ABC):
     @abstractmethod
     async def update(self, *, obj: ContactUserUpdateDTO) -> ContactUserDTO:
         """Update user contact
-        
+
         Args:
             obj (ContactUserUpdateDTO): DTO for update user contact object
 
@@ -40,16 +39,13 @@ class IUserContactRepository(ABC):
         Returns:
             int: id of deleted contact
         """
+
     pass
 
     @abstractmethod
     async def list(
-        self, *, 
-        user_id: str, 
-        filter_obj: MockObj, 
-        sorting_obj: MockObj, 
-        order_obj: MockObj
-                           ) -> list[ContactUserDTO]:
+        self, *, user_id: str, filter_obj: MockObj, sorting_obj: MockObj, order_obj: MockObj
+    ) -> list[ContactUserDTO]:
         """User contact list
 
         Args:
@@ -76,7 +72,7 @@ class IUserContactRepository(ABC):
 
     @abstractmethod
     async def contact_type_create(self, *, obj: ContactTypeCreateDTO) -> ContactTypeDTO:
-        """ Creating contact type
+        """Creating contact type
 
         Args:
             obj (ContactTypeCreateDTO): DTO for create contact type

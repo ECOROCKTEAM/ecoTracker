@@ -6,7 +6,7 @@ class SubscriptionTypeEnum(str, TranslationEnum):
     PREMIUM = "PREMIUM"
 
 
-class PeriodUnitEnum(str, TranslationEnum):
+class SubscriptionPeriodUnitEnum(str, TranslationEnum):
     DAY = "DAY"
     WEEK = "WEEK"
     MONTH = "MONTH"

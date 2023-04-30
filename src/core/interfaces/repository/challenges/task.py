@@ -6,15 +6,9 @@ from src.core.entity.task import TaskUpdateDTO
 
 
 class ITaskRepository(ABC):
-
     @abstractmethod
-    async def list(
-        self, *,
-        sorting_obj: MockObj,
-        paggination_obj: MockObj,
-        filter_obj: MockObj
-    ) -> list[Task]:
-        """ List of tasks
+    async def list(self, *, sorting_obj: MockObj, paggination_obj: MockObj, filter_obj: MockObj) -> list[Task]:
+        """List of tasks
 
         Args:
             sorting_obj (str): sorting object
@@ -50,7 +44,7 @@ class ITaskRepository(ABC):
 
     @abstractmethod
     async def delete(self, *, id: int) -> int:
-        """delete task 
+        """delete task
 
         Args:
             id (int): task identify

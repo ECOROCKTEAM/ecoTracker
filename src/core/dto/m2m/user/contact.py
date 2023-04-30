@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from src.core.dto.user.contact import ContactDTO
 
+
 @dataclass
 class ContactUserUpdateDTO:
     contact_id: int
@@ -17,7 +18,7 @@ class ContactUserDTO:
     active: bool
 
 
-@dataclass 
+@dataclass
 class ContactUserCreateDTO:
     username: str
     value: str

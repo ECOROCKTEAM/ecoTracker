@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 
-from src.core.dto.challenges.mission.mission import MissionCreateTranslateDTO, MissionTranslateDTO
+from src.core.dto.challenges.mission.mission import (
+    MissionCreateTranslateDTO,
+    MissionTranslateDTO,
+)
 from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.mixin.validators.translations import TranslationMixin
 from src.core.enum.challenges.status import OccupancyStatusEnum

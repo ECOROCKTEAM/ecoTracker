@@ -8,6 +8,7 @@ from src.core.enum.base.translation import TranslationEnum
 def translate():
     pass
 
+
 def enum_block_check():
     block_name = "enum"
     click.secho(f"Update translate block {block_name}", fg="green", bold=True)
@@ -55,17 +56,17 @@ def enum_block_check():
         write_block_translate_file(block=block_name, lang=lang, content=block)
     return error_msg_list
 
+
 @translate.command()
 def enum() -> list[str]:
     enum_block_check()
+
 
 @translate.command()
 def verify():
     click.secho("Boot translate verify", fg="green", bold=True)
     errors = []
-    errors.extend(
-        enum_block_check()
-    )
+    errors.extend(enum_block_check())
     if len(errors) != 0:
         click.secho("Translate errors found:", fg="red", bold=True)
         for err in errors:

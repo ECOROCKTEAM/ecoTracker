@@ -20,6 +20,10 @@ class Settings(BaseSettings):
         case_sensitive = True
 
 
+settings = Settings()
+
+
+# todo: remove this func
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    return settings

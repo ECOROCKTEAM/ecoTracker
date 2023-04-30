@@ -23,6 +23,7 @@ def enum_block_check():
             click.secho(f"Translate {lang.name} not found, created by path: {created_path}", fg="red", bold=True)
             content = read_translate_file(lang=lang)
         block = content.get(block_name, {})
+        enum_names = [enum_cls.__name__ for enum_cls in translate_subcls_list]
         for enum_cls in translate_subcls_list:
             enum_cls_name = enum_cls.__name__
             enum_block = block.get(enum_cls_name, {})
@@ -43,6 +44,14 @@ def enum_block_check():
             for name in delete_names:
                 del enum_block[name]
             block[enum_cls_name] = enum_block
+        delete_names = []
+        for name in block:
+            if name in enum_names:
+                continue
+            delete_names.append(name)
+            click.secho(f"Detect deleted enum in {lang}.{block_name}.{name}, was removed", fg="red", bold=True)
+        for name in delete_names:
+            del block[name]
         write_block_translate_file(block=block_name, lang=lang, content=block)
     return error_msg_list
 

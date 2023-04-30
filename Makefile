@@ -23,3 +23,7 @@ export-deps:
 .PHONY: pre-commit
 pre-commit:
 	${CMD} pre-commit run --all-files
+
+.PHONY: tests
+tests:
+	docker compose -f docker-compose.test.yaml up

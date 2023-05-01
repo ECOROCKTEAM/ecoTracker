@@ -21,4 +21,4 @@ ENV PATH="/venv/bin:$PATH"
 COPY requirements-test.txt ./
 RUN pip install -r requirements-test.txt
 
-CMD ["python", "-m", "pytest", "tests/"]
+CMD ["python", "-m", "pytest", "tests/", "-v"]

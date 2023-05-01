@@ -16,7 +16,7 @@ class Community:
 @dataclass
 class CommunityCreateDTO:
     name: str
-    privacy_id: int
+    privacy: CommunityPrivacyEnum
     description: str = ""
     active: bool = True
 

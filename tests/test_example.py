@@ -3,7 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import and_, select, text
 from src.application.database.base import Base
 from src.data.models import *
-from tests.fixtures import *  # fixtures must be imported
 
 
 @pytest.mark.asyncio

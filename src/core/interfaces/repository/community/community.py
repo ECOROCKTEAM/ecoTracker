@@ -67,7 +67,7 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def list(
+    async def list_(
         self, *, filter_obj: CommunityListFilter, order_obj: MockObj, pagination_obj: MockObj
     ) -> list[Community]:
         """Получить список сообществ

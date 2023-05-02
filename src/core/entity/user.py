@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
 from src.core.entity.subscription import Subscription
-from src.core.dto.user.role import UserRoleDTO
 
 
 @dataclass
@@ -12,7 +11,6 @@ class User:
     password: str
     active: bool
     subscription: Subscription
-    role: UserRoleDTO
 
     @property
     def is_premium(self) -> bool:
@@ -25,7 +23,6 @@ class UserCreateDTO:
     username: str
     password: str
     active: bool
-    role: UserRoleDTO
 
 
 @dataclass
@@ -34,4 +31,3 @@ class UserUpdateDTO:
     username: str | None = None
     password: str | None = None
     active: bool | None = None
-    role: UserRoleDTO | None = None

@@ -21,7 +21,7 @@ class ContactUserCreateUseCase:
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
 
-        await contact_value_type_check(value=obj.value, type=obj.type)
+        await contact_value_type_check(contact=obj.value, type=obj.type)
 
         contact = await self.repo.create(
             obj=ContactUserCreateDTO(

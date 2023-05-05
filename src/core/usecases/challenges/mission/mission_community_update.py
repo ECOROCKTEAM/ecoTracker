@@ -3,7 +3,8 @@ from src.core.entity.user import User
 
 from src.core.exception.user import UserIsNotPremiumError
 from src.core.interfaces.repository.challenges.mission import IRepositoryMission
-from src.core.entity.mission import MissionCommunity, MissionCommunityUpdateDTO
+from src.core.entity.mission import MissionCommunity
+from src.core.dto.challenges.mission import MissionCommunityUpdateDTO
 
 
 @dataclass
@@ -18,5 +19,5 @@ class MissionCommunityUpdateUsecase:
     async def __call__(self, *, user: User, update_obj: MissionCommunityUpdateDTO) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(username=user.username)
-        mission = await self.repo.update_for_community(obj=update_obj)
+        mission = await self.repo.community_mission_update(obj=update_obj, return_language=user.language)
         return Result(item=mission)

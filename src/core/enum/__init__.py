@@ -4,7 +4,6 @@ from src.core.enum.language import *
 from src.core.enum.variable_type import *
 
 from src.core.enum.user.contact import *
-from src.core.enum.user.role import *
 
 from src.core.enum.subscription.subscription import *
 

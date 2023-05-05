@@ -12,7 +12,7 @@ class IUnitOfWork(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def misssion(self) -> IRepositoryMission:
+    def mission(self) -> IRepositoryMission:
         ...
 
     @property

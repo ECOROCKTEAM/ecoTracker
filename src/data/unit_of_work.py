@@ -1,4 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from src.core.interfaces.repository.challenges.mission import IRepositoryMission
+from src.core.interfaces.repository.challenges.task import IRepositoryTask
 
 from src.core.interfaces.repository.community.community import IRepositoryCommunity
 from src.core.interfaces.unit_of_work import IUnitOfWork
@@ -12,20 +14,34 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
             return self._community
         raise ValueError("UoW not in context")
 
+    @property
+    def mission(self) -> IRepositoryMission:
+        ...
+
+    @property
+    def task(self) -> IRepositoryTask:
+        ...
+
     def __init__(self, session_factory) -> None:
-        self.session_factory = session_factory
-        self._session: AsyncSession | None = None
+        self.__session_factory = session_factory
+        self.__session: AsyncSession | None = None
         self._community: IRepositoryCommunity | None = None
 
+    @property
+    def _session(self) -> AsyncSession:
+        if self.__session is None:
+            raise ValueError("UoW not in context")
+        return self.__session
+
     async def __aenter__(self) -> IUnitOfWork:
-        self._session = self.session_factory()
+        self.__session = self.__session_factory()
         self._community = RepositoryCommunity(self._session)
         return self
 
     async def __aexit__(self, *args):
         await self._session.rollback()
         await self._session.close()
-        self._session = None
+        self.__session = None
 
     async def commit(self):
         await self._session.commit()

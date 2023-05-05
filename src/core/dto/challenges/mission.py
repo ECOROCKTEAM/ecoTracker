@@ -18,6 +18,8 @@ class MissionUserUpdateDTO:
 
 @dataclass
 class MissionCommunityCreateDTO:
+    mission_id: int
+    community_id: str
     author: str
     place: str | None = None
     meeting_date: int | None = None
@@ -25,8 +27,6 @@ class MissionCommunityCreateDTO:
     people_max: int | None = None
     comment: str | None = None
     status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
-    mission_id: int
-    community_id: str
 
 
 @dataclass

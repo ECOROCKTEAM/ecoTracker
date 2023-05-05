@@ -29,11 +29,11 @@ class MissionUser:
 class MissionCommunity:
     id: int
     author: str
+    status: OccupancyStatusEnum
+    community_id: str
+    mission_id: int
     place: str | None = None
     meeting_date: datetime | None = None
     people_required: int | None = None
     people_max: int | None = None
     comment: str | None = None
-    status: OccupancyStatusEnum
-    community_id: str
-    mission_id: int

@@ -15,8 +15,7 @@ from src.core.exception.user import (
     UserIsNotCommunityAdminUserError,
     UserIsNotPremiumError,
 )
-from src.core.interfaces.repository.community.community import IRepositoryCommunity
-from src.core.dto.community.filters import CommunityIncludeUserFilter
+from src.core.interfaces.repository.community.community import CommunityUserFilter, IRepositoryCommunity
 from src.core.dto.community.invite import (
     CommunityInviteCreateDTO,
     CommunityInviteDTO,
@@ -43,7 +42,7 @@ class CommunityGetInviteLinkUsecase:
             asyncio.create_task(
                 self.repo.user_list(
                     id=community_id,
-                    filter=CommunityIncludeUserFilter(role_list=[CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN]),
+                    filter_obj=CommunityUserFilter(role_list=[CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN]),
                 )
             ),
         )

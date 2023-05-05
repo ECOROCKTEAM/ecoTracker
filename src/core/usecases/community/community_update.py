@@ -2,16 +2,16 @@ import asyncio
 from dataclasses import dataclass
 from src.core.dto.m2m.user.community import UserCommunityDTO
 
-from src.core.entity.community import Community, CommunityUpdateDTO
+from src.core.entity.community import Community
+from src.core.dto.community.community import CommunityUpdateDTO
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
-from src.core.dto.community.filters import CommunityIncludeUserFilter
 from src.core.exception.community import CommunityDeactivatedError
 from src.core.exception.user import (
     UserIsNotCommunityAdminUserError,
     UserIsNotPremiumError,
 )
-from src.core.interfaces.repository.community.community import IRepositoryCommunity
+from src.core.interfaces.repository.community.community import IRepositoryCommunity, CommunityUserFilter
 
 
 @dataclass
@@ -31,7 +31,7 @@ class CommunityUpdateUsecase:
             asyncio.create_task(
                 self.repo.user_list(
                     id=community_id,
-                    filter=CommunityIncludeUserFilter(role_list=[CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN]),
+                    filter_obj=CommunityUserFilter(role_list=[CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN]),
                 )
             ),
         )

@@ -2,12 +2,11 @@ from dataclasses import dataclass
 
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
-from src.core.dto.community.filters import CommunityIncludeUserFilter
 from src.core.exception.user import (
     UserIsNotPremiumError,
     UserIsNotCommunitySuperUserError,
 )
-from src.core.interfaces.repository.community.community import IRepositoryCommunity
+from src.core.interfaces.repository.community.community import CommunityUserFilter, IRepositoryCommunity
 
 
 @dataclass
@@ -24,7 +23,7 @@ class CommunityDeleteUsecase:
             raise UserIsNotPremiumError(username=user.username)
         link_list = await self.repo.user_list(
             id=community_id,
-            filter=CommunityIncludeUserFilter(role_list=[CommunityRoleEnum.SUPERUSER]),
+            filter_obj=CommunityUserFilter(role_list=[CommunityRoleEnum.SUPERUSER]),
         )
         super_user_ids = [link.user_id for link in link_list]
         if user.username not in super_user_ids:

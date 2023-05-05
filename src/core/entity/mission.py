@@ -1,98 +1,39 @@
 from dataclasses import dataclass
-
-from src.core.dto.challenges.mission.mission import (
-    MissionCreateTranslateDTO,
-    MissionTranslateDTO,
-)
+from datetime import datetime
+from src.core.enum.language import LanguageEnum
 from src.core.dto.challenges.category import OccupancyCategoryDTO
-from src.core.mixin.validators.translations import TranslationMixin
 from src.core.enum.challenges.status import OccupancyStatusEnum
 
 
 @dataclass
-class MissionBase(TranslationMixin):
+class Mission:
     id: int
+    name: str
     active: bool
     score: int
+    description: str
+    instruction: str
     category: OccupancyCategoryDTO
-    translations: list[MissionTranslateDTO]
-
-    def __post_init__(self):
-        self._validate_translations(seq=self.translations)
+    language: LanguageEnum
 
 
 @dataclass
-class MissionCreateDTO(TranslationMixin):
-    score: int
-    category_id: int
-    translations: list[MissionCreateTranslateDTO]
-
-    def __post_init__(self):
-        self._validate_translations(seq=self.translations)
-
-
-@dataclass
-class MissionUpdateDTO(TranslationMixin):
+class MissionUser:
     id: int
-    translations: list[MissionCreateTranslateDTO]
-    active: bool | None = None
-    score: int | None = None
-    category_id: int | None = None
-
-    def __post_init__(self):
-        self._validate_translations(seq=self.translations)
-
-
-@dataclass
-class MissionUserCreateDTO:
-    username: str
-    mission_id: int
-    status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
-
-
-@dataclass
-class MissionUserUpdateDTO:
-    id: int
-    status: OccupancyStatusEnum | None = None
-
-
-@dataclass
-class MissionUser(MissionBase):
-    id: int
-    username: str
     status: OccupancyStatusEnum
+    username: str
+    mission_id: int
 
 
 @dataclass
-class MissionCommunityCreateDTO:
-    mission_id: int
-    status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
-    community_id: str
+class MissionCommunity:
+    id: int
     author: str
     place: str | None = None
-    meeting_date: int | None = None
+    meeting_date: datetime | None = None
     people_required: int | None = None
     people_max: int | None = None
     comment: str | None = None
-
-
-@dataclass
-class MissionCommunityUpdateDTO:
-    id: int
-    status: OccupancyStatusEnum | None = None
-    place: str | None = None
-    meeting_date: int | None = None
-    people_required: int | None = None
-    people_max: int | None = None
-    comment: str | None = None
-
-
-@dataclass
-class MissionCommunity(MissionBase):
-    place: str | None
-    meeting_date: int | None
-    people_required: int | None
-    people_max: int | None
-    comment: str | None
-    author: str  # creator user.username
     status: OccupancyStatusEnum
+    community_id: str
+    mission_id: int

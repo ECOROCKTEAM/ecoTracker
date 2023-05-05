@@ -15,7 +15,7 @@ class ContactUserGetUseCase:
     def __init__(self, repo: IUserContactRepository) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user: User, contact_id: str) -> Result:
+    async def __call__(self, *, user: User, contact_id: int) -> Result:
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
 

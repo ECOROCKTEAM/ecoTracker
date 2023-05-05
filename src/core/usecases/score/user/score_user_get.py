@@ -19,5 +19,5 @@ class ScoreUserGetUseCase:
         if not user.active:
             raise UserIsNotActivateError(username=user.username)
 
-        score = await self.repo.user_score_get(username=user.username)
+        score = await self.repo.user_score_get(user_id=user.username)
         return Result(item=score)

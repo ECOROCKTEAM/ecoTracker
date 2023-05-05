@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.dto.user.contact import ContactDTO
+from src.core.enum.user.contact import ContactTypeEnum
 
 
 @dataclass
@@ -22,4 +23,5 @@ class ContactUserDTO:
 class ContactUserCreateDTO:
     username: str
     value: str
+    type: ContactTypeEnum
     active: bool = True

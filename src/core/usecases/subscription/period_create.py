@@ -8,7 +8,6 @@ from src.core.dto.subscription.period import (
     SubscriptionPeriodCreateDTO,
     SubscriptionPeriodDTO,
 )
-from src.core.exception.user import UserPermissionError
 
 
 @dataclass
@@ -21,8 +20,5 @@ class SubscriptionPeriodCreateUseCase:
         self.repo = repo
 
     async def __call__(self, *, user: User, obj: SubscriptionPeriodCreateDTO) -> Result:
-        if not user.role.enum.ADMIN:
-            raise UserPermissionError(username=user.username)
-
         period = await self.repo.period_create(obj=obj)
         return Result(item=period)

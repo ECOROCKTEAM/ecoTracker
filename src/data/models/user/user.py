@@ -24,20 +24,6 @@ class UserModel(Base):
     # role
 
 
-class UserRoleApplicationModel(Base):
-    __tablename__ = "user_role_application"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    username: Mapped[str] = mapped_column(ForeignKey("user.username"))
-    role: Mapped[str] = mapped_column(ForeignKey("role_application.role"))
-
-
-class RoleApplicationModel(Base):
-    __tablename__ = "role_application"
-
-    role: Mapped[str] = mapped_column(primary_key=True, autoincrement=False)
-
-
 class UserContactModel(Base):
     __tablename__ = "user_contact"
 

@@ -1,10 +1,7 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 from src.core.dto.mock import MockObj
 
-from src.core.dto.community.filters import (
-    CommunityIncludeUserFilter,
-    CommunityListFilter,
-)
 from src.core.dto.community.invite import (
     CommunityInviteCreateDTO,
     CommunityInviteDTO,
@@ -15,7 +12,20 @@ from src.core.dto.m2m.user.community import (
     UserCommunityCreateDTO,
     UserCommunityUpdateDTO,
 )
-from src.core.entity.community import Community, CommunityCreateDTO, CommunityUpdateDTO
+from src.core.entity.community import Community
+from src.core.dto.community.community import CommunityCreateDTO, CommunityUpdateDTO
+from src.core.enum.community.role import CommunityRoleEnum
+
+
+@dataclass
+class CommunityFilter:
+    name: str | None = None
+    active: bool | None = None
+
+
+@dataclass
+class CommunityUserFilter:
+    role_list: list[CommunityRoleEnum] | None = field(default_factory=list)
 
 
 class IRepositoryCommunity(ABC):
@@ -67,13 +77,11 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def list_(
-        self, *, filter_obj: CommunityListFilter, order_obj: MockObj, pagination_obj: MockObj
-    ) -> list[Community]:
+    async def lst(self, *, filter_obj: CommunityFilter, order_obj: MockObj, pagination_obj: MockObj) -> list[Community]:
         """Получить список сообществ
 
         Args:
-            filter_obj (MockObj): Объект фильтрации
+            filter_obj (CommunityFilter): Объект фильтрации
             order_obj (MockObj): Объект порядка
             pagination_obj (MockObj): Объект пагинации
 
@@ -129,12 +137,12 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def user_list(self, *, id: str, filter: CommunityIncludeUserFilter) -> list[UserCommunityDTO]:
+    async def user_list(self, *, id: str, filter_obj: CommunityUserFilter) -> list[UserCommunityDTO]:
         """Получить список ID пользователей входящих в сообщество
 
         Args:
             id (str): ID сообщества
-            filter (CommunityIncludeUserListFilter): DTO объект фильтрации
+            filter_obj (CommunityUserFilter): DTO объект фильтрации
 
         Returns:
             List[UserCommunityDTO]: Список связей пользователей

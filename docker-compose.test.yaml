@@ -17,7 +17,7 @@ services:
     ports:
       - "5432:5432"
     env_file:
-      - infra/docker/localpsql/localpsql.env
+      - infra/docker/test_db/test.env
 
 volumes:
   postgres_data:

@@ -1,9 +1,10 @@
-from functools import lru_cache
+import os
 from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
     APP_NAME: str
+    APP_ENV: str
 
     DATABASE_USER: str
     DATABASE_PASSWORD: str
@@ -16,14 +17,8 @@ class Settings(BaseSettings):
         return f"postgresql+asyncpg://{self.DATABASE_USER}:{self.DATABASE_PASSWORD}@{self.DATABASE_HOST}:{self.DATABASE_PORT}/{self.DATABASE_NAME}"
 
     class Config:
-        env_file = ".env"
+        env_file = f"{os.environ['APP_ENV']}.env"
         case_sensitive = True
 
 
-settings = Settings()
-
-
-# todo: remove this func
-@lru_cache
-def get_settings() -> Settings:
-    return settings
+settings = Settings()  # type: ignore

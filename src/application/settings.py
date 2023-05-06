@@ -32,4 +32,4 @@ class SettingsTest(Settings):
 
 
 config = dict(dev=SettingsDev, test=SettingsTest)
-settings: SettingsDev | SettingsTest = config[os.environ.get("APP_ENV", "dev").lower()]()  # type: ignore
+settings: Settings = config[os.environ.get("APP_ENV", "dev").lower()]()  # type: ignore

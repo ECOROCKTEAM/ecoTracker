@@ -47,9 +47,8 @@ class UserSubscriptionModel(Base):
 class UserCommunityModel(Base):
     __tablename__ = "user_community"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    community_name: Mapped[int] = mapped_column(ForeignKey("community.id"))
+    user_id: Mapped[str] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    community_id: Mapped[str] = mapped_column(ForeignKey("community.id"), primary_key=True)
     role: Mapped[CommunityRoleEnum]
 
 

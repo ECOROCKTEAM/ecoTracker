@@ -1,4 +1,5 @@
 import os
+
 from pydantic import BaseSettings
 
 
@@ -17,8 +18,20 @@ class Settings(BaseSettings):
         return f"postgresql+asyncpg://{self.DATABASE_USER}:{self.DATABASE_PASSWORD}@{self.DATABASE_HOST}:{self.DATABASE_PORT}/{self.DATABASE_NAME}"
 
     class Config:
-        env_file = f"{os.environ['APP_ENV']}.env"
-        case_sensitive = True
+        env_file = ".env"
 
 
-settings = Settings()  # type: ignore
+class SettingsDev(Settings):
+    class Config:
+        env_file = "dev.env"
+
+
+class SettingsTest(Settings):
+    class Config:
+        env_file = "test.env"
+
+
+config = dict(dev=SettingsDev, test=SettingsTest)
+settings: SettingsDev | SettingsTest = config[os.environ.get("APP_ENV", "dev").lower()]()  # type: ignore
+
+print(settings)

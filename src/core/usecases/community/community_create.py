@@ -5,7 +5,8 @@ from src.core.enum.community.role import CommunityRoleEnum
 
 from src.core.exception.user import UserIsNotPremiumError
 from src.core.interfaces.repository.community.community import IRepositoryCommunity
-from src.core.entity.community import Community, CommunityCreateDTO
+from src.core.entity.community import Community
+from src.core.dto.community.community import CommunityCreateDTO
 
 
 @dataclass
@@ -21,12 +22,11 @@ class CommunityCreateUsecase:
         if not user.is_premium:
             raise UserIsNotPremiumError(username=user.username)
         community = await self.repo.create(obj=create_obj)
-        role = await self.repo.role_get(enum=CommunityRoleEnum.SUPERUSER)
         await self.repo.user_add(
             obj=UserCommunityCreateDTO(
                 user_id=user.username,
                 community_id=community.name,
-                role_id=role.id,
+                role=CommunityRoleEnum.USER,
             )
         )
         return Result(item=community)

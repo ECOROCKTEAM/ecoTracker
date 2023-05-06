@@ -1,5 +1,6 @@
-from __future__ import annotations
 import abc
+from src.core.interfaces.repository.challenges.mission import IRepositoryMission
+from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.interfaces.repository.community.community import IRepositoryCommunity
 
 
@@ -9,8 +10,18 @@ class IUnitOfWork(abc.ABC):
     def community(self) -> IRepositoryCommunity:
         ...
 
+    @property
     @abc.abstractmethod
-    async def __aenter__(self) -> IUnitOfWork:
+    def mission(self) -> IRepositoryMission:
+        ...
+
+    @property
+    @abc.abstractmethod
+    def task(self) -> IRepositoryTask:
+        ...
+
+    @abc.abstractmethod
+    async def __aenter__(self) -> "IUnitOfWork":
         ...
 
     @abc.abstractmethod

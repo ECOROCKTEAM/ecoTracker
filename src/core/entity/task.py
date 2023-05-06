@@ -1,61 +1,32 @@
 from dataclasses import dataclass
-
+from datetime import date, datetime
 from src.core.enum.language import LanguageEnum
+from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.dto.challenges.category import OccupancyCategoryDTO
-from src.core.mixin.validators.translations import TranslationMixin
 
 
 @dataclass
-class TaskTranslateDTO:
+class Task:
     id: int
+    score: int
+    category: OccupancyCategoryDTO
     name: str
     description: str
     language: LanguageEnum
 
 
 @dataclass
-class TaskTranslateCreateDTO:
-    name: str
-    description: str
-    language: LanguageEnum
-
-
-@dataclass
-class TaskTranslateUpdateDTO:
+class TaskUserPlan:
     id: int
-    language: LanguageEnum
-    name: str | None = None
-    description: str | None = None
+    username: str
+    task_id: int
 
 
 @dataclass
-class Task(TranslationMixin):
+class TaskUser:
     id: int
-    score: int
-    category: OccupancyCategoryDTO
-    translations: list[TaskTranslateDTO]
-
-    def __post_init__(self):
-        self._validate_translations(seq=self.translations)
-
-
-@dataclass
-class TaskCreateDTO(TranslationMixin):
-    score: int
-    category: OccupancyCategoryDTO
-    translations: list[TaskTranslateDTO]
-
-    def __post_init__(self):
-        self._validate_translations(seq=self.translations)
-
-
-@dataclass
-class TaskUpdateDTO(TranslationMixin):
-    id: int
-    score: int | None = None
-    category: OccupancyCategoryDTO | None = None
-    translations: list[TaskTranslateDTO] | None = None
-
-    def __post_init__(self):
-        if isinstance(self.translations, list):
-            self._validate_translations(seq=self.translations)
+    date: date  # YY.MM.DD
+    date_close: datetime | None  # YY.MM.DD HH:mm:SS
+    status: OccupancyStatusEnum
+    username: str
+    task_id: int

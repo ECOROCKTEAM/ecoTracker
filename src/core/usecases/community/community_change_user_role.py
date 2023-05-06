@@ -1,7 +1,6 @@
 import asyncio
 from dataclasses import dataclass
 
-from src.core.dto.community.filters import CommunityIncludeUserFilter
 from src.core.dto.m2m.user.community import UserCommunityUpdateDTO, UserCommunityDTO
 from src.core.entity.community import Community
 from src.core.entity.user import User
@@ -14,7 +13,7 @@ from src.core.exception.user import (
     UserIsNotPremiumError,
     UserIsNotCommunitySuperUserError,
 )
-from src.core.interfaces.repository.community.community import IRepositoryCommunity
+from src.core.interfaces.repository.community.community import IRepositoryCommunity, CommunityUserFilter
 
 
 @dataclass
@@ -35,7 +34,7 @@ class CommunityChangeUserRoleUsecase:
             asyncio.create_task(
                 self.repo.user_list(
                     id=community_id,
-                    filter=CommunityIncludeUserFilter(role_list=[CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN]),
+                    filter_obj=CommunityUserFilter(role_list=[CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN]),
                 )
             ),
         )
@@ -58,7 +57,7 @@ class CommunityChangeUserRoleUsecase:
             raise UserIsNotCommunityAdminUserError(username=user.username, community_id=community_id)
 
         # ADMIN can't change role for SUPERUSER
-        if target_user_link and target_user_link.role.enum.SUPERUSER and current_user_link.role.enum.ADMIN:
+        if target_user_link and target_user_link.role.SUPERUSER and current_user_link.role.ADMIN:
             raise UserIsNotCommunitySuperUserError(
                 username=current_user_link.user_id,
                 community_id=current_user_link.community_id,

@@ -2,8 +2,9 @@ import pytest
 from dataclasses import asdict
 from src.data.repository.community import RepositoryCommunity
 
-from src.core.entity.community import Community, CommunityUpdateDTO, CommunityCreateDTO, CommunityPrivacyEnum
+from src.core.entity.community import Community, CommunityPrivacyEnum
 from src.data.unit_of_work import SqlAlchemyUnitOfWork
+from src.core.dto.community.community import CommunityUpdateDTO, CommunityCreateDTO
 
 # python -m pytest tests/db/test_community.py
 

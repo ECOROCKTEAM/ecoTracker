@@ -28,7 +28,7 @@ class CommunityPublicAddUserUsecase:
             raise UserIsNotPremiumError(username=user.username)
         if not community.active:
             raise CommunityDeactivatedError(community_id=community_id)
-        if not community.privacy.enum.PUBLICK:
+        if not community.privacy.PUBLICK:
             raise CommunityPrivacyError(community_id=community_id)
         link = await self.repo.user_add(obj=create_obj)
         return Result(item=link)

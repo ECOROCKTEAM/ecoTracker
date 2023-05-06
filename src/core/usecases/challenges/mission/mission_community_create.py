@@ -3,7 +3,8 @@ from src.core.entity.user import User
 
 from src.core.exception.user import UserIsNotPremiumError
 from src.core.interfaces.repository.challenges.mission import IRepositoryMission
-from src.core.entity.mission import MissionCommunity, MissionCommunityCreateDTO
+from src.core.entity.mission import MissionCommunity
+from src.core.dto.challenges.mission import MissionCommunityCreateDTO
 
 
 @dataclass
@@ -18,5 +19,5 @@ class MissionCommunityCreateUsecase:
     async def __call__(self, *, user: User, create_obj: MissionCommunityCreateDTO) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(username=user.username)
-        mission = await self.repo.create_for_community(obj=create_obj)
+        mission = await self.repo.community_mission_create(obj=create_obj, return_language=user.language)
         return Result(item=mission)

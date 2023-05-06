@@ -2,12 +2,16 @@ from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from dataclasses import asdict
 
-from src.core.dto.community.filters import CommunityIncludeUserFilter, CommunityListFilter
 from src.core.dto.community.invite import CommunityInviteUpdateDTO, CommunityInviteDTO, CommunityInviteCreateDTO
 from src.core.dto.m2m.user.community import UserCommunityUpdateDTO, UserCommunityDTO, UserCommunityCreateDTO
 from src.core.dto.mock import MockObj
-from src.core.entity.community import Community, CommunityUpdateDTO, CommunityCreateDTO
-from src.core.interfaces.repository.community.community import IRepositoryCommunity
+from src.core.entity.community import Community
+from src.core.dto.community.community import CommunityUpdateDTO, CommunityCreateDTO
+from src.core.interfaces.repository.community.community import (
+    IRepositoryCommunity,
+    CommunityUserFilter,
+    CommunityFilter,
+)
 from src.data.models.community.community import CommunityModel
 
 
@@ -31,15 +35,14 @@ class RepositoryCommunity(IRepositoryCommunity):
 
     async def create(self, *, obj: CommunityCreateDTO) -> Community:
         stmt = insert(CommunityModel).values(**asdict(obj)).returning(CommunityModel)
-        res = await self.db_context.scalar(stmt)
-        return model_to_dto(res)
+        result = await self.db_context.scalar(stmt)
+        if result:
+            return model_to_dto(result)
 
     async def update(self, *, id: str, obj: CommunityUpdateDTO) -> Community:
         pass
 
-    async def list_(
-        self, *, filter_obj: CommunityListFilter, order_obj: MockObj, pagination_obj: MockObj
-    ) -> list[Community]:
+    async def lst(self, *, filter_obj: CommunityFilter, order_obj: MockObj, pagination_obj: MockObj) -> list[Community]:
         pass
 
     async def deactivate(self, *, id: str) -> str:
@@ -51,7 +54,7 @@ class RepositoryCommunity(IRepositoryCommunity):
     async def user_get(self, *, id: int) -> UserCommunityDTO:
         pass
 
-    async def user_list(self, *, id: str, filter: CommunityIncludeUserFilter) -> list[UserCommunityDTO]:
+    async def user_list(self, *, id: str, filter: CommunityUserFilter) -> list[UserCommunityDTO]:
         pass
 
     async def user_role_update(self, *, obj: UserCommunityUpdateDTO) -> UserCommunityDTO:

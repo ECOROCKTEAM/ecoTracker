@@ -3,10 +3,8 @@ from typing import AsyncGenerator, Generator
 import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from src.application.settings import get_settings
+from src.application.settings import settings
 from src.application.database.base import create_async_engine, create_session_factory, Base
-
-settings = get_settings()
 
 
 @pytest.fixture(scope="module")
@@ -22,7 +20,7 @@ def event_loop():
 
 
 @pytest_asyncio.fixture(scope="module")
-async def pool() -> Generator[async_sessionmaker[AsyncSession], None, None]:
+async def pool() -> AsyncGenerator[async_sessionmaker[AsyncSession], None]:
     engine = create_async_engine(url=settings.DATABASE_URL)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

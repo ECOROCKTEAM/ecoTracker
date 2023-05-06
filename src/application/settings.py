@@ -1,9 +1,11 @@
-from functools import lru_cache
+import os
+
 from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
     APP_NAME: str
+    APP_ENV: str
 
     DATABASE_USER: str
     DATABASE_PASSWORD: str
@@ -17,13 +19,17 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
-        case_sensitive = True
 
 
-settings = Settings()
+class SettingsDev(Settings):
+    class Config:
+        env_file = "dev.env"
 
 
-# todo: remove this func
-@lru_cache
-def get_settings() -> Settings:
-    return settings
+class SettingsTest(Settings):
+    class Config:
+        env_file = "test.env"
+
+
+config = dict(dev=SettingsDev, test=SettingsTest)
+settings: Settings = config[os.environ.get("APP_ENV", "dev").lower()]()  # type: ignore

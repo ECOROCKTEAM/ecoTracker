@@ -5,6 +5,8 @@ from src.data.repository.community import RepositoryCommunity
 from src.core.entity.community import Community, CommunityUpdateDTO, CommunityCreateDTO, CommunityPrivacyEnum
 from src.data.unit_of_work import SqlAlchemyUnitOfWork
 
+# python -m pytest tests/db/test_community.py
+
 
 @pytest.mark.asyncio
 async def test_get(pool):

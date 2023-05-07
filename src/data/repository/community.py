@@ -16,7 +16,9 @@ from src.data.models.community.community import CommunityModel
 
 
 def model_to_dto(model: CommunityModel) -> Community:
-    return Community(name=model.name, privacy=model.privacy, active=model.active, description=model.description)
+    return Community(
+        id=model.id, name=model.name, privacy=model.privacy, active=model.active, description=model.description
+    )
 
 
 def dto_to_model(dto: Community) -> CommunityModel:

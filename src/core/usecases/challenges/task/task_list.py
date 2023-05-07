@@ -25,7 +25,7 @@ class TaskListUseCase:
         filter_obj: MockObj,
     ) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(username=user.username)
+            raise UserIsNotActivateError(user_id=user.id)
 
         task_list = await self.repo.lst(
             sorting_obj=sorting_obj,

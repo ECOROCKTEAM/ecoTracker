@@ -21,15 +21,15 @@ class UserTaskAddUseCase:
 
     async def __call__(self, *, user: User, task_id: int) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(username=user.username)
+            raise UserIsNotActivateError(user_id=user.id)
 
-        tasks = await self.repo.list(user_id=user.username)
+        tasks = await self.repo.list(user_id=user.id)
 
         if len(tasks) == 3:
-            raise UserTaskMaxAmountError(username=user.username)
+            raise UserTaskMaxAmountError(user_id=user.id)
 
         obj = UserTaskCreateDTO(
-            username=user.username,
+            user_id=user.id,
             task_id=task_id,
             occupancy=OccupancyStatusEnum.ACTIVE,
         )

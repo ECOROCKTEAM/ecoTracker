@@ -2,4 +2,4 @@ from src.core.exception.base import DomainError
 
 
 class TaskAlreadyTakenError(DomainError):
-    msg = "For user={username} task={task} already taken"
+    msg = "For user={user_id} task={task} already taken"

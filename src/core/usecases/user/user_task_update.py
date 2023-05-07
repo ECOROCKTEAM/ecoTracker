@@ -17,7 +17,7 @@ class UserTaskUpdateUseCase:
 
     async def __call__(self, *, user: User, obj: UserTaskUpdateDTO) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(username=user.username)
+            raise UserIsNotActivateError(user_id=user.id)
 
         add = await self.repo.update(obj=obj)
         return Result(item=add)

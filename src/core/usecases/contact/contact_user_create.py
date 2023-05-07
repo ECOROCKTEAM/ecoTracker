@@ -19,13 +19,13 @@ class ContactUserCreateUseCase:
 
     async def __call__(self, *, user: User, obj: ContactCreateDTO) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(username=user.username)
+            raise UserIsNotActivateError(user_id=user.id)
 
         await contact_value_type_check(contact=obj.value, type=obj.type)
 
         contact = await self.repo.create(
             obj=ContactUserCreateDTO(
-                username=user.username,
+                user_id=user.id,
                 value=obj.value,
                 type=obj.type,
             )

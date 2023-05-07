@@ -93,14 +93,14 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def deactivate(self, *, id: str) -> str:
+    async def deactivate(self, *, id: int) -> int:
         """Удалить сообщество (Soft delete)
 
         Args:
-            id (str): Id сообщества
+            id (int): Id сообщества
 
         Returns:
-            str: Id удалённого сообщества
+            int: Id удалённого сообщества
 
         Raises:
             RepoError: Ошибка операции

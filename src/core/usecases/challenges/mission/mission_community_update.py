@@ -18,6 +18,6 @@ class MissionCommunityUpdateUsecase:
 
     async def __call__(self, *, user: User, update_obj: MissionCommunityUpdateDTO) -> Result:
         if not user.is_premium:
-            raise UserIsNotPremiumError(username=user.username)
+            raise UserIsNotPremiumError(user_id=user.id)
         mission = await self.repo.community_mission_update(obj=update_obj, return_language=user.language)
         return Result(item=mission)

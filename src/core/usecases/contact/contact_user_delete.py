@@ -16,7 +16,7 @@ class ContactUserDeleteUseCase:
 
     async def __call__(self, *, user: User, contact_id: int) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(username=user.username)
+            raise UserIsNotActivateError(user_id=user.id)
 
         contact = await self.repo.delete(contact_id=contact_id)
         return Result(id=contact)

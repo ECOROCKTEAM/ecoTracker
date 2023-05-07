@@ -8,6 +8,7 @@ from src.core.enum.language import LanguageEnum
 class User:
     """User entity"""
 
+    id: int
     username: str
     password: str
     active: bool
@@ -30,7 +31,7 @@ class UserCreateDTO:
 
 @dataclass
 class UserUpdateDTO:
-    user_id: str  # username reference
+    user_id: int  # username reference
     username: str | None = None
     password: str | None = None
     active: bool | None = None

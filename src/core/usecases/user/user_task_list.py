@@ -23,7 +23,7 @@ class UserTaskListUseCase:
         filter_obj: UserTaskFilter,
     ) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(username=user.username)
+            raise UserIsNotActivateError(user_id=user.id)
 
-        task_list = await self.repo.list(user_id=user.username, filter_obj=filter_obj)
+        task_list = await self.repo.list(user_id=user.id, filter_obj=filter_obj)
         return Result(item=task_list)

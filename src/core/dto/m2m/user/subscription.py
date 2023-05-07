@@ -4,14 +4,14 @@ from dataclasses import dataclass
 @dataclass
 class UserSubscription:
     id: int
-    username: str
+    user_id: int
     subscription_id: int
     until_date: int
 
 
 @dataclass
 class UserSubscriptionCreateDTO:
-    username: str
+    user_id: int
     subscription_id: int
     until_date: int
 

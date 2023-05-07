@@ -18,7 +18,7 @@ class Task:
 @dataclass
 class TaskUserPlan:
     id: int
-    username: str
+    user_id: int
     task_id: int
 
 
@@ -28,5 +28,5 @@ class TaskUser:
     date: date  # YY.MM.DD
     date_close: datetime | None  # YY.MM.DD HH:mm:SS
     status: OccupancyStatusEnum
-    username: str
+    user_id: int
     task_id: int

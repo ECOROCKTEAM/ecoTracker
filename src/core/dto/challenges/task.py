@@ -6,14 +6,14 @@ from src.core.enum.challenges.status import OccupancyStatusEnum
 
 @dataclass
 class TaskUserPlanCreateDTO:
-    username: str
+    user_id: int
     task_id: int
 
 
 @dataclass
 class TaskUserCreateDTO:
     date: date  # YY.MM.DD, mb auto in psql?
-    username: str
+    user_id: int
     task_id: int
     date_close: datetime | None = None
     status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE

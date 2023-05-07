@@ -36,7 +36,7 @@ class CommunityGetInviteLinkUsecase:
 
     async def __call__(self, *, user: User, community_id: str) -> Result:
         if not user.is_premium:
-            raise UserIsNotPremiumError(username=user.username)
+            raise UserIsNotPremiumError(user_id=user.id)
         tasks: tuple[asyncio.Task[Community], asyncio.Task[list[UserCommunityDTO]]] = (
             asyncio.create_task(self.repo.get(id=community_id)),
             asyncio.create_task(
@@ -50,8 +50,8 @@ class CommunityGetInviteLinkUsecase:
         if not community.active:
             raise CommunityDeactivatedError(community_id=community.name)
         head_user_ids = [link.user_id for link in link_list]
-        if user.username not in head_user_ids:
-            raise UserIsNotCommunityAdminUserError(username=user.username, community_id=community_id)
+        if user.id not in head_user_ids:
+            raise UserIsNotCommunityAdminUserError(user_id=user.id, community_id=community_id)
 
         link = None
         with contextlib.suppress(CommunityInviteLinkNotFoundError):

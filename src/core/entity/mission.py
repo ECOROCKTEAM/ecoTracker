@@ -21,7 +21,7 @@ class Mission:
 class MissionUser:
     id: int
     status: OccupancyStatusEnum
-    username: str
+    user_id: int
     mission_id: int
 
 

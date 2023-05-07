@@ -34,18 +34,18 @@ class UserSubscriptionUpdateUseCase:
         if user.is_premium and user.subscription.id == obj.subscription_id:
             """If user wants to extend date of paid subscription."""
 
-            old_user_sub = await self.user_sub_repo.get(user_id=user.username, sub_id=user.subscription.id)
+            old_user_sub = await self.user_sub_repo.get(user_id=user.id, sub_id=user.subscription.id)
             old_until_date = old_user_sub.until_date
             obj.until_date += old_until_date
 
-            await self.user_sub_repo.delete(user_id=user.username, sub_id=user.subscription.id)
+            await self.user_sub_repo.delete(user_id=user.id, sub_id=user.subscription.id)
             # Некоторые методы имеют переменные, но нигде не используюся потом. Можно заменить на андерскор (_).
             # Подумал, что имена переменных дадут понять,
             # что я удаляю именно старую подписку\обновляю на обычную подписку\удаляю старую платную и тп.
             # Если нужно -> изменю на _
 
             new_obj = UserSubscriptionCreateDTO(
-                username=user.username,
+                user_id=user.id,
                 subscription_id=obj.subscription_id,
                 until_date=obj.until_date,
             )
@@ -57,11 +57,11 @@ class UserSubscriptionUpdateUseCase:
             """If the user subscription has ended."""
 
             id_user_paid_sub = user.subscription.id
-            await self.user_repo.update_subscription(user_id=user.username, sub_id=obj.subscription_id)
-            await self.user_sub_repo.delete(user_id=user.username, sub_id=id_user_paid_sub)
+            await self.user_repo.update_subscription(user_id=user.id, sub_id=obj.subscription_id)
+            await self.user_sub_repo.delete(user_id=user.id, sub_id=id_user_paid_sub)
 
             user_sub = await self.user_sub_repo.get(
-                user_id=user.username, sub_id=user.subscription.id
+                user_id=user.id, sub_id=user.subscription.id
             )  # Мб тут Юзера вернуть?... Лишний запрос мб?
 
             return Result(item=user_sub)
@@ -70,13 +70,13 @@ class UserSubscriptionUpdateUseCase:
             """If user bought premium subscription"""
 
             obj = UserSubscriptionCreateDTO(
-                username=user.username,
+                user_id=user.id,
                 subscription_id=obj.subscription_id,
                 until_date=obj.until_date,
             )  # type: ignore
 
             new_paid_sub = await self.user_sub_repo.create(obj=obj)  # type: ignore
-            await self.user_repo.update_subscription(user_id=user.username, sub_id=obj.subscription_id)
+            await self.user_repo.update_subscription(user_id=user.id, sub_id=obj.subscription_id)
             return Result(item=new_paid_sub)
 
         await self.sub_repo.list(filter_obj=MockObj)[0]  # type: ignore

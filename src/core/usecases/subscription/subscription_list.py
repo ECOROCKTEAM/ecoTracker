@@ -18,9 +18,9 @@ class SubscriptionListUseCase:
     def __init__(self, repo: ISubscriptionRepository) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user: User, filter_obj: MockObj = None) -> Result:
+    async def __call__(self, *, user: User, filter_obj: MockObj | None = None) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(user=user.username)
+            raise UserIsNotActivateError(user_id=user.id)
 
         sub_list = await self.repo.list(filter_obj=filter_obj)
         return Result(items=sub_list)

@@ -18,14 +18,13 @@ class ContactUserUpdateUseCase:
 
     async def __call__(self, *, user: User, update_obj: ContactUserUpdateDTO) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(username=user.username)
+            raise UserIsNotActivateError(user_id=user.id)
 
         old_obj = await self.repo.get(id=update_obj.contact_id)
         await contact_value_type_check(contact=update_obj.contact.value, type=old_obj.type)
 
-        # Так как тип обновляемого контакта мы не получаем (пользователь его не вводит),
-        # то приходится по id брать старый контакт.
-        # Извлекать его тип и отправлять на проверку этот тип старого контакта с новым значением контакта.
+        # А тут не сработает проверка на тип контакта (к тому же у нас уже не contact_type, а enum).
+        # Я в асинх это делаю, а должен по идее в синх проверять
 
         obj = await self.repo.update(obj=update_obj)
         return Result(item=obj)

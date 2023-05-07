@@ -20,12 +20,12 @@ class CommunityPublicAddUserUsecase:
         self.repo = repo
 
     async def __call__(self, *, user: User, create_obj: UserCommunityCreateDTO) -> Result:
-        if user.username != create_obj.user_id:
-            raise UserPermissionError(username=user.username)
+        if user.id != create_obj.user_id:
+            raise UserPermissionError(user_id=user.id)
         community_id = create_obj.community_id
         community = await self.repo.get(id=community_id)
         if not user.is_premium:
-            raise UserIsNotPremiumError(username=user.username)
+            raise UserIsNotPremiumError(user_id=user.id)
         if not community.active:
             raise CommunityDeactivatedError(community_id=community_id)
         if not community.privacy.PUBLICK:

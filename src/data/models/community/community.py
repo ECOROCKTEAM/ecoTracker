@@ -11,7 +11,8 @@ from src.core.enum.challenges.status import OccupancyStatusEnum
 class CommunityModel(Base):
     __tablename__ = "community"
 
-    name: Mapped[str] = mapped_column(primary_key=True, unique=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(unique=True)
     description: Mapped[str]
     active: Mapped[bool] = mapped_column(default=True)
     privacy: Mapped[CommunityPrivacyEnum]

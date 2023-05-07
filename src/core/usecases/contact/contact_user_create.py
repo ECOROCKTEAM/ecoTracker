@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from src.core.usecases.verification.contact.contact import contact_value_type_check
 
 from src.core.dto.m2m.user.contact import ContactUserCreateDTO, ContactUserDTO
 from src.core.dto.user.contact import ContactCreateDTO
@@ -20,8 +19,6 @@ class ContactUserCreateUseCase:
     async def __call__(self, *, user: User, obj: ContactCreateDTO) -> Result:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
-
-        await contact_value_type_check(contact=obj.value, type=obj.type)
 
         contact = await self.repo.create(
             obj=ContactUserCreateDTO(

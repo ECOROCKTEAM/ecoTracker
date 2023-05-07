@@ -7,6 +7,7 @@ from src.core.enum.community.privacy import CommunityPrivacyEnum
 class Community:
     """Community entity"""
 
+    id: int
     name: str
     description: str
     active: bool

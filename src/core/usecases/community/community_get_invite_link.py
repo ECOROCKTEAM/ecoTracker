@@ -34,7 +34,7 @@ class CommunityGetInviteLinkUsecase:
     def __init__(self, *, repo: IRepositoryCommunity) -> None:
         self.repo = repo
 
-    async def __call__(self, *, user: User, community_id: str) -> Result:
+    async def __call__(self, *, user: User, community_id: int) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
         tasks: tuple[asyncio.Task[Community], asyncio.Task[list[UserCommunityDTO]]] = (
@@ -48,14 +48,14 @@ class CommunityGetInviteLinkUsecase:
         )
         community, link_list = await asyncio.gather(*tasks)
         if not community.active:
-            raise CommunityDeactivatedError(community_id=community.name)
+            raise CommunityDeactivatedError(community_id=community.id)
         head_user_ids = [link.user_id for link in link_list]
         if user.id not in head_user_ids:
             raise UserIsNotCommunityAdminUserError(user_id=user.id, community_id=community_id)
 
         link = None
         with contextlib.suppress(CommunityInviteLinkNotFoundError):
-            link = await self.repo.invite_link_get(id=community.name)
+            link = await self.repo.invite_link_get(id=community.id)
 
         random_hex = binascii.hexlify(os.urandom(16)).decode()
         next_time = datetime.now() + timedelta(weeks=1)

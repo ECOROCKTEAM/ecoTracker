@@ -25,7 +25,7 @@ class CommunityCreateUsecase:
         await self.repo.user_add(
             obj=UserCommunityCreateDTO(
                 user_id=user.id,
-                community_id=community.name,
+                community_id=community.id,
                 role=CommunityRoleEnum.USER,
             )
         )

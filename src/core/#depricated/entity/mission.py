@@ -49,7 +49,7 @@
 
 # @dataclass
 # class MissionUserCreateDTO:
-#     username: str
+#     user_id: int
 #     mission_id: int
 #     status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
 
@@ -63,7 +63,7 @@
 # @dataclass
 # class MissionUser(MissionBase):
 #     id: int
-#     username: str
+#     user_id: int
 #     status: OccupancyStatusEnum
 
 
@@ -98,5 +98,5 @@
 #     people_required: int | None
 #     people_max: int | None
 #     comment: str | None
-#     author: str  # creator user.username
+#     author: int  # creator user.id
 #     status: OccupancyStatusEnum

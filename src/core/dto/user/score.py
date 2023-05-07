@@ -3,11 +3,13 @@ from dataclasses import dataclass
 
 @dataclass
 class UserScoreDTO:
-    username: str
+    user_id: int
     value: int
 
 
 @dataclass
 class UserBoundOffsetDTO:
-    username: str
+    """Number of users when sorting before and after a specific user."""
+
+    user_id: int
     bound_offset: int

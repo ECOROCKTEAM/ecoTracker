@@ -20,11 +20,11 @@ class CommunityCreateUsecase:
 
     async def __call__(self, *, user: User, create_obj: CommunityCreateDTO) -> Result:
         if not user.is_premium:
-            raise UserIsNotPremiumError(username=user.username)
+            raise UserIsNotPremiumError(user_id=user.id)
         community = await self.repo.create(obj=create_obj)
         await self.repo.user_add(
             obj=UserCommunityCreateDTO(
-                user_id=user.username,
+                user_id=user.id,
                 community_id=community.name,
                 role=CommunityRoleEnum.USER,
             )

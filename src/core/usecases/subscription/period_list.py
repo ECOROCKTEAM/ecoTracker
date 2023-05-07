@@ -19,7 +19,7 @@ class SubscriptionPeriodListUseCase:
 
     async def __call__(self, *, user: User) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(username=user.username)
+            raise UserIsNotActivateError(user_id=user.id)
 
         obj_list = await self.repo.period_list()
         return Result(items=obj_list)

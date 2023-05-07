@@ -6,11 +6,11 @@ from src.core.dto.user.score import UserBoundOffsetDTO, UserScoreDTO
 
 class IScoreRepository(ABC):
     @abstractmethod
-    async def user_score_get(self, *, user_id: str) -> UserScoreDTO:
+    async def user_score_get(self, *, user_id: int) -> UserScoreDTO:
         """Get score for user
 
         Args:
-            user_id (str): user identify
+            user_id (int): user identify
 
         Returns:
             UserScoreDTO: DTO for user score

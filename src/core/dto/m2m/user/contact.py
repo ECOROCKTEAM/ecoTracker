@@ -14,14 +14,14 @@ class ContactUserUpdateDTO:
 @dataclass
 class ContactUserDTO:
     id: int
-    username: str
+    user_id: int
     contact: ContactDTO
     active: bool
 
 
 @dataclass
 class ContactUserCreateDTO:
-    username: str
+    user_id: int
     value: str
     type: ContactTypeEnum
     active: bool = True

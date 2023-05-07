@@ -27,7 +27,7 @@ class CommunityChangeUserRoleUsecase:
 
     async def __call__(self, *, user: User, update_obj: UserCommunityUpdateDTO) -> Result:
         if not user.is_premium:
-            raise UserIsNotPremiumError(username=user.username)
+            raise UserIsNotPremiumError(user_id=user.id)
         community_id = update_obj.community_id
         tasks: tuple[asyncio.Task[Community], asyncio.Task[list[UserCommunityDTO]]] = (
             asyncio.create_task(self.repo.get(id=community_id)),
@@ -48,18 +48,18 @@ class CommunityChangeUserRoleUsecase:
         current_user_link = None
         target_user_link = None
         for _link in link_list_head_user:
-            if user.username == _link.user_id:
+            if user.id == _link.user_id:
                 current_user_link = _link
             if update_obj.user_id == _link.user_id:
                 target_user_link = _link
         # User role must be ADMIN or SUPERUSER
         if current_user_link is None:
-            raise UserIsNotCommunityAdminUserError(username=user.username, community_id=community_id)
+            raise UserIsNotCommunityAdminUserError(user_id=user.id, community_id=community_id)
 
         # ADMIN can't change role for SUPERUSER
         if target_user_link and target_user_link.role.SUPERUSER and current_user_link.role.ADMIN:
             raise UserIsNotCommunitySuperUserError(
-                username=current_user_link.user_id,
+                user_id=current_user_link.user_id,
                 community_id=current_user_link.community_id,
             )
 

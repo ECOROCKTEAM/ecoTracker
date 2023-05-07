@@ -5,13 +5,13 @@ from src.core.enum.score.operation import ScoreOperationEnum
 
 @dataclass
 class ScoreUserDTO:
-    username: str
+    user_id: int
     value: int
     operation: ScoreOperationEnum
 
 
 @dataclass
 class ScoreCommunityDTO:
-    username: str
+    community_name: str
     value: int
     operation: ScoreOperationEnum

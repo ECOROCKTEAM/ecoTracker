@@ -19,7 +19,7 @@ class UserTaskDeleteUseCase:
 
     async def __call__(self, *, user: User, obj_id: int) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(username=user.username)
+            raise UserIsNotActivateError(user_id=user.id)
 
         # Подумать на работе над ограничениями при удалении тасков обычному пользователю
 

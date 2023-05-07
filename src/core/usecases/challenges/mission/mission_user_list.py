@@ -21,7 +21,7 @@ class MissionUserListUsecase:
         self, *, user: User, filter_obj: MissionUserFilter, order_obj: MockObj, pagination_obj: MockObj
     ) -> Result:
         if not user.is_premium:
-            raise UserIsNotPremiumError(username=user.username)
+            raise UserIsNotPremiumError(user_id=user.id)
         mission_list = await self.repo.user_mission_lst(
             filter_obj=filter_obj, order_obj=order_obj, pagination_obj=pagination_obj, return_language=user.language
         )

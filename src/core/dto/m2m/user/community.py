@@ -5,7 +5,7 @@ from src.core.enum.community.role import CommunityRoleEnum
 @dataclass
 class UserCommunityDTO:
     id: int
-    user_id: str
+    user_id: int
     community_id: str
     role: CommunityRoleEnum
 
@@ -13,13 +13,13 @@ class UserCommunityDTO:
 @dataclass
 class UserCommunityUpdateDTO:
     id: int
-    user_id: str
+    user_id: int
     community_id: str
     role: CommunityRoleEnum
 
 
 @dataclass
 class UserCommunityCreateDTO:
-    user_id: str
+    user_id: int
     community_id: str
     role: CommunityRoleEnum

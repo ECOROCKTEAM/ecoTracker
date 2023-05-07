@@ -20,6 +20,6 @@ class CommunityListUsecase:
         self, *, user: User, filter_obj: CommunityFilter, order_obj: MockObj, pagination_obj: MockObj
     ) -> Result:
         if not user.is_premium:
-            raise UserIsNotPremiumError(username=user.username)
+            raise UserIsNotPremiumError(user_id=user.id)
         community_list = await self.repo.lst(filter_obj=filter_obj, order_obj=order_obj, pagination_obj=pagination_obj)
         return Result(item=community_list)

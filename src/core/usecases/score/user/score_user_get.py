@@ -17,7 +17,7 @@ class ScoreUserGetUseCase:
 
     async def __call__(self, *, user: User) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(username=user.username)
+            raise UserIsNotActivateError(user_id=user.id)
 
-        score = await self.repo.user_score_get(user_id=user.username)
+        score = await self.repo.user_score_get(user_id=user.id)
         return Result(item=score)

@@ -2,32 +2,32 @@ from src.core.exception.base import DomainError, RepoError, PermissionError
 
 
 class UserError(DomainError):
-    msg_template = "username={username} problem"
+    msg_template = "user_id={user_id} problem"
 
 
 class UserPermissionError(UserError, PermissionError):
-    msg_template = "username={username} permission problem"
+    msg_template = "user_id={user_id} permission problem"
 
 
 class UserIsNotCommunitySuperUserError(UserPermissionError):
-    msg_template = "User with username={username} is not super user in community with community={community_id}"
+    msg_template = "User with user_id={user_id} is not super user in community with community={community_id}"
 
 
 class UserIsNotCommunityAdminUserError(UserPermissionError):
-    msg_template = "User with username={username} is not admin user in community with community={community_id}"
+    msg_template = "User with user_id={user_id} is not admin user in community with community={community_id}"
 
 
 class UserIsNotPremiumError(UserPermissionError):
-    msg_template = "User with username={username} not have Premium subscription"
+    msg_template = "User with user_id={user_id} not have Premium subscription"
 
 
 class UserNotFoundError(UserError, RepoError):
-    msg_template = "User with username={username} not found"
+    msg_template = "User with user_id={user_id} not found"
 
 
 class UserIsNotActivateError(UserError):
-    msg_template = "User with username={username} not active"
+    msg_template = "User with user_id={user_id} not active"
 
 
 class UserTaskMaxAmountError(UserError, RepoError):
-    msg_template = "User with username={username} has maximum tasks"
+    msg_template = "User with user_id={user_id} has maximum tasks"

@@ -30,7 +30,7 @@ class MissionCommunity:
     id: int
     author: str
     status: OccupancyStatusEnum
-    community_id: str
+    community_id: int
     mission_id: int
     place: str | None = None
     meeting_date: datetime | None = None

@@ -43,7 +43,7 @@ class CommunityChangeUserRoleUsecase:
             link_list_head_user,
         ) = await asyncio.gather(*tasks)
         if not community.active:
-            raise CommunityDeactivatedError(community_id=community.name)
+            raise CommunityDeactivatedError(community_id=community.id)
 
         current_user_link = None
         target_user_link = None

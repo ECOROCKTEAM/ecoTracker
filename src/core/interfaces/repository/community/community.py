@@ -19,6 +19,7 @@ from src.core.enum.community.role import CommunityRoleEnum
 
 @dataclass
 class CommunityFilter:
+    # Изменился primary key для Community. Может тут уже будет не name, а id?
     name: str | None = None
     active: bool | None = None
 
@@ -30,11 +31,11 @@ class CommunityUserFilter:
 
 class IRepositoryCommunity(ABC):
     @abstractmethod
-    async def get(self, *, id: str) -> Community:
+    async def get(self, *, id: int) -> Community:
         """Получить сообщество по id
 
         Args:
-            id (str): Id сообщества
+            id (int): Id сообщества
 
         Returns:
             Community: Сущность сообщества
@@ -61,11 +62,11 @@ class IRepositoryCommunity(ABC):
         pass
 
     @abstractmethod
-    async def update(self, *, id: str, obj: CommunityUpdateDTO) -> Community:
+    async def update(self, *, id: int, obj: CommunityUpdateDTO) -> Community:
         """Обновить поля сообщества
 
         Args:
-            id (str): Id сообщества
+            id (int): Id сообщества
             obj (CommunityUpdateDTO): DTO обновления сообщества
 
         Returns:
@@ -137,11 +138,11 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def user_list(self, *, id: str, filter_obj: CommunityUserFilter) -> list[UserCommunityDTO]:
+    async def user_list(self, *, id: int, filter_obj: CommunityUserFilter) -> list[UserCommunityDTO]:
         """Получить список ID пользователей входящих в сообщество
 
         Args:
-            id (str): ID сообщества
+            id (int): ID сообщества
             filter_obj (CommunityUserFilter): DTO объект фильтрации
 
         Returns:
@@ -181,11 +182,11 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def invite_link_get(self, *, id: str) -> CommunityInviteDTO:
+    async def invite_link_get(self, *, id: int) -> CommunityInviteDTO:
         """Получить инвайт ссылку
 
         Args:
-            str (id): Id сообщества
+            id (int): Id сообщества
 
         Returns:
             CommunityInviteDTO: DTO объект ссылки сообщества

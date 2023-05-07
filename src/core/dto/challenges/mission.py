@@ -19,7 +19,7 @@ class MissionUserUpdateDTO:
 @dataclass
 class MissionCommunityCreateDTO:
     mission_id: int
-    community_id: str
+    community_id: int
     author: str
     place: str | None = None
     meeting_date: int | None = None

@@ -49,7 +49,7 @@ class UserCommunityModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    community_name: Mapped[str] = mapped_column(ForeignKey("community.name"))
+    community_name: Mapped[int] = mapped_column(ForeignKey("community.id"))
     role: Mapped[CommunityRoleEnum]
 
 

@@ -26,7 +26,7 @@ class CommunityMissionModel(Base):
     people_max: Mapped[int | None]
     place: Mapped[str | None]
     comment: Mapped[str | None]
-    community: Mapped[str] = mapped_column(ForeignKey("community.name"))
+    community: Mapped[int] = mapped_column(ForeignKey("community.id"))
     mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
     status: Mapped[OccupancyStatusEnum]
 
@@ -35,7 +35,7 @@ class CommunityScoreModel(Base):
     __tablename__ = "community_score"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    community: Mapped[str] = mapped_column(ForeignKey("community.name"))
+    community: Mapped[int] = mapped_column(ForeignKey("community.id"))
     operation: Mapped[ScoreOperationEnum]
     value: Mapped[int]
 
@@ -44,6 +44,6 @@ class CommunityInviteModel(Base):
     __tablename__ = "community_invite"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    community: Mapped[str] = mapped_column(ForeignKey("community.name"))
+    community: Mapped[int] = mapped_column(ForeignKey("community.id"))
     code: Mapped[str]
     expire_time: Mapped[datetime] = mapped_column(DateTime(timezone=False))

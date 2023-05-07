@@ -12,6 +12,6 @@ class ScoreUserDTO:
 
 @dataclass
 class ScoreCommunityDTO:
-    community_name: str
+    community_name: int
     value: int
     operation: ScoreOperationEnum

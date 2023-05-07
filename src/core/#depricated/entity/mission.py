@@ -71,7 +71,7 @@
 # class MissionCommunityCreateDTO:
 #     mission_id: int
 #     status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
-#     community_id: str
+#     community_id: int
 #     author: str
 #     place: str | None = None
 #     meeting_date: int | None = None

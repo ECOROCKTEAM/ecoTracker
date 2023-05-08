@@ -1,37 +1,43 @@
-import abc
+from abc import abstractmethod, ABC
 from src.core.interfaces.repository.challenges.mission import IRepositoryMission
 from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.interfaces.repository.community.community import IRepositoryCommunity
+from src.core.interfaces.repository.score.score import IRepositoryScore
 
 
-class IUnitOfWork(abc.ABC):
+class IUnitOfWork(ABC):
     @property
-    @abc.abstractmethod
+    @abstractmethod
+    def score(self) -> IRepositoryScore:
+        ...
+
+    @property
+    @abstractmethod
     def community(self) -> IRepositoryCommunity:
         ...
 
     @property
-    @abc.abstractmethod
+    @abstractmethod
     def mission(self) -> IRepositoryMission:
         ...
 
     @property
-    @abc.abstractmethod
+    @abstractmethod
     def task(self) -> IRepositoryTask:
         ...
 
-    @abc.abstractmethod
+    @abstractmethod
     async def __aenter__(self) -> "IUnitOfWork":
         ...
 
-    @abc.abstractmethod
+    @abstractmethod
     async def __aexit__(self, *args):
         ...
 
-    @abc.abstractmethod
+    @abstractmethod
     async def commit(self):
         ...
 
-    @abc.abstractmethod
+    @abstractmethod
     async def rollback(self):
         ...

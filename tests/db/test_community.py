@@ -24,4 +24,4 @@ async def test_create(pool):
         res = await uow.community.create(obj=dto)
         await uow.commit()
 
-    assert res == Community(**asdict(dto))
+    assert res == Community(**asdict(dto), id=res.id)

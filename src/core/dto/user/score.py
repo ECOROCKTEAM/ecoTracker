@@ -1,10 +1,19 @@
 from dataclasses import dataclass
 
+from src.core.enum.score.operation import ScoreOperationEnum
+
 
 @dataclass
 class UserScoreDTO:
     user_id: int
     value: int
+
+
+@dataclass
+class OperationWithScoreUserDTO:
+    user_id: int
+    value: int
+    operation: ScoreOperationEnum
 
 
 @dataclass

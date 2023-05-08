@@ -123,15 +123,18 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def user_get(self, *, id: int) -> UserCommunityDTO:
+    async def user_get(
+        self,
+        *,
+        community_id: int,
+        user_id: int,
+    ) -> UserCommunityDTO:
         """Получить связь сообщество-пользователь
-
         Args:
-            id (int): Id связи
-
+            user_id (int): Id пользователя
+            community_id: Id сообщества
         Returns:
             UserCommunityDTO: Объект связи пользователя и сообщества
-
         Raises:
             RepoError: Ошибка операции
             UserNotInCommunity: Связь не найдена

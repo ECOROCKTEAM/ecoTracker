@@ -1,8 +1,6 @@
-import asyncio
 from dataclasses import dataclass
 
 from src.core.dto.m2m.user.community import UserCommunityUpdateDTO, UserCommunityDTO
-from src.core.entity.community import Community
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
 from src.core.exception.community import (
@@ -13,7 +11,8 @@ from src.core.exception.user import (
     UserIsNotPremiumError,
     UserIsNotCommunitySuperUserError,
 )
-from src.core.interfaces.repository.community.community import IRepositoryCommunity, CommunityUserFilter
+
+from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
 @dataclass
@@ -22,46 +21,29 @@ class Result:
 
 
 class CommunityChangeUserRoleUsecase:
-    def __init__(self, *, repo: IRepositoryCommunity) -> None:
-        self.repo = repo
+    def __init__(self, *, uow: IUnitOfWork) -> None:
+        self.uow = uow
 
-    async def __call__(self, *, user: User, update_obj: UserCommunityUpdateDTO) -> Result:
+    async def __call__(
+        self, *, user: User, community_id: int, user_id: int, update_obj: UserCommunityUpdateDTO
+    ) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
-        community_id = update_obj.community_id
-        tasks: tuple[asyncio.Task[Community], asyncio.Task[list[UserCommunityDTO]]] = (
-            asyncio.create_task(self.repo.get(id=community_id)),
-            asyncio.create_task(
-                self.repo.user_list(
-                    id=community_id,
-                    filter_obj=CommunityUserFilter(role_list=[CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN]),
+        async with self.uow as uow:
+            community = await uow.community.get(id=community_id)
+
+            if not community.active:
+                raise CommunityDeactivatedError(community_id=community.id)
+            current_user = await uow.community.user_get(user_id=user.id, community_id=community_id)
+            if current_user.role not in (CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN):
+                raise UserIsNotCommunityAdminUserError(user_id=user.id, community_id=community_id)
+
+            target_user = await uow.community.user_get(community_id=community_id, user_id=user_id)
+            if target_user.role == CommunityRoleEnum.SUPERUSER and current_user.role != CommunityRoleEnum.SUPERUSER:
+                raise UserIsNotCommunitySuperUserError(
+                    username=user_id,
+                    community_id=community_id,
                 )
-            ),
-        )
-        (
-            community,
-            link_list_head_user,
-        ) = await asyncio.gather(*tasks)
-        if not community.active:
-            raise CommunityDeactivatedError(community_id=community.id)
-
-        current_user_link = None
-        target_user_link = None
-        for _link in link_list_head_user:
-            if user.id == _link.user_id:
-                current_user_link = _link
-            if update_obj.user_id == _link.user_id:
-                target_user_link = _link
-        # User role must be ADMIN or SUPERUSER
-        if current_user_link is None:
-            raise UserIsNotCommunityAdminUserError(user_id=user.id, community_id=community_id)
-
-        # ADMIN can't change role for SUPERUSER
-        if target_user_link and target_user_link.role.SUPERUSER and current_user_link.role.ADMIN:
-            raise UserIsNotCommunitySuperUserError(
-                user_id=current_user_link.user_id,
-                community_id=current_user_link.community_id,
-            )
-
-        link = await self.repo.user_role_update(obj=update_obj)
+            link = await uow.community.user_role_update(obj=update_obj, community_id=community_id, user_id=user_id)
+            await uow.commit()
         return Result(item=link)

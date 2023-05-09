@@ -18,7 +18,7 @@ from src.core.enum.language import LanguageEnum
 
 @dataclass
 class MissionFilter:
-    """"""
+    active: bool | None = None
 
 
 @dataclass
@@ -43,6 +43,9 @@ class IRepositoryMission(ABC):
         Returns:
             MissionBase: Сущность базовой миссии
 
+        Raises:
+            EntityNotFound - Сущность не найдена
+            TranslateNotFound - Не найден перевод
         """
 
     @abstractmethod
@@ -61,16 +64,17 @@ class IRepositoryMission(ABC):
             List[MissionBase]: Список базовых миссий
         """
 
-    @abstractmethod
-    async def deactivate(self, *, id: int) -> int:
-        """Отключить миссию
+    # Replaced to admin app
+    # @abstractmethod
+    # async def deactivate(self, *, id: int) -> int:
+    #     """Отключить миссию
 
-        Args:
-            id (int): ID базовой миссии
+    #     Args:
+    #         id (int): ID базовой миссии
 
-        Returns:
-            int: ID базовой миссии
-        """
+    #     Returns:
+    #         int: ID базовой миссии
+    #     """
 
     @abstractmethod
     async def user_mission_get(self, *, id: int, lang: LanguageEnum) -> MissionUser:

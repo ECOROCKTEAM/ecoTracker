@@ -51,6 +51,8 @@ async def test_lst(pool, test_mission_model_list):
             order_obj=MockObj(),
             pagination_obj=MockObj(),
         )
+    assert len(test_mission_model_list) != 0
+    assert len(mission_list) != 0
     for mission in mission_list:
         assert mission.id in test_mission_ids
         assert mission.language == lang

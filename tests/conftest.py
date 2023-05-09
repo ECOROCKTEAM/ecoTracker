@@ -131,20 +131,24 @@ async def test_user_community_change(pool: async_sessionmaker[AsyncSession], tes
 
 @pytest_asyncio.fixture(scope="module")
 async def test_occupancy_category_model_list(pool: async_sessionmaker[AsyncSession]) -> list[OccupancyCategoryModel]:
-    test_data = [[{"name": f"test-occupancy-{fake.name()}", "language": lang}] for lang in LanguageEnum]
+    count = 5
     category_model_list: list[OccupancyCategoryModel] = []
     async with pool() as s:
-        for _ in range(5):
+        for _ in range(count):
             model = OccupancyCategoryModel()
             s.add(model)
             await s.flush()
+            translate_models = [
+                OccupancyCategoryTranslateModel(
+                    name=f"{fake.name()}_occupancy_t",
+                    category_id=model.id,
+                    language=lang,
+                )
+                for lang in LanguageEnum
+            ]
+            s.add_all(translate_models)
+            await s.flush()
             await s.refresh(model)
-            for translations in test_data:
-                for translate_data in translations:
-                    t_model = OccupancyCategoryTranslateModel(**translate_data, category_id=model.id)
-                    s.add(t_model)
-                    await s.flush()
-                await s.refresh(model)
             category_model_list.append(model)
         await s.commit()
     return category_model_list
@@ -154,36 +158,29 @@ async def test_occupancy_category_model_list(pool: async_sessionmaker[AsyncSessi
 async def test_mission_model_list(
     pool: async_sessionmaker[AsyncSession], test_occupancy_category_model_list: list[OccupancyCategoryModel]
 ) -> list[MissionModel]:
-    test_mission_list_data = []
-    for category in test_occupancy_category_model_list:
-        test_mission_data = {
-            "active": True,
-            "author": "",
-            "score": random.randint(50, 500),
-            "category_id": category.id,
-            "translations": [
-                {
-                    "name": f"test-mission-{fake.name()}",
-                    "description": "",
-                    "instruction": "",
-                    "language": category_t.language,
-                }
-                for category_t in category.translations
-            ],
-        }
-        test_mission_list_data.append(test_mission_data)
     mission_list: list[MissionModel] = []
     async with pool() as s:
-        for mission_data in test_mission_list_data:
-            translations = mission_data.pop("translations")
-            model = MissionModel(**mission_data)
+        for category in test_occupancy_category_model_list:
+            model = MissionModel(
+                active=True,
+                author="",
+                score=random.randint(50, 500),
+                category_id=category.id,
+            )
             s.add(model)
             await s.flush()
-            await s.refresh(model)
-            for translate_data in translations:
-                t_model = MissionTranslateModel(**translate_data, mission_id=model.id)
-                s.add(t_model)
-                await s.flush()
+            translate_models = [
+                MissionTranslateModel(
+                    name=f"{fake.name()}_mission_t",
+                    description="",
+                    instruction="",
+                    mission_id=model.id,
+                    language=lang,
+                )
+                for lang in LanguageEnum
+            ]
+            s.add_all(translate_models)
+            await s.flush()
             await s.refresh(model)
             mission_list.append(model)
         await s.commit()

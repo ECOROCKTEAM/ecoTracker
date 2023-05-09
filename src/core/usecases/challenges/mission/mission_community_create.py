@@ -19,5 +19,5 @@ class MissionCommunityCreateUsecase:
     async def __call__(self, *, user: User, create_obj: MissionCommunityCreateDTO) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
-        mission = await self.repo.community_mission_create(obj=create_obj, return_language=user.language)
+        mission = await self.repo.community_mission_create(obj=create_obj, lang=user.language)
         return Result(item=mission)

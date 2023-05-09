@@ -23,6 +23,6 @@ class MissionCommunityListUsecase:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
         mission_list = await self.repo.community_mission_lst(
-            filter_obj=filter_obj, order_obj=order_obj, pagination_obj=pagination_obj, return_language=user.language
+            filter_obj=filter_obj, order_obj=order_obj, pagination_obj=pagination_obj, lang=user.language
         )
         return Result(item=mission_list)

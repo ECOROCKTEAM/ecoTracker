@@ -24,12 +24,12 @@ class TaskUserPlanFilter:
 
 class IRepositoryTask(ABC):
     @abstractmethod
-    async def get(self, *, id: int, return_language: LanguageEnum) -> Task:
+    async def get(self, *, id: int, lang: LanguageEnum) -> Task:
         """Get task
 
         Args:
             id (int): task identify
-            return_language (LanguageEnum): Необходимый язык
+            lang (LanguageEnum): Необходимый язык
 
         Returns:
             Task: Task entity
@@ -37,7 +37,7 @@ class IRepositoryTask(ABC):
 
     @abstractmethod
     async def lst(
-        self, *, sorting_obj: MockObj, paggination_obj: MockObj, filter_obj: MockObj, return_language: LanguageEnum
+        self, *, sorting_obj: MockObj, paggination_obj: MockObj, filter_obj: MockObj, lang: LanguageEnum
     ) -> list[Task]:
         """List of tasks
 
@@ -45,7 +45,7 @@ class IRepositoryTask(ABC):
             sorting_obj (str): sorting object
             paggination_obj (str): paggination object
             filter_obj (str): filter object
-            return_language (LanguageEnum): Необходимый язык
+            lang (LanguageEnum): Необходимый язык
 
         Returns:
             list[Task]: list of Task entities
@@ -63,36 +63,36 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def user_task_get(self, *, id: int, return_language: LanguageEnum) -> TaskUser:
+    async def user_task_get(self, *, id: int, lang: LanguageEnum) -> TaskUser:
         """Получить задание для пользователя
 
         Args:
             id (int): ID задачи пользователя
-            return_language (LanguageEnum): Необходимый язык
+            lang (LanguageEnum): Необходимый язык
 
         Returns:
             TaskUser: Сущность задачи пользователя
         """
 
     @abstractmethod
-    async def user_task_create(self, *, obj: TaskUserCreateDTO, return_language: LanguageEnum) -> TaskUser:
+    async def user_task_create(self, *, obj: TaskUserCreateDTO, lang: LanguageEnum) -> TaskUser:
         """Создать задание для пользователя
 
         Args:
             obj (TaskUserCreateDTO): Объект создания
-            return_language (LanguageEnum): Необходимый язык
+            lang (LanguageEnum): Необходимый язык
 
         Returns:
             TaskUser: Сущность задачи пользователя
         """
 
     @abstractmethod
-    async def user_task_update(self, *, obj: TaskUserUpdateDTO, return_language: LanguageEnum) -> TaskUser:
+    async def user_task_update(self, *, obj: TaskUserUpdateDTO, lang: LanguageEnum) -> TaskUser:
         """Обновить задание для пользователя
 
         Args:
             obj (TaskUserCreateDTO): Объект обновления
-            return_language (LanguageEnum): Необходимый язык
+            lang (LanguageEnum): Необходимый язык
 
         Returns:
             TaskUser: Сущность задачи пользователя
@@ -105,7 +105,7 @@ class IRepositoryTask(ABC):
         filter_obj: TaskUserFilter,
         order_obj: MockObj,
         pagination_obj: MockObj,
-        return_language: LanguageEnum,
+        lang: LanguageEnum,
     ) -> list[TaskUser]:
         """Получить список заданий пользователя
 
@@ -113,7 +113,7 @@ class IRepositoryTask(ABC):
             filter_obj (TaskUserFilter): Объект фильтрации
             order_obj (MockObj): Объект порядка
             pagination_obj (MockObj): Объект пагинации
-            return_language (LanguageEnum): Необходимый язык
+            lang (LanguageEnum): Необходимый язык
 
         Returns:
             List[TaskUser]: Список сущностей заданий пользователя

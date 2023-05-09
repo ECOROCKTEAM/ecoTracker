@@ -19,6 +19,6 @@ class TaskGetUseCase:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
 
-        task = await self.repo.get(id=task_id, return_language=user.language)
+        task = await self.repo.get(id=task_id, lang=user.language)
 
         return Result(item=task)

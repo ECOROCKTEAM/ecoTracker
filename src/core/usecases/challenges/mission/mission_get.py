@@ -19,7 +19,7 @@ class MissionGetUsecase:
     async def __call__(self, *, user: User, id: int) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
-        mission = await self.repo.get(id=id, return_language=user.language)
+        mission = await self.repo.get(id=id, lang=user.language)
         if not mission.active:
             raise MissionDeactivatedError(user_id=user.id)
         return Result(item=mission)

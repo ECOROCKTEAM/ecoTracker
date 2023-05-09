@@ -72,7 +72,7 @@ async def test_change_role(pool, test_user, test_community, test_user_role, test
 
 
 @pytest.mark.asyncio
-async def test_list(pool, test_user, test_community_delete):
+async def test_delete(pool, test_user, test_community_delete):
     uow = SqlAlchemyUnitOfWork(pool)
     uc = community_delete.CommunityDeleteUsecase(uow=uow)
     res = await uc(user=test_user, community_id=test_community_delete.id)

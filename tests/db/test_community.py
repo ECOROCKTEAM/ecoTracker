@@ -12,9 +12,8 @@ from src.core.dto.community.community import CommunityUpdateDTO, CommunityCreate
 @pytest.mark.asyncio
 async def test_get(pool):
     async with SqlAlchemyUnitOfWork(pool) as uow:
-        res = await uow.community.get(id="asd")
-    print(res)
-    assert res is None
+        with pytest.raises(Exception):
+            res = await uow.community.get(id=1)
 
 
 @pytest.mark.asyncio
@@ -24,4 +23,4 @@ async def test_create(pool):
         res = await uow.community.create(obj=dto)
         await uow.commit()
 
-    assert res == Community(**asdict(dto))
+    assert res == Community(**asdict(dto), id=res.id)

@@ -37,9 +37,9 @@ def event_loop():
 @pytest_asyncio.fixture(scope="module")
 async def pool() -> AsyncGenerator[async_sessionmaker[AsyncSession], None]:
     engine = create_async_engine(url=settings.DATABASE_URL)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
+    # async with engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.drop_all)
+    #     await conn.run_sync(Base.metadata.create_all)
     factory = create_session_factory(engine=engine)
     yield factory
 

@@ -4,7 +4,10 @@ from src.core.dto.mock import MockObj
 from src.core.entity.mission import MissionCommunity
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotPremiumError
-from src.core.interfaces.repository.challenges.mission import IRepositoryMission, MissionCommunityFilter
+from src.core.interfaces.repository.challenges.mission import (
+    IRepositoryMission,
+    MissionCommunityFilter,
+)
 
 
 @dataclass

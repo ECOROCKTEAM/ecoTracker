@@ -5,14 +5,27 @@ import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from src.core.dto.community.invite import CommunityInviteCreateDTO, CommunityInviteDTO, CommunityInviteUpdateDTO
+from src.core.dto.community.invite import (
+    CommunityInviteCreateDTO,
+    CommunityInviteDTO,
+    CommunityInviteUpdateDTO,
+)
 from src.core.dto.m2m.user.community import UserCommunityDTO
 from src.core.entity.community import Community
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
-from src.core.exception.community import CommunityDeactivatedError, CommunityInviteLinkNotFoundError
-from src.core.exception.user import UserIsNotCommunityAdminUserError, UserIsNotPremiumError
-from src.core.interfaces.repository.community.community import CommunityUserFilter, IRepositoryCommunity
+from src.core.exception.community import (
+    CommunityDeactivatedError,
+    CommunityInviteLinkNotFoundError,
+)
+from src.core.exception.user import (
+    UserIsNotCommunityAdminUserError,
+    UserIsNotPremiumError,
+)
+from src.core.interfaces.repository.community.community import (
+    CommunityUserFilter,
+    IRepositoryCommunity,
+)
 
 
 @dataclass

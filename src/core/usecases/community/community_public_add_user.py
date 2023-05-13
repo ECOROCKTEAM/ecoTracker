@@ -2,7 +2,10 @@ from dataclasses import dataclass
 
 from src.core.dto.m2m.user.community import UserCommunityCreateDTO, UserCommunityDTO
 from src.core.entity.user import User
-from src.core.exception.community import CommunityDeactivatedError, CommunityPrivacyError
+from src.core.exception.community import (
+    CommunityDeactivatedError,
+    CommunityPrivacyError,
+)
 from src.core.exception.user import UserIsNotPremiumError, UserPermissionError
 from src.core.interfaces.repository.community.community import IRepositoryCommunity
 

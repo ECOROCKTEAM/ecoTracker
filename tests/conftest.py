@@ -7,7 +7,11 @@ import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from src.application.database.base import Base, create_async_engine, create_session_factory
+from src.application.database.base import (
+    Base,
+    create_async_engine,
+    create_session_factory,
+)
 from src.application.settings import settings
 from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.entity.community import Community
@@ -17,7 +21,10 @@ from src.core.enum.community.privacy import CommunityPrivacyEnum
 from src.core.enum.community.role import CommunityRoleEnum
 from src.core.enum.language import LanguageEnum
 from src.data.models.challenges.mission import MissionModel, MissionTranslateModel
-from src.data.models.challenges.occupancy import OccupancyCategoryModel, OccupancyCategoryTranslateModel
+from src.data.models.challenges.occupancy import (
+    OccupancyCategoryModel,
+    OccupancyCategoryTranslateModel,
+)
 from src.data.models.community.community import CommunityModel
 from src.data.models.user.user import UserCommunityModel, UserModel
 

@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
 
 from src.core.dto.mock import MockObj
-from src.core.dto.subscription.period import SubscriptionPeriodCreateDTO, SubscriptionPeriodDTO
+from src.core.dto.subscription.period import (
+    SubscriptionPeriodCreateDTO,
+    SubscriptionPeriodDTO,
+)
 from src.core.entity.subscription import Subscription, SubscriptionCreateDTO
 
 

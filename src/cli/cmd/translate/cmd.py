@@ -1,6 +1,10 @@
 import click
 
-from src.cli.cmd.util import create_translate_file, read_translate_file, write_block_translate_file
+from src.cli.cmd.util import (
+    create_translate_file,
+    read_translate_file,
+    write_block_translate_file,
+)
 from src.core.enum import LanguageEnum
 from src.core.enum.base.translation import TranslationEnum
 

@@ -1,12 +1,16 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.interfaces.repository.challenges.mission import IRepositoryMission
-from src.core.interfaces.repository.challenges.occupancy import IRepositoryOccupancyCategory
+from src.core.interfaces.repository.challenges.occupancy import (
+    IRepositoryOccupancyCategory,
+)
 from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.interfaces.repository.community.community import IRepositoryCommunity
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.data.repository.challenges.mission import RepositoryMission
-from src.data.repository.challenges.occupancy_category import RepositoryOccupancyCategory
+from src.data.repository.challenges.occupancy_category import (
+    RepositoryOccupancyCategory,
+)
 from src.data.repository.community import RepositoryCommunity
 
 

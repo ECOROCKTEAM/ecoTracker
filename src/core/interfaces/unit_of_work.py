@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 
 from src.core.interfaces.repository.challenges.mission import IRepositoryMission
-from src.core.interfaces.repository.challenges.occupancy import IRepositoryOccupancyCategory
+from src.core.interfaces.repository.challenges.occupancy import (
+    IRepositoryOccupancyCategory,
+)
 from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.interfaces.repository.community.community import IRepositoryCommunity
 

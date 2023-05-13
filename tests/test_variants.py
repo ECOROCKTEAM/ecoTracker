@@ -1,18 +1,26 @@
 import itertools
 import random
-import pytest
+from re import L
 from timeit import default_timer as timer
-from sqlalchemy import and_, outerjoin, select, text, or_
-from sqlalchemy.orm import noload, joinedload
-from sqlalchemy.ext.asyncio import AsyncSession
+
+import pytest
+from sqlalchemy import and_, or_, outerjoin, select, text
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload, noload
 from sqlalchemy.sql import func
 from sqlalchemy.sql.expression import literal, literal_column
+
 from src.application.database.base import Base
 from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.entity.mission import Mission
 from src.core.enum.language import LanguageEnum
-from src.data.models import MissionModel, MissionTranslateModel, OccupancyCategoryModel, OccupancyCategoryTranslateModel
+from src.data.models import (
+    MissionModel,
+    MissionTranslateModel,
+    OccupancyCategoryModel,
+    OccupancyCategoryTranslateModel,
+)
 from src.data.repository.challenges.mission import model_to_dto
 
 # count of languages - 28
@@ -82,13 +90,13 @@ async def generate_mission(s, count, cl):
 
 
 # python -m pytest tests/test_variants.py::test_list_select_all_python_find -vv -s --durations=0
-@pytest.mark.asyncio
-async def test_list_select_all_python_find(session: AsyncSession):
-    target_lang = LanguageEnum.Z
-    stmt = select(MissionModel)
-    res = await session.scalars(stmt)
-    conv_res = [model_to_dto(model, target_lang) for model in res]
-    # print("\n", conv_res[0])
+# @pytest.mark.asyncio
+# async def test_list_select_all_python_find(session: AsyncSession):
+#     target_lang = LanguageEnum.Z
+#     stmt = select(MissionModel)
+#     res = await session.scalars(stmt)
+#     conv_res = [model_to_dto(model, target_lang) for model in res]
+#     # print("\n", conv_res[0])
 
 
 # python -m pytest tests/test_variants.py::test_list_select_two_in_one_query -vv -s --durations=0
@@ -99,30 +107,22 @@ async def test_list_select_two_in_one_query(session: AsyncSession):
     stmt = (
         select(
             MissionModel,
-            OccupancyCategoryModel,
             func.array_agg(literal_column(MissionTranslateModel.__tablename__)),
-            func.array_agg(literal_column(OccupancyCategoryTranslateModel.__tablename__)),
         )
-        .options(noload(MissionModel.translations))
-        .options(noload(MissionModel.category))
-        .options(noload(OccupancyCategoryModel.translations))
-        .join(OccupancyCategoryModel, MissionModel.category_id == OccupancyCategoryModel.id)
         .join(
             MissionTranslateModel,
             MissionModel.id == MissionTranslateModel.mission_id,
         )
-        .join(OccupancyCategoryTranslateModel, OccupancyCategoryModel.id == OccupancyCategoryTranslateModel.category_id)
         .where(
             MissionTranslateModel.language.in_([target_lang, default_lang]),
-            OccupancyCategoryTranslateModel.language.in_([target_lang, default_lang]),
         )
-        .group_by(MissionModel.id, OccupancyCategoryModel.id)
+        .group_by(MissionModel.id)
     )
     coro = await session.execute(stmt)
     res = coro.all()
 
     def _to_entity(item):
-        mission, category, mission_translate_lst, category_translate_lst = item
+        mission, mission_translate_lst = item
         mission_translate_map = {t["language"]: dict(t) for t in mission_translate_lst}
         mission_translate_dict = mission_translate_map.get(
             target_lang.name, mission_translate_map.get(default_lang.name)
@@ -130,13 +130,6 @@ async def test_list_select_two_in_one_query(session: AsyncSession):
         if mission_translate_dict is None:
             raise ValueError("fuck jopa")
         mission_translate_dict["language"] = LanguageEnum[mission_translate_dict["language"]]
-        category_translate_map = {t["language"]: dict(t) for t in category_translate_lst}
-        category_translate_dict = category_translate_map.get(
-            target_lang.name, category_translate_map.get(default_lang.name)
-        )
-        if category_translate_dict is None:
-            raise ValueError("fuck jopa")
-        category_translate_dict["language"] = LanguageEnum[category_translate_dict["language"]]
 
         m = Mission(
             id=mission.id,
@@ -146,9 +139,7 @@ async def test_list_select_two_in_one_query(session: AsyncSession):
             description=mission_translate_dict["description"],
             instruction=mission_translate_dict["instruction"],
             language=mission_translate_dict["language"],
-            category=OccupancyCategoryDTO(
-                id=category.id, name=category_translate_dict["name"], language=category_translate_dict["language"]
-            ),
+            category_id=mission.category_id,
         )
         return m
 
@@ -162,30 +153,13 @@ async def test_list_with_subq_if_not_found(session: AsyncSession):
     target_lang = LanguageEnum.RU
     default_lang = LanguageEnum.EN
 
-    stmt = (
-        select(
-            MissionModel,
-            OccupancyCategoryModel,
-            MissionTranslateModel,
-            OccupancyCategoryTranslateModel,
-        )
-        .options(noload(MissionModel.translations))
-        .options(noload(MissionModel.category))
-        .options(noload(OccupancyCategoryModel.translations))
-        .join(OccupancyCategoryModel, MissionModel.category_id == OccupancyCategoryModel.id)
-        .join(
-            MissionTranslateModel,
-            and_(MissionModel.id == MissionTranslateModel.mission_id, MissionTranslateModel.language == target_lang),
-            isouter=True,
-        )
-        .join(
-            OccupancyCategoryTranslateModel,
-            and_(
-                OccupancyCategoryModel.id == OccupancyCategoryTranslateModel.category_id,
-                OccupancyCategoryTranslateModel.language == target_lang,
-            ),
-            isouter=True,
-        )
+    stmt = select(
+        MissionModel,
+        MissionTranslateModel,
+    ).join(
+        MissionTranslateModel,
+        and_(MissionModel.id == MissionTranslateModel.mission_id, MissionTranslateModel.language == target_lang),
+        isouter=True,
     )
     # print(stmt.compile(dialect=postgresql.dialect(),compile_kwargs={"literal_binds": True}))
 
@@ -193,29 +167,18 @@ async def test_list_with_subq_if_not_found(session: AsyncSession):
     res = coro.mappings().all()
 
     mission_default_lang_ids = []
-    category_default_lang_ids = []
-    holder = {
-        "mission": {},
-        "mission_translate": {},
-        "category": {},
-        "category_translate": {},
-    }
+    holder = {}
 
     # print()
     for item in res:
         mission = item.get("MissionModel")
-        category = item.get("OccupancyCategoryModel")
         mission_translate = item.get("MissionTranslateModel")
-        category_translate = item.get("OccupancyCategoryTranslateModel")
         # print(mission.id, mission_translate, category_translate)
         if mission_translate is None:
             mission_default_lang_ids.append(mission.id)
-        if category_translate is None:
-            category_default_lang_ids.append(category.id)
-        holder["mission"][mission.id] = mission
-        holder["category"][category.id] = category
-        holder["mission_translate"][mission.id] = mission_translate
-        holder["category_translate"][category.id] = category_translate
+        holder[mission.id] = {}
+        holder[mission.id]["model"] = mission
+        holder[mission.id]["translate"] = mission_translate
     if len(mission_default_lang_ids) > 0:
         # print("negative for mission:", mission_default_lang_ids)
         stmt_mission_negative = select(
@@ -230,28 +193,12 @@ async def test_list_with_subq_if_not_found(session: AsyncSession):
         coro = await session.scalars(stmt_mission_negative)
         result = coro.all()
         for model in result:
-            holder["mission_translate"][model.mission_id] = model
-    if len(category_default_lang_ids) > 0:
-        # print("negative for category:", category_default_lang_ids)
-        stmt_category_negative = select(
-            OccupancyCategoryTranslateModel,
-        ).where(
-            and_(
-                OccupancyCategoryTranslateModel.category_id.in_(category_default_lang_ids),
-                OccupancyCategoryTranslateModel.language == default_lang,
-            )
-        )
-        # print(stmt_category_negative.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
-        coro = await session.scalars(stmt_category_negative)
-        result = coro.all()
-        for model in result:
-            holder["category_translate"][model.category_id] = model
+            holder[model.mission_id]["translate"] = model
 
     entity_list = []
-    for _, mission_model in holder["mission"].items():
-        mission_translate_model = holder["mission_translate"][mission_model.id]
-        category_model = holder["category"][mission_model.category_id]
-        category_translate_model = holder["category_translate"][category_model.id]
+    for models in holder.values():
+        mission_model = models["model"]
+        mission_translate_model = models["translate"]
         entity_list.append(
             Mission(
                 id=mission_model.id,
@@ -261,9 +208,7 @@ async def test_list_with_subq_if_not_found(session: AsyncSession):
                 description=mission_translate_model.description,
                 instruction=mission_translate_model.instruction,
                 language=mission_translate_model.language,
-                category=OccupancyCategoryDTO(
-                    id=category_model.id, name=category_translate_model.name, language=category_translate_model.language
-                ),
+                category_id=mission_model.category_id,
             )
         )
     # print()
@@ -287,3 +232,121 @@ async def test_list_with_subq_if_not_found(session: AsyncSession):
 # 5.07s call     tests/test_variants.py::test_list_select_all_python_find
 # 1.07s call     tests/test_variants.py::test_list_select_two_in_one_query
 # 0.32s call     tests/test_variants.py::test_list_with_subq_if_not_found
+
+
+# python -m pytest tests/test_variants.py::test_get_select_two_in_one_query -vv -s --durations=0
+@pytest.mark.asyncio
+async def test_get_select_two_in_one_query(session: AsyncSession):
+    target_lang = LanguageEnum.RU
+    default_lang = LanguageEnum.EN
+    mission_id = 555
+    stmt = (
+        select(
+            MissionModel,
+            func.array_agg(literal_column(MissionTranslateModel.__tablename__)),
+        )
+        .join(
+            MissionTranslateModel,
+            and_(
+                MissionModel.id == MissionTranslateModel.mission_id,
+                MissionTranslateModel.language.in_([target_lang, default_lang]),
+            ),
+        )
+        .where(MissionModel.id == mission_id)
+        .group_by(MissionModel.id)
+    )
+    coro = await session.execute(stmt)
+    res = coro.one_or_none()
+    if res is None:
+        raise Exception("fuck jopa")
+
+    def _to_entity(item):
+        mission, mission_translate_lst = item
+        mission_translate_map = {t["language"]: dict(t) for t in mission_translate_lst}
+        mission_translate_dict = mission_translate_map.get(
+            target_lang.name, mission_translate_map.get(default_lang.name)
+        )
+        if mission_translate_dict is None:
+            raise ValueError("fuck jopa")
+        mission_translate_dict["language"] = LanguageEnum[mission_translate_dict["language"]]
+
+        m = Mission(
+            id=mission.id,
+            name=mission_translate_dict["name"],
+            active=mission.active,
+            score=mission.score,
+            description=mission_translate_dict["description"],
+            instruction=mission_translate_dict["instruction"],
+            language=mission_translate_dict["language"],
+            category_id=mission.category_id,
+        )
+        return m
+
+    _to_entity(res)
+
+
+# python -m pytest tests/test_variants.py::test_get_with_subq_if_not_found -vv -s --durations=0
+@pytest.mark.asyncio
+async def test_get_with_subq_if_not_found(session: AsyncSession):
+    target_lang = LanguageEnum.RU
+    default_lang = LanguageEnum.EN
+    mission_id = 555
+    stmt = (
+        select(
+            MissionModel,
+            MissionTranslateModel,
+        )
+        .join(
+            MissionTranslateModel,
+            and_(MissionModel.id == MissionTranslateModel.mission_id, MissionTranslateModel.language == target_lang),
+            isouter=True,
+        )
+        .where(MissionModel.id == mission_id)
+    )
+    # print(stmt.compile(dialect=postgresql.dialect(),compile_kwargs={"literal_binds": True}))
+
+    coro = await session.execute(stmt)
+    res = coro.mappings().one_or_none()
+    if res is None:
+        raise Exception("fuck jopa")
+    model, model_translate = res.values()
+    if model_translate is None:
+        stmt_mission_negative = select(
+            MissionTranslateModel,
+        ).where(
+            and_(
+                MissionTranslateModel.mission_id == mission_id,
+                MissionTranslateModel.language == default_lang,
+            )
+        )
+        # print(stmt_mission_negative.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
+        model_translate = await session.scalar(stmt_mission_negative)
+        if coro is None:
+            raise Exception("fuck jopa")
+    m = Mission(
+        id=model.id,
+        name=model_translate.name,
+        active=model.active,
+        score=model.score,
+        description=model_translate.description,
+        instruction=model_translate.instruction,
+        category_id=model.category_id,
+        language=model_translate.language,
+    )
+    # print(m)
+
+
+# Get by id with lang tested
+
+# State
+# Lang - 28
+# Mission - 10_000
+# MissionTranslate - 280_000
+# Category - 500
+# CategoryTranslate - 140_000
+
+# 0.79s call     tests/test_variants.py::test_get_select_two_in_one_query
+# 0.09s call     tests/test_variants.py::test_get_with_subq_if_not_found
+
+# test_get_select_two_in_one_query - сразу селектим 2 языка
+# test_get_with_subq_if_not_found - на позитиве, на чиле пробуем взять нам нужный, если нет, то делаем подзапрос

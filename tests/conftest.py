@@ -5,6 +5,7 @@ from typing import AsyncGenerator, Generator
 import faker
 import pytest
 import pytest_asyncio
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.application.database.base import (
@@ -197,9 +198,12 @@ async def test_mission_model_list(
 
 
 @pytest_asyncio.fixture(scope="module")
-async def test_mission(test_mission_model_list: list[MissionModel]) -> Mission:
+async def test_mission(pool: async_sessionmaker[AsyncSession], test_mission_model_list: list[MissionModel]) -> Mission:
     model = random.choice(test_mission_model_list)
-    translation = random.choice(model.translations)
+    async with pool() as s:
+        coro = await s.scalars(select(MissionTranslateModel).where(MissionTranslateModel.mission_id == model.id))
+        translations = coro.all()
+    translation = random.choice(translations)
     return Mission(
         id=model.id,
         name=translation.name,

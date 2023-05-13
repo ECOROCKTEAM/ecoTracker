@@ -191,9 +191,6 @@ async def test_mission_model_list(
 async def test_mission(test_mission_model_list: list[MissionModel]) -> Mission:
     model = random.choice(test_mission_model_list)
     translation = random.choice(model.translations)
-    lang = translation.language
-    category = model.category
-    category_translation = [category_t for category_t in category.translations if category_t.language == lang][0]
     return Mission(
         id=model.id,
         name=translation.name,
@@ -201,8 +198,6 @@ async def test_mission(test_mission_model_list: list[MissionModel]) -> Mission:
         score=model.score,
         description=translation.description,
         instruction=translation.instruction,
-        category=OccupancyCategoryDTO(
-            id=category.id, name=category_translation.name, language=category_translation.language
-        ),
+        category_id=model.category_id,
         language=translation.language,
     )

@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from src.core.dto.mock import MockObj
-from src.core.entity.user import User
 
+from src.core.dto.mock import MockObj
+from src.core.entity.community import Community
+from src.core.entity.user import User
 from src.core.exception.user import UserIsNotPremiumError
 from src.core.interfaces.repository.community.community import CommunityFilter
-from src.core.entity.community import Community
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 

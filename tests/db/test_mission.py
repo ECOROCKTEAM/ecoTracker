@@ -1,5 +1,7 @@
-import pytest
 from dataclasses import asdict
+
+import pytest
+
 from src.core.dto.mock import MockObj
 from src.core.entity.mission import Mission
 from src.core.enum.language import LanguageEnum

@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
 from src.core.dto.mock import MockObj
-from src.core.interfaces.repository.score.score import IScoreRepository
 from src.core.dto.user.score import UserBoundOffsetDTO, UserScoreDTO
-from src.core.exception.user import UserIsNotPremiumError, UserIsNotActivateError
 from src.core.entity.user import User
+from src.core.exception.user import UserIsNotActivateError, UserIsNotPremiumError
+from src.core.interfaces.repository.score.score import IScoreRepository
 
 
 @dataclass

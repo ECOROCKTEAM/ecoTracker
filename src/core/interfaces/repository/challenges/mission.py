@@ -1,18 +1,14 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from src.core.dto.mock import MockObj
 
-from src.core.entity.mission import (
-    Mission,
-    MissionUser,
-    MissionCommunity,
-)
 from src.core.dto.challenges.mission import (
-    MissionUserCreateDTO,
-    MissionUserUpdateDTO,
     MissionCommunityCreateDTO,
     MissionCommunityUpdateDTO,
+    MissionUserCreateDTO,
+    MissionUserUpdateDTO,
 )
+from src.core.dto.mock import MockObj
+from src.core.entity.mission import Mission, MissionCommunity, MissionUser
 from src.core.enum.language import LanguageEnum
 
 

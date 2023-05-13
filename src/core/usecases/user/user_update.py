@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from src.core.interfaces.repository.user.user import IUserRepository
 from src.core.entity.user import User, UserUpdateDTO
+from src.core.interfaces.repository.user.user import IUserRepository
 
 
 @dataclass

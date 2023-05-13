@@ -1,12 +1,10 @@
 from dataclasses import dataclass
 
 from src.core.dto.mock import MockObj
-from src.core.exception.user import UserIsNotActivateError
-from src.core.entity.user import User
 from src.core.entity.subscription import Subscription
-from src.core.interfaces.repository.subscription.subscription import (
-    ISubscriptionRepository,
-)
+from src.core.entity.user import User
+from src.core.exception.user import UserIsNotActivateError
+from src.core.interfaces.repository.subscription.subscription import ISubscriptionRepository
 
 
 @dataclass

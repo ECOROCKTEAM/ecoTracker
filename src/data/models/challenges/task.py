@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy.orm import Mapped, mapped_column
+
 from src.application.database.base import Base
 from src.core.enum.language import LanguageEnum
 

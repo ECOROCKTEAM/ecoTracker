@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from src.core.entity.user import User
 
+from src.core.entity.mission import Mission
+from src.core.entity.user import User
 from src.core.exception.mission import MissionDeactivatedError
 from src.core.exception.user import UserIsNotPremiumError
-from src.core.entity.mission import Mission
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 

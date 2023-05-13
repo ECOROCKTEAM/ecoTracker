@@ -1,5 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.core.dto.challenges.mission import (
     MissionCommunityCreateDTO,
     MissionCommunityUpdateDTO,

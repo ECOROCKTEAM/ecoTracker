@@ -1,15 +1,12 @@
 import pytest
+
 from src.core.dto.mock import MockObj
 from src.core.entity.mission import Mission
 from src.core.entity.user import User
 from src.core.enum.language import LanguageEnum
 from src.core.interfaces.repository.challenges.mission import MissionFilter
-
+from src.core.usecases.challenges.mission import mission_get, mission_list
 from src.data.unit_of_work import SqlAlchemyUnitOfWork
-from src.core.usecases.challenges.mission import (
-    mission_get,
-    mission_list,
-)
 
 
 # python -m pytest tests/use_cases/test_mission.py::test_list -v -s

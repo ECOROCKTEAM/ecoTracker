@@ -27,6 +27,7 @@ class MissionUserFilter:
 
 @dataclass
 class MissionCommunityFilter:
+    user_id: int | None = None
     community_id: int | None = None
     mission_id: int | None = None
     status: OccupancyStatusEnum | None = None

@@ -22,7 +22,7 @@ from src.core.interfaces.repository.challenges.mission import (
 )
 from src.data.models.challenges.mission import MissionModel, MissionTranslateModel
 from src.data.models.community.community import CommunityMissionModel
-from src.data.models.user.user import UserMissionModel
+from src.data.models.user.user import UserCommunityModel, UserMissionModel
 
 
 def mission_to_entity(model: MissionModel, model_translate: MissionTranslateModel) -> Mission:
@@ -220,12 +220,21 @@ class RepositoryMission(IRepositoryMission):
         self, *, filter_obj: MissionCommunityFilter, order_obj: MockObj, pagination_obj: MockObj
     ) -> list[MissionCommunity]:
         where_clause = []
+        stmt = select(CommunityMissionModel)
+        if filter_obj.user_id:
+            stmt = stmt.join(
+                UserCommunityModel,
+                and_(
+                    UserCommunityModel.community_id == CommunityMissionModel.community_id,
+                    UserCommunityModel.user_id == filter_obj.user_id,
+                ),
+            )
         if filter_obj.community_id:
             where_clause.append(CommunityMissionModel.community_id == filter_obj.community_id)
         if filter_obj.mission_id:
             where_clause.append(CommunityMissionModel.mission_id == filter_obj.mission_id)
         if filter_obj.status:
             where_clause.append(CommunityMissionModel.status == filter_obj.status)
-        stmt = select(CommunityMissionModel).where(*where_clause)
+        stmt = stmt.where(*where_clause)
         res = await self.db_context.scalars(stmt)
         return [mission_community_to_entity(model) for model in res]

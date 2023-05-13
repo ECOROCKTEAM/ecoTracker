@@ -6,12 +6,13 @@ from src.core.entity.user import User
 from src.core.enum.language import LanguageEnum
 from src.core.interfaces.repository.challenges.mission import MissionFilter
 from src.core.usecases.challenges.mission import mission_get, mission_list
+from src.data.models.challenges.mission import MissionModel
 from src.data.unit_of_work import SqlAlchemyUnitOfWork
 
 
 # python -m pytest tests/use_cases/test_mission.py::test_list -v -s
 @pytest.mark.asyncio
-async def test_list(pool, test_user: User, test_mission_model_list):
+async def test_list(pool, test_user: User, test_mission_model_list: list[MissionModel]):
     lang = LanguageEnum.RU
     test_mission_ids = [m.id for m in test_mission_model_list]
     test_user.language = lang

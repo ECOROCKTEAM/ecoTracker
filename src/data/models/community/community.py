@@ -1,11 +1,12 @@
 from datetime import datetime
+
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.application.database.base import Base
-from src.core.enum.score.operation import ScoreOperationEnum
-from src.core.enum.community.privacy import CommunityPrivacyEnum
 from src.core.enum.challenges.status import OccupancyStatusEnum
+from src.core.enum.community.privacy import CommunityPrivacyEnum
+from src.core.enum.score.operation import ScoreOperationEnum
 
 
 class CommunityModel(Base):

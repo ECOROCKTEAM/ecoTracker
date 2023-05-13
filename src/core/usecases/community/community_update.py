@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from src.core.entity.community import Community
 from src.core.dto.community.community import CommunityUpdateDTO
+from src.core.entity.community import Community
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
 from src.core.exception.community import CommunityDeactivatedError
@@ -9,7 +9,6 @@ from src.core.exception.user import (
     UserIsNotCommunityAdminUserError,
     UserIsNotPremiumError,
 )
-
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 

@@ -1,4 +1,4 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 
 from src.core.dto.mock import MockObj
 from src.core.dto.user.score import UserBoundOffsetDTO, UserScoreDTO

@@ -1,10 +1,14 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
+from src.core.dto.challenges.task import (
+    TaskUserCreateDTO,
+    TaskUserPlanCreateDTO,
+    TaskUserUpdateDTO,
+)
 from src.core.dto.mock import MockObj
-from src.core.enum.language import LanguageEnum
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
-from src.core.dto.challenges.task import TaskUserCreateDTO, TaskUserPlanCreateDTO, TaskUserUpdateDTO
+from src.core.enum.language import LanguageEnum
 
 
 @dataclass

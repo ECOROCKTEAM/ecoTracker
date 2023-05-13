@@ -1,13 +1,12 @@
 from dataclasses import dataclass
+
+from src.core.dto.community.community import CommunityCreateDTO
 from src.core.dto.m2m.user.community import UserCommunityCreateDTO
+from src.core.entity.community import Community
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
-from src.core.dto.community.community import CommunityCreateDTO
-
 from src.core.exception.user import UserIsNotPremiumError
-
 from src.core.interfaces.unit_of_work import IUnitOfWork
-from src.core.entity.community import Community
 
 
 @dataclass

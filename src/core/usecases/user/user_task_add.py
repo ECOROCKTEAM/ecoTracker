@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
-from src.core.enum.challenges.status import OccupancyStatusEnum
-from src.core.entity.user import User
-from src.core.interfaces.repository.user.task import IUserTaskRepository
 from src.core.dto.m2m.user.task import UserTaskCreateDTO, UserTaskDTO
+from src.core.entity.user import User
+from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.exception.user import UserIsNotActivateError, UserTaskMaxAmountError
+from src.core.interfaces.repository.user.task import IUserTaskRepository
 
 
 @dataclass

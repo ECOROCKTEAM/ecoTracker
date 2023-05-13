@@ -1,23 +1,32 @@
 import asyncio
+import random
 from typing import AsyncGenerator, Generator
+
+import faker
 import pytest
 import pytest_asyncio
-import random
-import faker
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from src.application.database.base import (
+    Base,
+    create_async_engine,
+    create_session_factory,
+)
 from src.application.settings import settings
-from src.application.database.base import create_async_engine, create_session_factory, Base
 from src.core.dto.challenges.category import OccupancyCategoryDTO
+from src.core.entity.community import Community
 from src.core.entity.mission import Mission
-from src.core.enum.language import LanguageEnum
-from src.data.models.challenges.mission import MissionModel, MissionTranslateModel
-from src.data.models.challenges.occupancy import OccupancyCategoryModel, OccupancyCategoryTranslateModel
-from src.data.models.user.user import UserModel, UserCommunityModel
-from src.data.models.community.community import CommunityModel
 from src.core.entity.user import User
 from src.core.enum.community.privacy import CommunityPrivacyEnum
 from src.core.enum.community.role import CommunityRoleEnum
-from src.core.entity.community import Community
+from src.core.enum.language import LanguageEnum
+from src.data.models.challenges.mission import MissionModel, MissionTranslateModel
+from src.data.models.challenges.occupancy import (
+    OccupancyCategoryModel,
+    OccupancyCategoryTranslateModel,
+)
+from src.data.models.community.community import CommunityModel
+from src.data.models.user.user import UserCommunityModel, UserModel
 
 fake = faker.Faker()
 
@@ -191,9 +200,6 @@ async def test_mission_model_list(
 async def test_mission(test_mission_model_list: list[MissionModel]) -> Mission:
     model = random.choice(test_mission_model_list)
     translation = random.choice(model.translations)
-    lang = translation.language
-    category = model.category
-    category_translation = [category_t for category_t in category.translations if category_t.language == lang][0]
     return Mission(
         id=model.id,
         name=translation.name,
@@ -201,8 +207,6 @@ async def test_mission(test_mission_model_list: list[MissionModel]) -> Mission:
         score=model.score,
         description=translation.description,
         instruction=translation.instruction,
-        category=OccupancyCategoryDTO(
-            id=category.id, name=category_translation.name, language=category_translation.language
-        ),
+        category_id=model.category_id,
         language=translation.language,
     )

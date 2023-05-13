@@ -1,6 +1,7 @@
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import and_, select, text
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.application.database.base import Base
 from src.data.models import *
 

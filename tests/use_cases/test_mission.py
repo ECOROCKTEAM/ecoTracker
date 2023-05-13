@@ -1,15 +1,12 @@
 import pytest
+
 from src.core.dto.mock import MockObj
 from src.core.entity.mission import Mission
 from src.core.entity.user import User
 from src.core.enum.language import LanguageEnum
 from src.core.interfaces.repository.challenges.mission import MissionFilter
-
+from src.core.usecases.challenges.mission import mission_get, mission_list
 from src.data.unit_of_work import SqlAlchemyUnitOfWork
-from src.core.usecases.challenges.mission import (
-    mission_get,
-    mission_list,
-)
 
 
 # python -m pytest tests/use_cases/test_mission.py::test_list -v -s
@@ -25,7 +22,6 @@ async def test_list(pool, test_user: User, test_mission_model_list):
     for mission in res.item:
         assert mission.id in test_mission_ids
         assert mission.language == lang
-        assert mission.category.language == lang
 
 
 # python -m pytest tests/use_cases/test_mission.py::test_get -v -s
@@ -41,11 +37,5 @@ async def test_get(pool, test_user: User, test_mission: Mission):
     assert test_mission.score == mission.score
     assert test_mission.description == mission.description
     assert test_mission.instruction == mission.instruction
+    assert test_mission.category_id == mission.category_id
     assert test_mission.language == mission.language
-
-    test_category = test_mission.category
-    category = mission.category
-    assert test_category.id == category.id
-    assert test_category.name == category.name
-    assert test_category.language == category.language
-    assert category.language == mission.language

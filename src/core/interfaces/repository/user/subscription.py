@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 
 from src.core.dto.m2m.user.subscription import (
     UserSubscription,
-    UserSubscriptionUpdateDTO,
     UserSubscriptionCreateDTO,
+    UserSubscriptionUpdateDTO,
 )
 
 

@@ -1,10 +1,10 @@
-from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.asyncio import (
-    create_async_engine,
-    async_sessionmaker,
-    AsyncSession,
     AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
 )
+from sqlalchemy.orm import DeclarativeBase
 
 
 def build_engine(url: str, echo: bool = False) -> AsyncEngine:

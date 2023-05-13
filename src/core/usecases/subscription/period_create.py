@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 
-from src.core.entity.user import User
-from src.core.interfaces.repository.subscription.subscription import (
-    ISubscriptionRepository,
-)
 from src.core.dto.subscription.period import (
     SubscriptionPeriodCreateDTO,
     SubscriptionPeriodDTO,
+)
+from src.core.entity.user import User
+from src.core.interfaces.repository.subscription.subscription import (
+    ISubscriptionRepository,
 )
 
 

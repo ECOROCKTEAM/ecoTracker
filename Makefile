@@ -18,6 +18,7 @@ lint-fix:
 
 .PHONY: fmt
 fmt:
+	${CMD} isort .
 	${CMD} black .
 
 .PHONY: export-deps

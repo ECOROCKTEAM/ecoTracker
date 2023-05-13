@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 
 from src.core.dto.mock import MockObj
+from src.core.entity.user import User, UserCreateDTO
 from src.core.interfaces.repository.subscription.subscription import (
     ISubscriptionRepository,
 )
 from src.core.interfaces.repository.user.user import IUserRepository
-from src.core.entity.user import User, UserCreateDTO
 
 
 @dataclass

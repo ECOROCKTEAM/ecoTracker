@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
+from src.core.dto.subscription.period import SubscriptionPeriodDTO
 from src.core.enum.language import LanguageEnum
 from src.core.enum.subscription.subscription import SubscriptionTypeEnum
-from src.core.dto.subscription.period import SubscriptionPeriodDTO
 from src.core.mixin.validators.translations import TranslationMixin
 
 

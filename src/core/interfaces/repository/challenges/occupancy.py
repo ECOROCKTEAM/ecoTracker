@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.core.dto.challenges.category import (
-    OccupancyCategoryDTO,
-)
+from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.enum.language import LanguageEnum
 
 

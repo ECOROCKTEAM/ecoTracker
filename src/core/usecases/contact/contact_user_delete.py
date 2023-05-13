@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from src.core.interfaces.repository.user.contact import IUserContactRepository
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError
+from src.core.interfaces.repository.user.contact import IUserContactRepository
 
 
 @dataclass

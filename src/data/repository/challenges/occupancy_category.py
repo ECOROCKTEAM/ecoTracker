@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.enum.language import LanguageEnum
-
 from src.core.interfaces.repository.challenges.occupancy import IRepositoryOccupancyCategory
 
 

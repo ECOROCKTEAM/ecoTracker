@@ -1,4 +1,4 @@
-from src.core.exception.base import DomainError, RepoError, PermissionError
+from src.core.exception.base import DomainError, PermissionError, RepoError
 
 
 class UserError(DomainError):

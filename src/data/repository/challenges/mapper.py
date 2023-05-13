@@ -1,4 +1,5 @@
 from typing import TypeVar
+
 from src.core.const.translate import DEFAULT_LANGUANGE
 from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.enum.language import LanguageEnum

@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
 
-from src.core.interfaces.repository.challenges.task import IRepositoryTask
-from src.core.exception.user import UserIsNotActivateError
+from src.core.dto.mock import MockObj
 from src.core.entity.task import Task
 from src.core.entity.user import User
-from src.core.dto.mock import MockObj
+from src.core.exception.user import UserIsNotActivateError
+from src.core.interfaces.repository.challenges.task import IRepositoryTask
 
 
 @dataclass

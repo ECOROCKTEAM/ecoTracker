@@ -9,6 +9,7 @@ from src.core.dto.challenges.mission import (
 )
 from src.core.dto.mock import MockObj
 from src.core.entity.mission import Mission, MissionCommunity, MissionUser
+from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
 
 
@@ -18,13 +19,17 @@ class MissionFilter:
 
 
 @dataclass
-class MissionUserFilter(MissionFilter):
-    """"""
+class MissionUserFilter:
+    user_id: int | None = None
+    mission_id: int | None = None
+    status: OccupancyStatusEnum | None = None
 
 
 @dataclass
-class MissionCommunityFilter(MissionFilter):
-    """"""
+class MissionCommunityFilter:
+    community_id: int | None = None
+    mission_id: int | None = None
+    status: OccupancyStatusEnum | None = None
 
 
 class IRepositoryMission(ABC):
@@ -60,49 +65,37 @@ class IRepositoryMission(ABC):
             List[MissionBase]: Список базовых миссий
         """
 
-    # Replaced to admin app
-    # @abstractmethod
-    # async def deactivate(self, *, id: int) -> int:
-    #     """Отключить миссию
-
-    #     Args:
-    #         id (int): ID базовой миссии
-
-    #     Returns:
-    #         int: ID базовой миссии
-    #     """
-
     @abstractmethod
-    async def user_mission_get(self, *, id: int, lang: LanguageEnum) -> MissionUser:
+    async def user_mission_get(self, *, user_id: int, mission_id: int) -> MissionUser:
         """Получить миссию пользователя
 
         Args:
-            id (int): ID миссии пользователя
-            lang (LanguageEnum): Необходимый язык
+            user_id (int): ID пользователя
+            mission_id (int): ID миссиии
 
         Returns:
             MissionUser: Сущность миссии пользователя
         """
 
     @abstractmethod
-    async def user_mission_create(self, *, obj: MissionUserCreateDTO, lang: LanguageEnum) -> MissionUser:
+    async def user_mission_create(self, *, obj: MissionUserCreateDTO) -> MissionUser:
         """Создать миссию для пользователя
 
         Args:
             obj (MissionUserCreateDTO): Объект создания
-            lang (LanguageEnum): Необходимый язык
 
         Returns:
             MissionUser: Сущность миссии пользователя
         """
 
     @abstractmethod
-    async def user_mission_update(self, *, obj: MissionUserUpdateDTO, lang: LanguageEnum) -> MissionUser:
+    async def user_mission_update(self, *, user_id: int, mission_id: int, obj: MissionUserUpdateDTO) -> MissionUser:
         """Обновить миссию для пользователя
 
         Args:
+            user_id (int): ID пользователя
+            mission_id (int): ID миссиии
             obj (MissionUserUpdateDTO): Объект обновления
-            lang (LanguageEnum): Необходимый язык
 
         Returns:
             MissionUser: Сущность миссии пользователя
@@ -115,7 +108,6 @@ class IRepositoryMission(ABC):
         filter_obj: MissionUserFilter,
         order_obj: MockObj,
         pagination_obj: MockObj,
-        lang: LanguageEnum,
     ) -> list[MissionUser]:
         """Получить список миссий пользователя
 
@@ -123,43 +115,44 @@ class IRepositoryMission(ABC):
             filter_obj (MissionUserFilter): Объект фильтрации
             order_obj (MockObj): Объект порядка
             pagination_obj (MockObj): Объект пагинации
-            lang (LanguageEnum): Необходимый язык
 
         Returns:
             List[MissionUser]: Список сущностей миссии пользователя
         """
 
     @abstractmethod
-    async def community_mission_create(self, *, obj: MissionCommunityCreateDTO, lang: LanguageEnum) -> MissionCommunity:
+    async def community_mission_create(self, *, obj: MissionCommunityCreateDTO) -> MissionCommunity:
         """Создать миссию для сообщест ва
 
         Args:
             obj (MissionCommunityCreateDTO): Объект создания
-            lang (LanguageEnum): Необходимый язык
 
         Returns:
             MissionCommunity: Сущность миссии сообщества
         """
 
     @abstractmethod
-    async def community_mission_get(self, *, id: int, lang: LanguageEnum) -> MissionCommunity:
+    async def community_mission_get(self, *, community_id: int, mission_id: int) -> MissionCommunity:
         """Получить миссию сообщества
 
         Args:
-            id (int): ID миссии сообщества
-            lang (LanguageEnum): Необходимый язык
+            community_id (int): ID сообщества
+            mission_id (int): ID миссии
 
         Returns:
             MissionCommunity: Сущность миссии сообщества
         """
 
     @abstractmethod
-    async def community_mission_update(self, *, obj: MissionCommunityUpdateDTO, lang: LanguageEnum) -> MissionCommunity:
+    async def community_mission_update(
+        self, *, community_id: int, mission_id: int, obj: MissionCommunityUpdateDTO
+    ) -> MissionCommunity:
         """Обновить миссию сообщества
 
         Args:
             obj (MissionCommunityUpdateDTO): Объект обновления
-            lang (LanguageEnum): Необходимый язык
+            community_id (int): ID сообщества
+            mission_id (int): ID миссии
 
         Returns:
             MissionCommunity: Сущность миссии сообщества
@@ -172,7 +165,6 @@ class IRepositoryMission(ABC):
         filter_obj: MissionCommunityFilter,
         order_obj: MockObj,
         pagination_obj: MockObj,
-        lang: LanguageEnum,
     ) -> list[MissionCommunity]:
         """Получить список миссий сообщества
 
@@ -180,7 +172,6 @@ class IRepositoryMission(ABC):
             filter_obj (MockObj): Объект фильтрации
             order_obj (MockObj): Объект порядка
             pagination_obj (MockObj): Объект пагинации
-            lang (LanguageEnum): Необходимый язык
 
         Returns:
             List[MissionCommunity]: Список сущностей миссии сообщества

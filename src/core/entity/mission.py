@@ -7,6 +7,8 @@ from src.core.enum.language import LanguageEnum
 
 @dataclass
 class Mission:
+    """Сущность миссии"""
+
     id: int
     name: str
     active: bool
@@ -19,19 +21,21 @@ class Mission:
 
 @dataclass
 class MissionUser:
-    id: int
-    status: OccupancyStatusEnum
+    """Сущность миссии пользователя"""
+
     user_id: int
     mission_id: int
+    status: OccupancyStatusEnum
 
 
 @dataclass
 class MissionCommunity:
-    id: int
-    author: str
-    status: OccupancyStatusEnum
+    """Сущность миссии сообщества"""
+
     community_id: int
     mission_id: int
+    author: str
+    status: OccupancyStatusEnum
     place: str | None = None
     meeting_date: datetime | None = None
     people_required: int | None = None

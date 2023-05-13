@@ -1,4 +1,6 @@
-from sqlalchemy import and_, select
+from dataclasses import asdict
+
+from sqlalchemy import and_, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.const.translate import DEFAULT_LANGUANGE
@@ -11,7 +13,7 @@ from src.core.dto.challenges.mission import (
 from src.core.dto.mock import MockObj
 from src.core.entity.mission import Mission, MissionCommunity, MissionUser
 from src.core.enum.language import LanguageEnum
-from src.core.exception.base import EntityNotFound, TranslateNotFound
+from src.core.exception.base import EntityNotCreated, EntityNotFound, TranslateNotFound
 from src.core.interfaces.repository.challenges.mission import (
     IRepositoryMission,
     MissionCommunityFilter,
@@ -19,9 +21,11 @@ from src.core.interfaces.repository.challenges.mission import (
     MissionUserFilter,
 )
 from src.data.models.challenges.mission import MissionModel, MissionTranslateModel
+from src.data.models.community.community import CommunityMissionModel
+from src.data.models.user.user import UserMissionModel
 
 
-def model_to_dto(model: MissionModel, model_translate: MissionTranslateModel) -> Mission:
+def mission_to_entity(model: MissionModel, model_translate: MissionTranslateModel) -> Mission:
     return Mission(
         id=model.id,
         name=model_translate.name,
@@ -31,6 +35,28 @@ def model_to_dto(model: MissionModel, model_translate: MissionTranslateModel) ->
         instruction=model_translate.instruction,
         category_id=model.category_id,
         language=model_translate.language,
+    )
+
+
+def mission_user_to_entity(model: UserMissionModel) -> MissionUser:
+    return MissionUser(
+        user_id=model.user_id,
+        mission_id=model.mission_id,
+        status=model.status,
+    )
+
+
+def mission_community_to_entity(model: CommunityMissionModel) -> MissionCommunity:
+    return MissionCommunity(
+        community_id=model.community_id,
+        mission_id=model.mission_id,
+        status=model.status,
+        author=model.author,
+        place=model.place,
+        meeting_date=model.meeting_date,
+        people_required=model.people_required,
+        people_max=model.people_max,
+        comment=model.comment,
     )
 
 
@@ -68,7 +94,7 @@ class RepositoryMission(IRepositoryMission):
             model_translate = await self.db_context.scalar(stmt_mission_negative)
             if model_translate is None:
                 raise TranslateNotFound(msg="")
-        return model_to_dto(model=model, model_translate=model_translate)
+        return mission_to_entity(model=model, model_translate=model_translate)
 
     async def lst(
         self, *, filter_obj: MissionFilter, order_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
@@ -117,37 +143,89 @@ class RepositoryMission(IRepositoryMission):
         for models in holder.values():
             mission = models["model"]
             mission_translate = models["translate"]
-            entity_list.append(model_to_dto(model=mission, model_translate=mission_translate))
+            entity_list.append(mission_to_entity(model=mission, model_translate=mission_translate))
         return entity_list
 
-    async def user_mission_get(self, *, id: int, lang: LanguageEnum) -> MissionUser:
-        return await super().user_mission_get(id=id, lang=lang)
+    async def user_mission_get(self, *, user_id: int, mission_id: int) -> MissionUser:
+        model = await self.db_context.get(entity=UserMissionModel, ident={"user_id": user_id, "mission_id": mission_id})
+        if not model:
+            raise EntityNotFound(msg="")
+        return mission_user_to_entity(model)
 
-    async def user_mission_create(self, *, obj: MissionUserCreateDTO, lang: LanguageEnum) -> MissionUser:
-        return await super().user_mission_create(obj=obj, lang=lang)
+    async def user_mission_create(self, *, obj: MissionUserCreateDTO) -> MissionUser:
+        stmt = insert(UserMissionModel).values(asdict(obj)).returning(UserMissionModel)
+        res = await self.db_context.scalar(stmt)
+        if res is None:
+            raise EntityNotCreated(msg="")
+        return mission_user_to_entity(res)
 
-    async def user_mission_update(self, *, obj: MissionUserUpdateDTO, lang: LanguageEnum) -> MissionUser:
-        return await super().user_mission_update(obj=obj, lang=lang)
+    async def user_mission_update(self, *, user_id: int, mission_id: int, obj: MissionUserUpdateDTO) -> MissionUser:
+        stmt = (
+            update(UserMissionModel)
+            .where(and_(UserMissionModel.user_id == user_id, UserMissionModel.mission_id == mission_id))
+            .values(**obj.to_dict())
+            .returning(UserMissionModel)
+        )
+        res = await self.db_context.scalar(stmt)
+        if not res:
+            raise EntityNotFound(msg="")
+        return mission_user_to_entity(res)
 
     async def user_mission_lst(
-        self, *, filter_obj: MissionUserFilter, order_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
+        self, *, filter_obj: MissionUserFilter, order_obj: MockObj, pagination_obj: MockObj
     ) -> list[MissionUser]:
-        return await super().user_mission_lst(
-            filter_obj=filter_obj, order_obj=order_obj, pagination_obj=pagination_obj, lang=lang
+        where_clause = []
+        if filter_obj.user_id:
+            where_clause.append(UserMissionModel.user_id == filter_obj.user_id)
+        if filter_obj.mission_id:
+            where_clause.append(UserMissionModel.mission_id == filter_obj.mission_id)
+        if filter_obj.status:
+            where_clause.append(UserMissionModel.status == filter_obj.status)
+        stmt = select(UserMissionModel).where(*where_clause)
+        res = await self.db_context.scalars(stmt)
+        return [mission_user_to_entity(model) for model in res]
+
+    async def community_mission_create(self, *, obj: MissionCommunityCreateDTO) -> MissionCommunity:
+        stmt = insert(CommunityMissionModel).values(asdict(obj)).returning(CommunityMissionModel)
+        res = await self.db_context.scalar(stmt)
+        if res is None:
+            raise EntityNotCreated(msg="")
+        return mission_community_to_entity(res)
+
+    async def community_mission_get(self, *, community_id: int, mission_id: int) -> MissionCommunity:
+        model = await self.db_context.get(
+            entity=CommunityMissionModel, ident={"community_id": community_id, "mission_id": mission_id}
         )
+        if not model:
+            raise EntityNotFound(msg="")
+        return mission_community_to_entity(model)
 
-    async def community_mission_create(self, *, obj: MissionCommunityCreateDTO, lang: LanguageEnum) -> MissionCommunity:
-        return await super().community_mission_create(obj=obj, lang=lang)
-
-    async def community_mission_get(self, *, id: int, lang: LanguageEnum) -> MissionCommunity:
-        return await super().community_mission_get(id=id, lang=lang)
-
-    async def community_mission_update(self, *, obj: MissionCommunityUpdateDTO, lang: LanguageEnum) -> MissionCommunity:
-        return await super().community_mission_update(obj=obj, lang=lang)
+    async def community_mission_update(
+        self, *, community_id: int, mission_id: int, obj: MissionCommunityUpdateDTO
+    ) -> MissionCommunity:
+        stmt = (
+            update(CommunityMissionModel)
+            .where(
+                and_(CommunityMissionModel.community_id == community_id, CommunityMissionModel.mission_id == mission_id)
+            )
+            .values(**obj.to_dict())
+            .returning(CommunityMissionModel)
+        )
+        res = await self.db_context.scalar(stmt)
+        if not res:
+            raise EntityNotFound(msg="")
+        return mission_community_to_entity(res)
 
     async def community_mission_lst(
-        self, *, filter_obj: MissionCommunityFilter, order_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
+        self, *, filter_obj: MissionCommunityFilter, order_obj: MockObj, pagination_obj: MockObj
     ) -> list[MissionCommunity]:
-        return await super().community_mission_lst(
-            filter_obj=filter_obj, order_obj=order_obj, pagination_obj=pagination_obj, lang=lang
-        )
+        where_clause = []
+        if filter_obj.community_id:
+            where_clause.append(CommunityMissionModel.community_id == filter_obj.community_id)
+        if filter_obj.mission_id:
+            where_clause.append(CommunityMissionModel.mission_id == filter_obj.mission_id)
+        if filter_obj.status:
+            where_clause.append(CommunityMissionModel.status == filter_obj.status)
+        stmt = select(CommunityMissionModel).where(*where_clause)
+        res = await self.db_context.scalars(stmt)
+        return [mission_community_to_entity(model) for model in res]

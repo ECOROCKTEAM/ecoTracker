@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+from datetime import datetime
 
+from src.core.dto.base import UpdateDTO
 from src.core.enum.challenges.status import OccupancyStatusEnum
+from src.core.typing.base import UNSET, UnsetType
 
 
 @dataclass
@@ -11,9 +14,8 @@ class MissionUserCreateDTO:
 
 
 @dataclass
-class MissionUserUpdateDTO:
-    id: int
-    status: OccupancyStatusEnum | None = None
+class MissionUserUpdateDTO(UpdateDTO):
+    status: OccupancyStatusEnum | UnsetType = UNSET
 
 
 @dataclass
@@ -22,7 +24,7 @@ class MissionCommunityCreateDTO:
     community_id: int
     author: str
     place: str | None = None
-    meeting_date: int | None = None
+    meeting_date: datetime | None = None
     people_required: int | None = None
     people_max: int | None = None
     comment: str | None = None
@@ -30,11 +32,10 @@ class MissionCommunityCreateDTO:
 
 
 @dataclass
-class MissionCommunityUpdateDTO:
-    id: int
-    status: OccupancyStatusEnum | None = None
-    place: str | None = None
-    meeting_date: int | None = None
-    people_required: int | None = None
-    people_max: int | None = None
-    comment: str | None = None
+class MissionCommunityUpdateDTO(UpdateDTO):
+    status: OccupancyStatusEnum | UnsetType = UNSET
+    place: str | UnsetType = UNSET
+    meeting_date: datetime | UnsetType = UNSET
+    people_required: int | UnsetType = UNSET
+    people_max: int | UnsetType = UNSET
+    comment: str | UnsetType = UNSET

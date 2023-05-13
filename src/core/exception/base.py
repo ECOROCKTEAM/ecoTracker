@@ -22,5 +22,9 @@ class EntityNotFound(DomainError):
     """"""
 
 
+class EntityNotCreated(DomainError):
+    """"""
+
+
 class TranslateNotFound(DomainError):
     """"""

@@ -1,10 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.interfaces.repository.challenges.mission import IRepositoryMission
+from src.core.interfaces.repository.challenges.occupancy import IRepositoryOccupancyCategory
 from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.interfaces.repository.community.community import IRepositoryCommunity
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.data.repository.challenges.mission import RepositoryMission
+from src.data.repository.challenges.occupancy_category import RepositoryOccupancyCategory
 from src.data.repository.community import RepositoryCommunity
 
 
@@ -23,7 +25,13 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
 
     @property
     def task(self) -> IRepositoryTask:
-        ...
+        return super().task
+
+    @property
+    def occupancy_category(self) -> IRepositoryOccupancyCategory:
+        if self._occupancy_category:
+            return self._occupancy_category
+        raise ValueError("UoW not in context")
 
     def __init__(self, session_factory) -> None:
         self.__session_factory = session_factory
@@ -40,6 +48,7 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self.__session = self.__session_factory()
         self._community = RepositoryCommunity(self._session)
         self._mission = RepositoryMission(self._session)
+        self._occupancy_category = RepositoryOccupancyCategory(self._session)
         return self
 
     async def __aexit__(self, *args):

@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
 
@@ -14,7 +13,7 @@ class Mission:
     score: int
     description: str
     instruction: str
-    category: OccupancyCategoryDTO
+    category_id: int
     language: LanguageEnum
 
 

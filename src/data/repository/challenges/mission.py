@@ -18,7 +18,7 @@ from src.core.interfaces.repository.challenges.mission import (
     MissionUserFilter,
 )
 from src.data.models.challenges.mission import MissionModel
-from src.data.repository.challenges.mapper import category_model_to_dto, select_translation
+from src.data.repository.challenges.mapper import select_translation
 
 
 def model_to_dto(model: MissionModel, lang: LanguageEnum) -> Mission:
@@ -30,7 +30,7 @@ def model_to_dto(model: MissionModel, lang: LanguageEnum) -> Mission:
         score=model.score,
         description=translation.description,
         instruction=translation.instruction,
-        category=category_model_to_dto(model=model.category, lang=lang),
+        category_id=model.category_id,
         language=translation.language,
     )
 

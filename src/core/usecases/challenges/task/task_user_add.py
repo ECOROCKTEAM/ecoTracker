@@ -24,7 +24,7 @@ class UserTaskAddUseCase:
 
         async with self.uow as uow:
             # Добавил в plan_lst\user_task_lst методы репоз None из-за того, что тут нам фильтры по сути не нужны
-            user_tasks = await uow.task.user_task_lst(return_language=user.language)
+            user_tasks = await uow.task.user_task_lst()
 
             for obj in user_tasks:
                 if task_id == obj.task_id:
@@ -41,7 +41,6 @@ class UserTaskAddUseCase:
             today = date.today()
             user_task_add = await uow.task.user_task_create(
                 obj=TaskUserCreateDTO(date=today, user_id=user.id, task_id=task_id),
-                return_language=user.language,
             )
 
             await uow.commit()

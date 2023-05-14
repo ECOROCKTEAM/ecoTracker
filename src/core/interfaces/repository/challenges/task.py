@@ -63,48 +63,46 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def user_task_get(self, *, id: int, return_language: LanguageEnum) -> TaskUser:
+    async def user_task_get(self, *, user_id: int, task_id: int) -> TaskUser:
         """Получить задание для пользователя
 
         Args:
-            id (int): ID задачи пользователя
-            return_language (LanguageEnum): Необходимый язык
+            user_id (int): ID of user object
+            task_id (int): ID of task object
 
         Returns:
             TaskUser: Сущность задачи пользователя
         """
 
     @abstractmethod
-    async def user_task_create(self, *, obj: TaskUserCreateDTO, return_language: LanguageEnum) -> TaskUser:
+    async def user_task_create(self, *, obj: TaskUserCreateDTO) -> TaskUser:
         """Создать задание для пользователя
 
         Args:
             obj (TaskUserCreateDTO): Объект создания
-            return_language (LanguageEnum): Необходимый язык
 
         Returns:
             TaskUser: Сущность задачи пользователя
         """
 
     @abstractmethod
-    async def user_task_update(self, *, obj: TaskUserUpdateDTO, return_language: LanguageEnum) -> TaskUser:
+    async def user_task_update(self, *, obj: TaskUserUpdateDTO) -> TaskUser:
         """Обновить задание для пользователя
 
         Args:
             obj (TaskUserCreateDTO): Объект обновления
-            return_language (LanguageEnum): Необходимый язык
 
         Returns:
             TaskUser: Сущность задачи пользователя
         """
 
     @abstractmethod
-    async def user_task_delete(self, *, id: int, return_language: LanguageEnum) -> int:
+    async def user_task_delete(self, *, user_id: int, task_id: int) -> int:
         """Delete user task
 
         Args:
-            id (int): ID of user task object
-            return_language (LanguageEnum): Enum of deleting task
+            user_id (int): ID of user object
+            task_id (int): ID of task object
 
         Returns:
             int: ID of deleted user task object
@@ -117,7 +115,6 @@ class IRepositoryTask(ABC):
         filter_obj: TaskUserFilter | None = None,
         order_obj: MockObj | None = None,
         pagination_obj: MockObj | None = None,
-        return_language: LanguageEnum,
     ) -> list[TaskUser]:
         """Получить список заданий пользователя
 
@@ -125,7 +122,6 @@ class IRepositoryTask(ABC):
             filter_obj (TaskUserFilter): Объект фильтрации
             order_obj (MockObj): Объект порядка
             pagination_obj (MockObj): Объект пагинации
-            return_language (LanguageEnum): Необходимый язык
 
         Returns:
             List[TaskUser]: Список сущностей заданий пользователя

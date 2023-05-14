@@ -63,8 +63,7 @@ class UserScoreModel(Base):
 class UserTaskModel(Base):
     __tablename__ = "user_task"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True, nullable=False, autoincrement=False)
     task_id: Mapped[int] = mapped_column(ForeignKey("task.id"))
     status: Mapped[OccupancyStatusEnum]
 

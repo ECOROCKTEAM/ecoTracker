@@ -24,7 +24,7 @@ class UserTaskUpdateUseCase:
 
         async with self.uow as uow:
             if obj.status == OccupancyStatusEnum.FINISH:
-                user_task_id = await uow.task.user_task_get(id=obj.id, return_language=user.language)
+                user_task_id = await uow.task.user_task_get(user_id=user.id, task_id=obj.task_id)
                 # Возможно тут проверка на то, что в UserTaskPlan уже есть такой таск, не нужна, если у нас update метод
                 await uow.task.plan_create(obj=TaskUserPlanCreateDTO(user_id=user.id, task_id=user_task_id.task_id))
 
@@ -33,11 +33,11 @@ class UserTaskUpdateUseCase:
             today = datetime.today().replace(microsecond=0)
             updated_obj = await uow.task.user_task_update(
                 obj=TaskUserUpdateDTO(
-                    id=obj.id,
+                    task_id=obj.task_id,
+                    user_id=user.id,
                     date_close=today,
                     status=obj.status,
                 ),
-                return_language=user.language,
             )
             await uow.commit()
             return Result(item=updated_obj)

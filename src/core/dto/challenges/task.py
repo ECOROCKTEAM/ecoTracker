@@ -21,6 +21,7 @@ class TaskUserCreateDTO:
 
 @dataclass
 class TaskUserUpdateDTO:
-    id: int
+    task_id: int
+    user_id: int | None = None  # Мб передавать сразу User entity, чтобы язык получать?
     date_close: datetime | None = None
     status: OccupancyStatusEnum | None = None

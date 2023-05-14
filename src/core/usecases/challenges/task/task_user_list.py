@@ -33,7 +33,6 @@ class UserTaskListUseCase:
                 filter_obj=filter_obj,
                 order_obj=order_obj,
                 pagination_obj=pagination_obj,
-                return_language=user.language,
             )
 
         return Result(items=lst)

@@ -15,14 +15,11 @@ class UserTaskGetUseCase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def __call__(self, *, user: User, obj_id: int) -> Result:
+    async def __call__(self, *, user: User, task_id: int) -> Result:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
 
         async with self.uow as uow:
-            user_task = await uow.task.user_task_get(
-                id=obj_id,
-                return_language=user.language,
-            )
+            user_task = await uow.task.user_task_get(user_id=user.id, task_id=task_id)
 
         return Result(item=user_task)

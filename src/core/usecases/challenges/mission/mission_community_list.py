@@ -13,6 +13,7 @@ class Result:
     item: list[MissionCommunity]
 
 
+# TODO HOW
 class MissionCommunityListUsecase:
     def __init__(self, *, uow: IUnitOfWork) -> None:
         self.uow = uow

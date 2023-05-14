@@ -20,7 +20,6 @@ class MissionFilter:
 
 @dataclass
 class MissionUserFilter:
-    user_id: int | None = None
     mission_id: int | None = None
     status: OccupancyStatusEnum | None = None
 
@@ -79,7 +78,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    async def user_mission_create(self, *, obj: MissionUserCreateDTO) -> MissionUser:
+    async def user_mission_create(self, *, user_id: int, obj: MissionUserCreateDTO) -> MissionUser:
         """Создать миссию для пользователя
 
         Args:
@@ -106,6 +105,7 @@ class IRepositoryMission(ABC):
     async def user_mission_lst(
         self,
         *,
+        user_id: int,
         filter_obj: MissionUserFilter,
         order_obj: MockObj,
         pagination_obj: MockObj,

@@ -49,14 +49,14 @@ class RepositoryCommunity(IRepositoryCommunity):
         stmt = select(CommunityModel).where(CommunityModel.id == id)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_dto(res)
 
     async def create(self, *, obj: CommunityCreateDTO) -> Community:
         stmt = insert(CommunityModel).values(**asdict(obj)).returning(CommunityModel)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_dto(res)
 
     async def update(self, *, id: int, obj: CommunityUpdateDTO) -> Community:
@@ -68,7 +68,7 @@ class RepositoryCommunity(IRepositoryCommunity):
         )
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_dto(res)
 
     async def lst(self, *, filter_obj: CommunityFilter, order_obj: MockObj, pagination_obj: MockObj) -> list[Community]:
@@ -83,7 +83,7 @@ class RepositoryCommunity(IRepositoryCommunity):
         stmt = update(CommunityModel).where(CommunityModel.id == id).values(active=False).returning(CommunityModel.id)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return res
 
     async def user_add(self, *, obj: UserCommunityCreateDTO) -> UserCommunityDTO:
@@ -102,7 +102,7 @@ class RepositoryCommunity(IRepositoryCommunity):
         )
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return user_community_model_to_dto(res)
 
     async def user_list(self, *, id: int, filter_obj: CommunityUserFilter) -> list[UserCommunityDTO]:
@@ -121,14 +121,14 @@ class RepositoryCommunity(IRepositoryCommunity):
         )
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return user_community_model_to_dto(res)
 
     async def invite_link_update(self, *, id: int, obj: CommunityInviteUpdateDTO) -> Community:
         stmt = update(CommunityModel).where(CommunityModel.id == id).values(**asdict(obj)).returning(CommunityModel)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_dto(res)
 
     async def invite_link_create(self, *, obj: CommunityInviteCreateDTO) -> CommunityInviteDTO:

@@ -89,13 +89,12 @@ async def test_user_mission_get(pool, test_user_mission: MissionUser):
 async def test_user_mission_create(pool, test_user_2: User, test_mission: Mission):
     async with SqlAlchemyUnitOfWork(pool) as uow:
         mission_user_lst = await uow.mission.user_mission_lst(
-            filter_obj=MissionUserFilter(), order_obj=MockObj(), pagination_obj=MockObj()
+            user_id=test_user_2.id, filter_obj=MissionUserFilter(), order_obj=MockObj(), pagination_obj=MockObj()
         )
         stlen = len(mission_user_lst)
         mission_user_created = await uow.mission.user_mission_create(
-            obj=MissionUserCreateDTO(
-                user_id=test_user_2.id, mission_id=test_mission.id, status=OccupancyStatusEnum.ACTIVE
-            )
+            user_id=test_user_2.id,
+            obj=MissionUserCreateDTO(mission_id=test_mission.id, status=OccupancyStatusEnum.ACTIVE),
         )
         await uow.commit()
 
@@ -103,7 +102,7 @@ async def test_user_mission_create(pool, test_user_2: User, test_mission: Missio
         assert mission_user_created.mission_id == test_mission.id
         assert mission_user_created.status == OccupancyStatusEnum.ACTIVE
         mission_user_lst = await uow.mission.user_mission_lst(
-            filter_obj=MissionUserFilter(), order_obj=MockObj(), pagination_obj=MockObj()
+            user_id=test_user_2.id, filter_obj=MissionUserFilter(), order_obj=MockObj(), pagination_obj=MockObj()
         )
         enlen = len(mission_user_lst)
         assert enlen > stlen
@@ -130,9 +129,10 @@ async def test_user_mission_update(pool, test_user_mission: MissionUser):
 
 # python -m pytest tests/db/test_mission.py::test_user_mission_lst -v -s
 @pytest.mark.asyncio
-async def test_user_mission_lst(pool, test_user_mission_model_list: list[UserMissionModel]):
+async def test_user_mission_lst(pool, test_user: User, test_user_mission_model_list: list[UserMissionModel]):
     async with SqlAlchemyUnitOfWork(pool) as uow:
         mission_list = await uow.mission.user_mission_lst(
+            user_id=test_user.id,
             filter_obj=MissionUserFilter(),
             order_obj=MockObj(),
             pagination_obj=MockObj(),

@@ -20,6 +20,6 @@ class MissionUserCreateUsecase:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
         async with self.uow as uow:
-            mission = await uow.mission.user_mission_create(obj=create_obj)
+            mission = await uow.mission.user_mission_create(user_id=user.id, obj=create_obj)
             await uow.commit()
         return Result(item=mission)

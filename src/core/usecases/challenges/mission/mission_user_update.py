@@ -16,10 +16,10 @@ class MissionUserUpdateUsecase:
     def __init__(self, *, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def __call__(self, *, user: User, user_id: int, mission_id: int, update_obj: MissionUserUpdateDTO) -> Result:
+    async def __call__(self, *, user: User, mission_id: int, update_obj: MissionUserUpdateDTO) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
         async with self.uow as uow:
-            mission = await uow.mission.user_mission_update(obj=update_obj, user_id=user_id, mission_id=mission_id)
+            mission = await uow.mission.user_mission_update(obj=update_obj, user_id=user.id, mission_id=mission_id)
             await uow.commit()
         return Result(item=mission)

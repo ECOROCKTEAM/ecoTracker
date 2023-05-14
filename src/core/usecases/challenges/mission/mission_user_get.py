@@ -15,9 +15,9 @@ class MissionUserGetUsecase:
     def __init__(self, *, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def __call__(self, *, user: User, user_id: int, mission_id: int) -> Result:
+    async def __call__(self, *, user: User, mission_id: int) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
         async with self.uow as uow:
-            mission = await uow.mission.user_mission_get(user_id=user_id, mission_id=mission_id)
+            mission = await uow.mission.user_mission_get(user_id=user.id, mission_id=mission_id)
         return Result(item=mission)

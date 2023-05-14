@@ -159,6 +159,16 @@ async def test_user_community(pool: async_sessionmaker[AsyncSession], test_user,
 
 
 @pytest_asyncio.fixture(scope="module")
+async def test_user_community_2(pool: async_sessionmaker[AsyncSession], test_user_2, test_community_2) -> None:
+    async with pool() as sess:
+        role = UserCommunityModel(
+            user_id=test_user_2.id, community_id=test_community_2.id, role=CommunityRoleEnum.SUPERUSER
+        )
+        sess.add(role)
+        await sess.commit()
+
+
+@pytest_asyncio.fixture(scope="module")
 async def test_user_community_change(pool: async_sessionmaker[AsyncSession], test_user_role, test_community) -> None:
     async with pool() as sess:
         role = UserCommunityModel(

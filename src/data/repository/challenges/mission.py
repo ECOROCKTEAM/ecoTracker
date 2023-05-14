@@ -152,8 +152,8 @@ class RepositoryMission(IRepositoryMission):
             raise EntityNotFound(msg="")
         return mission_user_to_entity(model)
 
-    async def user_mission_create(self, *, obj: MissionUserCreateDTO) -> MissionUser:
-        stmt = insert(UserMissionModel).values(asdict(obj)).returning(UserMissionModel)
+    async def user_mission_create(self, *, user_id: int, obj: MissionUserCreateDTO) -> MissionUser:
+        stmt = insert(UserMissionModel).values(user_id=user_id, **asdict(obj)).returning(UserMissionModel)
         res = await self.db_context.scalar(stmt)
         if res is None:
             raise EntityNotCreated(msg="")
@@ -172,11 +172,10 @@ class RepositoryMission(IRepositoryMission):
         return mission_user_to_entity(res)
 
     async def user_mission_lst(
-        self, *, filter_obj: MissionUserFilter, order_obj: MockObj, pagination_obj: MockObj
+        self, *, user_id: int, filter_obj: MissionUserFilter, order_obj: MockObj, pagination_obj: MockObj
     ) -> list[MissionUser]:
         where_clause = []
-        if filter_obj.user_id:
-            where_clause.append(UserMissionModel.user_id == filter_obj.user_id)
+        where_clause.append(UserMissionModel.user_id == user_id)
         if filter_obj.mission_id:
             where_clause.append(UserMissionModel.mission_id == filter_obj.mission_id)
         if filter_obj.status:

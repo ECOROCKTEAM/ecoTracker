@@ -8,7 +8,6 @@ from src.core.typing.base import UNSET, UnsetType
 
 @dataclass
 class MissionUserCreateDTO:
-    user_id: int
     mission_id: int
     status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
 

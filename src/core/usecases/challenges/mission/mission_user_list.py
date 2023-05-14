@@ -22,9 +22,8 @@ class MissionUserListUsecase:
     ) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
-        filter_obj.user_id = user.id
         async with self.uow as uow:
             mission_list = await uow.mission.user_mission_lst(
-                filter_obj=filter_obj, order_obj=order_obj, pagination_obj=pagination_obj
+                user_id=user.id, filter_obj=filter_obj, order_obj=order_obj, pagination_obj=pagination_obj
             )
         return Result(item=mission_list)

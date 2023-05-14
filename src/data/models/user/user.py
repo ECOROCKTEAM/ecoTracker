@@ -81,3 +81,4 @@ class UserMissionModel(Base):
     )
     mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"), primary_key=True, autoincrement=False)
     status: Mapped[OccupancyStatusEnum] = mapped_column()
+    date_close: Mapped[datetime | None] = mapped_column(default=None)

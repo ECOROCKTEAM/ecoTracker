@@ -293,7 +293,9 @@ async def test_mission(pool: async_sessionmaker[AsyncSession], test_mission_mode
 @pytest_asyncio.fixture(scope="module")
 async def test_user_mission(test_user_mission_model_list: list[UserMissionModel]) -> MissionUser:
     model = random.choice(test_user_mission_model_list)
-    return MissionUser(user_id=model.user_id, mission_id=model.mission_id, status=model.status)
+    return MissionUser(
+        user_id=model.user_id, mission_id=model.mission_id, status=model.status, date_close=model.date_close
+    )
 
 
 @pytest_asyncio.fixture(scope="module")
@@ -309,4 +311,5 @@ async def test_community_mission(test_community_mission_model_list: list[Communi
         people_required=model.people_required,
         people_max=model.people_max,
         comment=model.comment,
+        date_close=model.date_close,
     )

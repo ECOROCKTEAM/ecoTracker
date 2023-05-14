@@ -42,6 +42,7 @@ def mission_user_to_entity(model: UserMissionModel) -> MissionUser:
     return MissionUser(
         user_id=model.user_id,
         mission_id=model.mission_id,
+        date_close=model.date_close,
         status=model.status,
     )
 
@@ -51,6 +52,7 @@ def mission_community_to_entity(model: CommunityMissionModel) -> MissionCommunit
         community_id=model.community_id,
         mission_id=model.mission_id,
         status=model.status,
+        date_close=model.date_close,
         author=model.author,
         place=model.place,
         meeting_date=model.meeting_date,

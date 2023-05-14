@@ -32,6 +32,7 @@ class CommunityMissionModel(Base):
     people_max: Mapped[int | None] = mapped_column()
     place: Mapped[str | None] = mapped_column()
     comment: Mapped[str | None] = mapped_column()
+    date_close: Mapped[datetime | None] = mapped_column(default=None)
     status: Mapped[OccupancyStatusEnum] = mapped_column()
 
 

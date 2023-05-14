@@ -15,7 +15,7 @@ class MissionUserCreateDTO:
 
 @dataclass
 class MissionUserUpdateDTO(UpdateDTO):
-    date_close: datetime | UnsetType = field(init=False, default=UNSET)
+    date_close: datetime | None | UnsetType = field(init=False, default=UNSET)
     status: OccupancyStatusEnum | UnsetType = UNSET
 
     def __post_init__(self):
@@ -39,13 +39,13 @@ class MissionCommunityCreateDTO:
 
 @dataclass
 class MissionCommunityUpdateDTO(UpdateDTO):
-    date_close: datetime | UnsetType = field(init=False, default=UNSET)
-    status: OccupancyStatusEnum | UnsetType = UNSET
-    place: str | UnsetType = UNSET
-    meeting_date: datetime | UnsetType = UNSET
-    people_required: int | UnsetType = UNSET
-    people_max: int | UnsetType = UNSET
-    comment: str | UnsetType = UNSET
+    date_close: datetime | None | UnsetType = field(init=False, default=UNSET)
+    status: OccupancyStatusEnum | None | UnsetType = UNSET
+    place: str | None | UnsetType = UNSET
+    meeting_date: datetime | None | UnsetType = UNSET
+    people_required: int | None | UnsetType = UNSET
+    people_max: int | None | UnsetType = UNSET
+    comment: str | None | UnsetType = UNSET
 
     def __post_init__(self):
         if self.status == OccupancyStatusEnum.FINISH:

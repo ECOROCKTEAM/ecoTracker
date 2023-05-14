@@ -9,7 +9,7 @@ from src.core.dto.challenges.task import TaskUserCreateDTO, TaskUserPlanCreateDT
 
 @dataclass
 class TaskFilter:
-    """"""
+    category_id: int | None = None
 
 
 @dataclass
@@ -24,7 +24,7 @@ class TaskUserPlanFilter:
 
 class IRepositoryTask(ABC):
     @abstractmethod
-    async def get(self, *, id: int, return_language: LanguageEnum) -> Task:
+    async def get(self, *, id: int, lang: LanguageEnum) -> Task:
         """Get task
 
         Args:
@@ -37,7 +37,7 @@ class IRepositoryTask(ABC):
 
     @abstractmethod
     async def lst(
-        self, *, sorting_obj: MockObj, paggination_obj: MockObj, filter_obj: MockObj, return_language: LanguageEnum
+        self, *, sorting_obj: MockObj, pagination_obj: MockObj, filter_obj: TaskFilter, return_language: LanguageEnum
     ) -> list[Task]:
         """List of tasks
 
@@ -99,12 +99,24 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
+    async def user_task_delete(self, *, id: int, return_language: LanguageEnum) -> int:
+        """Delete user task
+
+        Args:
+            id (int): ID of user task object
+            return_language (LanguageEnum): Enum of deleting task
+
+        Returns:
+            int: ID of deleted user task object
+        """
+
+    @abstractmethod
     async def user_task_lst(
         self,
         *,
-        filter_obj: TaskUserFilter,
-        order_obj: MockObj,
-        pagination_obj: MockObj,
+        filter_obj: TaskUserFilter | None = None,
+        order_obj: MockObj | None = None,
+        pagination_obj: MockObj | None = None,
         return_language: LanguageEnum,
     ) -> list[TaskUser]:
         """Получить список заданий пользователя
@@ -145,9 +157,9 @@ class IRepositoryTask(ABC):
     async def plan_lst(
         self,
         *,
-        filter_obj: TaskUserPlanFilter,
-        order_obj: MockObj,
-        pagination_obj: MockObj,
+        filter_obj: TaskUserFilter | None = None,
+        order_obj: MockObj | None = None,
+        pagination_obj: MockObj | None = None,
     ) -> list[TaskUserPlan]:
         """Получить список плана задач
 

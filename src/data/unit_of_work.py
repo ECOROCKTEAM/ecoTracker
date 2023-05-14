@@ -5,9 +5,16 @@ from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.interfaces.repository.community.community import IRepositoryCommunity
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.data.repository.community import RepositoryCommunity
+from src.data.repository.task import RepositoryTask
 
 
 class SqlAlchemyUnitOfWork(IUnitOfWork):
+    def __init__(self, session_factory) -> None:
+        self.__session_factory = session_factory
+        self.__session: AsyncSession | None = None
+        self._community: IRepositoryCommunity | None = None
+        self._task: IRepositoryTask | None = None
+
     @property
     def community(self) -> IRepositoryCommunity:
         if self._community:
@@ -20,12 +27,9 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
 
     @property
     def task(self) -> IRepositoryTask:
-        ...
-
-    def __init__(self, session_factory) -> None:
-        self.__session_factory = session_factory
-        self.__session: AsyncSession | None = None
-        self._community: IRepositoryCommunity | None = None
+        if self._task:
+            return self._task
+        raise ValueError("UoW not in context")
 
     @property
     def _session(self) -> AsyncSession:
@@ -36,6 +40,7 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
     async def __aenter__(self) -> IUnitOfWork:
         self.__session = self.__session_factory()
         self._community = RepositoryCommunity(self._session)
+        self._task = RepositoryTask(self._session)
         return self
 
     async def __aexit__(self, *args):

@@ -40,3 +40,14 @@ async def test_get(pool, test_task: Task, test_user: User):
     assert test_task.name == task.name
     assert test_task.description == task.description
     assert test_task.language == task.language
+
+
+@pytest.mark.asyncio
+async def test_user_task_add(pool, test_task: Task, test_user: User):
+    test_user.language = test_task.language
+    uow = SqlAlchemyUnitOfWork(pool)
+    uc = task_user_add.UserTaskAddUseCase(uow=uow)
+    result = await uc(user=test_user, task_id=test_task.id)
+    user_task = result.item
+    assert user_task.user_id == test_user.id
+    assert user_task.task_id == test_task.id

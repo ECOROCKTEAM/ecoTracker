@@ -19,6 +19,7 @@ class TaskModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     score: Mapped[int]  # type: ignore
+    active: Mapped[bool]  # type: ignore
     category_id: Mapped[int] = mapped_column(ForeignKey("occupancy_category.id"))
 
     category: Mapped["OccupancyCategoryModel"] = relationship(lazy="joined", back_populates="tasks")
@@ -38,22 +39,20 @@ class TaskTranslateModel(Base):
     task: Mapped["TaskModel"] = relationship(lazy="noload", back_populates="translations")
 
 
-# @dataclass
-# class UserTask(Base):
-#     __tablename__ = "user_task"
+@dataclass
+class UserTaskModel(Base):
+    __tablename__ = "user_task"
 
-#     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-#     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-#     task_id: Mapped[int] = mapped_column(ForeignKey("task.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True, nullable=False, autoincrement=False)
+    task_id: Mapped[int] = mapped_column(ForeignKey("task.id"), primary_key=True, nullable=False, autoincrement=False)
+    date_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    date_close: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    status: Mapped[OccupancyStatusEnum]  # type: ignore
 
 
 @dataclass
 class UserTaskPlan(Base):
     __tablename__ = "user_task_plan"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    task_id: Mapped[int] = mapped_column(ForeignKey("task.id"))
-    date_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    date_close: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    status: Mapped[OccupancyStatusEnum]  # type: ignore
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True, nullable=False, autoincrement=False)
+    task_id: Mapped[int] = mapped_column(ForeignKey("task.id"), primary_key=True, nullable=False, autoincrement=False)

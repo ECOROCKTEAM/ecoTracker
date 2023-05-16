@@ -12,8 +12,7 @@ class TaskUserPlanCreateDTO:
 
 @dataclass
 class TaskUserCreateDTO:
-    date: date  # YY.MM.DD, mb auto in psql?
-    user_id: int
+    date_start: date  # YY.MM.DD, mb auto in psql?
     task_id: int
     date_close: datetime | None = None
     status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
@@ -21,7 +20,5 @@ class TaskUserCreateDTO:
 
 @dataclass
 class TaskUserUpdateDTO:
-    task_id: int
-    user_id: int | None = None  # Мб передавать сразу User entity, чтобы язык получать?
     date_close: datetime | None = None
     status: OccupancyStatusEnum | None = None

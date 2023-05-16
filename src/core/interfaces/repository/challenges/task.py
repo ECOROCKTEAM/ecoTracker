@@ -2,6 +2,7 @@ from abc import abstractmethod, ABC
 from dataclasses import dataclass
 
 from src.core.dto.mock import MockObj
+from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
 from src.core.dto.challenges.task import TaskUserCreateDTO, TaskUserPlanCreateDTO, TaskUserUpdateDTO
@@ -9,11 +10,14 @@ from src.core.dto.challenges.task import TaskUserCreateDTO, TaskUserPlanCreateDT
 
 @dataclass
 class TaskFilter:
+    active: bool | None = None
     category_id: int | None = None
 
 
 @dataclass
 class TaskUserFilter:
+    task_id: int | None = None
+    status: OccupancyStatusEnum | None = None
     """"""
 
 
@@ -37,7 +41,7 @@ class IRepositoryTask(ABC):
 
     @abstractmethod
     async def lst(
-        self, *, sorting_obj: MockObj, pagination_obj: MockObj, filter_obj: TaskFilter, return_language: LanguageEnum
+        self, *, filter_obj: TaskFilter, sorting_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
     ) -> list[Task]:
         """List of tasks
 
@@ -45,14 +49,14 @@ class IRepositoryTask(ABC):
             sorting_obj (str): sorting object
             paggination_obj (str): paggination object
             filter_obj (str): filter object
-            return_language (LanguageEnum): Необходимый язык
+            lang (LanguageEnum): Необходимый язык
 
         Returns:
             list[Task]: list of Task entities
         """
 
     @abstractmethod
-    async def deactivate(self, *, id: int) -> int:
+    async def deactivate(self, *, obj_id: int) -> int:
         """Отключить таск
 
         Args:
@@ -75,10 +79,11 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def user_task_create(self, *, obj: TaskUserCreateDTO) -> TaskUser:
+    async def user_task_create(self, *, user_id: int, obj: TaskUserCreateDTO) -> TaskUser:
         """Создать задание для пользователя
 
         Args:
+            user_id (int): ID of user
             obj (TaskUserCreateDTO): Объект создания
 
         Returns:
@@ -86,10 +91,12 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def user_task_update(self, *, obj: TaskUserUpdateDTO) -> TaskUser:
+    async def user_task_update(self, *, user_id: int, task_id: int, obj: TaskUserUpdateDTO) -> TaskUser:
         """Обновить задание для пользователя
 
         Args:
+            user_id (int): ID of user
+            task_id (int): ID of task
             obj (TaskUserCreateDTO): Объект обновления
 
         Returns:
@@ -97,21 +104,10 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def user_task_delete(self, *, user_id: int, task_id: int) -> int:
-        """Delete user task
-
-        Args:
-            user_id (int): ID of user object
-            task_id (int): ID of task object
-
-        Returns:
-            int: ID of deleted user task object
-        """
-
-    @abstractmethod
     async def user_task_lst(
         self,
         *,
+        user_id: int,
         filter_obj: TaskUserFilter | None = None,
         order_obj: MockObj | None = None,
         pagination_obj: MockObj | None = None,
@@ -119,6 +115,7 @@ class IRepositoryTask(ABC):
         """Получить список заданий пользователя
 
         Args:
+            user_id (int): ID of user
             filter_obj (TaskUserFilter): Объект фильтрации
             order_obj (MockObj): Объект порядка
             pagination_obj (MockObj): Объект пагинации
@@ -153,13 +150,15 @@ class IRepositoryTask(ABC):
     async def plan_lst(
         self,
         *,
-        filter_obj: TaskUserFilter | None = None,
+        user_id: int,
+        # filter_obj: TaskUserFilter | None = None,
         order_obj: MockObj | None = None,
         pagination_obj: MockObj | None = None,
     ) -> list[TaskUserPlan]:
         """Получить список плана задач
 
         Args:
+            user_id (int): ID of user
             filter_obj (MockObj): Объект фильтрации
             order_obj (MockObj): Объект порядка
             pagination_obj (MockObj): Объект пагинации

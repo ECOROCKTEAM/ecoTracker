@@ -162,7 +162,11 @@ async def test_task_model_list(
     task_list: list[TaskModel] = []
     async with pool() as session:
         for category in test_occupancy_category_model_list:
-            task = TaskModel(score=randint(5, 15), category_id=category.id)
+            task = TaskModel(
+                score=randint(5, 15),
+                category_id=category.id,
+                active=True,
+            )
             session.add(task)
             await session.flush()
             translate_models = [
@@ -193,6 +197,7 @@ async def test_task(pool: async_sessionmaker[AsyncSession], test_task_model_list
         id=task.id,
         score=task.score,
         category_id=task.category_id,
+        active=task.active,
         language=task_translate.language,
         description=task_translate.description,
         name=task_translate.name,

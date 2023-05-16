@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from src.core.entity.task import Task
 from src.core.entity.user import User
+from src.core.exception.task import TaskDeactivatedError
 from src.core.exception.user import UserIsNotActivateError
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
@@ -21,5 +22,6 @@ class TaskGetUseCase:
 
         async with self.uow as uow:
             task = await uow.task.get(id=task_id, lang=user.language)
-
+            if not task.active:
+                raise TaskDeactivatedError(task_id=task.id)
         return Result(item=task)

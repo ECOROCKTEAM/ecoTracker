@@ -20,3 +20,7 @@ class PermissionError(Exception):
 
 class EntityNotFound(DomainError):
     """"""
+
+
+class EntityNotCreated(DomainError):
+    """"""

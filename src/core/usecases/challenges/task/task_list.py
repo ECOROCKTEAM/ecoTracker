@@ -28,11 +28,13 @@ class TaskListUseCase:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
 
+        filter_obj.active = True
+
         async with self.uow as uow:
             task_list = await uow.task.lst(
                 sorting_obj=sorting_obj,
                 pagination_obj=paggination_obj,
                 filter_obj=filter_obj,
-                return_language=user.language,
+                lang=user.language,
             )
         return Result(items=task_list)

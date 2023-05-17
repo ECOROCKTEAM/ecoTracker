@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from src.core.entity.mission import MissionCommunity
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
+from src.core.exception.base import EntityNotActive
 from src.core.exception.user import UserIsNotPremiumError
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
@@ -23,5 +24,8 @@ class MissionCommunityGetUsecase:
             user_community = await uow.community.user_get(community_id=community_id, user_id=user.id)
             if user_community.role in [CommunityRoleEnum.BLOCKED]:
                 raise PermissionError("")
+            community = await uow.community.get(id=community_id)
+            if not community.active:
+                raise EntityNotActive(msg="")
             mission = await uow.mission.community_mission_get(community_id=community_id, mission_id=mission_id)
         return Result(item=mission)

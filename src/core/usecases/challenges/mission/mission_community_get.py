@@ -27,5 +27,8 @@ class MissionCommunityGetUsecase:
             community = await uow.community.get(id=community_id)
             if not community.active:
                 raise EntityNotActive(msg="")
-            mission = await uow.mission.community_mission_get(community_id=community_id, mission_id=mission_id)
-        return Result(item=mission)
+            mission = await uow.mission.get(id=mission_id, lang=user.language)
+            if not mission.active:
+                raise EntityNotActive(msg=f"{mission.id=}")
+            selected_mission = await uow.mission.community_mission_get(community_id=community_id, mission_id=mission_id)
+        return Result(item=selected_mission)

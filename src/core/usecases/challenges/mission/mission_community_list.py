@@ -5,6 +5,7 @@ from src.core.entity.mission import MissionCommunity
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotPremiumError
 from src.core.interfaces.repository.challenges.mission import MissionCommunityFilter
+from src.core.interfaces.repository.community.community import CommunityFilter
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
@@ -13,7 +14,6 @@ class Result:
     item: list[MissionCommunity]
 
 
-# TODO HOW
 class MissionCommunityListUsecase:
     def __init__(self, *, uow: IUnitOfWork) -> None:
         self.uow = uow
@@ -23,8 +23,11 @@ class MissionCommunityListUsecase:
     ) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
-        filter_obj.user_id = user.id
         async with self.uow as uow:
+            community_list = await uow.community.lst(
+                filter_obj=CommunityFilter(user_id=user.id, active=True), order_obj=MockObj(), pagination_obj=MockObj()
+            )
+            filter_obj.community_id_list = [c.id for c in community_list]
             mission_list = await uow.mission.community_mission_lst(
                 filter_obj=filter_obj, order_obj=order_obj, pagination_obj=pagination_obj
             )

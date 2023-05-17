@@ -31,11 +31,14 @@ class MissionCommunityUpdateUsecase:
             community = await uow.community.get(id=community_id)
             if not community.active:
                 raise EntityNotActive(msg="")
+            mission = await uow.mission.get(id=mission_id, lang=user.language)
+            if not mission.active:
+                raise EntityNotActive(msg=f"{mission.id=}")
+            updated_mission = await uow.mission.community_mission_update(
+                mission_id=mission_id, community_id=community_id, obj=update_obj
+            )
             if update_obj.status == OccupancyStatusEnum.FINISH:
                 # Add score
                 ...
-            mission = await uow.mission.community_mission_update(
-                mission_id=mission_id, community_id=community_id, obj=update_obj
-            )
             await uow.commit()
-        return Result(item=mission)
+        return Result(item=updated_mission)

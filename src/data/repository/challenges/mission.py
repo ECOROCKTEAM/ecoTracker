@@ -22,7 +22,7 @@ from src.core.interfaces.repository.challenges.mission import (
 )
 from src.data.models.challenges.mission import MissionModel, MissionTranslateModel
 from src.data.models.community.community import CommunityMissionModel
-from src.data.models.user.user import UserCommunityModel, UserMissionModel
+from src.data.models.user.user import UserMissionModel
 
 
 def mission_to_entity(model: MissionModel, model_translate: MissionTranslateModel) -> Mission:
@@ -102,7 +102,7 @@ class RepositoryMission(IRepositoryMission):
         self, *, filter_obj: MissionFilter, order_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
     ) -> list[Mission]:
         where_clause = []
-        if filter_obj.active:
+        if filter_obj.active is not None:
             where_clause.append(MissionModel.active == filter_obj.active)
         stmt = (
             select(
@@ -176,13 +176,17 @@ class RepositoryMission(IRepositoryMission):
     async def user_mission_lst(
         self, *, user_id: int, filter_obj: MissionUserFilter, order_obj: MockObj, pagination_obj: MockObj
     ) -> list[MissionUser]:
+        stmt = select(UserMissionModel)
         where_clause = []
         where_clause.append(UserMissionModel.user_id == user_id)
-        if filter_obj.mission_id:
+        if filter_obj.mission_id is not None:
             where_clause.append(UserMissionModel.mission_id == filter_obj.mission_id)
-        if filter_obj.status:
+        if filter_obj.status is not None:
             where_clause.append(UserMissionModel.status == filter_obj.status)
-        stmt = select(UserMissionModel).where(*where_clause)
+        if filter_obj.mission_active is not None:
+            stmt = stmt.join(MissionModel, UserMissionModel.mission_id == MissionModel.id)
+            where_clause.append(MissionModel.active == filter_obj.mission_active)
+        stmt = stmt.where(*where_clause)
         res = await self.db_context.scalars(stmt)
         return [mission_user_to_entity(model) for model in res]
 
@@ -222,19 +226,13 @@ class RepositoryMission(IRepositoryMission):
     ) -> list[MissionCommunity]:
         where_clause = []
         stmt = select(CommunityMissionModel)
-        if filter_obj.user_id:
-            stmt = stmt.join(
-                UserCommunityModel,
-                and_(
-                    UserCommunityModel.community_id == CommunityMissionModel.community_id,
-                    UserCommunityModel.user_id == filter_obj.user_id,
-                ),
-            )
-        if filter_obj.community_id:
+        if filter_obj.community_id_list is not None:
+            where_clause.append(CommunityMissionModel.community_id.in_(filter_obj.community_id_list))
+        if filter_obj.community_id is not None:
             where_clause.append(CommunityMissionModel.community_id == filter_obj.community_id)
-        if filter_obj.mission_id:
+        if filter_obj.mission_id is not None:
             where_clause.append(CommunityMissionModel.mission_id == filter_obj.mission_id)
-        if filter_obj.status:
+        if filter_obj.status is not None:
             where_clause.append(CommunityMissionModel.status == filter_obj.status)
         stmt = stmt.where(*where_clause)
         res = await self.db_context.scalars(stmt)

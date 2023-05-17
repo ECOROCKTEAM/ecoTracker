@@ -20,14 +20,15 @@ class MissionFilter:
 
 @dataclass
 class MissionUserFilter:
+    mission_active: bool | None = None
     mission_id: int | None = None
     status: OccupancyStatusEnum | None = None
 
 
 @dataclass
 class MissionCommunityFilter:
-    user_id: int | None = None
     community_id: int | None = None
+    community_id_list: list[int] | None = None
     mission_id: int | None = None
     status: OccupancyStatusEnum | None = None
 

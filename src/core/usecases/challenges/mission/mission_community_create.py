@@ -27,7 +27,10 @@ class MissionCommunityCreateUsecase:
                 raise PermissionError("")
             community = await uow.community.get(id=create_obj.community_id)
             if not community.active:
-                raise EntityNotActive(msg="")
-            mission = await uow.mission.community_mission_create(obj=create_obj)
+                raise EntityNotActive(msg=f"{community.id=}")
+            mission = await uow.mission.get(id=create_obj.mission_id, lang=user.language)
+            if not mission.active:
+                raise EntityNotActive(msg=f"{mission.id=}")
+            created_mission = await uow.mission.community_mission_create(obj=create_obj)
             await uow.commit()
-        return Result(item=mission)
+        return Result(item=created_mission)

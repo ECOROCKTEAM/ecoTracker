@@ -6,6 +6,7 @@ from src.core.dto.challenges.mission import (
     MissionUserCreateDTO,
     MissionUserUpdateDTO,
 )
+from src.core.dto.m2m.user.community import UserCommunityDTO
 from src.core.dto.mock import MockObj
 from src.core.entity.community import Community
 from src.core.entity.mission import Mission, MissionCommunity, MissionUser
@@ -13,12 +14,14 @@ from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
 from src.core.interfaces.repository.challenges.mission import (
+    MissionCommunityFilter,
     MissionFilter,
     MissionUserFilter,
 )
 from src.core.usecases.challenges.mission import (
     mission_community_create,
     mission_community_get,
+    mission_community_list,
     mission_community_update,
     mission_get,
     mission_list,
@@ -126,11 +129,22 @@ async def test_mission_community_update(
     assert mission.status == OccupancyStatusEnum.FINISH
 
 
-# TODO
-# # python -m pytest tests/use_cases/test_mission.py::test_mission_community_list -v -s
-# @pytest.mark.asyncio
-# async def test_mission_community_list(pool):
-#     pass
+# python -m pytest tests/use_cases/test_mission.py::test_mission_community_list -v -s
+@pytest.mark.asyncio
+async def test_mission_community_list(
+    pool, test_user: User, test_user_community: UserCommunityDTO, test_community_mission: MissionCommunity
+):
+    print()
+    uow = SqlAlchemyUnitOfWork(pool)
+    uc = mission_community_list.MissionCommunityListUsecase(uow=uow)
+    res = await uc(user=test_user, filter_obj=MissionCommunityFilter(), order_obj=MockObj(), pagination_obj=MockObj())
+    mission_list = res.item
+    print(mission_list)
+    assert len(mission_list) != 0
+    mission = mission_list[0]
+    print(mission)
+    assert mission.community_id == test_user_community.community_id
+    assert mission.mission_id == test_community_mission.community_id
 
 
 # python -m pytest tests/use_cases/test_mission.py::test_mission_user_get -v -s

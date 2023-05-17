@@ -15,6 +15,7 @@ from src.application.database.base import (
 )
 from src.application.settings import settings
 from src.core.dto.challenges.category import OccupancyCategoryDTO
+from src.core.dto.m2m.user.community import UserCommunityDTO
 from src.core.entity.community import Community
 from src.core.entity.mission import Mission, MissionCommunity, MissionUser
 from src.core.entity.user import User
@@ -68,7 +69,7 @@ async def test_user(pool: async_sessionmaker[AsyncSession]) -> User:
         sess.add(user)
         await sess.commit()
         return User(
-            username=user.username, password=user.password, active=True, id=user.id, language="", subscription=""
+            username=user.username, password=user.password, active=True, id=user.id, language="", subscription=""  # type: ignore
         )
 
 
@@ -79,7 +80,12 @@ async def test_user_2(pool: async_sessionmaker[AsyncSession]) -> User:
         sess.add(user)
         await sess.commit()
         return User(
-            username=user.username, password=user.password, active=True, id=user.id, language="", subscription=""
+            username=user.username,
+            password=user.password,
+            active=True,
+            id=user.id,
+            language=LanguageEnum.RU,
+            subscription="",  # type: ignore
         )
 
 
@@ -90,7 +96,7 @@ async def test_user_role(pool: async_sessionmaker[AsyncSession]) -> User:
         sess.add(user)
         await sess.commit()
         return User(
-            username=user.username, password=user.password, active=True, id=user.id, language="", subscription=""
+            username=user.username, password=user.password, active=True, id=user.id, language="", subscription=""  # type: ignore
         )
 
 
@@ -149,13 +155,14 @@ async def test_community_delete(pool: async_sessionmaker[AsyncSession], test_use
 
 
 @pytest_asyncio.fixture(scope="module")
-async def test_user_community(pool: async_sessionmaker[AsyncSession], test_user, test_community) -> None:
+async def test_user_community(pool: async_sessionmaker[AsyncSession], test_user, test_community) -> UserCommunityDTO:
     async with pool() as sess:
         role = UserCommunityModel(
             user_id=test_user.id, community_id=test_community.id, role=CommunityRoleEnum.SUPERUSER
         )
         sess.add(role)
         await sess.commit()
+    return UserCommunityDTO(user_id=role.user_id, community_id=role.community_id, role=role.role)
 
 
 @pytest_asyncio.fixture(scope="module")

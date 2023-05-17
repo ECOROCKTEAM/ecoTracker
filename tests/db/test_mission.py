@@ -11,6 +11,7 @@ from src.core.dto.challenges.mission import (
     MissionUserUpdateDTO,
 )
 from src.core.dto.mock import MockObj
+from src.core.entity.community import Community
 from src.core.entity.mission import Mission, MissionCommunity, MissionUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
@@ -161,7 +162,7 @@ async def test_community_mission_get(pool, test_community_mission: MissionCommun
 
 # python -m pytest tests/db/test_mission.py::test_community_mission_create -v -s
 @pytest.mark.asyncio
-async def test_community_mission_create(pool, test_community_2: User, test_mission: Mission):
+async def test_community_mission_create(pool, test_community_2: Community, test_mission: Mission):
     async with SqlAlchemyUnitOfWork(pool) as uow:
         community_mission_lst = await uow.mission.community_mission_lst(
             filter_obj=MissionCommunityFilter(), order_obj=MockObj(), pagination_obj=MockObj()
@@ -187,7 +188,7 @@ async def test_community_mission_create(pool, test_community_2: User, test_missi
         assert enlen > stlen
 
 
-# python -m pytest tests/db/test_mission.py::test_user_mission_update -v -s
+# python -m pytest tests/db/test_mission.py::test_community_mission_update -v -s
 @pytest.mark.asyncio
 async def test_community_mission_update(pool, test_community_mission: MissionCommunity):
     current_status = test_community_mission.status
@@ -206,7 +207,7 @@ async def test_community_mission_update(pool, test_community_mission: MissionCom
         assert new_status != current_status
 
 
-# python -m pytest tests/db/test_mission.py::test_user_mission_lst -v -s
+# python -m pytest tests/db/test_mission.py::test_community_mission_lst -v -s
 @pytest.mark.asyncio
 async def test_community_mission_lst(pool, test_community_mission_model_list: list[CommunityMissionModel]):
     async with SqlAlchemyUnitOfWork(pool) as uow:

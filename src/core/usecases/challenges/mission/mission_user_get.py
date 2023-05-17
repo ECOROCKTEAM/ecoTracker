@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from src.core.entity.mission import MissionUser
 from src.core.entity.user import User
+from src.core.exception.base import EntityNotActive
 from src.core.exception.user import UserIsNotPremiumError
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
@@ -19,5 +20,8 @@ class MissionUserGetUsecase:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
         async with self.uow as uow:
-            mission = await uow.mission.user_mission_get(user_id=user.id, mission_id=mission_id)
-        return Result(item=mission)
+            mission = await uow.mission.get(id=mission_id, lang=user.language)
+            if not mission.active:
+                raise EntityNotActive(msg=f"{mission.id=}")
+            selected_mission = await uow.mission.user_mission_get(user_id=user.id, mission_id=mission_id)
+        return Result(item=selected_mission)

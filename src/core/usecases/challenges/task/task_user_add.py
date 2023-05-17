@@ -33,16 +33,17 @@ class UserTaskAddUseCase:
             user_tasks = await uow.task.user_task_lst(user_id=user.id, filter_obj=filter_obj)
             user_plan_tasks = await uow.task.plan_lst(user_id=user.id)
 
-            if user_plan_tasks and user_tasks:
-                for obj in user_tasks:
-                    if task_id == obj.task_id:
-                        raise TaskAlreadyTakenError(user_id=user.id, task_id=task_id)
+            # if user_plan_tasks and user_tasks:
+            for obj in user_tasks:
+                if task_id == obj.task_id:
+                    raise TaskAlreadyTakenError(user_id=user.id, task_id=task_id)
 
-                if not user.is_premium and (len(user_tasks) >= 3 or len(user_plan_tasks) >= 3):
-                    raise UserTaskMaxAmountError(user_id=user.id)
+            max_count = 3
+            if user.is_premium:
+                max_count = 10
 
-                if user.is_premium and (len(user_tasks) >= 10 or len(user_plan_tasks) >= 10):
-                    raise UserTaskMaxAmountError(user_id=user.id)
+            if len(user_tasks) == max_count and len(user_plan_tasks) == max_count:
+                raise UserTaskMaxAmountError(user_id=user.id)
 
             today = date.today()
             user_task_add = await uow.task.user_task_create(

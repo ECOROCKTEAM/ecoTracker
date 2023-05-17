@@ -30,6 +30,7 @@ class UserTaskListUseCase:
 
         async with self.uow as uow:
             lst = await uow.task.user_task_lst(
+                user_id=user.id,
                 filter_obj=filter_obj,
                 order_obj=order_obj,
                 pagination_obj=pagination_obj,

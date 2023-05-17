@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from src.core.dto.challenges.task import TaskUserPlanCreateDTO, TaskUserUpdateDTO
+from src.core.dto.challenges.task import TaskUserUpdateDTO
 from src.core.entity.task import TaskUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
@@ -33,8 +33,8 @@ class UserTaskUpdateUseCase:
                 raise UserDoesNotHaveThisTaskError(user_id=user.id, task_id=task_id)
 
             if obj.status == OccupancyStatusEnum.FINISH:
-                await uow.task.plan_create(obj=TaskUserPlanCreateDTO(user_id=user.id, task_id=task_id))
                 # После мёрджа score репы и UC, добавить метод на добавление очков пользователю за выполненный таск
+                """"""
 
             if obj.status == OccupancyStatusEnum.REJECT and task_user.status.FINISH:
                 raise UserCanNotRejectFinishedTaskError(task_id=task_id)

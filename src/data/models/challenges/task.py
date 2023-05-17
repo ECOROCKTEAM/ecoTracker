@@ -19,8 +19,8 @@ class TaskModel(Base):
     __tablename__ = "task"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    score: Mapped[int]  # type: ignore
-    active: Mapped[bool]  # type: ignore
+    score: Mapped[int] = mapped_column(default=0)
+    active: Mapped[bool] = mapped_column(default=True)
     category_id: Mapped[int] = mapped_column(ForeignKey("occupancy_category.id"))
 
     category: Mapped["OccupancyCategoryModel"] = relationship(lazy="joined", back_populates="tasks")
@@ -32,10 +32,10 @@ class TaskTranslateModel(Base):
     __tablename__ = "task_translate"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str]  # type: ignore
-    description: Mapped[str]  # type: ignore
+    name: Mapped[str] = mapped_column()
+    description: Mapped[str] = mapped_column()
     task_id: Mapped[int] = mapped_column(ForeignKey("task.id"))
-    language: Mapped[LanguageEnum]  # type: ignore
+    language: Mapped[LanguageEnum] = mapped_column()
 
     task: Mapped["TaskModel"] = relationship(lazy="noload", back_populates="translations")
 
@@ -48,7 +48,7 @@ class UserTaskModel(Base):
     task_id: Mapped[int] = mapped_column(ForeignKey("task.id"), primary_key=True, nullable=False, autoincrement=False)
     date_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     date_close: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    status: Mapped[OccupancyStatusEnum]  # type: ignore
+    status: Mapped[OccupancyStatusEnum] = mapped_column()
 
 
 @dataclass

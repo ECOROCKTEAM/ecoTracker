@@ -1,23 +1,24 @@
-import pytest
 from dataclasses import asdict
 
-from src.core.entity.user import User
-from src.core.dto.mock import MockObj
+import pytest
+
 from src.core.dto.community.community import CommunityCreateDTO, CommunityUpdateDTO
 from src.core.dto.m2m.user.community import UserCommunityUpdateDTO
+from src.core.dto.mock import MockObj
+from src.core.entity.user import User
 from src.core.enum.community.privacy import CommunityPrivacyEnum
 from src.core.enum.community.role import CommunityRoleEnum
 from src.core.interfaces.repository.community.community import CommunityFilter
-from src.data.unit_of_work import SqlAlchemyUnitOfWork
 from src.core.usecases.community import (
-    community_delete,
-    community_list,
-    community_create,
-    community_update,
     community_change_user_role,
+    community_create,
+    community_delete,
     community_get_invite_link,
+    community_list,
     community_public_add_user,
+    community_update,
 )
+from src.data.unit_of_work import SqlAlchemyUnitOfWork
 
 
 @pytest.mark.asyncio
@@ -72,7 +73,7 @@ async def test_change_role(pool, test_user, test_community, test_user_role, test
 
 
 @pytest.mark.asyncio
-async def test_list(pool, test_user, test_community_delete):
+async def test_delete(pool, test_user, test_community_delete):
     uow = SqlAlchemyUnitOfWork(pool)
     uc = community_delete.CommunityDeleteUsecase(uow=uow)
     res = await uc(user=test_user, community_id=test_community_delete.id)

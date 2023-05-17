@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 from datetime import datetime
+
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.application.database.base import Base
-from src.core.enum.score.operation import ScoreOperationEnum
-from src.core.enum.community.role import CommunityRoleEnum
 from src.core.enum.challenges.status import OccupancyStatusEnum
+from src.core.enum.community.role import CommunityRoleEnum
+from src.core.enum.score.operation import ScoreOperationEnum
 
 
 @dataclass  # TODO remove

@@ -1,6 +1,7 @@
-import os
 import json
+import os
 from pathlib import Path
+
 from src.cli.config import TRANSLATE_DIR, TRANSLATE_FILE_TEMPLATE
 from src.core.enum.language import LanguageEnum
 

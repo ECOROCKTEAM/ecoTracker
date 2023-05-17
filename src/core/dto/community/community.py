@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from src.core.enum.community.privacy import CommunityPrivacyEnum
 
 

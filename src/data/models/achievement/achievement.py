@@ -1,5 +1,6 @@
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy.orm import Mapped, mapped_column
+
 from src.application.database.base import Base
 from src.core.enum.achievement.category import AchievementCategoryEnum
 from src.core.enum.achievement.status import AchievementStatusEnum

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from src.core.dto.mock import MockObj
 
+from src.core.dto.mock import MockObj
 from src.core.entity.task import TaskUser
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError

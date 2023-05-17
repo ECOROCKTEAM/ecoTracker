@@ -1,15 +1,24 @@
 from dataclasses import asdict
-from sqlalchemy import and_, select, update, insert
+
+from sqlalchemy import and_, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.const.translate import DEFAULT_LANGUANGE
-from src.core.dto.challenges.task import TaskUserCreateDTO, TaskUserPlanCreateDTO, TaskUserUpdateDTO
+from src.core.dto.challenges.task import (
+    TaskUserCreateDTO,
+    TaskUserPlanCreateDTO,
+    TaskUserUpdateDTO,
+)
 from src.core.dto.mock import MockObj
+from src.core.entity.task import Task, TaskUser, TaskUserPlan
 from src.core.enum.language import LanguageEnum
 from src.core.exception.base import EntityNotCreated, EntityNotFound
 from src.core.exception.task import TaskAlreadyDeactivatedError
-from src.core.interfaces.repository.challenges.task import IRepositoryTask, TaskFilter, TaskUserFilter
-from src.core.entity.task import Task, TaskUser, TaskUserPlan
+from src.core.interfaces.repository.challenges.task import (
+    IRepositoryTask,
+    TaskFilter,
+    TaskUserFilter,
+)
 from src.data.models.challenges.task import TaskModel, TaskTranslateModel, UserTaskModel
 
 

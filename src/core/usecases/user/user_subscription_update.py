@@ -1,17 +1,17 @@
 from dataclasses import dataclass
 
-from src.core.interfaces.repository.user.user import IUserRepository
+from src.core.dto.m2m.user.subscription import (
+    UserSubscription,
+    UserSubscriptionCreateDTO,
+    UserSubscriptionUpdateDTO,
+)
 from src.core.dto.mock import MockObj
+from src.core.entity.user import User
 from src.core.interfaces.repository.subscription.subscription import (
     ISubscriptionRepository,
 )
-from src.core.dto.m2m.user.subscription import (
-    UserSubscription,
-    UserSubscriptionUpdateDTO,
-    UserSubscriptionCreateDTO,
-)
 from src.core.interfaces.repository.user.subscription import IUserSubscriptionRepository
-from src.core.entity.user import User
+from src.core.interfaces.repository.user.user import IUserRepository
 
 
 @dataclass

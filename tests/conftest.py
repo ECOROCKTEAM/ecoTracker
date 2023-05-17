@@ -1,24 +1,38 @@
 import asyncio
+import random
+from random import choice, randint
 from typing import AsyncGenerator, Generator
+
+import faker
 import pytest
 import pytest_asyncio
-import faker
-from random import randint, choice
 from sqlalchemy import select
-
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from src.application.database.base import (
+    Base,
+    create_async_engine,
+    create_session_factory,
+)
 from src.application.settings import settings
-from src.application.database.base import create_async_engine, create_session_factory, Base
+from src.core.dto.challenges.category import OccupancyCategoryDTO
+from src.core.entity.community import Community
+from src.core.entity.mission import Mission
 from src.core.entity.task import Task
-from src.core.enum.language import LanguageEnum
-from src.data.models.challenges.occupancy import OccupancyCategoryModel, OccupancyCategoryTranslateModel
-from src.data.models.challenges.task import TaskModel, TaskTranslateModel
-from src.data.models.user.user import UserModel, UserCommunityModel
-from src.data.models.community.community import CommunityModel
 from src.core.entity.user import User
 from src.core.enum.community.privacy import CommunityPrivacyEnum
 from src.core.enum.community.role import CommunityRoleEnum
-from src.core.entity.community import Community
+from src.core.enum.language import LanguageEnum
+from src.data.models.challenges.mission import MissionModel, MissionTranslateModel
+from src.data.models.challenges.occupancy import (
+    OccupancyCategoryModel,
+    OccupancyCategoryTranslateModel,
+)
+from src.data.models.challenges.task import TaskModel, TaskTranslateModel
+from src.data.models.community.community import CommunityModel
+from src.data.models.user.user import UserCommunityModel, UserModel
+
+fake = faker.Faker()
 
 fake = faker.Faker()
 
@@ -201,4 +215,53 @@ async def test_task(pool: async_sessionmaker[AsyncSession], test_task_model_list
         language=task_translate.language,
         description=task_translate.description,
         name=task_translate.name,
+    )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_mission_model_list(
+    pool: async_sessionmaker[AsyncSession], test_occupancy_category_model_list: list[OccupancyCategoryModel]
+) -> list[MissionModel]:
+    mission_list: list[MissionModel] = []
+    async with pool() as s:
+        for category in test_occupancy_category_model_list:
+            model = MissionModel(
+                active=True,
+                author="",
+                score=random.randint(50, 500),
+                category_id=category.id,
+            )
+            s.add(model)
+            await s.flush()
+            translate_models = [
+                MissionTranslateModel(
+                    name=f"{fake.name()}_mission_t",
+                    description="",
+                    instruction="",
+                    mission_id=model.id,
+                    language=lang,
+                )
+                for lang in LanguageEnum
+            ]
+            s.add_all(translate_models)
+            await s.flush()
+            await s.refresh(model)
+            mission_list.append(model)
+        await s.commit()
+    return mission_list
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_mission(test_mission_model_list: list[MissionModel]) -> Mission:
+    model = random.choice(test_mission_model_list)
+    translation = random.choice(model.translations)
+    return Mission(
+        id=model.id,
+        name=translation.name,
+        active=model.active,
+        score=model.score,
+        description=translation.description,
+        instruction=translation.instruction,
+        category_id=model.category_id,
+        language=translation.language,
     )

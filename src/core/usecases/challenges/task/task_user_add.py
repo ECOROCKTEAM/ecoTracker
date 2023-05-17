@@ -5,7 +5,11 @@ from src.core.dto.challenges.task import TaskUserCreateDTO
 from src.core.entity.task import TaskUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
-from src.core.exception.user import TaskAlreadyTakenError, UserIsNotActivateError, UserTaskMaxAmountError
+from src.core.exception.user import (
+    TaskAlreadyTakenError,
+    UserIsNotActivateError,
+    UserTaskMaxAmountError,
+)
 from src.core.interfaces.repository.challenges.task import TaskUserFilter
 from src.core.interfaces.unit_of_work import IUnitOfWork
 

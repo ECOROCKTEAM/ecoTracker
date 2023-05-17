@@ -1,17 +1,14 @@
-import pytest
 from dataclasses import asdict
+
+import pytest
 
 from src.core.dto.mock import MockObj
 from src.core.entity.task import Task
 from src.core.entity.user import User
 from src.core.enum.language import LanguageEnum
 from src.core.interfaces.repository.challenges.task import TaskFilter
+from src.core.usecases.challenges.task import task_get, task_list, task_user_add
 from src.data.unit_of_work import SqlAlchemyUnitOfWork
-from src.core.usecases.challenges.task import (
-    task_user_add,
-    task_list,
-    task_get,
-)
 
 
 @pytest.mark.asyncio

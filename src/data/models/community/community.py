@@ -17,6 +17,8 @@ class CommunityModel(Base):
     description: Mapped[str]
     active: Mapped[bool] = mapped_column(default=True)
     privacy: Mapped[CommunityPrivacyEnum]
+    code: Mapped[str | None] = mapped_column(unique=True)
+    code_expire_time: Mapped[datetime | None] = mapped_column(DateTime(timezone=False))
 
 
 class CommunityMissionModel(Base):
@@ -40,12 +42,3 @@ class CommunityScoreModel(Base):
     community_id: Mapped[int] = mapped_column(ForeignKey("community.id"))
     operation: Mapped[ScoreOperationEnum]
     value: Mapped[int]
-
-
-class CommunityInviteModel(Base):
-    __tablename__ = "community_invite"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    community_id: Mapped[int] = mapped_column(ForeignKey("community.id"))
-    code: Mapped[str]
-    expire_time: Mapped[datetime] = mapped_column(DateTime(timezone=False))

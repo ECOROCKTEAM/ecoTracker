@@ -2,11 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
 from src.core.dto.community.community import CommunityCreateDTO, CommunityUpdateDTO
-from src.core.dto.community.invite import (
-    CommunityInviteCreateDTO,
-    CommunityInviteDTO,
-    CommunityInviteUpdateDTO,
-)
+from src.core.dto.community.invite import CommunityInviteDTO, CommunityInviteUpdateDTO
 from src.core.dto.m2m.user.community import (
     UserCommunityCreateDTO,
     UserCommunityDTO,
@@ -181,37 +177,29 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def invite_link_create(self, *, obj: CommunityInviteCreateDTO) -> CommunityInviteDTO:
-        """Создать инвайт ссылку сообщества
+    async def user_remove(
+        self,
+        *,
+        community_id: int,
+        user_id: int,
+    ) -> bool:
+        """Удалить пользователя из сообщества
 
         Args:
-            obj (CommunityInviteCreateDTO): DTO объект создания ссылки для сообщества
+            user_id (int): Id пользователя
+            community_id: Id сообщества
 
         Returns:
-            CommunityInviteDTO: DTO объект ссылки сообщества
+            bool: статус операции
 
         Raises:
             RepoError: Ошибка операции
+            EntityNotFound: Сущность не найдена
         """
 
     @abstractmethod
-    async def invite_link_get(self, *, id: int) -> CommunityInviteDTO:
-        """Получить инвайт ссылку
-
-        Args:
-            id (int): Id сообщества
-
-        Returns:
-            CommunityInviteDTO: DTO объект ссылки сообщества
-
-        Raises:
-            RepoError: Ошибка операции
-            CommunityInviteLinkNotFoundError: Ссылка не найдена
-        """
-
-    @abstractmethod
-    async def invite_link_update(self, *, id: int, obj: CommunityInviteUpdateDTO) -> CommunityInviteDTO:
-        """Обновить инвайт ссылку на сообщество
+    async def code_set(self, *, id: int, obj: CommunityInviteUpdateDTO) -> CommunityInviteDTO:
+        """Обновить инвайт код сообщества
 
         Args:
             id (int): Id сообщества
@@ -221,5 +209,36 @@ class IRepositoryCommunity(ABC):
             CommunityInviteDTO: DTO объект ссылки сообщества
 
         Raises:
+            RepoError: Ошибка операции
+        """
+
+    @abstractmethod
+    async def code_get(self, *, id: int) -> CommunityInviteDTO:
+        """Получить инвайт код
+
+        Args:
+            id (int): Id сообщества
+
+        Returns:
+            CommunityInviteDTO: DTO объект ссылки сообщества
+
+        Raises:
+            EntityNotFound: Сущность не найдена
+            RepoError: Ошибка операции
+            CommunityInviteLinkNotFoundError: Ссылка не найдена
+        """
+
+    @abstractmethod
+    async def get_by_code(self, code: str) -> Community:
+        """Получить сообщество по коду
+
+        Args:
+            code (str): Код сообщества
+
+        Returns:
+            Community: Сущность сообщества
+
+        Raises:
+            EntityNotFound: Сущность не найдена
             RepoError: Ошибка операции
         """

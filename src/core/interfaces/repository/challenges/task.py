@@ -60,17 +60,6 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def deactivate(self, *, obj_id: int) -> int:
-        """Отключить таск
-
-        Args:
-            id (int): ID базового задания
-
-        Returns:
-            int: ID базового задания
-        """
-
-    @abstractmethod
     async def user_task_get(self, *, user_id: int, task_id: int) -> TaskUser:
         """Получить задание для пользователя
 

@@ -1,6 +1,6 @@
 from dataclasses import asdict
 
-from sqlalchemy import and_, insert, select, update
+from sqlalchemy import and_, insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.const.translate import DEFAULT_LANGUANGE
@@ -13,7 +13,6 @@ from src.core.dto.mock import MockObj
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
 from src.core.enum.language import LanguageEnum
 from src.core.exception.base import EntityNotCreated, EntityNotFound
-from src.core.exception.task import TaskAlreadyDeactivatedError
 from src.core.interfaces.repository.challenges.task import (
     IRepositoryTask,
     TaskFilter,
@@ -110,20 +109,6 @@ class RepositoryTask(IRepositoryTask):
             task_model_to_entity(model=models["task"], translated_model=models["translate"])
             for models in holder.values()
         ]
-
-    async def deactivate(self, *, obj_id: int) -> int:
-        task = select(TaskModel).where(TaskModel.id == obj_id)
-        task = await self.db_context.scalar(task)
-        if not task:
-            raise EntityNotFound()
-        if not task.active:
-            raise TaskAlreadyDeactivatedError(task_id=task.id)
-        # Нужны ли тут эти проверки? Или сразу обновлять таску и всё?
-        stmt = update(TaskModel).where(TaskModel.id == obj_id).values(active=False).returning(TaskModel.id)
-        result = await self.db_context.scalar(stmt)
-        if not result:
-            raise EntityNotFound()
-        return result
 
     # доделать с юзером
     async def user_task_create(self, *, user_id: int, obj: TaskUserCreateDTO) -> TaskUser:

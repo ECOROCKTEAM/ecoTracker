@@ -1,6 +1,6 @@
 from dataclasses import asdict
 
-from sqlalchemy import and_, insert, select
+from sqlalchemy import and_, delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.const.translate import DEFAULT_LANGUANGE
@@ -17,8 +17,22 @@ from src.core.interfaces.repository.challenges.task import (
     IRepositoryTask,
     TaskFilter,
     TaskUserFilter,
+    TaskUserPlanFilter,
 )
-from src.data.models.challenges.task import TaskModel, TaskTranslateModel, UserTaskModel
+from src.data.models.challenges.task import (
+    TaskModel,
+    TaskTranslateModel,
+    UserTaskModel,
+    UserTaskPlanModel,
+)
+from src.utils import as_dict_skip_none
+
+
+def plan_model_to_entity(model: UserTaskPlanModel) -> TaskUserPlan:
+    return TaskUserPlan(
+        user_id=model.user_id,
+        task_id=model.task_id,
+    )
 
 
 def task_model_to_entity(model: TaskModel, translated_model: TaskTranslateModel) -> Task:
@@ -110,7 +124,6 @@ class RepositoryTask(IRepositoryTask):
             for models in holder.values()
         ]
 
-    # доделать с юзером
     async def user_task_create(self, *, user_id: int, obj: TaskUserCreateDTO) -> TaskUser:
         stmt = insert(UserTaskModel).values(user_id=user_id, **asdict(obj)).returning(UserTaskModel)
         result = await self.db_context.scalar(stmt)
@@ -119,33 +132,76 @@ class RepositoryTask(IRepositoryTask):
         return user_task_to_entity(model=result)
 
     async def user_task_get(self, *, user_id: int, task_id: int) -> TaskUser:
-        return await super().user_task_get(user_id=user_id, task_id=task_id)
+        stmt = select(UserTaskModel).where(UserTaskModel.user_id == user_id, UserTaskModel.task_id == task_id)
+        result = await self.db_context.scalar(stmt)
+        if not result:
+            raise EntityNotFound()
+        return user_task_to_entity(model=result)
 
     async def user_task_lst(
         self,
         *,
         user_id: int,
-        filter_obj: TaskUserFilter | None = None,
-        order_obj: MockObj | None = None,
-        pagination_obj: MockObj | None = None,
+        filter_obj: TaskUserFilter,
+        order_obj: MockObj,
+        pagination_obj: MockObj,
     ) -> list[TaskUser]:
-        return await super().user_task_lst(
-            user_id=user_id,
-            filter_obj=filter_obj,
-            order_obj=order_obj,
-            pagination_obj=pagination_obj,
-        )
+        stmt = select(UserTaskModel)
+        where_clause = []
+        where_clause.append(UserTaskModel.user_id == user_id)
+        if filter_obj.status is not None:
+            where_clause.append(UserTaskModel.status == filter_obj.status)
+        if filter_obj.task_active is not None:
+            where_clause.append(UserTaskModel.task_id == filter_obj.task_id)
+        if filter_obj.task_active is not None:
+            stmt = stmt.join(TaskModel, UserTaskModel.task_id == TaskModel.id)
+            where_clause.append(TaskModel.active == filter_obj.task_active)
+        stmt = stmt.where(*where_clause)
+        result = await self.db_context.scalars(stmt)
+        return [user_task_to_entity(model=model) for model in result]
 
     async def user_task_update(self, *, user_id: int, task_id: int, obj: TaskUserUpdateDTO) -> TaskUser:
-        return await super().user_task_update(user_id=user_id, task_id=task_id, obj=obj)
+        stmt = (
+            update(UserTaskModel)
+            .values(as_dict_skip_none(obj))
+            .where(
+                UserTaskModel.user_id == user_id,
+                UserTaskModel.task_id == task_id,
+            )
+            .returning(UserTaskModel)
+        )
+        result = await self.db_context.scalar(stmt)
+        if not result:
+            raise EntityNotFound()
+        return user_task_to_entity(model=result)
 
     async def plan_create(self, *, obj: TaskUserPlanCreateDTO) -> TaskUserPlan:
-        return await super().plan_create(obj=obj)
+        stmt = insert(UserTaskPlanModel).values(**asdict(obj)).returning(UserTaskPlanModel)
+        result = await self.db_context.scalar(stmt)
+        if not result:
+            raise EntityNotCreated()
+        return plan_model_to_entity(model=result)
 
-    async def plan_delete(self, *, id: int) -> int:
-        return await super().plan_delete(id=id)
+    async def plan_delete(self, *, user_id: int, task_id: int) -> bool:
+        stmt = (
+            delete(UserTaskPlanModel)
+            .where(UserTaskPlanModel.user_id == user_id, UserTaskPlanModel.task_id == task_id)
+            .returning(1)
+        )
+        result = await self.db_context.scalar(stmt)
+        return bool(result)
 
     async def plan_lst(
-        self, *, user_id: int, order_obj: MockObj | None = None, pagination_obj: MockObj | None = None
+        self, *, user_id: int, filter_obj: TaskUserPlanFilter, order_obj: MockObj, pagination_obj: MockObj
     ) -> list[TaskUserPlan]:
-        return await super().plan_lst(user_id=user_id, order_obj=order_obj, pagination_obj=pagination_obj)
+        stmt = select(UserTaskPlanModel)
+        where_clause = []
+        where_clause.append(UserTaskPlanModel.user_id == user_id)
+        if filter_obj.task_id_list is not None:
+            where_clause.append(UserTaskPlanModel.task_id.in_(filter_obj.task_id_list))
+        if filter_obj.task_active is not None:
+            stmt = stmt.join(TaskModel, UserTaskPlanModel.task_id == TaskModel.id)
+            where_clause.append(TaskModel.active == filter_obj.task_active)
+        stmt = stmt.where(*where_clause)
+        result = await self.db_context.scalars(stmt)
+        return [plan_model_to_entity(model=model) for model in result]

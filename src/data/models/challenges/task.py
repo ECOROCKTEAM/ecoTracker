@@ -52,7 +52,7 @@ class UserTaskModel(Base):
 
 
 @dataclass
-class UserTaskPlan(Base):
+class UserTaskPlanModel(Base):
     __tablename__ = "user_task_plan"
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True, nullable=False, autoincrement=False)

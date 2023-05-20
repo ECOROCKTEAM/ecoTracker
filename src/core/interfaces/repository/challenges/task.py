@@ -21,12 +21,14 @@ class TaskFilter:
 @dataclass
 class TaskUserFilter:
     task_id: int | None = None
+    task_active: bool | None = None
     status: OccupancyStatusEnum | None = None
-    """"""
 
 
 @dataclass
 class TaskUserPlanFilter:
+    task_id_list: list[int] | None = None
+    task_active: bool | None = None
     """"""
 
 
@@ -129,14 +131,15 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def plan_delete(self, *, id: int) -> int:
+    async def plan_delete(self, *, user_id: int, task_id: int) -> bool:
         """Удалить план задач
 
         Args:
-            id (int): ID плана
+            user_id (int): ID of user
+            task_id (int): ID of task
 
         Returns:
-            int: ID плана
+            bool: Boolean result
         """
 
     @abstractmethod
@@ -144,7 +147,7 @@ class IRepositoryTask(ABC):
         self,
         *,
         user_id: int,
-        # filter_obj: TaskUserFilter | None = None,
+        filter_obj: TaskUserPlanFilter | None = None,
         order_obj: MockObj | None = None,
         pagination_obj: MockObj | None = None,
     ) -> list[TaskUserPlan]:

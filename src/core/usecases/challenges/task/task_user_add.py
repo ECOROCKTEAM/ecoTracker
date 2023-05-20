@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import date
 
 from src.core.dto.challenges.task import TaskUserCreateDTO
+from src.core.dto.mock import MockObj
 from src.core.entity.task import TaskUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
@@ -10,7 +11,10 @@ from src.core.exception.user import (
     UserIsNotActivateError,
     UserTaskMaxAmountError,
 )
-from src.core.interfaces.repository.challenges.task import TaskUserFilter
+from src.core.interfaces.repository.challenges.task import (
+    TaskUserFilter,
+    TaskUserPlanFilter,
+)
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
@@ -28,15 +32,26 @@ class UserTaskAddUseCase:
             raise UserIsNotActivateError(user_id=user.id)
 
         async with self.uow as uow:
-            filter_obj = TaskUserFilter(status=OccupancyStatusEnum.ACTIVE)
+            """
+            Не костыль ли это?
+            Вроде типо хардкод. Но будем ли мы получать order+pagination объекты,
+            когда пользователь захочет просто себе добавить таск?
+            """
+            user_tasks = await uow.task.user_task_lst(
+                user_id=user.id,
+                filter_obj=TaskUserFilter(task_id=task_id, status=OccupancyStatusEnum.ACTIVE),
+                pagination_obj=MockObj(),
+                order_obj=MockObj(),
+            )
+            user_plan_tasks = await uow.task.plan_lst(
+                user_id=user.id,
+                filter_obj=TaskUserPlanFilter(),
+                order_obj=MockObj(),
+                pagination_obj=MockObj(),
+            )
 
-            user_tasks = await uow.task.user_task_lst(user_id=user.id, filter_obj=filter_obj)
-            user_plan_tasks = await uow.task.plan_lst(user_id=user.id)
-
-            # if user_plan_tasks and user_tasks:
-            for obj in user_tasks:
-                if task_id == obj.task_id:
-                    raise TaskAlreadyTakenError(user_id=user.id, task_id=task_id)
+            if user_tasks:
+                raise TaskAlreadyTakenError(user_id=user.id, task_id=task_id)
 
             max_count = 3
             if user.is_premium:

@@ -18,7 +18,6 @@ class Task:
 
 @dataclass
 class TaskUserPlan:
-    id: int
     user_id: int
     task_id: int
 

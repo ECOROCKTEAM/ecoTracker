@@ -2,9 +2,9 @@ from dataclasses import dataclass, field
 
 from src.core.dto.m2m.user.contact import ContactUserDTO
 from src.core.dto.mock import MockObj
-from src.core.interfaces.repository.user.contact import IUserContactRepository
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError
+from src.core.interfaces.repository.user.contact import IUserContactRepository
 
 
 @dataclass

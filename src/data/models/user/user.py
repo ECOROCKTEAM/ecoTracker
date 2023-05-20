@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 from datetime import datetime
+
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.application.database.base import Base
-from src.core.enum.score.operation import ScoreOperationEnum
-from src.core.enum.community.role import CommunityRoleEnum
 from src.core.enum.challenges.status import OccupancyStatusEnum
+from src.core.enum.community.role import CommunityRoleEnum
+from src.core.enum.score.operation import ScoreOperationEnum
 
 
 @dataclass  # TODO remove
@@ -46,10 +47,8 @@ class UserSubscriptionModel(Base):
 
 class UserCommunityModel(Base):
     __tablename__ = "user_community"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    community_id: Mapped[int] = mapped_column(ForeignKey("community.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    community_id: Mapped[int] = mapped_column(ForeignKey("community.id"), primary_key=True)
     role: Mapped[CommunityRoleEnum]
 
 

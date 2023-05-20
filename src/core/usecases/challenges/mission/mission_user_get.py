@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from src.core.entity.user import User
 
+from src.core.entity.mission import MissionUser
+from src.core.entity.user import User
 from src.core.exception.user import UserIsNotPremiumError
 from src.core.interfaces.repository.challenges.mission import IRepositoryMission
-from src.core.entity.mission import MissionUser
 
 
 @dataclass
@@ -18,5 +18,5 @@ class MissionUserGetUsecase:
     async def __call__(self, *, user: User, id: int) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
-        mission = await self.repo.user_mission_get(id=id, return_language=user.language)
+        mission = await self.repo.user_mission_get(id=id, lang=user.language)
         return Result(item=mission)

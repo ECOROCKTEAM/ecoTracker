@@ -1,19 +1,19 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from src.core.dto.mock import MockObj
 
+from src.core.dto.community.community import CommunityCreateDTO, CommunityUpdateDTO
 from src.core.dto.community.invite import (
     CommunityInviteCreateDTO,
     CommunityInviteDTO,
     CommunityInviteUpdateDTO,
 )
 from src.core.dto.m2m.user.community import (
-    UserCommunityDTO,
     UserCommunityCreateDTO,
+    UserCommunityDTO,
     UserCommunityUpdateDTO,
 )
+from src.core.dto.mock import MockObj
 from src.core.entity.community import Community
-from src.core.dto.community.community import CommunityCreateDTO, CommunityUpdateDTO
 from src.core.enum.community.role import CommunityRoleEnum
 
 
@@ -42,7 +42,7 @@ class IRepositoryCommunity(ABC):
 
         Raises:
             RepoError: Ошибка операции
-            CommunityNotFoundError: Сообщество не найдено
+            EntityNotFound: Сущность не найдена
         """
 
     @abstractmethod
@@ -75,6 +75,7 @@ class IRepositoryCommunity(ABC):
         Raises:
             RepoError: Ошибка операции
             CommunityUpdateError: Ошибка при обновлении сообщества
+            EntityNotFound: Сущность не найдена
         """
 
     @abstractmethod
@@ -106,6 +107,7 @@ class IRepositoryCommunity(ABC):
         Raises:
             RepoError: Ошибка операции
             CommunityDeleteError: Ошибка при удалении сообщества
+            EntityNotFound: Сущность не найдена
         """
 
     @abstractmethod
@@ -119,6 +121,7 @@ class IRepositoryCommunity(ABC):
             UserCommunityDTO: Объект связи пользователя и сообщества
 
         Raises:
+            EntityNotFound: Сущность не найдена
             RepoError: Ошибка операции
         """
 
@@ -137,7 +140,7 @@ class IRepositoryCommunity(ABC):
             UserCommunityDTO: Объект связи пользователя и сообщества
         Raises:
             RepoError: Ошибка операции
-            UserNotInCommunity: Связь не найдена
+            EntityNotFound: Сущность не найдена
         """
 
     @abstractmethod
@@ -156,10 +159,14 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def user_role_update(self, *, obj: UserCommunityUpdateDTO) -> UserCommunityDTO:
+    async def user_role_update(
+        self, *, community_id: int, user_id: int, obj: UserCommunityUpdateDTO
+    ) -> UserCommunityDTO:
         """Обновить роль пользователя в сообществе
 
         Args:
+            user_id (int): Id пользователя
+            community_id: Id сообщества
             obj (UserCommunityUpdateDTO): DTO объект обновления роли пользователя в сообществе
 
         Returns:
@@ -167,7 +174,7 @@ class IRepositoryCommunity(ABC):
 
         Raises:
             RepoError: Ошибка операции
-            UserNotInCommunity: Связь не найдена
+            EntityNotFound: Сущность не найдена
         """
 
     @abstractmethod
@@ -200,10 +207,11 @@ class IRepositoryCommunity(ABC):
         """
 
     @abstractmethod
-    async def invite_link_update(self, *, obj: CommunityInviteUpdateDTO) -> CommunityInviteDTO:
+    async def invite_link_update(self, *, id: int, obj: CommunityInviteUpdateDTO) -> CommunityInviteDTO:
         """Обновить инвайт ссылку на сообщество
 
         Args:
+            id (int): Id сообщества
             obj (CommunityInviteUpdateDTO): DTO объект обновления ссылки для сообщества
 
         Returns:

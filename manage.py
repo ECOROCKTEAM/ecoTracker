@@ -1,4 +1,5 @@
 import click
+
 from src.cli.cmd.translate.cmd import translate
 
 

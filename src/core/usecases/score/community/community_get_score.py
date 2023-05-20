@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 
-from src.core.entity.community import Community
-from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.core.dto.community.score import CommunityScoreDTO
-from src.core.exception.user import UserIsNotPremiumError, UserIsNotActivateError
-from src.core.exception.community import CommunityDeactivatedError
+from src.core.entity.community import Community
 from src.core.entity.user import User
+from src.core.exception.community import CommunityDeactivatedError
+from src.core.exception.user import UserIsNotActivateError, UserIsNotPremiumError
+from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
 @dataclass
@@ -31,6 +31,6 @@ class CommunityGetScoreUseCase:
             raise UserIsNotPremiumError(user_id=user.id)
 
         async with self.uow as uow:
-            community_score = await uow.score.community_get(community_id=community.id)
+            community_score = await uow.score_community.community_get(community_id=community.id)
 
         return Result(item=community_score)

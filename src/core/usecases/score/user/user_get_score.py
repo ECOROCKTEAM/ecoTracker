@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
 from src.core.dto.user.score import UserScoreDTO
-from src.core.exception.user import UserIsNotActivateError
 from src.core.entity.user import User
+from src.core.exception.user import UserIsNotActivateError
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
@@ -20,6 +20,6 @@ class UserGetScoreUseCase:
             raise UserIsNotActivateError(user_id=user.id)
 
         async with self.uow as uow:
-            score = await uow.score.user_get(user_id=user.id)
+            score = await uow.score_user.user_get(user_id=user.id)
 
         return Result(item=score)

@@ -18,6 +18,7 @@ lint-fix:
 
 .PHONY: fmt
 fmt:
+	${CMD} isort .
 	${CMD} black .
 
 .PHONY: export-deps
@@ -38,4 +39,5 @@ pre-commit:
 
 .PHONY: tests
 tests:
-	docker-compose -f docker-compose.test.yaml up --build --exit-code-from test-runner
+
+	docker compose -f docker-compose.test.yaml up --force-recreate -V --build --exit-code-from test-runner

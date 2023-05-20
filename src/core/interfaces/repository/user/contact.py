@@ -1,8 +1,11 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 
+from src.core.dto.m2m.user.contact import (
+    ContactUserCreateDTO,
+    ContactUserDTO,
+    ContactUserUpdateDTO,
+)
 from src.core.dto.mock import MockObj
-from src.core.dto.m2m.user.contact import ContactUserDTO
-from src.core.dto.m2m.user.contact import ContactUserCreateDTO, ContactUserUpdateDTO
 
 
 class IUserContactRepository(ABC):

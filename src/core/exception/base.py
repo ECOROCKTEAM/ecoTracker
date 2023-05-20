@@ -16,3 +16,11 @@ class RepoError(BaseError):
 
 class PermissionError(Exception):
     """"""
+
+
+class EntityNotFound(DomainError):
+    """"""
+
+
+class TranslateNotFound(DomainError):
+    """"""

@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
 from src.core.entity.task import Task
-from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError
+from src.core.interfaces.repository.challenges.task import IRepositoryTask
 
 
 @dataclass
@@ -19,6 +19,6 @@ class TaskGetUseCase:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
 
-        task = await self.repo.get(id=task_id, return_language=user.language)
+        task = await self.repo.get(id=task_id, lang=user.language)
 
         return Result(item=task)

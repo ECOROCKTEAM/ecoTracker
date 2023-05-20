@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
 from src.core.dto.mock import MockObj
-from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.core.dto.user.score import UserBoundOffsetDTO, UserScoreDTO
-from src.core.exception.user import UserIsNotPremiumError, UserIsNotActivateError
 from src.core.entity.user import User
+from src.core.exception.user import UserIsNotActivateError, UserIsNotPremiumError
+from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
 @dataclass
@@ -28,10 +28,10 @@ class UserGetRatingUseCase:
                 """Get rating for specific user."""
 
                 obj = UserBoundOffsetDTO(user_id=user.id, bound_offset=bound_offset)
-                rating = await uow.score.user_rating(obj=obj, order_obj=order_obj)
+                rating = await uow.score_user.user_rating(obj=obj, order_obj=order_obj)
             else:
                 """Global user rating"""
 
-                rating = await uow.score.user_rating(order_obj=order_obj)
+                rating = await uow.score_user.user_rating(order_obj=order_obj)
 
         return Result(item=rating)

@@ -1,10 +1,11 @@
-import pytest
 from dataclasses import asdict
-from src.data.repository.community import RepositoryCommunity
 
+import pytest
+
+from src.core.dto.community.community import CommunityCreateDTO, CommunityUpdateDTO
 from src.core.entity.community import Community, CommunityPrivacyEnum
+from src.data.repository.community import RepositoryCommunity
 from src.data.unit_of_work import SqlAlchemyUnitOfWork
-from src.core.dto.community.community import CommunityUpdateDTO, CommunityCreateDTO
 
 # python -m pytest tests/db/test_community.py
 
@@ -12,9 +13,8 @@ from src.core.dto.community.community import CommunityUpdateDTO, CommunityCreate
 @pytest.mark.asyncio
 async def test_get(pool):
     async with SqlAlchemyUnitOfWork(pool) as uow:
-        res = await uow.community.get(id="asd")
-    print(res)
-    assert res is None
+        with pytest.raises(Exception):
+            res = await uow.community.get(id=1)
 
 
 @pytest.mark.asyncio

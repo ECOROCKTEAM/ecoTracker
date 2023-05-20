@@ -1,24 +1,40 @@
-from sqlalchemy import select, insert
-from sqlalchemy.ext.asyncio import AsyncSession
 from dataclasses import asdict
 
-from src.core.dto.community.invite import CommunityInviteUpdateDTO, CommunityInviteDTO, CommunityInviteCreateDTO
-from src.core.dto.m2m.user.community import UserCommunityUpdateDTO, UserCommunityDTO, UserCommunityCreateDTO
+from sqlalchemy import insert, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.core.dto.community.community import CommunityCreateDTO, CommunityUpdateDTO
+from src.core.dto.community.invite import (
+    CommunityInviteCreateDTO,
+    CommunityInviteDTO,
+    CommunityInviteUpdateDTO,
+)
+from src.core.dto.m2m.user.community import (
+    UserCommunityCreateDTO,
+    UserCommunityDTO,
+    UserCommunityUpdateDTO,
+)
 from src.core.dto.mock import MockObj
 from src.core.entity.community import Community
-from src.core.dto.community.community import CommunityUpdateDTO, CommunityCreateDTO
+from src.core.exception.base import EntityNotFound
 from src.core.interfaces.repository.community.community import (
-    IRepositoryCommunity,
-    CommunityUserFilter,
     CommunityFilter,
+    CommunityUserFilter,
+    IRepositoryCommunity,
 )
 from src.data.models.community.community import CommunityModel
+from src.data.models.user.user import UserCommunityModel
+from src.utils import as_dict_skip_none
 
 
 def model_to_dto(model: CommunityModel) -> Community:
     return Community(
         id=model.id, name=model.name, privacy=model.privacy, active=model.active, description=model.description
     )
+
+
+def user_community_model_to_dto(model: UserCommunityModel) -> UserCommunityDTO:
+    return UserCommunityDTO(user_id=model.user_id, community_id=model.community_id, role=model.role)
 
 
 def dto_to_model(dto: Community) -> CommunityModel:
@@ -29,58 +45,94 @@ class RepositoryCommunity(IRepositoryCommunity):
     def __init__(self, db_context: AsyncSession) -> None:
         self.db_context = db_context
 
-    async def get(self, *, id: str) -> Community:
-        stmt = select(CommunityModel).where(CommunityModel.name == id)
-        result = await self.db_context.scalar(stmt)
-        if result:
-            return model_to_dto(result)
+    async def get(self, *, id: int) -> Community:
+        stmt = select(CommunityModel).where(CommunityModel.id == id)
+        res = await self.db_context.scalar(stmt)
+        if not res:
+            raise EntityNotFound()
+        return model_to_dto(res)
 
     async def create(self, *, obj: CommunityCreateDTO) -> Community:
         stmt = insert(CommunityModel).values(**asdict(obj)).returning(CommunityModel)
-        result = await self.db_context.scalar(stmt)
-        if result:
-            return model_to_dto(result)
+        res = await self.db_context.scalar(stmt)
+        if not res:
+            raise EntityNotFound()
+        return model_to_dto(res)
 
-    async def update(self, *, id: str, obj: CommunityUpdateDTO) -> Community:
-        pass
+    async def update(self, *, id: int, obj: CommunityUpdateDTO) -> Community:
+        stmt = (
+            update(CommunityModel)
+            .where(CommunityModel.id == id)
+            .values(**as_dict_skip_none(obj))
+            .returning(CommunityModel)
+        )
+        res = await self.db_context.scalar(stmt)
+        if not res:
+            raise EntityNotFound()
+        return model_to_dto(res)
 
     async def lst(self, *, filter_obj: CommunityFilter, order_obj: MockObj, pagination_obj: MockObj) -> list[Community]:
-        pass
+        where_clause = []
+        if filter_obj.active:
+            where_clause.append(CommunityModel.active == filter_obj.active)
+        stmt = select(CommunityModel).where(*where_clause)  # todo .order_by().limit().offset()
+        res = await self.db_context.scalars(stmt)
+        return [model_to_dto(model) for model in res]
 
-    async def deactivate(self, *, id: str) -> str:
-        pass
+    async def deactivate(self, *, id: int) -> int:
+        stmt = update(CommunityModel).where(CommunityModel.id == id).values(active=False).returning(CommunityModel.id)
+        res = await self.db_context.scalar(stmt)
+        if not res:
+            raise EntityNotFound()
+        return res
 
     async def user_add(self, *, obj: UserCommunityCreateDTO) -> UserCommunityDTO:
-        pass
+        stmt = insert(UserCommunityModel).values(asdict(obj)).returning(UserCommunityModel)
+        res = await self.db_context.scalar(stmt)
+        return user_community_model_to_dto(res)
 
-    async def user_get(self, *, id: int) -> UserCommunityDTO:
-        pass
+    async def user_get(
+        self,
+        *,
+        community_id: int,
+        user_id: int,
+    ) -> UserCommunityDTO:
+        stmt = select(UserCommunityModel).where(
+            UserCommunityModel.user_id == user_id, UserCommunityModel.community_id == community_id
+        )
+        res = await self.db_context.scalar(stmt)
+        if not res:
+            raise EntityNotFound()
+        return user_community_model_to_dto(res)
 
-    async def user_list(self, *, id: str, filter: CommunityUserFilter) -> list[UserCommunityDTO]:
-        pass
+    async def user_list(self, *, id: int, filter_obj: CommunityUserFilter) -> list[UserCommunityDTO]:
+        stmt = select(UserCommunityModel).join(CommunityModel).where(CommunityModel.id == id)
+        res = await self.db_context.scalars(stmt)
+        return [user_community_model_to_dto(model) for model in res]
 
-    async def user_role_update(self, *, obj: UserCommunityUpdateDTO) -> UserCommunityDTO:
-        pass
+    async def user_role_update(
+        self, *, community_id: int, user_id: int, obj: UserCommunityUpdateDTO
+    ) -> UserCommunityDTO:
+        stmt = (
+            update(UserCommunityModel)
+            .where(UserCommunityModel.community_id == community_id, UserCommunityModel.user_id == user_id)
+            .values(as_dict_skip_none(obj))
+            .returning(UserCommunityModel)
+        )
+        res = await self.db_context.scalar(stmt)
+        if not res:
+            raise EntityNotFound()
+        return user_community_model_to_dto(res)
+
+    async def invite_link_update(self, *, id: int, obj: CommunityInviteUpdateDTO) -> Community:
+        stmt = update(CommunityModel).where(CommunityModel.id == id).values(**asdict(obj)).returning(CommunityModel)
+        res = await self.db_context.scalar(stmt)
+        if not res:
+            raise EntityNotFound()
+        return model_to_dto(res)
 
     async def invite_link_create(self, *, obj: CommunityInviteCreateDTO) -> CommunityInviteDTO:
         pass
 
-    async def invite_link_get(self, *, id: str) -> CommunityInviteDTO:
+    async def invite_link_get(self, *, id: int) -> CommunityInviteDTO:
         pass
-
-    async def invite_link_update(self, *, obj: CommunityInviteUpdateDTO) -> CommunityInviteDTO:
-        pass
-
-
-# async def _update(self, *, obj: UserTaskUpdateDTO) -> UserTaskDTO:
-#     values = asdict(obj)
-#     id_ = values.pop("id")
-#     stmt = update(TaskModel).where(id=id_).values(**values).returning(TaskModel)
-#     result: TaskModel = await self.db_contex.scalar(stmt)
-#     return model_to_dto(result)
-#
-# async def _delete(self, *, id: int) -> int:
-#     stmt = delete(TaskModel).where(TaskModel.id == id).returning(TaskModel.id)
-#     result = await self.db_contex.scalar(stmt)
-#     return result
-#

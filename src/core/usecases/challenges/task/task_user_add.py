@@ -32,11 +32,6 @@ class UserTaskAddUseCase:
             raise UserIsNotActivateError(user_id=user.id)
 
         async with self.uow as uow:
-            """
-            Не костыль ли это?
-            Вроде типо хардкод. Но будем ли мы получать order+pagination объекты,
-            когда пользователь захочет просто себе добавить таск?
-            """
             user_tasks = await uow.task.user_task_lst(
                 user_id=user.id,
                 filter_obj=TaskUserFilter(task_id=task_id, status=OccupancyStatusEnum.ACTIVE),
@@ -49,7 +44,6 @@ class UserTaskAddUseCase:
                 order_obj=MockObj(),
                 pagination_obj=MockObj(),
             )
-
             if user_tasks:
                 raise TaskAlreadyTakenError(user_id=user.id, task_id=task_id)
 

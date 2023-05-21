@@ -1,5 +1,6 @@
 import asyncio
 import random
+from datetime import datetime
 from random import choice, randint
 from typing import AsyncGenerator, Generator
 
@@ -18,8 +19,9 @@ from src.application.settings import settings
 from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.entity.community import Community
 from src.core.entity.mission import Mission
-from src.core.entity.task import Task
+from src.core.entity.task import Task, TaskUser
 from src.core.entity.user import User
+from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.community.privacy import CommunityPrivacyEnum
 from src.core.enum.community.role import CommunityRoleEnum
 from src.core.enum.language import LanguageEnum
@@ -28,7 +30,7 @@ from src.data.models.challenges.occupancy import (
     OccupancyCategoryModel,
     OccupancyCategoryTranslateModel,
 )
-from src.data.models.challenges.task import TaskModel, TaskTranslateModel
+from src.data.models.challenges.task import TaskModel, TaskTranslateModel, UserTaskModel
 from src.data.models.community.community import CommunityModel
 from src.data.models.user.user import UserCommunityModel, UserModel
 
@@ -207,6 +209,8 @@ async def test_task(pool: async_sessionmaker[AsyncSession], test_task_model_list
         coro = await session.scalars(select(TaskTranslateModel).where(TaskTranslateModel.task_id == task.id))
         translations = coro.all()
     task_translate = choice(translations)
+    print(task.id)
+    print("TASK1")
     return Task(
         id=task.id,
         score=task.score,
@@ -264,4 +268,66 @@ async def test_mission(test_mission_model_list: list[MissionModel]) -> Mission:
         instruction=translation.instruction,
         category_id=model.category_id,
         language=translation.language,
+    )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_user_task(pool: async_sessionmaker[AsyncSession], test_user, test_task) -> TaskUser:
+    async with pool() as sess:
+        obj = UserTaskModel(
+            user_id=test_user.id,
+            task_id=test_task.id,
+            status=OccupancyStatusEnum.ACTIVE,
+            date_close=datetime.now(),
+            date_start=datetime.now(),
+        )
+        sess.add(obj)
+        await sess.commit()
+
+    return TaskUser(
+        user_id=obj.user_id,
+        task_id=obj.task_id,
+        date_start=obj.date_start,
+        date_close=obj.date_close,
+        status=obj.status,
+    )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_task2(pool: async_sessionmaker[AsyncSession], test_task_model_list: list[TaskModel]) -> Task:
+    task = choice(test_task_model_list)
+    async with pool() as session:
+        coro = await session.scalars(select(TaskTranslateModel).where(TaskTranslateModel.task_id == task.id))
+        translations = coro.all()
+    task_translate = choice(translations)
+    return Task(
+        id=task.id,
+        score=task.score,
+        category_id=task.category_id,
+        active=task.active,
+        language=task_translate.language,
+        description=task_translate.description,
+        name=task_translate.name,
+    )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_user_task2(pool: async_sessionmaker[AsyncSession], test_user, test_task2) -> TaskUser:
+    async with pool() as sess:
+        obj = UserTaskModel(
+            user_id=test_user.id,
+            task_id=test_task2.id,
+            status=OccupancyStatusEnum.REJECT,
+            date_close=datetime.now(),
+            date_start=datetime.now(),
+        )
+        sess.add(obj)
+        await sess.commit()
+
+    return TaskUser(
+        user_id=obj.user_id,
+        task_id=obj.task_id,
+        date_start=obj.date_start,
+        date_close=obj.date_close,
+        status=obj.status,
     )

@@ -33,6 +33,10 @@ class UserTaskMaxAmountError(UserError, RepoError):
     msg_template = "User with user_id={user_id} has maximum tasks"
 
 
+class UserTaskStatusError(RepoError):
+    msg_template = "Task_id={task_ud} has not status ACTIVE"
+
+
 class TaskAlreadyTakenError(UserError, RepoError):
     msg_template = "User_id={user_id} already has this task_id={task_id}"
 

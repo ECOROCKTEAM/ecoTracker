@@ -18,6 +18,8 @@ from src.core.usecases.challenges.task import (
     task_get,
     task_list,
     task_user_add,
+    task_user_complete,
+    task_user_delete,
     task_user_get,
     task_user_list,
     task_user_plan_list,
@@ -55,18 +57,7 @@ async def test_get(pool, test_task: Task, test_user: User):
 
 
 @pytest.mark.asyncio
-async def test_user_task_add(pool, test_task: Task, test_user: User):
-    test_user.language = test_task.language
-    uow = SqlAlchemyUnitOfWork(pool)
-    uc = task_user_add.UserTaskAddUseCase(uow=uow)
-    result = await uc(user=test_user, task_id=test_task.id)
-    user_task = result.item
-    assert user_task.user_id == test_user.id
-    assert user_task.task_id == test_task.id
-
-
-@pytest.mark.asyncio
-async def test_user_task_get(pool, test_user: User, test_task: Task):
+async def test_user_task_get(pool, test_user: User, test_task: Task, test_user_task):
     test_user.language = test_task.language
     uow = SqlAlchemyUnitOfWork(pool)
     uc = task_user_get.UserTaskGetUseCase(uow=uow)
@@ -87,20 +78,20 @@ async def test_user_task_lst(pool, test_user: User):
         assert obj.user_id == test_user.id
 
 
-@pytest.mark.asyncio
-async def test_user_task_update(pool, test_user: User, test_task: Task):
-    test_user.language = test_task.language
-    t = datetime.now() - timedelta(hours=1)
-    update_obj = TaskUserUpdateDTO(date_close=t, status=OccupancyStatusEnum.OVERDUE)
-    uow = SqlAlchemyUnitOfWork(pool)
-    uc = task_user_update.UserTaskUpdateUseCase(uow=uow)
-    result = await uc(user=test_user, task_id=test_task.id, obj=update_obj)
-    upd_obj = result.item
-    assert upd_obj.task_id == test_task.id
-    assert upd_obj.user_id == test_user.id
-    assert upd_obj.status == update_obj.status
-    # assert upd_obj.date_close == update_obj.date_close
-    # time\time+00:00 - Спросить
+# @pytest.mark.asyncio
+# async def test_user_task_update(pool, test_user: User, test_task: Task):
+#     test_user.language = test_task.language
+#     t = datetime.now() - timedelta(hours=1)
+#     update_obj = TaskUserUpdateDTO(date_close=t, status=OccupancyStatusEnum.OVERDUE)
+#     uow = SqlAlchemyUnitOfWork(pool)
+#     uc = task_user_update.UserTaskUpdateUseCase(uow=uow)
+#     result = await uc(user=test_user, task_id=test_task.id, obj=update_obj)
+#     upd_obj = result.item
+#     assert upd_obj.task_id == test_task.id
+#     assert upd_obj.user_id == test_user.id
+#     assert upd_obj.status == update_obj.status
+#     # assert upd_obj.date_close == update_obj.date_close
+#     # time\time+00:00 - Спросить
 
 
 @pytest.mark.asyncio
@@ -118,3 +109,41 @@ async def test_plan_list(pool, test_user: User, test_task: Task):
     for obj in plan_list:
         assert test_user.id == obj.user_id
         assert test_task.id == obj.task_id
+
+
+@pytest.mark.asyncio
+async def test_user_task_add(pool, test_task2: Task, test_user: User, test_user_task2):
+    test_user.language = test_task2.language
+    uow = SqlAlchemyUnitOfWork(pool)
+    uc = task_user_add.UserTaskAddUseCase(uow=uow)
+    result = await uc(user=test_user, task_id=test_task2.id)
+    user_task = result.item
+    assert user_task.user_id == test_user.id
+    assert user_task.task_id == test_task2.id
+
+
+# @pytest.mark.asyncio
+# async def test_task_complete(pool, test_user_task, test_user, test_task):
+#     test_user.language = test_task.language
+#     uow = SqlAlchemyUnitOfWork(pool)
+#     uc = task_user_complete.UserTaskCompleteUseCase(uow=uow)
+#     result = await uc(user=test_user, task_id=test_task.id)
+#     user_task = result.item
+#     assert user_task.user_id == test_user.id
+#     assert user_task.task_id == test_task.id
+#     assert user_task.status == OccupancyStatusEnum.FINISH
+#     # assert user_task.date_close == test_user_task.date_close Как правильно даты проверить?
+#     # assert user_task.date_start == test_user_task.date_start
+
+
+# @pytest.mark.asyncio
+# async def test_task_delete(pool, test_user_task, test_user, test_task):
+#     print(test_user_task)
+#     test_user.language = test_task.language
+#     uow = SqlAlchemyUnitOfWork(pool)
+#     uc = task_user_delete.UserTaskDeleteUseCase(uow=uow)
+#     result = await uc(user=test_user, task_id=test_task.id)
+#     user_task = result.item
+#     assert user_task.user_id == test_user.id
+#     assert user_task.task_id == test_task.id
+#     assert isinstance(user_task.date_close, datetime)

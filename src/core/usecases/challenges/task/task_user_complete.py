@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from datetime import datetime
 
 from src.core.dto.challenges.task import TaskUserUpdateDTO
 from src.core.entity.task import TaskUser
@@ -14,7 +13,7 @@ class Result:
     item: TaskUser
 
 
-class UserTaskDeleteUseCase:
+class UserTaskCompleteUseCase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
@@ -27,21 +26,17 @@ class UserTaskDeleteUseCase:
             if not user_task.status.ACTIVE:
                 raise UserTaskStatusError(task_id=task_id)
 
-            if not user.is_premium:
-                """
-                Если у нас будет редис, может там хранить ключ с userid_task_deleted и значением int,
-                которое будет увеличиваться на +=1, когда обычный пользователь будет удалять у себя таск?
-
-                Если так, то тут будет get в redis и проверка значения.
-                """
-
             if user.is_premium:
-                """Проверка на удаление 10-ти задач."""
+                """Проверка на 10 тасков в день"""
 
-            task = await uow.task.user_task_update(
-                user_id=user.id,
-                task_id=task_id,
-                obj=TaskUserUpdateDTO(date_close=datetime.now(), status=OccupancyStatusEnum.REJECT),
+            if not user.is_premium:
+                """Проверка на 3 таска в день"""
+
+            """ Добавить после мержа метод на добавление очков за завершённый таск """
+
+            result = await uow.task.user_task_update(
+                user_id=user.id, task_id=task_id, obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.FINISH)
             )
+            """ Добавлять ли тут ещё и date_close, когда пользователь ВЫПОЛНЯЕТ таск? """
 
-        return Result(item=task)
+        return Result(item=result)

@@ -4,14 +4,14 @@ from src.core.enum.score.operation import ScoreOperationEnum
 
 
 @dataclass
-class ScoreUserDTO:
+class ScoreUser:
     user_id: int
     value: int
     operation: ScoreOperationEnum
 
 
 @dataclass
-class ScoreCommunityDTO:
-    community_name: int
+class ScoreCommunity:
+    community_id: int
     value: int
     operation: ScoreOperationEnum

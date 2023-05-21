@@ -16,17 +16,19 @@ from src.application.settings import settings
 from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.entity.community import Community
 from src.core.entity.mission import Mission
+from src.core.entity.score import ScoreCommunity, ScoreUser
 from src.core.entity.user import User
 from src.core.enum.community.privacy import CommunityPrivacyEnum
 from src.core.enum.community.role import CommunityRoleEnum
 from src.core.enum.language import LanguageEnum
+from src.core.enum.score.operation import ScoreOperationEnum
 from src.data.models.challenges.mission import MissionModel, MissionTranslateModel
 from src.data.models.challenges.occupancy import (
     OccupancyCategoryModel,
     OccupancyCategoryTranslateModel,
 )
-from src.data.models.community.community import CommunityModel
-from src.data.models.user.user import UserCommunityModel, UserModel
+from src.data.models.community.community import CommunityModel, CommunityScoreModel
+from src.data.models.user.user import UserCommunityModel, UserModel, UserScoreModel
 
 fake = faker.Faker()
 
@@ -96,6 +98,15 @@ async def test_community(pool: async_sessionmaker[AsyncSession]) -> Community:
             id=community.id,
             privacy=community.privacy,
         )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_user_score(pool: async_sessionmaker[AsyncSession], test_user) -> ScoreUser:
+    async with pool() as session:
+        score_user = UserScoreModel(user_id=test_user.id, value=100, operation=ScoreOperationEnum.PLUS)
+        session.add(score_user)
+        await session.commit()
+        return ScoreUser(user_id=score_user.user_id, value=score_user.value, operation=score_user.operation)
 
 
 @pytest_asyncio.fixture(scope="module")
@@ -210,3 +221,16 @@ async def test_mission(test_mission_model_list: list[MissionModel]) -> Mission:
         category_id=model.category_id,
         language=translation.language,
     )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_score_community(pool: async_sessionmaker[AsyncSession], test_community: CommunityModel):
+    async with pool() as sess:
+        item = CommunityScoreModel(
+            community_id=test_community.id,
+            operation=ScoreOperationEnum.PLUS,
+            value=100,
+        )
+        sess.add(item)
+        await sess.commit()
+        return ScoreCommunity(community_id=item.community_id, operation=item.operation, value=item.value)

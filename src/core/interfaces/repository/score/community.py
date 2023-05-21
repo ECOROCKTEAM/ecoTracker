@@ -10,7 +10,7 @@ from src.core.dto.mock import MockObj
 
 class IRepositoryCommunityScore(ABC):
     @abstractmethod
-    async def community_change(self, *, obj: CommunityOperationWithScoreDTO) -> CommunityScoreDTO:
+    async def change(self, *, obj: CommunityOperationWithScoreDTO) -> CommunityScoreDTO:
         """Action with community score
 
         Args:

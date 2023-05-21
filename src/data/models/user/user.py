@@ -16,7 +16,7 @@ class UserModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(unique=True)
-    password: Mapped[str]
+    password: Mapped[str] = mapped_column()
     active: Mapped[bool] = mapped_column(default=True)
 
     # contacts = relationship(
@@ -52,13 +52,14 @@ class UserCommunityModel(Base):
     role: Mapped[CommunityRoleEnum]
 
 
+@dataclass
 class UserScoreModel(Base):
     __tablename__ = "user_score"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    operation: Mapped[ScoreOperationEnum]
-    value: Mapped[int]
+    operation: Mapped[ScoreOperationEnum] = mapped_column()
+    value: Mapped[int] = mapped_column()
 
 
 class UserTaskModel(Base):

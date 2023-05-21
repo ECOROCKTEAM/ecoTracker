@@ -6,6 +6,7 @@ from src.core.dto.user.score import (
     UserBoundOffsetDTO,
     UserScoreDTO,
 )
+from src.core.entity.score import ScoreUser
 
 
 class IRepositoryUserScore(ABC):
@@ -34,16 +35,16 @@ class IRepositoryUserScore(ABC):
             order_obj (MockObj): Order for score value
 
         Returns:
-            list[UserScore]: List of DTO user score objects
+            dict[int, UserScoreDTO]: Dict with int as user rating and value as UserScore DTO object
         """
 
     @abstractmethod
-    async def user_change(self, *, obj: OperationWithScoreUserDTO) -> UserScoreDTO:
+    async def change(self, *, obj: OperationWithScoreUserDTO) -> ScoreUser:
         """Operation with user score (addiction, subtraction, multiplication, division)
 
         Args:
             obj (IncrementScoreUserDTO): DTO of user object, value and math operator
 
         Returns:
-            UserScoreDTO: DTO of user value object
+            ScoreUser: User score entity
         """

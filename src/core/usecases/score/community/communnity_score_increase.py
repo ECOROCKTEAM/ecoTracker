@@ -9,7 +9,6 @@ from src.core.entity.community import Community
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
 from src.core.exception.community import CommunityDeactivatedError
-from src.core.exception.score import CommunityOperationScoreError
 from src.core.exception.user import UserIsNotActivateError, UserPermissionError
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
@@ -45,14 +44,7 @@ class CommunityChangeRatingUseCase:
             if user_community_role.role not in (CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN):
                 raise UserPermissionError(user_id=user.id)
 
-            if obj.operation.MINUS:
-                """If current community value more that subtrahend value."""
-
-                current_community_score = await uow.score_community.community_get(community_id=community.id)
-                if current_community_score.value > obj.value:
-                    raise CommunityOperationScoreError(operation=obj.operation, community_id=community.id)
-
-            action_with_rating = await uow.score_community.community_change(
+            action_with_rating = await uow.score_community.change(
                 obj=CommunityOperationWithScoreDTO(community_id=community.id, value=obj.value, operation=obj.operation)
             )
             await uow.commit()

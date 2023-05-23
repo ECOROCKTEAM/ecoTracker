@@ -2,5 +2,5 @@ from src.core.enum.base.translation import TranslationEnum
 
 
 class CommunityPrivacyEnum(str, TranslationEnum):
-    PUBLICK = "PUBLICK"
+    PUBLIC = "PUBLIC"
     PRIVATE = "PRIVATE"

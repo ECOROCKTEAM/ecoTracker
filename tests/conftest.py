@@ -2,7 +2,7 @@ import asyncio
 import random
 from datetime import datetime
 from random import choice, randint
-from typing import AsyncGenerator, Generator
+from typing import AsyncGenerator
 
 import faker
 import pytest
@@ -16,7 +16,6 @@ from src.application.database.base import (
     create_session_factory,
 )
 from src.application.settings import settings
-from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.entity.community import Community
 from src.core.entity.mission import Mission
 from src.core.entity.task import Task, TaskUser
@@ -33,8 +32,6 @@ from src.data.models.challenges.occupancy import (
 from src.data.models.challenges.task import TaskModel, TaskTranslateModel, UserTaskModel
 from src.data.models.community.community import CommunityModel
 from src.data.models.user.user import UserCommunityModel, UserModel
-
-fake = faker.Faker()
 
 fake = faker.Faker()
 
@@ -209,8 +206,6 @@ async def test_task(pool: async_sessionmaker[AsyncSession], test_task_model_list
         coro = await session.scalars(select(TaskTranslateModel).where(TaskTranslateModel.task_id == task.id))
         translations = coro.all()
     task_translate = choice(translations)
-    print(task.id)
-    print("TASK1")
     return Task(
         id=task.id,
         score=task.score,
@@ -283,7 +278,6 @@ async def test_user_task(pool: async_sessionmaker[AsyncSession], test_user, test
         )
         sess.add(obj)
         await sess.commit()
-
     return TaskUser(
         user_id=obj.user_id,
         task_id=obj.task_id,

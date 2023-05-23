@@ -44,6 +44,7 @@ class UserTaskAddUseCase:
                 order_obj=MockObj(),
                 pagination_obj=MockObj(),
             )
+
             if user_tasks:
                 raise TaskAlreadyTakenError(user_id=user.id, task_id=task_id)
 

@@ -151,7 +151,7 @@ class RepositoryTask(IRepositoryTask):
         where_clause.append(UserTaskModel.user_id == user_id)
         if filter_obj.status is not None:
             where_clause.append(UserTaskModel.status == filter_obj.status)
-        if filter_obj.task_active is not None:
+        if filter_obj.task_id is not None:
             where_clause.append(UserTaskModel.task_id == filter_obj.task_id)
         if filter_obj.task_active is not None:
             stmt = stmt.join(TaskModel, UserTaskModel.task_id == TaskModel.id)

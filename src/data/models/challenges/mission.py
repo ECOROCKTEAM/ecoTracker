@@ -1,14 +1,10 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from src.application.database.base import Base
 from src.core.enum.language import LanguageEnum
-
-if TYPE_CHECKING:
-    from src.data.models.challenges.occupancy import OccupancyCategoryModel
 
 
 @dataclass
@@ -20,9 +16,6 @@ class MissionModel(Base):
     author: Mapped[str] = mapped_column()
     score: Mapped[int] = mapped_column()
     category_id: Mapped[int] = mapped_column(ForeignKey("occupancy_category.id"))
-
-    category: Mapped["OccupancyCategoryModel"] = relationship(lazy="joined", back_populates="missions")
-    translations: Mapped[list["MissionTranslateModel"]] = relationship(lazy="selectin", back_populates="mission")
 
 
 @dataclass
@@ -41,5 +34,3 @@ class MissionTranslateModel(Base):
     instruction: Mapped[str] = mapped_column()
     mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
     language: Mapped[LanguageEnum] = mapped_column()
-
-    mission: Mapped["MissionModel"] = relationship(lazy="noload", back_populates="translations")

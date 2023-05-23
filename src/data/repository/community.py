@@ -16,6 +16,7 @@ from src.core.dto.m2m.user.community import (
 )
 from src.core.dto.mock import MockObj
 from src.core.entity.community import Community
+from src.core.enum.community.role import CommunityRoleEnum
 from src.core.exception.base import EntityNotFound
 from src.core.interfaces.repository.community.community import (
     CommunityFilter,
@@ -49,14 +50,14 @@ class RepositoryCommunity(IRepositoryCommunity):
         stmt = select(CommunityModel).where(CommunityModel.id == id)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_dto(res)
 
     async def create(self, *, obj: CommunityCreateDTO) -> Community:
         stmt = insert(CommunityModel).values(**asdict(obj)).returning(CommunityModel)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_dto(res)
 
     async def update(self, *, id: int, obj: CommunityUpdateDTO) -> Community:
@@ -68,14 +69,19 @@ class RepositoryCommunity(IRepositoryCommunity):
         )
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_dto(res)
 
     async def lst(self, *, filter_obj: CommunityFilter, order_obj: MockObj, pagination_obj: MockObj) -> list[Community]:
+        stmt = select(CommunityModel)
         where_clause = []
-        if filter_obj.active:
+        if filter_obj.user_id is not None:
+            stmt = stmt.join(UserCommunityModel)
+            where_clause.append(UserCommunityModel.user_id == filter_obj.user_id)
+            where_clause.append(UserCommunityModel.role != CommunityRoleEnum.BLOCKED)
+        if filter_obj.active is not None:
             where_clause.append(CommunityModel.active == filter_obj.active)
-        stmt = select(CommunityModel).where(*where_clause)  # todo .order_by().limit().offset()
+        stmt = stmt.where(*where_clause)  # todo .order_by().limit().offset()
         res = await self.db_context.scalars(stmt)
         return [model_to_dto(model) for model in res]
 
@@ -83,7 +89,7 @@ class RepositoryCommunity(IRepositoryCommunity):
         stmt = update(CommunityModel).where(CommunityModel.id == id).values(active=False).returning(CommunityModel.id)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return res
 
     async def user_add(self, *, obj: UserCommunityCreateDTO) -> UserCommunityDTO:
@@ -102,7 +108,7 @@ class RepositoryCommunity(IRepositoryCommunity):
         )
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return user_community_model_to_dto(res)
 
     async def user_list(self, *, id: int, filter_obj: CommunityUserFilter) -> list[UserCommunityDTO]:
@@ -121,14 +127,14 @@ class RepositoryCommunity(IRepositoryCommunity):
         )
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return user_community_model_to_dto(res)
 
     async def invite_link_update(self, *, id: int, obj: CommunityInviteUpdateDTO) -> Community:
         stmt = update(CommunityModel).where(CommunityModel.id == id).values(**asdict(obj)).returning(CommunityModel)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_dto(res)
 
     async def invite_link_create(self, *, obj: CommunityInviteCreateDTO) -> CommunityInviteDTO:

@@ -5,6 +5,7 @@ from typing import AsyncGenerator, Generator
 import faker
 import pytest
 import pytest_asyncio
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.application.database.base import (
@@ -14,9 +15,11 @@ from src.application.database.base import (
 )
 from src.application.settings import settings
 from src.core.dto.challenges.category import OccupancyCategoryDTO
+from src.core.dto.m2m.user.community import UserCommunityDTO
 from src.core.entity.community import Community
-from src.core.entity.mission import Mission
+from src.core.entity.mission import Mission, MissionCommunity, MissionUser
 from src.core.entity.user import User
+from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.community.privacy import CommunityPrivacyEnum
 from src.core.enum.community.role import CommunityRoleEnum
 from src.core.enum.language import LanguageEnum
@@ -25,8 +28,8 @@ from src.data.models.challenges.occupancy import (
     OccupancyCategoryModel,
     OccupancyCategoryTranslateModel,
 )
-from src.data.models.community.community import CommunityModel
-from src.data.models.user.user import UserCommunityModel, UserModel
+from src.data.models.community.community import CommunityMissionModel, CommunityModel
+from src.data.models.user.user import UserCommunityModel, UserMissionModel, UserModel
 
 fake = faker.Faker()
 
@@ -66,7 +69,23 @@ async def test_user(pool: async_sessionmaker[AsyncSession]) -> User:
         sess.add(user)
         await sess.commit()
         return User(
-            username=user.username, password=user.password, active=True, id=user.id, language="", subscription=""
+            username=user.username, password=user.password, active=True, id=user.id, language="", subscription=""  # type: ignore
+        )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_user_2(pool: async_sessionmaker[AsyncSession]) -> User:
+    async with pool() as sess:
+        user = UserModel(username="test-2", password="test", active=True)
+        sess.add(user)
+        await sess.commit()
+        return User(
+            username=user.username,
+            password=user.password,
+            active=True,
+            id=user.id,
+            language=LanguageEnum.RU,
+            subscription="",  # type: ignore
         )
 
 
@@ -77,7 +96,7 @@ async def test_user_role(pool: async_sessionmaker[AsyncSession]) -> User:
         sess.add(user)
         await sess.commit()
         return User(
-            username=user.username, password=user.password, active=True, id=user.id, language="", subscription=""
+            username=user.username, password=user.password, active=True, id=user.id, language="", subscription=""  # type: ignore
         )
 
 
@@ -86,6 +105,23 @@ async def test_community(pool: async_sessionmaker[AsyncSession]) -> Community:
     async with pool() as sess:
         community = CommunityModel(
             name="test-com", description="test-com", active=True, privacy=CommunityPrivacyEnum.PRIVATE
+        )
+        sess.add(community)
+        await sess.commit()
+        return Community(
+            name=community.name,
+            description=community.description,
+            active=True,
+            id=community.id,
+            privacy=community.privacy,
+        )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_community_2(pool: async_sessionmaker[AsyncSession]) -> Community:
+    async with pool() as sess:
+        community = CommunityModel(
+            name="test-com-2", description="test-com", active=True, privacy=CommunityPrivacyEnum.PRIVATE
         )
         sess.add(community)
         await sess.commit()
@@ -119,10 +155,21 @@ async def test_community_delete(pool: async_sessionmaker[AsyncSession], test_use
 
 
 @pytest_asyncio.fixture(scope="module")
-async def test_user_community(pool: async_sessionmaker[AsyncSession], test_user, test_community) -> None:
+async def test_user_community(pool: async_sessionmaker[AsyncSession], test_user, test_community) -> UserCommunityDTO:
     async with pool() as sess:
         role = UserCommunityModel(
             user_id=test_user.id, community_id=test_community.id, role=CommunityRoleEnum.SUPERUSER
+        )
+        sess.add(role)
+        await sess.commit()
+    return UserCommunityDTO(user_id=role.user_id, community_id=role.community_id, role=role.role)
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_user_community_2(pool: async_sessionmaker[AsyncSession], test_user_2, test_community_2) -> None:
+    async with pool() as sess:
+        role = UserCommunityModel(
+            user_id=test_user_2.id, community_id=test_community_2.id, role=CommunityRoleEnum.SUPERUSER
         )
         sess.add(role)
         await sess.commit()
@@ -197,9 +244,47 @@ async def test_mission_model_list(
 
 
 @pytest_asyncio.fixture(scope="module")
-async def test_mission(test_mission_model_list: list[MissionModel]) -> Mission:
+async def test_user_mission_model_list(
+    pool: async_sessionmaker[AsyncSession], test_user: User, test_mission_model_list: list[MissionModel]
+) -> list[UserMissionModel]:
+    models = []
+    async with pool() as s:
+        for mission_model in test_mission_model_list:
+            model = UserMissionModel(
+                user_id=test_user.id, mission_id=mission_model.id, status=OccupancyStatusEnum.ACTIVE
+            )
+            models.append(model)
+        s.add_all(models)
+        await s.commit()
+    return models
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_community_mission_model_list(
+    pool: async_sessionmaker[AsyncSession], test_community: Community, test_mission_model_list: list[MissionModel]
+) -> list[CommunityMissionModel]:
+    models = []
+    async with pool() as s:
+        for mission_model in test_mission_model_list:
+            model = CommunityMissionModel(
+                community_id=test_community.id,
+                mission_id=mission_model.id,
+                status=OccupancyStatusEnum.ACTIVE,
+                author="aboba",
+            )
+            models.append(model)
+        s.add_all(models)
+        await s.commit()
+    return models
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_mission(pool: async_sessionmaker[AsyncSession], test_mission_model_list: list[MissionModel]) -> Mission:
     model = random.choice(test_mission_model_list)
-    translation = random.choice(model.translations)
+    async with pool() as s:
+        coro = await s.scalars(select(MissionTranslateModel).where(MissionTranslateModel.mission_id == model.id))
+        translations = coro.all()
+    translation = random.choice(translations)
     return Mission(
         id=model.id,
         name=translation.name,
@@ -209,4 +294,29 @@ async def test_mission(test_mission_model_list: list[MissionModel]) -> Mission:
         instruction=translation.instruction,
         category_id=model.category_id,
         language=translation.language,
+    )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_user_mission(test_user_mission_model_list: list[UserMissionModel]) -> MissionUser:
+    model = random.choice(test_user_mission_model_list)
+    return MissionUser(
+        user_id=model.user_id, mission_id=model.mission_id, status=model.status, date_close=model.date_close
+    )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_community_mission(test_community_mission_model_list: list[CommunityMissionModel]) -> MissionCommunity:
+    model = random.choice(test_community_mission_model_list)
+    return MissionCommunity(
+        community_id=model.community_id,
+        mission_id=model.mission_id,
+        status=model.status,
+        author=model.author,
+        place=model.place,
+        meeting_date=model.meeting_date,
+        people_required=model.people_required,
+        people_max=model.people_max,
+        comment=model.comment,
+        date_close=model.date_close,
     )

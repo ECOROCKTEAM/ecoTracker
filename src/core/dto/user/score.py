@@ -7,6 +7,7 @@ from src.core.enum.score.operation import ScoreOperationEnum
 class UserScoreDTO:
     user_id: int
     value: int
+    position: int
 
 
 @dataclass

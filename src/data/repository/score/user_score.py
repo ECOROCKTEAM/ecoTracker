@@ -1,5 +1,6 @@
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import aliased
 
 from src.core.dto.mock import MockObj
 from src.core.dto.user.score import (
@@ -24,8 +25,16 @@ def rating_calculation(current_value: int, operated_value: int, operation: Score
     #                     Typeignore?
 
 
-def user_score_to_rating_list(rating_position: int, model: UserScoreModel) -> dict[int, UserScoreDTO]:
-    return {rating_position: UserScoreDTO(user_id=model.user_id, value=model.value)}
+# def user_score_to_rating_list(rating_position: int, model: UserScoreModel) -> dict[int, UserScoreDTO]:
+#     return {rating_position: UserScoreDTO(user_id=model.user_id, value=model.value)}
+
+
+def user_rating_to_dto(model) -> UserScoreDTO:  # хз какой формат придёт после запроса. Дописать type hit в model
+    return UserScoreDTO(
+        user_id=model.user_id,
+        value=model.value,
+        position=model.position,
+    )
 
 
 def score_model_to_entity(model: UserScoreModel) -> ScoreUser:
@@ -65,18 +74,37 @@ class UserScoreRepository(IRepositoryUserScore):
             raise EntityNotFound()
         return score_model_to_entity(model=result)
 
-    async def user_rating(
-        self, *, obj: UserBoundOffsetDTO | None = None, order_obj: MockObj
-    ) -> dict[int, UserScoreDTO]:
-        return await super().user_rating(obj=obj, order_obj=order_obj)
+    """ Как быть с тестами? Ждать дамба? Или вручную написать? Typehitting в функции к model аргументу """
 
-    # async def user_rating(
-    #     self, *, obj: UserBoundOffsetDTO, order_obj: MockObj
-    # ):
-    #     stmt = select(UserScoreModel)
-    #     if obj:
-    #         stmt = stmt.where(UserScoreModel.user_id == obj.user_id).order_by(UserScoreModel.value).offset()
-    #     result = await self.db_context.scalars(stmt)
-    #     if not result:
-    #         raise EntityNotFound()
-    #     pass
+    async def user_rating(self, *, obj: UserBoundOffsetDTO, order_obj: MockObj):
+        inner_stmt = select(
+            func.row_number().over(order_by=UserScoreModel.value),
+            UserScoreModel.user_id,
+            UserScoreModel.value,
+        ).select_from(UserScoreModel)
+
+        subquery = inner_stmt.subquery()
+        alias = aliased(UserScoreModel, subquery)
+        user_position_stmt = select(subquery).where(alias.user_id == obj.user_id)
+        result = await self.db_context.scalar(user_position_stmt)
+        if not result:
+            raise EntityNotFound()
+
+        user_position = user_rating_to_dto(result)
+
+        if (user_position.position - obj.bound_offset) <= 0:
+            limit_obj = obj.bound_offset + (obj.bound_offset - user_position.position) + 1
+            offset_obj = 1
+        else:
+            offset_obj = user_position.position - obj.bound_offset
+            limit_obj = (obj.bound_offset * 2) + 1
+
+        stmt = (
+            select(func.row_number().over(order_by=UserScoreModel.value), UserScoreModel.user_id, UserScoreModel.value)
+            .select_from(UserScoreModel)
+            .offset(offset_obj)
+            .limit(limit_obj)
+        )
+
+        result = await self.db_context.scalars(stmt)
+        return [user_rating_to_dto(model=model) for model in result]

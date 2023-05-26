@@ -21,3 +21,8 @@ class MissionUserUpdateUsecase:
             raise UserIsNotPremiumError(user_id=user.id)
         mission = await self.repo.user_mission_update(obj=update_obj, lang=user.language)
         return Result(item=mission)
+
+
+"""
+Добавить начисление очков
+"""

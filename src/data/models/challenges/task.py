@@ -19,8 +19,8 @@ class TaskModel(Base):
     __tablename__ = "task"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    score: Mapped[int] = mapped_column(default=0)
-    active: Mapped[bool] = mapped_column(default=True)
+    score: Mapped[int] = mapped_column()
+    active: Mapped[bool] = mapped_column()
     category_id: Mapped[int] = mapped_column(ForeignKey("occupancy_category.id"))
 
     category: Mapped["OccupancyCategoryModel"] = relationship(lazy="joined", back_populates="tasks")

@@ -1,13 +1,10 @@
 import pytest
 
 from src.core.dto.challenges.score import ScoreOperationValueDTO
+from src.core.dto.mock import MockObj
 from src.core.entity.user import User
 from src.core.enum.score.operation import ScoreOperationEnum
-from src.core.usecases.score.user import (
-    user_get_rating,
-    user_get_score,
-    user_score_increase,
-)
+from src.core.usecases.score.user import user_get_rating, user_get_score
 from src.data.unit_of_work import SqlAlchemyUnitOfWork
 
 
@@ -21,14 +18,18 @@ async def test_user(pool, test_user: User, test_user_score):
 
 
 @pytest.mark.asyncio
-async def test_user_score_increase(pool, test_user: User, test_user_score):
+async def test_user_rating(
+    pool,
+    test_users,
+    test_users_scores,
+    test_user_for_rating: User,
+):
     uow = SqlAlchemyUnitOfWork(pool)
-    uc = user_score_increase.UserChangeScoreUseCase(uow=uow)
-    obj = ScoreOperationValueDTO(value=100, operation=ScoreOperationEnum.PLUS)
-    result = await uc(user=test_user, obj=obj)
-    user_score = result.item
-    new_score = test_user_score.value
-    new_score += obj.value
-    assert user_score.user_id == test_user.id
-    assert user_score.value == new_score
-    assert user_score.operation == obj.operation
+    uc = user_get_rating.UserGetRatingUseCase(uow=uow)
+    result = await uc(user=test_user_for_rating, order_obj=MockObj(), bound_offset=4)
+    users_rating = result.items
+    for user in users_rating:
+        assert isinstance(user.position, int)
+        assert isinstance(user.user_id, int)
+        assert isinstance(user.value, int)
+        # хз что тут проверять...

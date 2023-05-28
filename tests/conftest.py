@@ -84,23 +84,6 @@ async def test_user_role(pool: async_sessionmaker[AsyncSession]) -> User:
 
 
 @pytest_asyncio.fixture(scope="module")
-async def test_community(pool: async_sessionmaker[AsyncSession]) -> Community:
-    async with pool() as sess:
-        community = CommunityModel(
-            name="test-com", description="test-com", active=True, privacy=CommunityPrivacyEnum.PRIVATE
-        )
-        sess.add(community)
-        await sess.commit()
-        return Community(
-            name=community.name,
-            description=community.description,
-            active=True,
-            id=community.id,
-            privacy=community.privacy,
-        )
-
-
-@pytest_asyncio.fixture(scope="module")
 async def test_user_score(pool: async_sessionmaker[AsyncSession], test_user) -> ScoreUser:
     async with pool() as session:
         score_user = UserScoreModel(user_id=test_user.id, value=100, operation=ScoreOperationEnum.PLUS)
@@ -234,3 +217,176 @@ async def test_score_community(pool: async_sessionmaker[AsyncSession], test_comm
         sess.add(item)
         await sess.commit()
         return ScoreCommunity(community_id=item.community_id, operation=item.operation, value=item.value)
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_users(pool: async_sessionmaker[AsyncSession]) -> list[User]:
+    user_list: list[User] = []
+    count = 20
+    async with pool() as sess:
+        for _ in range(count):
+            user = UserModel(username=f"{fake.name()}_test_users", password="123", active=True)
+            sess.add(user)
+            await sess.flush()
+            await sess.refresh(user)
+            user_list.append(
+                User(
+                    id=user.id,
+                    username=user.username,
+                    password=user.password,
+                    active=user.active,
+                    subscription="",
+                    language="",
+                )
+            )
+        min_value_user = UserModel(id=999, username="MinValue", password="123", active=True)
+        sess.add(min_value_user)
+        max_value_user = UserModel(id=1000, username="MaxValue", password="123", active=True)
+        sess.add(max_value_user)
+        await sess.commit()
+        user_list.append(
+            User(
+                id=min_value_user.id,
+                username=min_value_user.username,
+                password=min_value_user.password,
+                active=min_value_user.active,
+                subscription="",
+                language="",
+            )
+        )
+        user_list.append(
+            User(
+                id=max_value_user.id,
+                username=max_value_user.username,
+                password=max_value_user.password,
+                active=max_value_user.active,
+                subscription="",
+                language="",
+            )
+        )
+    return user_list
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_users_scores(pool: async_sessionmaker[AsyncSession], test_users) -> list[UserScoreModel]:
+    user_score_list: list[UserScoreModel] = []
+    val = 100
+    async with pool() as sess:
+        for user in test_users[:-2]:
+            user_score = UserScoreModel(user_id=user.id, value=val, operation=ScoreOperationEnum.PLUS)
+            val += 10
+            sess.add(user_score)
+            await sess.flush()
+            await sess.refresh(user_score)
+            user_score_list.append(user_score)
+        await sess.commit()
+        min_value_user = UserScoreModel(user_id=999, value=115, operation=ScoreOperationEnum.PLUS)
+        sess.add(min_value_user)
+        max_value_user = UserScoreModel(
+            user_id=1000,
+            value=100000,
+            operation=ScoreOperationEnum.PLUS,
+        )
+        sess.add(max_value_user)
+        await sess.commit()
+    user_score_list.append(max_value_user)
+    user_score_list.append(min_value_user)
+    return user_score_list
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_user_for_rating(test_users) -> User:
+    user: User = random.choice(test_users)
+    return User(
+        id=user.id, username=user.username, active=user.active, password=user.password, language="", subscription=""
+    )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_community(pool: async_sessionmaker[AsyncSession]) -> Community:
+    async with pool() as sess:
+        community = CommunityModel(
+            name="test-com", description="test-com", active=True, privacy=CommunityPrivacyEnum.PRIVATE
+        )
+        sess.add(community)
+        await sess.commit()
+        return Community(
+            name=community.name,
+            description=community.description,
+            active=True,
+            id=community.id,
+            privacy=community.privacy,
+        )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_community_list(pool: async_sessionmaker[AsyncSession]) -> list[CommunityModel]:
+    community_list: list[CommunityModel] = []
+    async with pool() as sess:
+        for _ in range(30):
+            community_model = CommunityModel(
+                name=fake.name(),
+                description="dasw",
+                active=True,
+                privacy=CommunityPrivacyEnum.PRIVATE,
+            )
+            sess.add(community_model)
+            await sess.flush()
+            await sess.refresh(community_model)
+            community_list.append(community_model)
+        min_value_community = CommunityModel(
+            id=1000, name="MinValue", description="low", active=True, privacy=CommunityPrivacyEnum.PRIVATE
+        )
+        max_value_community = CommunityModel(
+            id=1111, name="MaxValue", description="max", active=True, privacy=CommunityPrivacyEnum.PRIVATE
+        )
+        community_list.append(max_value_community)
+        community_list.append(min_value_community)
+        sess.add_all((min_value_community, max_value_community))
+        await sess.commit()
+    return community_list
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_community_score(pool: async_sessionmaker[AsyncSession], test_community_list: list[Community]):
+    community_score_list: list[CommunityScoreModel] = []
+    async with pool() as sess:
+        for community in test_community_list[:-2]:
+            community_score = CommunityScoreModel(
+                community_id=community.id,
+                operation=ScoreOperationEnum.PLUS,
+                value=random.randint(1, 1000),
+            )
+            sess.add(community_score)
+            await sess.flush()
+            await sess.refresh(community_score)
+            community_score_list.append(community_score)
+
+        min_value = CommunityScoreModel(
+            community_id=1000,
+            value=1,
+            operation=ScoreOperationEnum.PLUS,
+        )
+        max_value = CommunityScoreModel(
+            community_id=1111,
+            value=10000000,
+            operation=ScoreOperationEnum.PLUS,
+        )
+        sess.add(max_value)
+        sess.add(min_value)
+        await sess.commit()
+    community_score_list.append(max_value)
+    community_score_list.append(min_value)
+    return community_score_list
+
+
+@pytest_asyncio.fixture(scope="module")
+async def community_for_rating(test_community_list: list[Community]) -> Community:
+    community = test_community_list[-1]
+    return Community(
+        id=community.id,
+        name=community.name,
+        description=community.description,
+        active=community.active,
+        privacy=community.privacy,
+    )

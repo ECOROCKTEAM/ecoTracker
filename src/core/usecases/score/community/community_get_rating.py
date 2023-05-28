@@ -10,7 +10,7 @@ from src.core.interfaces.unit_of_work import IUnitOfWork
 @dataclass
 class Result:
     # Dict with community rating as a key and community DTO as a value
-    item: dict[int, CommunityScoreDTO]
+    item: list[CommunityScoreDTO]
 
 
 class CommunityGetRatingUseCase:

@@ -1,4 +1,6 @@
-from sqlalchemy import func, select, update
+from dataclasses import asdict
+
+from sqlalchemy import func, insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 
@@ -9,32 +11,9 @@ from src.core.dto.user.score import (
     UserScoreDTO,
 )
 from src.core.entity.score import ScoreUser
-from src.core.enum.score.operation import ScoreOperationEnum
 from src.core.exception.base import EntityNotFound
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
 from src.data.models.user.user import UserScoreModel
-from src.utils import as_dict_skip_none
-
-
-def rating_calculation(current_value: int, operated_value: int, operation: ScoreOperationEnum) -> int:
-    if operation.PLUS:
-        return current_value + operated_value
-    elif operation.MINUS:
-        return current_value - operated_value
-    return current_value  # Если не сделать тут return, будет error, что на всех уровнях должно взвращаться int.
-    #                     Typeignore?
-
-
-# def user_score_to_rating_list(rating_position: int, model: UserScoreModel) -> dict[int, UserScoreDTO]:
-#     return {rating_position: UserScoreDTO(user_id=model.user_id, value=model.value)}
-
-
-def user_rating_to_dto(model) -> UserScoreDTO:  # хз какой формат придёт после запроса. Дописать type hit в model
-    return UserScoreDTO(
-        user_id=model.user_id,
-        value=model.value,
-        position=model.position,
-    )
 
 
 def score_model_to_entity(model: UserScoreModel) -> ScoreUser:
@@ -50,22 +29,11 @@ class UserScoreRepository(IRepositoryUserScore):
         self.db_context = db_context
 
     async def change(self, *, obj: OperationWithScoreUserDTO) -> ScoreUser:
-        stmt = select(UserScoreModel).where(UserScoreModel.user_id == obj.user_id)
+        stmt = insert(UserScoreModel).values(**asdict(obj)).returning(UserScoreModel)
         result = await self.db_context.scalar(stmt)
         if not result:
             raise EntityNotFound()
-        new_rating = rating_calculation(current_value=result.value, operated_value=obj.value, operation=obj.operation)
-        new_obj = ScoreUser(user_id=obj.user_id, value=new_rating, operation=obj.operation)
-        new_stmt = (
-            update(UserScoreModel)
-            .where(UserScoreModel.user_id == obj.user_id)
-            .values(**as_dict_skip_none(new_obj))
-            .returning(UserScoreModel)
-        )
-        new_score = await self.db_context.scalar(new_stmt)
-        if not new_score:
-            raise EntityNotFound()
-        return score_model_to_entity(model=new_score)
+        return score_model_to_entity(model=result)
 
     async def user_get(self, *, user_id: int) -> ScoreUser:
         stmt = select(UserScoreModel).where(UserScoreModel.user_id == user_id)
@@ -74,37 +42,56 @@ class UserScoreRepository(IRepositoryUserScore):
             raise EntityNotFound()
         return score_model_to_entity(model=result)
 
-    """ Как быть с тестами? Ждать дамба? Или вручную написать? Typehitting в функции к model аргументу """
+    """ Как быть с тестами? Ждать дамба? Или вручную написать? """
 
-    async def user_rating(self, *, obj: UserBoundOffsetDTO, order_obj: MockObj):
+    async def user_rating(self, *, obj: UserBoundOffsetDTO, order_obj: MockObj) -> list[UserScoreDTO]:
         inner_stmt = select(
-            func.row_number().over(order_by=UserScoreModel.value),
+            func.row_number().over(order_by=UserScoreModel.value).label("position"),
             UserScoreModel.user_id,
             UserScoreModel.value,
         ).select_from(UserScoreModel)
-
         subquery = inner_stmt.subquery()
         alias = aliased(UserScoreModel, subquery)
         user_position_stmt = select(subquery).where(alias.user_id == obj.user_id)
-        result = await self.db_context.scalar(user_position_stmt)
-        if not result:
+        result = await self.db_context.execute(user_position_stmt)
+        result_values = result.first()
+
+        if not result_values:
             raise EntityNotFound()
 
-        user_position = user_rating_to_dto(result)
+        position, user_id, value = result_values  # Мб сделать метод для этого дела: внизу ещё есть
+
+        user_position = UserScoreDTO(
+            user_id=user_id,
+            value=value,
+            position=position,
+        )
 
         if (user_position.position - obj.bound_offset) <= 0:
-            limit_obj = obj.bound_offset + (obj.bound_offset - user_position.position) + 1
-            offset_obj = 1
+            limit_obj = user_position.position + obj.bound_offset
+            offset_obj = 0
         else:
-            offset_obj = user_position.position - obj.bound_offset
+            offset_obj = user_position.position - obj.bound_offset - 1
             limit_obj = (obj.bound_offset * 2) + 1
 
         stmt = (
-            select(func.row_number().over(order_by=UserScoreModel.value), UserScoreModel.user_id, UserScoreModel.value)
+            select(
+                func.row_number().over(order_by=UserScoreModel.value).label("position"),
+                UserScoreModel.user_id,
+                UserScoreModel.value,
+            )
             .select_from(UserScoreModel)
             .offset(offset_obj)
             .limit(limit_obj)
         )
+        result = await self.db_context.execute(stmt)
 
-        result = await self.db_context.scalars(stmt)
-        return [user_rating_to_dto(model=model) for model in result]
+        if not result:
+            raise EntityNotFound()
+
+        user_score_list: list[UserScoreDTO] = []
+        for user_score in result:
+            position, user_id, value = user_score
+            user_score_list.append(UserScoreDTO(user_id=user_id, value=value, position=position))
+
+        return user_score_list

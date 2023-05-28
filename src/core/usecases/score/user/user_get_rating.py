@@ -10,14 +10,14 @@ from src.core.interfaces.unit_of_work import IUnitOfWork
 @dataclass
 class Result:
     # Dict with user rating as a key and user DTO as a value
-    item: dict[int, UserScoreDTO]
+    items: list[UserScoreDTO]
 
 
 class UserGetRatingUseCase:
     def __init__(self, uow: IUnitOfWork):
         self.uow = uow
 
-    async def __call__(self, *, order_obj: MockObj, bound_offset: int | None = None, user: User) -> Result:
+    async def __call__(self, *, user: User, order_obj: MockObj, bound_offset: int | None = None) -> Result:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id, deactivated=user.active)
         if not user.is_premium:
@@ -34,4 +34,4 @@ class UserGetRatingUseCase:
 
                 rating = await uow.score_user.user_rating(order_obj=order_obj)
 
-        return Result(item=rating)
+        return Result(items=rating)

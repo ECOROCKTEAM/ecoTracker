@@ -27,7 +27,7 @@ class IRepositoryUserScore(ABC):
         *,
         obj: UserBoundOffsetDTO | None = None,
         order_obj: MockObj,
-    ) -> dict[int, UserScoreDTO]:
+    ) -> list[UserScoreDTO]:
         """Get user rating
 
         Args:
@@ -35,7 +35,7 @@ class IRepositoryUserScore(ABC):
             order_obj (MockObj): Order for score value
 
         Returns:
-            dict[int, UserScoreDTO]: Dict with int as user rating and value as UserScore DTO object
+            list[UserScoreDTO]: List of DTO of user score object
         """
 
     @abstractmethod

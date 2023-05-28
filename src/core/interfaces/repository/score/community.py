@@ -6,18 +6,19 @@ from src.core.dto.community.score import (
     CommunityScoreDTO,
 )
 from src.core.dto.mock import MockObj
+from src.core.entity.score import ScoreCommunity
 
 
 class IRepositoryCommunityScore(ABC):
     @abstractmethod
-    async def change(self, *, obj: CommunityOperationWithScoreDTO) -> CommunityScoreDTO:
+    async def change(self, *, obj: CommunityOperationWithScoreDTO) -> ScoreCommunity:
         """Action with community score
 
         Args:
             obj (CommunityOperationWithScoreDTO): DTO of community object, value and math operator
 
         Returns:
-            CommunityScoreDTO: DTO of community score object
+            ScoreCommunity: Entity of community score object
         """
 
     @abstractmethod
@@ -37,7 +38,7 @@ class IRepositoryCommunityScore(ABC):
         *,
         order_obj: MockObj,
         obj: CommunityBoundOffsetDTO | None = None,
-    ) -> dict[int, CommunityScoreDTO]:
+    ) -> list[CommunityScoreDTO]:
         """Get community rating
 
         Args:
@@ -48,5 +49,5 @@ class IRepositoryCommunityScore(ABC):
                 Defaults to None.
 
         Returns:
-            dict[int, CommunityRatingDTO]: Dict with rating position as a key and DTO community object as a value.
+            list[CommunityScoreDTO]: List of DTO community score objects.
         """

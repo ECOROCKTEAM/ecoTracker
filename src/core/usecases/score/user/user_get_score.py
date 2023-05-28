@@ -22,4 +22,7 @@ class UserGetScoreUseCase:
         async with self.uow as uow:
             score = await uow.score_user.user_get(user_id=user.id)
 
+            if score.value < 0:
+                score.value = 0
+
         return Result(item=score)

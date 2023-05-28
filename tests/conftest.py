@@ -390,3 +390,41 @@ async def community_for_rating(test_community_list: list[Community]) -> Communit
         active=community.active,
         privacy=community.privacy,
     )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def community_operations_list(
+    pool: async_sessionmaker[AsyncSession], community_for_rating: Community
+) -> list[CommunityScoreModel]:
+    community_list: list[CommunityScoreModel] = []
+    async with pool() as sess:
+        for _ in range(10):
+            community_operation = CommunityScoreModel(
+                operation=ScoreOperationEnum.PLUS,
+                value=10,
+                community_id=community_for_rating.id,
+            )
+            sess.add(community_operation)
+            await sess.flush()
+            await sess.refresh(community_operation)
+            community_list.append(community_operation)
+        await sess.commit()
+    return community_list
+
+
+@pytest_asyncio.fixture(scope="module")
+async def user_operations_list(pool: async_sessionmaker[AsyncSession], test_user: User):
+    user_list: list[UserScoreModel] = []
+    async with pool() as sess:
+        for _ in range(10):
+            user_operation = UserScoreModel(
+                user_id=test_user.id,
+                value=10,
+                operation=ScoreOperationEnum.PLUS,
+            )
+            sess.add(user_operation)
+            await sess.flush()
+            await sess.refresh(user_operation)
+            user_list.append(user_operation)
+        await sess.commit()
+    return user_list

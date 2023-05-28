@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.dto.mock import MockObj
-from src.core.dto.user.score import UserBoundOffsetDTO, UserScoreDTO
+from src.core.dto.user.score import UserBoundOffsetDTO, UserRatingDTO
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError, UserIsNotPremiumError
 from src.core.interfaces.unit_of_work import IUnitOfWork
@@ -10,7 +10,7 @@ from src.core.interfaces.unit_of_work import IUnitOfWork
 @dataclass
 class Result:
     # Dict with user rating as a key and user DTO as a value
-    items: list[UserScoreDTO]
+    items: list[UserRatingDTO]
 
 
 class UserGetRatingUseCase:

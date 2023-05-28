@@ -9,7 +9,7 @@ from src.data.unit_of_work import SqlAlchemyUnitOfWork
 
 
 @pytest.mark.asyncio
-async def test_user(pool, test_user: User, test_user_score):
+async def test_user(pool, test_user: User, user_operations_list):
     uow = SqlAlchemyUnitOfWork(pool)
     uc = user_get_score.UserGetScoreUseCase(uow=uow)
     result = await uc(user=test_user)

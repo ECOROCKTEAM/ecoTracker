@@ -1,42 +1,42 @@
 # from abc import abstractmethod, ABC
 
-# from src.core.dto.community.score import CommunityBoundOffsetDTO, CommunityScoreDTO, CommunityOperationWithScoreDTO
+# from src.core.dto.community.score import CommunityBoundOffsetDTO, CommunityRatingDTO, CommunityOperationWithScoreDTO
 # from src.core.dto.mock import MockObj
-# from src.core.dto.user.score import OperationWithScoreUserDTO, UserBoundOffsetDTO, UserScoreDTO
+# from src.core.dto.user.score import OperationWithScoreUserDTO, UserBoundOffsetDTO, UserRatingDTO
 
 
 # class IRepositoryScore(ABC):
 #     @abstractmethod
-#     async def community_change(self, *, obj: CommunityOperationWithScoreDTO) -> CommunityScoreDTO:
+#     async def community_change(self, *, obj: CommunityOperationWithScoreDTO) -> CommunityRatingDTO:
 #         """Action with community score
 
 #         Args:
 #             obj (CommunityOperationWithScoreDTO): DTO of community object, value and math operator
 
 #         Returns:
-#             CommunityScoreDTO: DTO of community score object
+#             CommunityRatingDTO: DTO of community score object
 #         """
 
 #     @abstractmethod
-#     async def community_get(self, *, community_id: int) -> CommunityScoreDTO:
+#     async def community_get(self, *, community_id: int) -> CommunityRatingDTO:
 #         """Get community score
 
 #         Args:
 #             community_id (int): community identify
 
 #         Returns:
-#             CommunityScoreDTO: DTO of community score object
+#             CommunityRatingDTO: DTO of community score object
 #         """
 
 #     @abstractmethod
-#     async def user_get(self, *, user_id: int) -> UserScoreDTO:
+#     async def user_get(self, *, user_id: int) -> UserRatingDTO:
 #         """Get user score
 
 #         Args:
 #             user_id (int): user identify
 
 #         Returns:
-#             UserScoreDTO: DTO of user score object
+#             UserRatingDTO: DTO of user score object
 #         """
 
 #     @abstractmethod
@@ -45,7 +45,7 @@
 #         *,
 #         order_obj: MockObj,
 #         obj: CommunityBoundOffsetDTO | None = None,
-#     ) -> dict[int, CommunityScoreDTO]:
+#     ) -> dict[int, CommunityRatingDTO]:
 #         """Get community rating
 
 #         Args:
@@ -65,7 +65,7 @@
 #         *,
 #         obj: UserBoundOffsetDTO | None = None,
 #         order_obj: MockObj,
-#     ) -> dict[int, UserScoreDTO]:
+#     ) -> dict[int, UserRatingDTO]:
 #         """Get user rating
 
 #         Args:
@@ -78,12 +78,12 @@
 #         """
 
 #     @abstractmethod
-#     async def user_change(self, *, obj: OperationWithScoreUserDTO) -> UserScoreDTO:
+#     async def user_change(self, *, obj: OperationWithScoreUserDTO) -> UserRatingDTO:
 #         """Operation with user score (addiction, subtraction, multiplication, division)
 
 #         Args:
 #             obj (IncrementScoreUserDTO): DTO of user object, value and math operator
 
 #         Returns:
-#             UserScoreDTO: DTO of user value object
+#             UserRatingDTO: DTO of user value object
 #         """

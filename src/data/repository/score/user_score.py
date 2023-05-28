@@ -8,9 +8,11 @@ from src.core.dto.mock import MockObj
 from src.core.dto.user.score import (
     OperationWithScoreUserDTO,
     UserBoundOffsetDTO,
+    UserRatingDTO,
     UserScoreDTO,
 )
 from src.core.entity.score import ScoreUser
+from src.core.enum.score.operation import ScoreOperationEnum
 from src.core.exception.base import EntityNotFound
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
 from src.data.models.user.user import UserScoreModel
@@ -28,23 +30,33 @@ class UserScoreRepository(IRepositoryUserScore):
     def __init__(self, db_context: AsyncSession) -> None:
         self.db_context = db_context
 
-    async def change(self, *, obj: OperationWithScoreUserDTO) -> ScoreUser:
+    async def add(self, *, obj: OperationWithScoreUserDTO) -> ScoreUser:
         stmt = insert(UserScoreModel).values(**asdict(obj)).returning(UserScoreModel)
         result = await self.db_context.scalar(stmt)
         if not result:
             raise EntityNotFound()
         return score_model_to_entity(model=result)
 
-    async def user_get(self, *, user_id: int) -> ScoreUser:
+    async def user_get(self, *, user_id: int) -> UserScoreDTO:
         stmt = select(UserScoreModel).where(UserScoreModel.user_id == user_id)
-        result = await self.db_context.scalar(stmt)
+        result = await self.db_context.scalars(stmt)
         if not result:
             raise EntityNotFound()
-        return score_model_to_entity(model=result)
+        user_score = UserScoreDTO(
+            user_id=user_id,
+            value=0,
+        )
+        for obj in result:
+            if obj.operation == ScoreOperationEnum.PLUS:
+                user_score.value += obj.value
+            elif obj.operation == ScoreOperationEnum.MINUS:
+                user_score.value -= obj.value
+
+        return user_score
 
     """ Как быть с тестами? Ждать дамба? Или вручную написать? """
 
-    async def user_rating(self, *, obj: UserBoundOffsetDTO, order_obj: MockObj) -> list[UserScoreDTO]:
+    async def user_rating(self, *, obj: UserBoundOffsetDTO, order_obj: MockObj) -> list[UserRatingDTO]:
         inner_stmt = select(
             func.row_number().over(order_by=UserScoreModel.value).label("position"),
             UserScoreModel.user_id,
@@ -61,7 +73,7 @@ class UserScoreRepository(IRepositoryUserScore):
 
         position, user_id, value = result_values  # Мб сделать метод для этого дела: внизу ещё есть
 
-        user_position = UserScoreDTO(
+        user_position = UserRatingDTO(
             user_id=user_id,
             value=value,
             position=position,
@@ -89,9 +101,9 @@ class UserScoreRepository(IRepositoryUserScore):
         if not result:
             raise EntityNotFound()
 
-        user_score_list: list[UserScoreDTO] = []
+        user_score_list: list[UserRatingDTO] = []
         for user_score in result:
             position, user_id, value = user_score
-            user_score_list.append(UserScoreDTO(user_id=user_id, value=value, position=position))
+            user_score_list.append(UserRatingDTO(user_id=user_id, value=value, position=position))
 
         return user_score_list

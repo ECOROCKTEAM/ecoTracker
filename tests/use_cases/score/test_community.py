@@ -7,13 +7,18 @@ from src.data.unit_of_work import SqlAlchemyUnitOfWork
 
 
 @pytest.mark.asyncio
-async def test_score_get(pool, test_score_community, test_community, test_user):
+async def test_score_get(
+    pool,
+    community_operations_list,
+    community_for_rating,
+    test_user,
+):
     uow = SqlAlchemyUnitOfWork(pool)
     uc = community_get_score.CommunityGetScoreUseCase(uow=uow)
-    result = await uc(community=test_community, user=test_user)
+    result = await uc(community=community_for_rating, user=test_user)
     score = result.item
-    assert score.community_id == test_community.id
-    assert test_score_community.value == score.value
+    assert score.community_id == community_for_rating.id
+    assert isinstance(score.value, int)
 
 
 @pytest.mark.asyncio

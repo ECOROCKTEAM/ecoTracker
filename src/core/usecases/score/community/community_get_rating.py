@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.dto.community.score import CommunityBoundOffsetDTO, CommunityScoreDTO
+from src.core.dto.community.score import CommunityBoundOffsetDTO, CommunityRatingDTO
 from src.core.dto.mock import MockObj
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError, UserIsNotPremiumError
@@ -10,7 +10,7 @@ from src.core.interfaces.unit_of_work import IUnitOfWork
 @dataclass
 class Result:
     # Dict with community rating as a key and community DTO as a value
-    item: list[CommunityScoreDTO]
+    item: list[CommunityRatingDTO]
 
 
 class CommunityGetRatingUseCase:

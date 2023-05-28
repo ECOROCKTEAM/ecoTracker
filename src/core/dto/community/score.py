@@ -4,10 +4,16 @@ from src.core.enum.score.operation import ScoreOperationEnum
 
 
 @dataclass
-class CommunityScoreDTO:
+class CommunityRatingDTO:
     community_id: int
     value: int
     position: int
+
+
+@dataclass
+class CommunityScoreDTO:
+    community_id: int
+    value: int
 
 
 @dataclass

@@ -4,6 +4,7 @@ from src.core.dto.mock import MockObj
 from src.core.dto.user.score import (
     OperationWithScoreUserDTO,
     UserBoundOffsetDTO,
+    UserRatingDTO,
     UserScoreDTO,
 )
 from src.core.entity.score import ScoreUser
@@ -18,7 +19,7 @@ class IRepositoryUserScore(ABC):
             user_id (int): user identify
 
         Returns:
-            UserScoreDTO: DTO of user score object
+            UserRating: DTO of user score object
         """
 
     @abstractmethod
@@ -27,7 +28,7 @@ class IRepositoryUserScore(ABC):
         *,
         obj: UserBoundOffsetDTO | None = None,
         order_obj: MockObj,
-    ) -> list[UserScoreDTO]:
+    ) -> list[UserRatingDTO]:
         """Get user rating
 
         Args:
@@ -35,11 +36,11 @@ class IRepositoryUserScore(ABC):
             order_obj (MockObj): Order for score value
 
         Returns:
-            list[UserScoreDTO]: List of DTO of user score object
+            list[UserRatingDTO]: List of DTO of user score object
         """
 
     @abstractmethod
-    async def change(self, *, obj: OperationWithScoreUserDTO) -> ScoreUser:
+    async def add(self, *, obj: OperationWithScoreUserDTO) -> ScoreUser:
         """Operation with user score (addiction, subtraction, multiplication, division)
 
         Args:

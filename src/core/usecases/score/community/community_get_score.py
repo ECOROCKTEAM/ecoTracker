@@ -33,4 +33,7 @@ class CommunityGetScoreUseCase:
         async with self.uow as uow:
             community_score = await uow.score_community.community_get(community_id=community.id)
 
+            if community_score.value < 0:
+                community_score.value = 0
+
         return Result(item=community_score)

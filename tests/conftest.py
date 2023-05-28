@@ -1,11 +1,13 @@
 import asyncio
 import random
-from typing import AsyncGenerator, Generator
+from datetime import datetime, timedelta
+from typing import AsyncGenerator
+from uuid import uuid4
 
 import faker
 import pytest
 import pytest_asyncio
-from sqlalchemy import select
+from sqlalchemy import update, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.application.database.base import (
@@ -14,6 +16,7 @@ from src.application.database.base import (
     create_session_factory,
 )
 from src.application.settings import settings
+from src.core.dto.community.invite import CommunityInviteDTO
 from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.dto.m2m.user.community import UserCommunityDTO
 from src.core.entity.community import Community
@@ -90,6 +93,28 @@ async def test_user_2(pool: async_sessionmaker[AsyncSession]) -> User:
 
 
 @pytest_asyncio.fixture(scope="module")
+async def test_user_join_by_code(pool: async_sessionmaker[AsyncSession]) -> User:
+    async with pool() as sess:
+        user = UserModel(username="test-join_by_code", password="test", active=True)
+        sess.add(user)
+        await sess.commit()
+        return User(
+            username=user.username, password=user.password, active=True, id=user.id, language="", subscription=""
+        )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_user_join(pool: async_sessionmaker[AsyncSession]) -> User:
+    async with pool() as sess:
+        user = UserModel(username="test-join", password="test", active=True)
+        sess.add(user)
+        await sess.commit()
+        return User(
+            username=user.username, password=user.password, active=True, id=user.id, language="", subscription=""
+        )
+
+
+@pytest_asyncio.fixture(scope="module")
 async def test_user_role(pool: async_sessionmaker[AsyncSession]) -> User:
     async with pool() as sess:
         user = UserModel(username="test-role", password="test-role", active=True)
@@ -97,6 +122,17 @@ async def test_user_role(pool: async_sessionmaker[AsyncSession]) -> User:
         await sess.commit()
         return User(
             username=user.username, password=user.password, active=True, id=user.id, language="", subscription=""  # type: ignore
+        )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_user_leave(pool: async_sessionmaker[AsyncSession]) -> User:
+    async with pool() as sess:
+        user = UserModel(username="test-user-leave", password="test-user-leave", active=True)
+        sess.add(user)
+        await sess.commit()
+        return User(
+            username=user.username, password=user.password, active=True, id=user.id, language="", subscription=""
         )
 
 
@@ -183,6 +219,34 @@ async def test_user_community_change(pool: async_sessionmaker[AsyncSession], tes
         )
         sess.add(role)
         await sess.commit()
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_user_community_leave(
+    pool: async_sessionmaker[AsyncSession], test_user_leave, test_community
+) -> UserCommunityModel:
+    async with pool() as sess:
+        role = UserCommunityModel(
+            user_id=test_user_leave.id, community_id=test_community.id, role=CommunityRoleEnum.USER
+        )
+        sess.add(role)
+        await sess.commit()
+        return role
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_community_join_code(pool: async_sessionmaker[AsyncSession], test_community) -> CommunityInviteDTO:
+    code = uuid4().hex
+    expire_time = datetime.now() + timedelta(days=7)
+    async with pool() as sess:
+        stmt = (
+            update(CommunityModel)
+            .where(CommunityModel.id == test_community.id)
+            .values(code=code, code_expire_time=expire_time)
+        )
+        await sess.execute(stmt)
+        await sess.commit()
+    return CommunityInviteDTO(community_id=test_community.id, code=code, expire_time=expire_time)
 
 
 @pytest_asyncio.fixture(scope="module")

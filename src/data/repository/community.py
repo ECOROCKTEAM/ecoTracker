@@ -34,7 +34,7 @@ def user_community_model_to_dto(model: UserCommunityModel) -> UserCommunityDTO:
 
 
 def model_to_invite_dto(model: CommunityModel) -> CommunityInviteDTO:
-    return CommunityInviteDTO(community_id=model.id, code=model.code, expire_time=model.expire_time)
+    return CommunityInviteDTO(community_id=model.id, code=model.code, expire_time=model.code_expire_time)
 
 
 class RepositoryCommunity(IRepositoryCommunity):
@@ -45,14 +45,14 @@ class RepositoryCommunity(IRepositoryCommunity):
         stmt = select(CommunityModel).where(CommunityModel.id == id)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_dto(res)
 
     async def create(self, *, obj: CommunityCreateDTO) -> Community:
         stmt = insert(CommunityModel).values(**asdict(obj)).returning(CommunityModel)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_dto(res)
 
     async def update(self, *, id: int, obj: CommunityUpdateDTO) -> Community:
@@ -64,7 +64,7 @@ class RepositoryCommunity(IRepositoryCommunity):
         )
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_dto(res)
 
     async def lst(self, *, filter_obj: CommunityFilter, order_obj: MockObj, pagination_obj: MockObj) -> list[Community]:
@@ -79,7 +79,7 @@ class RepositoryCommunity(IRepositoryCommunity):
         stmt = update(CommunityModel).where(CommunityModel.id == id).values(active=False).returning(CommunityModel.id)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return res
 
     async def user_add(self, *, obj: UserCommunityCreateDTO) -> UserCommunityDTO:
@@ -98,7 +98,7 @@ class RepositoryCommunity(IRepositoryCommunity):
         )
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return user_community_model_to_dto(res)
 
     async def user_list(self, *, id: int, filter_obj: CommunityUserFilter) -> list[UserCommunityDTO]:
@@ -121,35 +121,40 @@ class RepositoryCommunity(IRepositoryCommunity):
         )
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return user_community_model_to_dto(res)
 
     async def user_remove(self, *, community_id: int, user_id: int) -> bool:
         stmt = (
             delete(UserCommunityModel)
             .where(UserCommunityModel.community_id == community_id, UserCommunityModel.user_id == user_id)
-            .returning(1)
+            .returning(UserCommunityModel.community_id)
         )
         res = await self.db_context.scalar(stmt)
         return bool(res)
 
     async def code_set(self, *, id: int, obj: CommunityInviteUpdateDTO) -> CommunityInviteDTO:
-        stmt = update(CommunityModel).where(CommunityModel.id == id).values(**asdict(obj)).returning(CommunityModel)
+        stmt = (
+            update(CommunityModel)
+            .where(CommunityModel.id == id)
+            .values(code=obj.code, code_expire_time=obj.expire_time)
+            .returning(CommunityModel)
+        )
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_invite_dto(res)
 
     async def code_get(self, *, id: int) -> CommunityInviteDTO:
         stmt = select(CommunityModel).where(CommunityModel.id == id)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_invite_dto(res)
 
     async def get_by_code(self, code: str) -> Community:
-        stmt = select(CommunityModel).where(CommunityModel.code == code, CommunityModel.code_expire_time > func.now)
+        stmt = select(CommunityModel).where(CommunityModel.code == code, CommunityModel.code_expire_time > func.now())
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound()
+            raise EntityNotFound(msg="")
         return model_to_dto(res)

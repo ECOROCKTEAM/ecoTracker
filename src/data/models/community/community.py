@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey
@@ -21,18 +22,20 @@ class CommunityModel(Base):
     code_expire_time: Mapped[datetime | None] = mapped_column(DateTime(timezone=False))
 
 
+@dataclass
 class CommunityMissionModel(Base):
     __tablename__ = "community_mission"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    meeting_date: Mapped[datetime] = mapped_column(DateTime(timezone=False))
-    people_required: Mapped[int | None]
-    people_max: Mapped[int | None]
-    place: Mapped[str | None]
-    comment: Mapped[str | None]
-    community_id: Mapped[int] = mapped_column(ForeignKey("community.id"))
-    mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
-    status: Mapped[OccupancyStatusEnum]
+    community_id: Mapped[int] = mapped_column(ForeignKey("community.id"), primary_key=True, autoincrement=False)
+    mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"), primary_key=True, autoincrement=False)
+    author: Mapped[str] = mapped_column()
+    meeting_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=False))
+    people_required: Mapped[int | None] = mapped_column()
+    people_max: Mapped[int | None] = mapped_column()
+    place: Mapped[str | None] = mapped_column()
+    comment: Mapped[str | None] = mapped_column()
+    date_close: Mapped[datetime | None] = mapped_column(default=None)
+    status: Mapped[OccupancyStatusEnum] = mapped_column()
 
 
 class CommunityScoreModel(Base):

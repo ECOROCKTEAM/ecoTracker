@@ -12,6 +12,7 @@ from src.core.dto.m2m.user.community import (
 )
 from src.core.dto.mock import MockObj
 from src.core.entity.community import Community
+from src.core.enum.community.role import CommunityRoleEnum
 from src.core.exception.base import EntityNotFound
 from src.core.interfaces.repository.community.community import (
     CommunityFilter,
@@ -68,10 +69,15 @@ class RepositoryCommunity(IRepositoryCommunity):
         return model_to_dto(res)
 
     async def lst(self, *, filter_obj: CommunityFilter, order_obj: MockObj, pagination_obj: MockObj) -> list[Community]:
+        stmt = select(CommunityModel)
         where_clause = []
-        if filter_obj.active:
+        if filter_obj.user_id is not None:
+            stmt = stmt.join(UserCommunityModel)
+            where_clause.append(UserCommunityModel.user_id == filter_obj.user_id)
+            where_clause.append(UserCommunityModel.role != CommunityRoleEnum.BLOCKED)
+        if filter_obj.active is not None:
             where_clause.append(CommunityModel.active == filter_obj.active)
-        stmt = select(CommunityModel).where(*where_clause)  # todo .order_by().limit().offset()
+        stmt = stmt.where(*where_clause)  # todo .order_by().limit().offset()
         res = await self.db_context.scalars(stmt)
         return [model_to_dto(model) for model in res]
 

@@ -15,9 +15,9 @@ from src.core.enum.community.role import CommunityRoleEnum
 
 @dataclass
 class CommunityFilter:
-    # Изменился primary key для Community. Может тут уже будет не name, а id?
     name: str | None = None
     active: bool | None = None
+    user_id: int | None = None
 
 
 @dataclass

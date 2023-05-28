@@ -39,7 +39,6 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         if self._task:
             return self._task
         raise ValueError("UoW not in context")
-        return super().task
 
     @property
     def occupancy_category(self) -> IRepositoryOccupancyCategory:

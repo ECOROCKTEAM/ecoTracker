@@ -38,15 +38,16 @@ class UserTaskAddUseCase:
                 pagination_obj=MockObj(),
                 order_obj=MockObj(),
             )
+
+            if user_tasks:
+                raise TaskAlreadyTakenError(user_id=user.id, task_id=task_id)
+
             user_plan_tasks = await uow.task.plan_lst(
                 user_id=user.id,
                 filter_obj=TaskUserPlanFilter(),
                 order_obj=MockObj(),
                 pagination_obj=MockObj(),
             )
-
-            if user_tasks:
-                raise TaskAlreadyTakenError(user_id=user.id, task_id=task_id)
 
             max_count = 3
             if user.is_premium:

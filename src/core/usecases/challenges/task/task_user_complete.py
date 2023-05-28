@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from src.core.dto.challenges.task import TaskUserUpdateDTO
 from src.core.entity.task import TaskUser
@@ -35,7 +36,9 @@ class UserTaskCompleteUseCase:
             """ Добавить после мержа метод на добавление очков за завершённый таск """
 
             result = await uow.task.user_task_update(
-                user_id=user.id, task_id=task_id, obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.FINISH)
+                user_id=user.id,
+                task_id=task_id,
+                obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.FINISH, date_close=datetime.now()),
             )
             """ Добавлять ли тут ещё и date_close, когда пользователь ВЫПОЛНЯЕТ таск? """
 

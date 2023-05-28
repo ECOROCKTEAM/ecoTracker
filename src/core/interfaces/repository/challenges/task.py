@@ -27,7 +27,6 @@ class TaskUserFilter:
 
 @dataclass
 class TaskUserPlanFilter:
-    task_id_list: list[int] | None = None
     task_active: bool | None = None
     """"""
 
@@ -131,7 +130,7 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def plan_delete(self, *, user_id: int, task_id: int) -> bool:
+    async def plan_delete(self, *, user_id: int, task_id: int) -> TaskUserPlan:
         """Удалить план задач
 
         Args:
@@ -139,7 +138,7 @@ class IRepositoryTask(ABC):
             task_id (int): ID of task
 
         Returns:
-            bool: Boolean result
+            TaskUserPlan: Task user entity object
         """
 
     @abstractmethod

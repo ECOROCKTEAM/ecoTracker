@@ -182,14 +182,16 @@ class RepositoryTask(IRepositoryTask):
             raise EntityNotCreated()
         return plan_model_to_entity(model=result)
 
-    async def plan_delete(self, *, user_id: int, task_id: int) -> bool:
+    async def plan_delete(self, *, user_id: int, task_id: int) -> TaskUserPlan:
         stmt = (
             delete(UserTaskPlanModel)
             .where(UserTaskPlanModel.user_id == user_id, UserTaskPlanModel.task_id == task_id)
-            .returning(1)
+            .returning(UserTaskPlanModel)
         )
         result = await self.db_context.scalar(stmt)
-        return bool(result)
+        if not result:
+            raise EntityNotFound()
+        return plan_model_to_entity(model=result)
 
     async def plan_lst(
         self, *, user_id: int, filter_obj: TaskUserPlanFilter, order_obj: MockObj, pagination_obj: MockObj
@@ -197,8 +199,6 @@ class RepositoryTask(IRepositoryTask):
         stmt = select(UserTaskPlanModel)
         where_clause = []
         where_clause.append(UserTaskPlanModel.user_id == user_id)
-        if filter_obj.task_id_list is not None:
-            where_clause.append(UserTaskPlanModel.task_id.in_(filter_obj.task_id_list))
         if filter_obj.task_active is not None:
             stmt = stmt.join(TaskModel, UserTaskPlanModel.task_id == TaskModel.id)
             where_clause.append(TaskModel.active == filter_obj.task_active)

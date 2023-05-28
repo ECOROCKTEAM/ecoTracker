@@ -35,9 +35,7 @@ async def test_create(pool, test_user):
 @pytest.mark.asyncio
 async def test_update(pool, test_user, test_community, test_user_community):
     uow = SqlAlchemyUnitOfWork(pool)
-    update_obj = CommunityUpdateDTO(
-        name="new_name", description="new_description", privacy=CommunityPrivacyEnum.PUBLICK
-    )
+    update_obj = CommunityUpdateDTO(name="new_name", description="new_description", privacy=CommunityPrivacyEnum.PUBLIC)
     uc = community_update.CommunityUpdateUsecase(uow=uow)
     res = await uc(community_id=test_community.id, user=test_user, update_obj=update_obj)
     assert res.item.id == test_community.id

@@ -43,7 +43,7 @@ class ISubscriptionRepository(ABC):
         """
 
     @abstractmethod
-    async def list(self, *, filter_obj: MockObj | None = None) -> list[Subscription]:
+    async def lst(self, *, filter_obj: MockObj | None = None) -> list[Subscription]:
         """List of subscriptions
 
         Args:

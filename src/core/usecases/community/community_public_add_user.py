@@ -27,7 +27,7 @@ class CommunityPublicAddUserUsecase:
             community = await uow.community.get(id=community_id)
             if not community.active:
                 raise CommunityDeactivatedError(community_id=community_id)
-            if not community.privacy.PUBLICK:
+            if not community.privacy.PUBLIC:
                 raise CommunityPrivacyError(community_id=community_id)
             role = await uow.community.user_add(
                 obj=UserCommunityCreateDTO(user_id=user.id, community_id=community.id, role=CommunityRoleEnum.USER)

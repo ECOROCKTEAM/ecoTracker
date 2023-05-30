@@ -7,7 +7,7 @@ from uuid import uuid4
 import faker
 import pytest
 import pytest_asyncio
-from sqlalchemy import update, select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.application.database.base import (
@@ -16,8 +16,9 @@ from src.application.database.base import (
     create_session_factory,
 )
 from src.application.settings import settings
+
+# from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.dto.community.invite import CommunityInviteDTO
-from src.core.dto.challenges.category import OccupancyCategoryDTO
 from src.core.dto.m2m.user.community import UserCommunityDTO
 from src.core.entity.community import Community
 from src.core.entity.mission import Mission, MissionCommunity, MissionUser

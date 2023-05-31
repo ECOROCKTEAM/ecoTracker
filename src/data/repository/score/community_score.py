@@ -84,9 +84,9 @@ class CommunityScoreRepository(IRepositoryCommunityScore):
             .offset(offset_obj)
             .limit(limit_obj)
         )
-        result = await self.db_context.execute(stmt)
-        if not result:
-            raise EntityNotFound()
+        ex = await self.db_context.execute(stmt)
+        result = ex.all()
+
         community_rating_list: list[CommunityRatingDTO] = []
         for community in result:
             position, community_id, value = community

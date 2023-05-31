@@ -65,8 +65,8 @@ class UserScoreRepository(IRepositoryUserScore):
         subquery = inner_stmt.subquery()
         alias = aliased(UserScoreModel, subquery)
         user_position_stmt = select(subquery).where(alias.user_id == obj.user_id)
-        result = await self.db_context.execute(user_position_stmt)
-        result_values = result.first()
+        ex = await self.db_context.execute(user_position_stmt)
+        result_values = ex.first()
 
         if not result_values:
             raise EntityNotFound()
@@ -96,10 +96,8 @@ class UserScoreRepository(IRepositoryUserScore):
             .offset(offset_obj)
             .limit(limit_obj)
         )
-        result = await self.db_context.execute(stmt)
-
-        if not result:
-            raise EntityNotFound()
+        ex = await self.db_context.execute(stmt)
+        result = ex.all()
 
         user_score_list: list[UserRatingDTO] = []
         for user_score in result:

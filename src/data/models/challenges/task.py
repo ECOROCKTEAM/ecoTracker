@@ -44,8 +44,9 @@ class TaskTranslateModel(Base):
 class UserTaskModel(Base):
     __tablename__ = "user_task"
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True, nullable=False, autoincrement=False)
-    task_id: Mapped[int] = mapped_column(ForeignKey("task.id"), primary_key=True, nullable=False, autoincrement=False)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    task_id: Mapped[int] = mapped_column(ForeignKey("task.id"), nullable=False)
     date_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     date_close: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     status: Mapped[OccupancyStatusEnum] = mapped_column()

@@ -24,8 +24,9 @@ class TaskUserPlan:
 
 @dataclass
 class TaskUser:
-    date_start: date  # YY.MM.DD
-    date_close: datetime | None  # YY.MM.DD HH:mm:SS
-    status: OccupancyStatusEnum
+    id: int
     user_id: int
     task_id: int
+    status: OccupancyStatusEnum
+    date_start: date  # YY.MM.DD
+    date_close: datetime | None  # YY.MM.DD HH:mm:SS

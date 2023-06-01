@@ -61,12 +61,11 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def user_task_get(self, *, user_id: int, task_id: int) -> TaskUser:
+    async def user_task_get(self, *, id: int) -> TaskUser:
         """Получить задание для пользователя
 
         Args:
-            user_id (int): ID of user object
-            task_id (int): ID of task object
+            id (int): User task object identify
 
         Returns:
             TaskUser: Сущность задачи пользователя
@@ -85,12 +84,11 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def user_task_update(self, *, user_id: int, task_id: int, obj: TaskUserUpdateDTO) -> TaskUser:
+    async def user_task_update(self, *, id: int, obj: TaskUserUpdateDTO) -> TaskUser:
         """Обновить задание для пользователя
 
         Args:
-            user_id (int): ID of user
-            task_id (int): ID of task
+            id (int): User task object identify
             obj (TaskUserCreateDTO): Объект обновления
 
         Returns:

@@ -30,7 +30,7 @@ class CommunityScoreRepository(IRepositoryCommunityScore):
         stmt = insert(CommunityScoreModel).values(**asdict(obj)).returning(CommunityScoreModel)
         result = await self.db_context.scalar(stmt)
         if not result:
-            raise EntityNotFound()
+            raise EntityNotFound(msg=f"Community={obj.community_id} not found")
         return score_model_to_entity(model=result)
 
     async def community_get(self, *, community_id: int) -> CommunityScoreDTO:
@@ -38,7 +38,7 @@ class CommunityScoreRepository(IRepositoryCommunityScore):
         result = await self.db_context.scalars(stmt)
 
         if not result:
-            raise EntityNotFound()
+            raise EntityNotFound(msg=f"Community={community_id} not found")
         community_rating = CommunityScoreDTO(community_id=community_id, value=0)
 
         for obj in result:
@@ -63,7 +63,7 @@ class CommunityScoreRepository(IRepositoryCommunityScore):
 
         result_values = result.first()
         if not result_values:
-            raise EntityNotFound()
+            raise EntityNotFound(msg=f"Community={obj.community_id} not found")
         position, community_id, value = result_values
 
         community_position = CommunityRatingDTO(community_id=community_id, value=value, position=position)

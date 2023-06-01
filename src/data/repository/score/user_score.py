@@ -34,14 +34,14 @@ class UserScoreRepository(IRepositoryUserScore):
         stmt = insert(UserScoreModel).values(**asdict(obj)).returning(UserScoreModel)
         result = await self.db_context.scalar(stmt)
         if not result:
-            raise EntityNotFound()
+            raise EntityNotFound(msg=f"User={obj.user_id} not found")
         return score_model_to_entity(model=result)
 
     async def user_get(self, *, user_id: int) -> UserScoreDTO:
         stmt = select(UserScoreModel).where(UserScoreModel.user_id == user_id)
         result = await self.db_context.scalars(stmt)
         if not result:
-            raise EntityNotFound()
+            raise EntityNotFound(msg=f"User={user_id} not found")
         user_score = UserScoreDTO(
             user_id=user_id,
             value=0,
@@ -53,8 +53,6 @@ class UserScoreRepository(IRepositoryUserScore):
                 user_score.value -= obj.value
 
         return user_score
-
-    """ Как быть с тестами? Ждать дамба? Или вручную написать? """
 
     async def user_rating(self, *, obj: UserBoundOffsetDTO, order_obj: MockObj) -> list[UserRatingDTO]:
         inner_stmt = select(
@@ -69,9 +67,9 @@ class UserScoreRepository(IRepositoryUserScore):
         result_values = ex.first()
 
         if not result_values:
-            raise EntityNotFound()
+            raise EntityNotFound(msg=f"User={obj.user_id} not found")
 
-        position, user_id, value = result_values  # Мб сделать метод для этого дела: внизу ещё есть
+        position, user_id, value = result_values
 
         user_position = UserRatingDTO(
             user_id=user_id,

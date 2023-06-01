@@ -34,7 +34,7 @@ class UserTaskMaxAmountError(UserError, RepoError):
 
 
 class UserTaskStatusError(RepoError):
-    msg_template = "Task_id={task_ud} has not status ACTIVE"
+    msg_template = "Object_id={obj_id} has not status ACTIVE"
 
 
 class TaskAlreadyTakenError(UserError, RepoError):

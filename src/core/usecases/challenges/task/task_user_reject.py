@@ -18,14 +18,14 @@ class UserTaskDeleteUseCase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def __call__(self, *, user: User, task_id: int) -> Result:
+    async def __call__(self, *, user: User, obj_id: int) -> Result:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
 
         async with self.uow as uow:
-            user_task = await uow.task.user_task_get(user_id=user.id, task_id=task_id)
-            if not user_task.status.ACTIVE:
-                raise UserTaskStatusError(task_id=task_id)
+            user_task = await uow.task.user_task_get(id=obj_id)
+            if not user_task.status == OccupancyStatusEnum.ACTIVE:
+                raise UserTaskStatusError(obj_id=obj_id)
 
             if not user.is_premium:
                 """
@@ -39,8 +39,7 @@ class UserTaskDeleteUseCase:
                 """Проверка на удаление 10-ти задач."""
 
             task = await uow.task.user_task_update(
-                user_id=user.id,
-                task_id=task_id,
+                id=obj_id,
                 obj=TaskUserUpdateDTO(date_close=datetime.now(), status=OccupancyStatusEnum.REJECT),
             )
 

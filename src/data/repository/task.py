@@ -49,6 +49,7 @@ def task_model_to_entity(model: TaskModel, translated_model: TaskTranslateModel)
 
 def user_task_to_entity(model: UserTaskModel) -> TaskUser:
     return TaskUser(
+        id=model.id,
         date_start=model.date_start,
         date_close=model.date_close,
         status=model.status,
@@ -74,7 +75,7 @@ class RepositoryTask(IRepositoryTask):
         record = await self.db_context.execute(stmt)
         result = record.one_or_none()
         if result is None:
-            raise EntityNotFound()
+            raise EntityNotFound(msg=f"Task obj={id} not found")
         task, task_translate = result
         if task_translate is None:
             task_default_lang = select(TaskTranslateModel).where(
@@ -82,7 +83,7 @@ class RepositoryTask(IRepositoryTask):
             )
             task_translate = await self.db_context.scalar(task_default_lang)
             if task_translate is None:
-                raise EntityNotFound()
+                raise EntityNotFound(msg=f"Task={task} with task_translate={task_translate} not found")
         return task_model_to_entity(model=task, translated_model=task_translate)
 
     async def lst(
@@ -114,7 +115,7 @@ class RepositoryTask(IRepositoryTask):
                 )
                 result = await self.db_context.scalar(task_default_lang)
                 if not result:
-                    raise EntityNotFound()
+                    raise EntityNotFound(task=task, task_translate=task_translate)
                 holder[task.id]["translate"] = result
             else:
                 holder[task.id]["translate"] = task_translate
@@ -124,18 +125,23 @@ class RepositoryTask(IRepositoryTask):
             for models in holder.values()
         ]
 
-    async def user_task_create(self, *, user_id: int, obj: TaskUserCreateDTO) -> TaskUser:
-        stmt = insert(UserTaskModel).values(user_id=user_id, **asdict(obj)).returning(UserTaskModel)
+    async def user_task_add(self, *, user_id: int, obj: TaskUserCreateDTO) -> TaskUser:
+        stmt = (
+            update(UserTaskModel)
+            .where(UserTaskModel.user_id == user_id, UserTaskModel.task_id == obj.task_id)
+            .values(user_id=user_id, **asdict(obj))
+            .returning(UserTaskModel)
+        )
         result = await self.db_context.scalar(stmt)
         if result is None:
-            raise EntityNotCreated()
+            raise EntityNotCreated(msg=f"UserTask object with task_id={obj.task_id}, user_id={user_id} not created")
         return user_task_to_entity(model=result)
 
-    async def user_task_get(self, *, user_id: int, task_id: int) -> TaskUser:
-        stmt = select(UserTaskModel).where(UserTaskModel.user_id == user_id, UserTaskModel.task_id == task_id)
+    async def user_task_get(self, *, id: int) -> TaskUser:
+        stmt = select(UserTaskModel).where(UserTaskModel.id == id)
         result = await self.db_context.scalar(stmt)
         if not result:
-            raise EntityNotFound()
+            raise EntityNotFound(msg=f"UserTask object with id={id} not found")
         return user_task_to_entity(model=result)
 
     async def user_task_lst(
@@ -149,10 +155,10 @@ class RepositoryTask(IRepositoryTask):
         stmt = select(UserTaskModel)
         where_clause = []
         where_clause.append(UserTaskModel.user_id == user_id)
-        if filter_obj.status is not None:
-            where_clause.append(UserTaskModel.status == filter_obj.status)
         if filter_obj.task_id is not None:
             where_clause.append(UserTaskModel.task_id == filter_obj.task_id)
+        if filter_obj.status is not None:
+            where_clause.append(UserTaskModel.status == filter_obj.status)
         if filter_obj.task_active is not None:
             stmt = stmt.join(TaskModel, UserTaskModel.task_id == TaskModel.id)
             where_clause.append(TaskModel.active == filter_obj.task_active)
@@ -160,26 +166,25 @@ class RepositoryTask(IRepositoryTask):
         result = await self.db_context.scalars(stmt)
         return [user_task_to_entity(model=model) for model in result]
 
-    async def user_task_update(self, *, user_id: int, task_id: int, obj: TaskUserUpdateDTO) -> TaskUser:
+    async def user_task_update(self, *, id: int, obj: TaskUserUpdateDTO) -> TaskUser:
         stmt = (
             update(UserTaskModel)
             .values(as_dict_skip_none(obj))
             .where(
-                UserTaskModel.user_id == user_id,
-                UserTaskModel.task_id == task_id,
+                UserTaskModel.id == id,
             )
             .returning(UserTaskModel)
         )
         result = await self.db_context.scalar(stmt)
         if not result:
-            raise EntityNotFound()
+            raise EntityNotFound(msg=f"UserTask object={id} not found and was not updated")
         return user_task_to_entity(model=result)
 
     async def plan_create(self, *, obj: TaskUserPlanCreateDTO) -> TaskUserPlan:
         stmt = insert(UserTaskPlanModel).values(**asdict(obj)).returning(UserTaskPlanModel)
         result = await self.db_context.scalar(stmt)
         if not result:
-            raise EntityNotCreated()
+            raise EntityNotCreated(msg=f"UserTaskPlan with task_id={obj.task_id}, user_id={obj.user_id} not created")
         return plan_model_to_entity(model=result)
 
     async def plan_delete(self, *, user_id: int, task_id: int) -> TaskUserPlan:
@@ -190,7 +195,7 @@ class RepositoryTask(IRepositoryTask):
         )
         result = await self.db_context.scalar(stmt)
         if not result:
-            raise EntityNotFound()
+            raise EntityNotFound(msg=f"UserTaskPlan with task_id={task_id}, user_id={user_id} not deleted")
         return plan_model_to_entity(model=result)
 
     async def plan_lst(

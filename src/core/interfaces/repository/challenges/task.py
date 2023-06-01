@@ -72,7 +72,7 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def user_task_create(self, *, user_id: int, obj: TaskUserCreateDTO) -> TaskUser:
+    async def user_task_add(self, *, user_id: int, obj: TaskUserCreateDTO) -> TaskUser:
         """Создать задание для пользователя
 
         Args:

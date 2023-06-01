@@ -18,14 +18,14 @@ class UserTaskCompleteUseCase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def __call__(self, *, user: User, task_id: int) -> Result:
+    async def __call__(self, *, user: User, obj_id: int) -> Result:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
 
         async with self.uow as uow:
-            user_task = await uow.task.user_task_get(user_id=user.id, task_id=task_id)
-            if not user_task.status.ACTIVE:
-                raise UserTaskStatusError(task_id=task_id)
+            user_task = await uow.task.user_task_get(id=obj_id)
+            if not user_task.status == OccupancyStatusEnum.ACTIVE:
+                raise UserTaskStatusError(obj_id=obj_id)
 
             if user.is_premium:
                 """Проверка на 10 тасков в день"""
@@ -36,10 +36,8 @@ class UserTaskCompleteUseCase:
             """ Добавить после мержа метод на добавление очков за завершённый таск """
 
             result = await uow.task.user_task_update(
-                user_id=user.id,
-                task_id=task_id,
+                id=obj_id,
                 obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.FINISH, date_close=datetime.now()),
             )
-            """ Добавлять ли тут ещё и date_close, когда пользователь ВЫПОЛНЯЕТ таск? """
 
         return Result(item=result)

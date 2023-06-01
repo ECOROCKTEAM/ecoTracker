@@ -32,6 +32,8 @@ async def test_list(pool, test_task_model_list, test_user: User):
     test_task_ids = [m.id for m in test_task_model_list]
     uow = SqlAlchemyUnitOfWork(pool)
     uc = task_list.TaskListUseCase(uow=uow)
+    # async with uow as uow:
+    #     task = await uow.task.get(id=1337228, lang=test_user.language)
     result = await uc(user=test_user, sorting_obj=MockObj(), paggination_obj=MockObj(), filter_obj=TaskFilter())
     assert isinstance(result.items, list)
     for task in result.items:
@@ -58,7 +60,7 @@ async def test_user_task_get(pool, test_user: User, test_task: Task, test_user_t
     test_user.language = test_task.language
     uow = SqlAlchemyUnitOfWork(pool)
     uc = task_user_get.UserTaskGetUseCase(uow=uow)
-    result = await uc(user=test_user, task_id=test_task.id)
+    result = await uc(obj_id=test_user_task.id, user=test_user)
     user_task = result.item
     assert test_user.id == user_task.user_id
     assert test_task.id == user_task.task_id
@@ -93,7 +95,7 @@ async def test_plan_list(pool, test_user: User, test_task: Task):
 
 
 @pytest.mark.asyncio
-async def test_user_task_add(pool, test_task2: Task, test_user: User):
+async def test_user_task_add(pool, test_task2: Task, test_user: User, test_user_task2):
     test_user.language = test_task2.language
     uow = SqlAlchemyUnitOfWork(pool)
     uc = task_user_add.UserTaskAddUseCase(uow=uow)
@@ -108,7 +110,7 @@ async def test_task_complete(pool, test_user_task, test_user, test_task):
     test_user.language = test_task.language
     uow = SqlAlchemyUnitOfWork(pool)
     uc = task_user_complete.UserTaskCompleteUseCase(uow=uow)
-    result = await uc(user=test_user, task_id=test_task.id)
+    result = await uc(user=test_user, obj_id=test_user_task.id)
     user_task = result.item
     assert user_task.user_id == test_user.id
     assert user_task.task_id == test_task.id
@@ -122,7 +124,7 @@ async def test_task_reject(pool, test_user_task, test_user, test_task):
     test_user.language = test_task.language
     uow = SqlAlchemyUnitOfWork(pool)
     uc = task_user_reject.UserTaskDeleteUseCase(uow=uow)
-    result = await uc(user=test_user, task_id=test_task.id)
+    result = await uc(user=test_user, obj_id=test_user_task.id)
     user_task = result.item
     assert user_task.user_id == test_user.id
     assert user_task.task_id == test_task.id

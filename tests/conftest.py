@@ -279,6 +279,7 @@ async def test_user_task(pool: async_sessionmaker[AsyncSession], test_user, test
         sess.add(obj)
         await sess.commit()
     return TaskUser(
+        id=obj.id,
         user_id=obj.user_id,
         task_id=obj.task_id,
         date_start=obj.date_start,
@@ -317,8 +318,8 @@ async def test_user_task2(pool: async_sessionmaker[AsyncSession], test_user, tes
         )
         sess.add(obj)
         await sess.commit()
-
     return TaskUser(
+        id=obj.id,
         user_id=obj.user_id,
         task_id=obj.task_id,
         date_start=obj.date_start,

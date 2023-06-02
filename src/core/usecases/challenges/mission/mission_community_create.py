@@ -18,19 +18,19 @@ class MissionCommunityCreateUsecase:
     def __init__(self, *, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def __call__(self, *, user: User, create_obj: MissionCommunityCreateDTO) -> Result:
+    async def __call__(self, *, user: User, community_id: int, create_obj: MissionCommunityCreateDTO) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
         async with self.uow as uow:
-            user_community = await uow.community.user_get(community_id=create_obj.community_id, user_id=user.id)
+            user_community = await uow.community.user_get(community_id=community_id, user_id=user.id)
             if user_community.role in [CommunityRoleEnum.USER, CommunityRoleEnum.BLOCKED]:
                 raise PermissionError("")
-            community = await uow.community.get(id=create_obj.community_id)
+            community = await uow.community.get(id=community_id)
             if not community.active:
                 raise EntityNotActive(msg=f"{community.id=}")
             mission = await uow.mission.get(id=create_obj.mission_id, lang=user.language)
             if not mission.active:
                 raise EntityNotActive(msg=f"{mission.id=}")
-            created_mission = await uow.mission.community_mission_create(obj=create_obj)
+            created_mission = await uow.mission.community_mission_create(community_id=community_id, obj=create_obj)
             await uow.commit()
         return Result(item=created_mission)

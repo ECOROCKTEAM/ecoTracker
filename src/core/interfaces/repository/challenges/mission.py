@@ -20,7 +20,6 @@ class MissionFilter:
 
 @dataclass
 class MissionUserFilter:
-    mission_active: bool | None = None
     mission_id: int | None = None
     status: OccupancyStatusEnum | None = None
 
@@ -67,12 +66,11 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    async def user_mission_get(self, *, user_id: int, mission_id: int) -> MissionUser:
+    async def user_mission_get(self, *, id: int, user_id: int) -> MissionUser:
         """Получить миссию пользователя
 
         Args:
-            user_id (int): ID пользователя
-            mission_id (int): ID миссиии
+            id (int): ID Сущности миссии пользователя
 
         Returns:
             MissionUser: Сущность миссии пользователя
@@ -90,13 +88,11 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    async def user_mission_update(self, *, user_id: int, mission_id: int, obj: MissionUserUpdateDTO) -> MissionUser:
+    async def user_mission_update(self, *, id: int, user_id: int, obj: MissionUserUpdateDTO) -> MissionUser:
         """Обновить миссию для пользователя
 
         Args:
-            user_id (int): ID пользователя
-            mission_id (int): ID миссиии
-            obj (MissionUserUpdateDTO): Объект обновления
+            id (int): ID Сущности миссии пользователя
 
         Returns:
             MissionUser: Сущность миссии пользователя
@@ -123,7 +119,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    async def community_mission_create(self, *, obj: MissionCommunityCreateDTO) -> MissionCommunity:
+    async def community_mission_create(self, *, community_id: int, obj: MissionCommunityCreateDTO) -> MissionCommunity:
         """Создать миссию для сообщест ва
 
         Args:
@@ -134,12 +130,12 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    async def community_mission_get(self, *, community_id: int, mission_id: int) -> MissionCommunity:
+    async def community_mission_get(self, *, id: int, community_id: int) -> MissionCommunity:
         """Получить миссию сообщества
 
         Args:
+            id (int): ID Сущности миссии сообщества
             community_id (int): ID сообщества
-            mission_id (int): ID миссии
 
         Returns:
             MissionCommunity: Сущность миссии сообщества
@@ -147,14 +143,13 @@ class IRepositoryMission(ABC):
 
     @abstractmethod
     async def community_mission_update(
-        self, *, community_id: int, mission_id: int, obj: MissionCommunityUpdateDTO
+        self, *, id: int, community_id: int, obj: MissionCommunityUpdateDTO
     ) -> MissionCommunity:
         """Обновить миссию сообщества
 
         Args:
+            id (int): ID Сущности миссии сообщества
             obj (MissionCommunityUpdateDTO): Объект обновления
-            community_id (int): ID сообщества
-            mission_id (int): ID миссии
 
         Returns:
             MissionCommunity: Сущность миссии сообщества

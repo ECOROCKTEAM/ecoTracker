@@ -9,7 +9,6 @@ from src.core.typing.base import UNSET, UnsetType
 @dataclass
 class MissionUserCreateDTO:
     mission_id: int
-    date_close: datetime | None = field(init=False, default=None)
     status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
 
 
@@ -19,21 +18,19 @@ class MissionUserUpdateDTO(UpdateDTO):
     status: OccupancyStatusEnum | UnsetType = UNSET
 
     def __post_init__(self):
-        if self.status == OccupancyStatusEnum.FINISH:
+        if self.status in [OccupancyStatusEnum.FINISH, OccupancyStatusEnum.REJECT]:
             self.date_close = datetime.now()
 
 
 @dataclass
 class MissionCommunityCreateDTO:
     mission_id: int
-    community_id: int
     author: str
     place: str | None = None
     meeting_date: datetime | None = None
     people_required: int | None = None
     people_max: int | None = None
     comment: str | None = None
-    date_close: datetime | None = field(init=False, default=None)
     status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
 
 
@@ -48,5 +45,5 @@ class MissionCommunityUpdateDTO(UpdateDTO):
     comment: str | None | UnsetType = UNSET
 
     def __post_init__(self):
-        if self.status == OccupancyStatusEnum.FINISH:
+        if self.status in [OccupancyStatusEnum.FINISH, OccupancyStatusEnum.REJECT]:
             self.date_close = datetime.now()

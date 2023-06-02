@@ -129,14 +129,11 @@ class IRepositoryCommunity(ABC):
         user_id: int,
     ) -> UserCommunityDTO:
         """Получить связь сообщество-пользователь
-
         Args:
             user_id (int): Id пользователя
             community_id: Id сообщества
-
         Returns:
             UserCommunityDTO: Объект связи пользователя и сообщества
-
         Raises:
             RepoError: Ошибка операции
             EntityNotFound: Сущность не найдена

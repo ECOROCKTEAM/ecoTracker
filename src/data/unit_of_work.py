@@ -6,15 +6,38 @@ from src.core.interfaces.repository.challenges.occupancy import (
 )
 from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.interfaces.repository.community.community import IRepositoryCommunity
+from src.core.interfaces.repository.score.community import IRepositoryCommunityScore
+from src.core.interfaces.repository.score.user import IRepositoryUserScore
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.data.repository.challenges.mission import RepositoryMission
 from src.data.repository.challenges.occupancy_category import (
     RepositoryOccupancyCategory,
 )
 from src.data.repository.community import RepositoryCommunity
+from src.data.repository.score.community_score import CommunityScoreRepository
+from src.data.repository.score.user_score import UserScoreRepository
 
 
 class SqlAlchemyUnitOfWork(IUnitOfWork):
+    def __init__(self, session_factory) -> None:
+        self.__session_factory = session_factory
+        self.__session: AsyncSession | None = None
+        self._community: IRepositoryCommunity | None = None
+        self._score_user: IRepositoryUserScore | None = None
+        self._score_community: IRepositoryCommunityScore | None = None
+
+    @property
+    def score_user(self) -> IRepositoryUserScore:
+        if self._score_user:
+            return self._score_user
+        raise ValueError("UoW not in context")
+
+    @property
+    def score_community(self) -> IRepositoryCommunityScore:
+        if self._score_community:
+            return self._score_community
+        raise ValueError("UoW not in context")
+
     @property
     def community(self) -> IRepositoryCommunity:
         if self._community:
@@ -37,11 +60,6 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
             return self._occupancy_category
         raise ValueError("UoW not in context")
 
-    def __init__(self, session_factory) -> None:
-        self.__session_factory = session_factory
-        self.__session: AsyncSession | None = None
-        self._community: IRepositoryCommunity | None = None
-
     @property
     def _session(self) -> AsyncSession:
         if self.__session is None:
@@ -53,6 +71,8 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self._community = RepositoryCommunity(self._session)
         self._mission = RepositoryMission(self._session)
         self._occupancy_category = RepositoryOccupancyCategory(self._session)
+        self._score_user = UserScoreRepository(self._session)
+        self._score_community = CommunityScoreRepository(self._session)
         return self
 
     async def __aexit__(self, *args):

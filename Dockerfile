@@ -9,7 +9,7 @@ RUN pip install --upgrade pip
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
+COPY ./src ./src
 
 
 FROM python:3.10 as test_runner
@@ -20,5 +20,6 @@ ENV PATH="/venv/bin:$PATH"
 
 COPY requirements-test.txt ./
 RUN pip install -r requirements-test.txt
+COPY . .
 
 CMD ["python", "-m", "pytest", "tests/", "-v"]

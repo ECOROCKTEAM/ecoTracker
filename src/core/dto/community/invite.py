@@ -1,24 +1,15 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 
 @dataclass
 class CommunityInviteDTO:
-    # Нужен ли нам тут id, если мы поменяли primary key для Community?
-    id: int
     community_id: int
-    code: str
-    expire_time: int
-
-
-@dataclass
-class CommunityInviteCreateDTO:
-    community_id: int
-    code: str
-    expire_time: int
+    code: str | None
+    expire_time: datetime | None
 
 
 @dataclass
 class CommunityInviteUpdateDTO:
-    community_id: int
     code: str
-    expire_time: int
+    expire_time: datetime

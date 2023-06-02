@@ -9,6 +9,10 @@ class CommunityDeactivatedError(CommunityError):
     msg_template = "community={community_id} deactivated"
 
 
+class CommunityLeaveError(CommunityError):
+    msg_template = "user={user_id} can't leave community={community_id} "
+
+
 class CommunityPrivacyError(CommunityError):
     msg_template = "community={community_id} problem"
 

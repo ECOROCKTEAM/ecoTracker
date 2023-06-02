@@ -71,17 +71,15 @@ class UserTaskModel(Base):
     status: Mapped[OccupancyStatusEnum]
 
 
+@dataclass
 class UserMissionModel(Base):
     __tablename__ = "user_mission"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(
         ForeignKey("user.id"),
-        nullable=False,
         primary_key=True,
         autoincrement=False,
     )
-    mission_id: Mapped[int] = mapped_column(
-        ForeignKey("mission.id"), nullable=False, primary_key=True, autoincrement=False
-    )
-    status: Mapped[OccupancyStatusEnum]
+    mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"), primary_key=True, autoincrement=False)
+    status: Mapped[OccupancyStatusEnum] = mapped_column()
+    date_close: Mapped[datetime | None] = mapped_column(default=None)

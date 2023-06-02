@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from src.core.entity.mission import Mission
 from src.core.entity.user import User
-from src.core.exception.mission import MissionDeactivatedError
+from src.core.exception.base import EntityNotActive
 from src.core.exception.user import UserIsNotPremiumError
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
@@ -22,5 +22,5 @@ class MissionGetUsecase:
         async with self.uow as uow:
             mission = await uow.mission.get(id=id, lang=user.language)
         if not mission.active:
-            raise MissionDeactivatedError(user_id=user.id)
+            raise EntityNotActive(msg=f"mission.id={id}")
         return Result(item=mission)

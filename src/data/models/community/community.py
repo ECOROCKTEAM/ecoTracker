@@ -19,20 +19,24 @@ class CommunityModel(Base):
     description: Mapped[str] = mapped_column()
     active: Mapped[bool] = mapped_column(default=True)
     privacy: Mapped[CommunityPrivacyEnum] = mapped_column()
+    code: Mapped[str | None] = mapped_column(unique=True)
+    code_expire_time: Mapped[datetime | None] = mapped_column(DateTime(timezone=False))
 
 
+@dataclass
 class CommunityMissionModel(Base):
     __tablename__ = "community_mission"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    meeting_date: Mapped[datetime] = mapped_column(DateTime(timezone=False))
-    people_required: Mapped[int | None]
-    people_max: Mapped[int | None]
-    place: Mapped[str | None]
-    comment: Mapped[str | None]
-    community_id: Mapped[int] = mapped_column(ForeignKey("community.id"))
-    mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
-    status: Mapped[OccupancyStatusEnum]
+    community_id: Mapped[int] = mapped_column(ForeignKey("community.id"), primary_key=True, autoincrement=False)
+    mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"), primary_key=True, autoincrement=False)
+    author: Mapped[str] = mapped_column()
+    meeting_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=False))
+    people_required: Mapped[int | None] = mapped_column()
+    people_max: Mapped[int | None] = mapped_column()
+    place: Mapped[str | None] = mapped_column()
+    comment: Mapped[str | None] = mapped_column()
+    date_close: Mapped[datetime | None] = mapped_column(default=None)
+    status: Mapped[OccupancyStatusEnum] = mapped_column()
 
 
 @dataclass
@@ -43,12 +47,3 @@ class CommunityScoreModel(Base):
     community_id: Mapped[int] = mapped_column(ForeignKey("community.id"))
     operation: Mapped[ScoreOperationEnum] = mapped_column()
     value: Mapped[int] = mapped_column()
-
-
-class CommunityInviteModel(Base):
-    __tablename__ = "community_invite"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    community_id: Mapped[int] = mapped_column(ForeignKey("community.id"))
-    code: Mapped[str]
-    expire_time: Mapped[datetime] = mapped_column(DateTime(timezone=False))

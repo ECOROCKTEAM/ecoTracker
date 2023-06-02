@@ -4,10 +4,9 @@ from src.core.dto.mock import MockObj
 from src.core.entity.mission import MissionCommunity
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotPremiumError
-from src.core.interfaces.repository.challenges.mission import (
-    IRepositoryMission,
-    MissionCommunityFilter,
-)
+from src.core.interfaces.repository.challenges.mission import MissionCommunityFilter
+from src.core.interfaces.repository.community.community import CommunityFilter
+from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
 @dataclass
@@ -16,15 +15,20 @@ class Result:
 
 
 class MissionCommunityListUsecase:
-    def __init__(self, *, repo: IRepositoryMission) -> None:
-        self.repo = repo
+    def __init__(self, *, uow: IUnitOfWork) -> None:
+        self.uow = uow
 
     async def __call__(
         self, *, user: User, filter_obj: MissionCommunityFilter, order_obj: MockObj, pagination_obj: MockObj
     ) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
-        mission_list = await self.repo.community_mission_lst(
-            filter_obj=filter_obj, order_obj=order_obj, pagination_obj=pagination_obj, lang=user.language
-        )
+        async with self.uow as uow:
+            community_list = await uow.community.lst(
+                filter_obj=CommunityFilter(user_id=user.id, active=True), order_obj=MockObj(), pagination_obj=MockObj()
+            )
+            filter_obj.community_id_list = [c.id for c in community_list]
+            mission_list = await uow.mission.community_mission_lst(
+                filter_obj=filter_obj, order_obj=order_obj, pagination_obj=pagination_obj
+            )
         return Result(item=mission_list)

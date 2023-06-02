@@ -22,5 +22,5 @@ class SubscriptionListUseCase:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
 
-        sub_list = await self.repo.list(filter_obj=filter_obj)
+        sub_list = await self.repo.lst(filter_obj=filter_obj)
         return Result(items=sub_list)

@@ -91,6 +91,8 @@ class RepositoryCommunity(IRepositoryCommunity):
     async def user_add(self, *, obj: UserCommunityCreateDTO) -> UserCommunityDTO:
         stmt = insert(UserCommunityModel).values(asdict(obj)).returning(UserCommunityModel)
         res = await self.db_context.scalar(stmt)
+        if not res:
+            raise EntityNotFound(msg="")
         return user_community_model_to_dto(res)
 
     async def user_get(

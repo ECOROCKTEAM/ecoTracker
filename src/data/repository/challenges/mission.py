@@ -20,9 +20,12 @@ from src.core.interfaces.repository.challenges.mission import (
     MissionFilter,
     MissionUserFilter,
 )
-from src.data.models.challenges.mission import MissionModel, MissionTranslateModel
-from src.data.models.community.community import CommunityMissionModel
-from src.data.models.user.user import UserMissionModel
+from src.data.models.challenges.mission import (
+    CommunityMissionModel,
+    MissionModel,
+    MissionTranslateModel,
+    UserMissionModel,
+)
 
 
 def mission_to_entity(model: MissionModel, model_translate: MissionTranslateModel) -> Mission:
@@ -42,6 +45,7 @@ def mission_user_to_entity(model: UserMissionModel) -> MissionUser:
     return MissionUser(
         user_id=model.user_id,
         mission_id=model.mission_id,
+        date_start=model.date_start,
         date_close=model.date_close,
         status=model.status,
     )
@@ -52,6 +56,7 @@ def mission_community_to_entity(model: CommunityMissionModel) -> MissionCommunit
         community_id=model.community_id,
         mission_id=model.mission_id,
         status=model.status,
+        date_start=model.date_start,
         date_close=model.date_close,
         author=model.author,
         place=model.place,
@@ -148,8 +153,14 @@ class RepositoryMission(IRepositoryMission):
             entity_list.append(mission_to_entity(model=mission, model_translate=mission_translate))
         return entity_list
 
-    async def user_mission_get(self, *, user_id: int, mission_id: int) -> MissionUser:
-        model = await self.db_context.get(entity=UserMissionModel, ident={"user_id": user_id, "mission_id": mission_id})
+    async def user_mission_get(self, *, id: int, user_id: int) -> MissionUser:
+        stmt = select(UserMissionModel).where(
+            and_(
+                UserMissionModel.id == id,
+                UserMissionModel.user_id == user_id,
+            )
+        )
+        model = await self.db_context.scalar(stmt)
         if not model:
             raise EntityNotFound(msg="")
         return mission_user_to_entity(model)
@@ -161,10 +172,15 @@ class RepositoryMission(IRepositoryMission):
             raise EntityNotCreated(msg="")
         return mission_user_to_entity(res)
 
-    async def user_mission_update(self, *, user_id: int, mission_id: int, obj: MissionUserUpdateDTO) -> MissionUser:
+    async def user_mission_update(self, *, id: int, user_id: int, obj: MissionUserUpdateDTO) -> MissionUser:
         stmt = (
             update(UserMissionModel)
-            .where(and_(UserMissionModel.user_id == user_id, UserMissionModel.mission_id == mission_id))
+            .where(
+                and_(
+                    UserMissionModel.id == id,
+                    UserMissionModel.user_id == user_id,
+                )
+            )
             .values(**obj.to_dict())
             .returning(UserMissionModel)
         )
@@ -183,35 +199,40 @@ class RepositoryMission(IRepositoryMission):
             where_clause.append(UserMissionModel.mission_id == filter_obj.mission_id)
         if filter_obj.status is not None:
             where_clause.append(UserMissionModel.status == filter_obj.status)
-        if filter_obj.mission_active is not None:
-            stmt = stmt.join(MissionModel, UserMissionModel.mission_id == MissionModel.id)
-            where_clause.append(MissionModel.active == filter_obj.mission_active)
         stmt = stmt.where(*where_clause)
         res = await self.db_context.scalars(stmt)
         return [mission_user_to_entity(model) for model in res]
 
-    async def community_mission_create(self, *, obj: MissionCommunityCreateDTO) -> MissionCommunity:
-        stmt = insert(CommunityMissionModel).values(asdict(obj)).returning(CommunityMissionModel)
+    async def community_mission_create(self, *, community_id: int, obj: MissionCommunityCreateDTO) -> MissionCommunity:
+        stmt = (
+            insert(CommunityMissionModel)
+            .values(community_id=community_id, **asdict(obj))
+            .returning(CommunityMissionModel)
+        )
         res = await self.db_context.scalar(stmt)
         if res is None:
             raise EntityNotCreated(msg="")
         return mission_community_to_entity(res)
 
-    async def community_mission_get(self, *, community_id: int, mission_id: int) -> MissionCommunity:
-        model = await self.db_context.get(
-            entity=CommunityMissionModel, ident={"community_id": community_id, "mission_id": mission_id}
+    async def community_mission_get(self, *, id: int, community_id: int) -> MissionCommunity:
+        stmt = select(CommunityMissionModel).where(
+            and_(CommunityMissionModel.id == id, CommunityMissionModel.community_id == community_id)
         )
+        model = await self.db_context.scalar(stmt)
         if not model:
             raise EntityNotFound(msg="")
         return mission_community_to_entity(model)
 
     async def community_mission_update(
-        self, *, community_id: int, mission_id: int, obj: MissionCommunityUpdateDTO
+        self, *, id: int, community_id: int, obj: MissionCommunityUpdateDTO
     ) -> MissionCommunity:
         stmt = (
             update(CommunityMissionModel)
             .where(
-                and_(CommunityMissionModel.community_id == community_id, CommunityMissionModel.mission_id == mission_id)
+                and_(
+                    CommunityMissionModel.id == id,
+                    CommunityMissionModel.community_id == community_id,
+                )
             )
             .values(**obj.to_dict())
             .returning(CommunityMissionModel)

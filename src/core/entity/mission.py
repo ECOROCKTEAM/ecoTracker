@@ -25,6 +25,7 @@ class MissionUser:
 
     user_id: int
     mission_id: int
+    date_start: datetime
     date_close: datetime | None
     status: OccupancyStatusEnum
 
@@ -36,6 +37,7 @@ class MissionCommunity:
     community_id: int
     mission_id: int
     author: str
+    date_start: datetime
     date_close: datetime | None
     status: OccupancyStatusEnum
     place: str | None = None

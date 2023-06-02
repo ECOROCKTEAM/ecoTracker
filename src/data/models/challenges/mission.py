@@ -1,9 +1,11 @@
 from dataclasses import dataclass
+from datetime import datetime
 
-from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy import DateTime, ForeignKey, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.application.database.base import Base
+from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
 
 
@@ -34,3 +36,35 @@ class MissionTranslateModel(Base):
     instruction: Mapped[str] = mapped_column()
     mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
     language: Mapped[LanguageEnum] = mapped_column()
+
+
+@dataclass
+class UserMissionModel(Base):
+    __tablename__ = "user_mission"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("user.id"),
+    )
+    mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
+    date_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    date_close: Mapped[datetime | None] = mapped_column(default=None)
+    status: Mapped[OccupancyStatusEnum] = mapped_column()
+
+
+@dataclass
+class CommunityMissionModel(Base):
+    __tablename__ = "community_mission"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    community_id: Mapped[int] = mapped_column(ForeignKey("community.id"))
+    mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
+    author: Mapped[str] = mapped_column()
+    meeting_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=False))
+    people_required: Mapped[int | None] = mapped_column()
+    people_max: Mapped[int | None] = mapped_column()
+    place: Mapped[str | None] = mapped_column()
+    comment: Mapped[str | None] = mapped_column()
+    date_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    date_close: Mapped[datetime | None] = mapped_column(default=None)
+    status: Mapped[OccupancyStatusEnum] = mapped_column()

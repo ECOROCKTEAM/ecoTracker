@@ -8,21 +8,26 @@ from src.core.dto.challenges.task import (
 )
 from src.core.dto.mock import MockObj
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
+from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
 
 
 @dataclass
 class TaskFilter:
-    """"""
+    active: bool | None = None
+    category_id: int | None = None
 
 
 @dataclass
 class TaskUserFilter:
-    """"""
+    task_id: int | None = None
+    task_active: bool | None = None
+    status: OccupancyStatusEnum | None = None
 
 
 @dataclass
 class TaskUserPlanFilter:
+    task_active: bool | None = None
     """"""
 
 
@@ -41,7 +46,7 @@ class IRepositoryTask(ABC):
 
     @abstractmethod
     async def lst(
-        self, *, sorting_obj: MockObj, paggination_obj: MockObj, filter_obj: MockObj, lang: LanguageEnum
+        self, *, filter_obj: TaskFilter, sorting_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
     ) -> list[Task]:
         """List of tasks
 
@@ -56,47 +61,35 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def deactivate(self, *, id: int) -> int:
-        """Отключить таск
-
-        Args:
-            id (int): ID базового задания
-
-        Returns:
-            int: ID базового задания
-        """
-
-    @abstractmethod
-    async def user_task_get(self, *, id: int, lang: LanguageEnum) -> TaskUser:
+    async def user_task_get(self, *, id: int) -> TaskUser:
         """Получить задание для пользователя
 
         Args:
-            id (int): ID задачи пользователя
-            lang (LanguageEnum): Необходимый язык
+            id (int): User task object identify
 
         Returns:
             TaskUser: Сущность задачи пользователя
         """
 
     @abstractmethod
-    async def user_task_create(self, *, obj: TaskUserCreateDTO, lang: LanguageEnum) -> TaskUser:
+    async def user_task_add(self, *, user_id: int, obj: TaskUserCreateDTO) -> TaskUser:
         """Создать задание для пользователя
 
         Args:
+            user_id (int): ID of user
             obj (TaskUserCreateDTO): Объект создания
-            lang (LanguageEnum): Необходимый язык
 
         Returns:
             TaskUser: Сущность задачи пользователя
         """
 
     @abstractmethod
-    async def user_task_update(self, *, obj: TaskUserUpdateDTO, lang: LanguageEnum) -> TaskUser:
+    async def user_task_update(self, *, id: int, obj: TaskUserUpdateDTO) -> TaskUser:
         """Обновить задание для пользователя
 
         Args:
+            id (int): User task object identify
             obj (TaskUserCreateDTO): Объект обновления
-            lang (LanguageEnum): Необходимый язык
 
         Returns:
             TaskUser: Сущность задачи пользователя
@@ -106,18 +99,18 @@ class IRepositoryTask(ABC):
     async def user_task_lst(
         self,
         *,
-        filter_obj: TaskUserFilter,
-        order_obj: MockObj,
-        pagination_obj: MockObj,
-        lang: LanguageEnum,
+        user_id: int,
+        filter_obj: TaskUserFilter | None = None,
+        order_obj: MockObj | None = None,
+        pagination_obj: MockObj | None = None,
     ) -> list[TaskUser]:
         """Получить список заданий пользователя
 
         Args:
+            user_id (int): ID of user
             filter_obj (TaskUserFilter): Объект фильтрации
             order_obj (MockObj): Объект порядка
             pagination_obj (MockObj): Объект пагинации
-            lang (LanguageEnum): Необходимый язык
 
         Returns:
             List[TaskUser]: Список сущностей заданий пользователя
@@ -135,27 +128,30 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def plan_delete(self, *, id: int) -> int:
+    async def plan_delete(self, *, user_id: int, task_id: int) -> TaskUserPlan:
         """Удалить план задач
 
         Args:
-            id (int): ID плана
+            user_id (int): ID of user
+            task_id (int): ID of task
 
         Returns:
-            int: ID плана
+            TaskUserPlan: Task user entity object
         """
 
     @abstractmethod
     async def plan_lst(
         self,
         *,
-        filter_obj: TaskUserPlanFilter,
-        order_obj: MockObj,
-        pagination_obj: MockObj,
+        user_id: int,
+        filter_obj: TaskUserPlanFilter | None = None,
+        order_obj: MockObj | None = None,
+        pagination_obj: MockObj | None = None,
     ) -> list[TaskUserPlan]:
         """Получить список плана задач
 
         Args:
+            user_id (int): ID of user
             filter_obj (MockObj): Объект фильтрации
             order_obj (MockObj): Объект порядка
             pagination_obj (MockObj): Объект пагинации

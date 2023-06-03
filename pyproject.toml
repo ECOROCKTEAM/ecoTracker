@@ -9,6 +9,7 @@ python = "^3.10"
 alembic = "^1.10.4"
 pydantic = {extras = ["dotenv"], version = "^1.10.7"}
 asyncpg = "^0.27.0"
+faker = "^18.7.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"

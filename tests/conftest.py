@@ -1,6 +1,7 @@
 import asyncio
 import random
 from datetime import datetime, timedelta
+from random import choice, randint
 from typing import AsyncGenerator
 from uuid import uuid4
 
@@ -23,28 +24,26 @@ from src.core.dto.m2m.user.community import UserCommunityDTO
 from src.core.entity.community import Community
 from src.core.entity.mission import Mission, MissionCommunity, MissionUser
 from src.core.entity.score import ScoreCommunity, ScoreUser
+from src.core.entity.task import Task, TaskUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.community.privacy import CommunityPrivacyEnum
 from src.core.enum.community.role import CommunityRoleEnum
 from src.core.enum.language import LanguageEnum
 from src.core.enum.score.operation import ScoreOperationEnum
-from src.data.models.challenges.mission import MissionModel, MissionTranslateModel
+from src.data.models.challenges.mission import (
+    CommunityMissionModel,
+    MissionModel,
+    MissionTranslateModel,
+    UserMissionModel,
+)
 from src.data.models.challenges.occupancy import (
     OccupancyCategoryModel,
     OccupancyCategoryTranslateModel,
 )
-from src.data.models.community.community import (
-    CommunityMissionModel,
-    CommunityModel,
-    CommunityScoreModel,
-)
-from src.data.models.user.user import (
-    UserCommunityModel,
-    UserMissionModel,
-    UserModel,
-    UserScoreModel,
-)
+from src.data.models.challenges.task import TaskModel, TaskTranslateModel, UserTaskModel
+from src.data.models.community.community import CommunityModel, CommunityScoreModel
+from src.data.models.user.user import UserCommunityModel, UserModel, UserScoreModel
 
 fake = faker.Faker()
 
@@ -151,7 +150,9 @@ async def test_user_leave(pool: async_sessionmaker[AsyncSession]) -> User:
 @pytest_asyncio.fixture(scope="module")
 async def test_user_score(pool: async_sessionmaker[AsyncSession], test_user) -> ScoreUser:
     async with pool() as session:
-        score_user = UserScoreModel(user_id=test_user.id, value=100, operation=ScoreOperationEnum.PLUS)
+        score_user = UserScoreModel(
+            user_id=test_user.id, value=100, operation=ScoreOperationEnum.PLUS, status=OccupancyStatusEnum.ACTIVE
+        )
         session.add(score_user)
         await session.commit()
         return ScoreUser(user_id=score_user.user_id, value=score_user.value, operation=score_user.operation)
@@ -279,6 +280,55 @@ async def test_occupancy_category_model_list(pool: async_sessionmaker[AsyncSessi
 
 
 @pytest_asyncio.fixture(scope="module")
+async def test_task_model_list(
+    pool: async_sessionmaker[AsyncSession], test_occupancy_category_model_list: list[OccupancyCategoryModel]
+) -> list[TaskModel]:
+    task_list: list[TaskModel] = []
+    async with pool() as session:
+        for category in test_occupancy_category_model_list:
+            task = TaskModel(
+                score=randint(5, 15),
+                category_id=category.id,
+                active=True,
+            )
+            session.add(task)
+            await session.flush()
+            translate_models = [
+                TaskTranslateModel(
+                    name=fake.name(),
+                    description="",
+                    task_id=task.id,
+                    language=lang,
+                )
+                for lang in LanguageEnum
+            ]
+            session.add_all(translate_models)
+            await session.flush()
+            await session.refresh(task)
+            task_list.append(task)
+        await session.commit()
+    return task_list
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_task(pool: async_sessionmaker[AsyncSession], test_task_model_list: list[TaskModel]) -> Task:
+    task = choice(test_task_model_list)
+    async with pool() as session:
+        coro = await session.scalars(select(TaskTranslateModel).where(TaskTranslateModel.task_id == task.id))
+        translations = coro.all()
+    task_translate = choice(translations)
+    return Task(
+        id=task.id,
+        score=task.score,
+        category_id=task.category_id,
+        active=task.active,
+        language=task_translate.language,
+        description=task_translate.description,
+        name=task_translate.name,
+    )
+
+
+@pytest_asyncio.fixture(scope="module")
 async def test_mission_model_list(
     pool: async_sessionmaker[AsyncSession], test_occupancy_category_model_list: list[OccupancyCategoryModel]
 ) -> list[MissionModel]:
@@ -366,6 +416,68 @@ async def test_mission(pool: async_sessionmaker[AsyncSession], test_mission_mode
 
 
 @pytest_asyncio.fixture(scope="module")
+async def test_user_task(pool: async_sessionmaker[AsyncSession], test_user, test_task) -> TaskUser:
+    async with pool() as sess:
+        obj = UserTaskModel(
+            user_id=test_user.id,
+            task_id=test_task.id,
+            status=OccupancyStatusEnum.ACTIVE,
+            date_close=datetime.now(),
+            date_start=datetime.now(),
+        )
+        sess.add(obj)
+        await sess.commit()
+    return TaskUser(
+        id=obj.id,
+        user_id=obj.user_id,
+        task_id=obj.task_id,
+        date_start=obj.date_start,
+        date_close=obj.date_close,
+        status=obj.status,
+    )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_task2(pool: async_sessionmaker[AsyncSession], test_task_model_list: list[TaskModel]) -> Task:
+    task = choice(test_task_model_list)
+    async with pool() as session:
+        coro = await session.scalars(select(TaskTranslateModel).where(TaskTranslateModel.task_id == task.id))
+        translations = coro.all()
+    task_translate = choice(translations)
+    return Task(
+        id=task.id,
+        score=task.score,
+        category_id=task.category_id,
+        active=task.active,
+        language=task_translate.language,
+        description=task_translate.description,
+        name=task_translate.name,
+    )
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_user_task2(pool: async_sessionmaker[AsyncSession], test_user, test_task2) -> TaskUser:
+    async with pool() as sess:
+        obj = UserTaskModel(
+            user_id=test_user.id,
+            task_id=test_task2.id,
+            status=OccupancyStatusEnum.REJECT,
+            date_close=datetime.now(),
+            date_start=datetime.now(),
+        )
+        sess.add(obj)
+        await sess.commit()
+    return TaskUser(
+        id=obj.id,
+        user_id=obj.user_id,
+        task_id=obj.task_id,
+        date_start=obj.date_start,
+        date_close=obj.date_close,
+        status=obj.status,
+    )
+
+
+@pytest_asyncio.fixture(scope="module")
 async def test_score_community(pool: async_sessionmaker[AsyncSession], test_community: CommunityModel):
     async with pool() as sess:
         item = CommunityScoreModel(
@@ -432,19 +544,21 @@ async def test_users_scores(pool: async_sessionmaker[AsyncSession], test_users) 
     val = 100
     async with pool() as sess:
         for user in test_users[:-2]:
-            user_score = UserScoreModel(user_id=user.id, value=val, operation=ScoreOperationEnum.PLUS)
+            user_score = UserScoreModel(
+                user_id=user.id, value=val, operation=ScoreOperationEnum.PLUS, status=OccupancyStatusEnum.ACTIVE
+            )
             val += 10
             sess.add(user_score)
             await sess.flush()
             await sess.refresh(user_score)
             user_score_list.append(user_score)
         await sess.commit()
-        min_value_user = UserScoreModel(user_id=999, value=115, operation=ScoreOperationEnum.PLUS)
+        min_value_user = UserScoreModel(
+            user_id=999, value=115, operation=ScoreOperationEnum.PLUS, status=OccupancyStatusEnum.ACTIVE
+        )
         sess.add(min_value_user)
         max_value_user = UserScoreModel(
-            user_id=1000,
-            value=100000,
-            operation=ScoreOperationEnum.PLUS,
+            user_id=1000, value=100000, operation=ScoreOperationEnum.PLUS, status=OccupancyStatusEnum.ACTIVE
         )
         sess.add(max_value_user)
         await sess.commit()
@@ -465,7 +579,11 @@ async def test_user_for_rating(test_users) -> User:
 async def test_user_mission(test_user_mission_model_list: list[UserMissionModel]) -> MissionUser:
     model = random.choice(test_user_mission_model_list)
     return MissionUser(
-        user_id=model.user_id, mission_id=model.mission_id, status=model.status, date_close=model.date_close
+        user_id=model.user_id,
+        mission_id=model.mission_id,
+        status=model.status,
+        date_close=model.date_close,
+        date_start=model.date_start,
     )
 
 
@@ -585,9 +703,7 @@ async def user_operations_list(pool: async_sessionmaker[AsyncSession], test_user
     async with pool() as sess:
         for _ in range(10):
             user_operation = UserScoreModel(
-                user_id=test_user.id,
-                value=10,
-                operation=ScoreOperationEnum.PLUS,
+                user_id=test_user.id, value=10, operation=ScoreOperationEnum.PLUS, status=OccupancyStatusEnum.ACTIVE
             )
             sess.add(user_operation)
             await sess.flush()
@@ -610,4 +726,5 @@ async def test_community_mission(test_community_mission_model_list: list[Communi
         people_max=model.people_max,
         comment=model.comment,
         date_close=model.date_close,
+        date_start=model.date_start,
     )

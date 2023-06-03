@@ -13,6 +13,7 @@ from src.data.repository.challenges.mission import RepositoryMission
 from src.data.repository.challenges.occupancy_category import (
     RepositoryOccupancyCategory,
 )
+from src.data.repository.challenges.task import RepositoryTask
 from src.data.repository.community import RepositoryCommunity
 from src.data.repository.score.community_score import CommunityScoreRepository
 from src.data.repository.score.user_score import UserScoreRepository
@@ -23,6 +24,7 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self.__session_factory = session_factory
         self.__session: AsyncSession | None = None
         self._community: IRepositoryCommunity | None = None
+        self._task: IRepositoryTask | None = None
         self._score_user: IRepositoryUserScore | None = None
         self._score_community: IRepositoryCommunityScore | None = None
 
@@ -52,7 +54,9 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
 
     @property
     def task(self) -> IRepositoryTask:
-        return super().task
+        if self._task:
+            return self._task
+        raise ValueError("UoW not in context")
 
     @property
     def occupancy_category(self) -> IRepositoryOccupancyCategory:
@@ -69,6 +73,7 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
     async def __aenter__(self) -> IUnitOfWork:
         self.__session = self.__session_factory()
         self._community = RepositoryCommunity(self._session)
+        self._task = RepositoryTask(self._session)
         self._mission = RepositoryMission(self._session)
         self._occupancy_category = RepositoryOccupancyCategory(self._session)
         self._score_user = UserScoreRepository(self._session)

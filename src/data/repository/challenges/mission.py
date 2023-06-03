@@ -43,6 +43,7 @@ def mission_to_entity(model: MissionModel, model_translate: MissionTranslateMode
 
 def mission_user_to_entity(model: UserMissionModel) -> MissionUser:
     return MissionUser(
+        id=model.id,
         user_id=model.user_id,
         mission_id=model.mission_id,
         date_start=model.date_start,
@@ -53,6 +54,7 @@ def mission_user_to_entity(model: UserMissionModel) -> MissionUser:
 
 def mission_community_to_entity(model: CommunityMissionModel) -> MissionCommunity:
     return MissionCommunity(
+        id=model.id,
         community_id=model.community_id,
         mission_id=model.mission_id,
         status=model.status,

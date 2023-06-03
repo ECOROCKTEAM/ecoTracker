@@ -61,9 +61,8 @@ class UserScoreModel(Base):
     operation: Mapped[ScoreOperationEnum] = mapped_column()
     value: Mapped[int] = mapped_column()
 
-
-class UserTaskModel(Base):
-    __tablename__ = "user_task"
+    # class UserTaskModel(Base):
+    #     __tablename__ = "user_task"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))

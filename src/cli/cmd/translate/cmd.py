@@ -63,7 +63,7 @@ def enum_block_check():
 
 
 @translate.command()
-def enum() -> list[str]:
+def enum() -> None:
     enum_block_check()
 
 

@@ -52,34 +52,19 @@ class UserCommunityModel(Base):
     role: Mapped[CommunityRoleEnum]
 
 
+@dataclass
 class UserScoreModel(Base):
     __tablename__ = "user_score"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    operation: Mapped[ScoreOperationEnum]
-    value: Mapped[int]
+    operation: Mapped[ScoreOperationEnum] = mapped_column()
+    value: Mapped[int] = mapped_column()
 
-
-# class UserTaskModel(Base):
-#     __tablename__ = "user_task"
-
-#     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True, nullable=False, autoincrement=False)
-#     task_id: Mapped[int] = mapped_column(ForeignKey("task.id"))
-#     status: Mapped[OccupancyStatusEnum]
-
-
-class UserMissionModel(Base):
-    __tablename__ = "user_mission"
+    # class UserTaskModel(Base):
+    #     __tablename__ = "user_task"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("user.id"),
-        nullable=False,
-        primary_key=True,
-        autoincrement=False,
-    )
-    mission_id: Mapped[int] = mapped_column(
-        ForeignKey("mission.id"), nullable=False, primary_key=True, autoincrement=False
-    )
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    task_id: Mapped[int] = mapped_column(ForeignKey("task.id"))
     status: Mapped[OccupancyStatusEnum]

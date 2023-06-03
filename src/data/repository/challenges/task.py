@@ -115,7 +115,7 @@ class RepositoryTask(IRepositoryTask):
                 )
                 result = await self.db_context.scalar(task_default_lang)
                 if not result:
-                    raise EntityNotFound(task=task, task_translate=task_translate)
+                    raise EntityNotFound(msg=f"{task=}, {task_translate=}")
                 holder[task.id]["translate"] = result
             else:
                 holder[task.id]["translate"] = task_translate

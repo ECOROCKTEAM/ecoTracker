@@ -26,5 +26,13 @@ class EntityNotCreated(DomainError):
     """"""
 
 
+class EntityNotActive(DomainError):
+    """"""
+
+
+class EntityNotChange(DomainError):
+    """"""
+
+
 class TranslateNotFound(DomainError):
     """"""

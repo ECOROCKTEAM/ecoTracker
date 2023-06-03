@@ -3,6 +3,7 @@ from dataclasses import asdict
 import pytest
 
 from src.core.dto.community.community import CommunityCreateDTO, CommunityUpdateDTO
+from src.core.dto.community.invite import CommunityInviteDTO
 from src.core.dto.m2m.user.community import UserCommunityUpdateDTO
 from src.core.dto.mock import MockObj
 from src.core.entity.user import User
@@ -14,11 +15,15 @@ from src.core.usecases.community import (
     community_create,
     community_delete,
     community_get_invite_link,
+    community_join_by_code,
+    community_leave,
     community_list,
     community_public_add_user,
     community_update,
 )
 from src.data.unit_of_work import SqlAlchemyUnitOfWork
+
+DAY_SECONDS = 86000
 
 
 @pytest.mark.asyncio
@@ -78,3 +83,38 @@ async def test_delete(pool, test_user, test_community_delete):
     uc = community_delete.CommunityDeleteUsecase(uow=uow)
     res = await uc(user=test_user, community_id=test_community_delete.id)
     assert res.item == test_community_delete.id
+
+
+@pytest.mark.asyncio
+async def test_get_invite(pool, test_user, test_community):
+    uow = SqlAlchemyUnitOfWork(pool)
+    uc = community_get_invite_link.CommunityGetInviteLinkUsecase(uow=uow, invite_expire_sec=DAY_SECONDS)
+    res = await uc(community_id=test_community.id, user=test_user)
+    assert isinstance(res.item, CommunityInviteDTO)
+    assert len(res.item.code) == 32
+
+
+@pytest.mark.asyncio
+async def test_leave(pool, test_user_leave, test_community, test_user_community_leave):
+    # test_user_community_leave for create test user role(m2m)
+    uow = SqlAlchemyUnitOfWork(pool)
+    uc = community_leave.CommunityLeaveUsecase(uow=uow)
+    res = await uc(user=test_user_leave, community_id=test_community.id)
+    assert isinstance(res.item, bool)
+    assert res.item
+
+
+@pytest.mark.asyncio
+async def test_join_by_code(pool, test_user_join_by_code, test_community_join_code):
+    uow = SqlAlchemyUnitOfWork(pool)
+    uc = community_join_by_code.CommunityJoinByCode(uow=uow)
+    res = await uc(user=test_user_join_by_code, code=test_community_join_code.code)
+    assert res.item.role == CommunityRoleEnum.USER
+
+
+@pytest.mark.asyncio
+async def test_public_add(pool, test_user_join, test_community):
+    uow = SqlAlchemyUnitOfWork(pool)
+    uc = community_public_add_user.CommunityPublicAddUserUsecase(uow=uow)
+    res = await uc(user=test_user_join, community_id=test_community.id)
+    assert res.item.role == CommunityRoleEnum.USER

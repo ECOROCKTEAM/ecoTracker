@@ -1,31 +1,16 @@
-import asyncio
-import binascii
-import contextlib
-import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from uuid import uuid4
 
-from src.core.dto.community.invite import (
-    CommunityInviteCreateDTO,
-    CommunityInviteDTO,
-    CommunityInviteUpdateDTO,
-)
-from src.core.dto.m2m.user.community import UserCommunityDTO
-from src.core.entity.community import Community
+from src.core.dto.community.invite import CommunityInviteDTO, CommunityInviteUpdateDTO
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
-from src.core.exception.community import (
-    CommunityDeactivatedError,
-    CommunityInviteLinkNotFoundError,
-)
+from src.core.exception.community import CommunityDeactivatedError
 from src.core.exception.user import (
     UserIsNotCommunityAdminUserError,
     UserIsNotPremiumError,
 )
-from src.core.interfaces.repository.community.community import (
-    CommunityUserFilter,
-    IRepositoryCommunity,
-)
+from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
 @dataclass
@@ -34,41 +19,28 @@ class Result:
 
 
 class CommunityGetInviteLinkUsecase:
-    def __init__(self, *, repo: IRepositoryCommunity) -> None:
-        self.repo = repo
+    def __init__(self, *, uow: IUnitOfWork, invite_expire_sec: int) -> None:
+        self.uow = uow
+        self.invite_expire_sec = invite_expire_sec
 
     async def __call__(self, *, user: User, community_id: int) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
-        tasks: tuple[asyncio.Task[Community], asyncio.Task[list[UserCommunityDTO]]] = (
-            asyncio.create_task(self.repo.get(id=community_id)),
-            asyncio.create_task(
-                self.repo.user_list(
-                    id=community_id,
-                    filter_obj=CommunityUserFilter(role_list=[CommunityRoleEnum.SUPERUSER, CommunityRoleEnum.ADMIN]),
+
+        async with self.uow as uow:
+            community = await uow.community.get(id=community_id)
+            if not community.active:
+                raise CommunityDeactivatedError(community_id=community.id)
+            role = await uow.community.user_get(community_id=community_id, user_id=user.id)
+            if role.role not in (CommunityRoleEnum.ADMIN, CommunityRoleEnum.SUPERUSER):
+                raise UserIsNotCommunityAdminUserError(user_id=user.id, community_id=community_id)
+            community_code = await uow.community.code_get(id=community_id)
+            if not community_code.code:
+                obj = CommunityInviteUpdateDTO(
+                    code=uuid4().hex, expire_time=datetime.utcnow() + timedelta(seconds=self.invite_expire_sec)
                 )
-            ),
-        )
-        community, link_list = await asyncio.gather(*tasks)
-        if not community.active:
-            raise CommunityDeactivatedError(community_id=community.id)
-        head_user_ids = [link.user_id for link in link_list]
-        if user.id not in head_user_ids:
-            raise UserIsNotCommunityAdminUserError(user_id=user.id, community_id=community_id)
+                community_code = await uow.community.code_set(id=community_id, obj=obj)
+                await uow.commit()
 
-        link = None
-        with contextlib.suppress(CommunityInviteLinkNotFoundError):
-            link = await self.repo.invite_link_get(id=community.id)
-
-        random_hex = binascii.hexlify(os.urandom(16)).decode()
-        next_time = datetime.now() + timedelta(weeks=1)
-        expire_time = int(next_time.timestamp())
-
-        if link is None:
-            create_obj = CommunityInviteCreateDTO(community_id=community_id, code=random_hex, expire_time=expire_time)
-            link = await self.repo.invite_link_create(obj=create_obj)
-            return Result(item=link)
-
-        update_obj = CommunityInviteUpdateDTO(community_id=community_id, code=random_hex, expire_time=expire_time)
-        link = await self.repo.invite_link_update(obj=update_obj)
-        return Result(item=link)
+            # create_link(community_code)
+            return Result(item=community_code)

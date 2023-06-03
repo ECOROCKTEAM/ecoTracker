@@ -23,6 +23,7 @@ class Mission:
 class MissionUser:
     """Сущность миссии пользователя"""
 
+    id: int
     user_id: int
     mission_id: int
     date_start: datetime
@@ -34,6 +35,7 @@ class MissionUser:
 class MissionCommunity:
     """Сущность миссии сообщества"""
 
+    id: int
     community_id: int
     mission_id: int
     author: str

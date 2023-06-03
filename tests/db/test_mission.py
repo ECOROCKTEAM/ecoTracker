@@ -80,7 +80,7 @@ async def test_user_mission_get(pool, test_user_mission: MissionUser):
     async with SqlAlchemyUnitOfWork(pool) as uow:
         mission_user = await uow.mission.user_mission_get(
             user_id=test_user_mission.user_id,
-            mission_id=test_user_mission.mission_id,
+            id=test_user_mission.id,
         )
     assert test_user_mission.user_id == mission_user.user_id
     assert test_user_mission.mission_id == mission_user.mission_id
@@ -119,7 +119,7 @@ async def test_user_mission_update(pool, test_user_mission: MissionUser):
     async with SqlAlchemyUnitOfWork(pool) as uow:
         mission_user = await uow.mission.user_mission_update(
             user_id=test_user_mission.user_id,
-            mission_id=test_user_mission.mission_id,
+            id=test_user_mission.id,
             obj=MissionUserUpdateDTO(status=new_status),
         )
         await uow.commit()
@@ -154,8 +154,8 @@ async def test_user_mission_lst(pool, test_user: User, test_user_mission_model_l
 async def test_community_mission_get(pool, test_community_mission: MissionCommunity):
     async with SqlAlchemyUnitOfWork(pool) as uow:
         mission_user = await uow.mission.community_mission_get(
+            id=test_community_mission.id,
             community_id=test_community_mission.community_id,
-            mission_id=test_community_mission.mission_id,
         )
     assert test_community_mission.community_id == mission_user.community_id
     assert test_community_mission.mission_id == mission_user.mission_id
@@ -171,12 +171,12 @@ async def test_community_mission_create(pool, test_community_2: Community, test_
         )
         stlen = len(community_mission_lst)
         mission_community_created = await uow.mission.community_mission_create(
+            community_id=test_community_2.id,
             obj=MissionCommunityCreateDTO(
-                community_id=test_community_2.id,
                 mission_id=test_mission.id,
                 status=OccupancyStatusEnum.ACTIVE,
                 author="amogus",
-            )
+            ),
         )
         await uow.commit()
 
@@ -198,7 +198,7 @@ async def test_community_mission_update(pool, test_community_mission: MissionCom
     async with SqlAlchemyUnitOfWork(pool) as uow:
         mission_community = await uow.mission.community_mission_update(
             community_id=test_community_mission.community_id,
-            mission_id=test_community_mission.mission_id,
+            id=test_community_mission.id,
             obj=MissionCommunityUpdateDTO(status=new_status),
         )
         await uow.commit()

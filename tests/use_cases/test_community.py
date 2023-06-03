@@ -6,6 +6,7 @@ from src.core.dto.community.community import CommunityCreateDTO, CommunityUpdate
 from src.core.dto.community.invite import CommunityInviteDTO
 from src.core.dto.m2m.user.community import UserCommunityUpdateDTO
 from src.core.dto.mock import MockObj
+from src.core.entity.community import CommunityInvite
 from src.core.entity.user import User
 from src.core.enum.community.privacy import CommunityPrivacyEnum
 from src.core.enum.community.role import CommunityRoleEnum
@@ -40,9 +41,7 @@ async def test_create(pool, test_user):
 @pytest.mark.asyncio
 async def test_update(pool, test_user, test_community, test_user_community):
     uow = SqlAlchemyUnitOfWork(pool)
-    update_obj = CommunityUpdateDTO(
-        name="new_name", description="new_description", privacy=CommunityPrivacyEnum.PUBLICK
-    )
+    update_obj = CommunityUpdateDTO(name="new_name", description="new_description", privacy=CommunityPrivacyEnum.PUBLIC)
     uc = community_update.CommunityUpdateUsecase(uow=uow)
     res = await uc(community_id=test_community.id, user=test_user, update_obj=update_obj)
     assert res.item.id == test_community.id
@@ -88,9 +87,9 @@ async def test_delete(pool, test_user, test_community_delete):
 @pytest.mark.asyncio
 async def test_get_invite(pool, test_user, test_community):
     uow = SqlAlchemyUnitOfWork(pool)
-    uc = community_get_invite_link.CommunityGetInviteLinkUsecase(uow=uow, invite_expire_sec=DAY_SECONDS)
+    uc = community_get_invite_link.CommunityGetInviteCodeUsecase(uow=uow, invite_expire_sec=DAY_SECONDS)
     res = await uc(community_id=test_community.id, user=test_user)
-    assert isinstance(res.item, CommunityInviteDTO)
+    assert isinstance(res.item, CommunityInvite)
     assert len(res.item.code) == 32
 
 
@@ -107,7 +106,7 @@ async def test_leave(pool, test_user_leave, test_community, test_user_community_
 @pytest.mark.asyncio
 async def test_join_by_code(pool, test_user_join_by_code, test_community_join_code):
     uow = SqlAlchemyUnitOfWork(pool)
-    uc = community_join_by_code.CommunityJoinByCode(uow=uow)
+    uc = community_join_by_code.CommunityJoinByCodeUsecase(uow=uow)
     res = await uc(user=test_user_join_by_code, code=test_community_join_code.code)
     assert res.item.role == CommunityRoleEnum.USER
 

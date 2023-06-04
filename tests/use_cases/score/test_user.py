@@ -1,9 +1,7 @@
 import pytest
 
-from src.core.dto.challenges.score import ScoreOperationValueDTO
 from src.core.dto.mock import MockObj
 from src.core.entity.user import User
-from src.core.enum.score.operation import ScoreOperationEnum
 from src.core.usecases.score.user import user_get_rating, user_get_score
 from src.data.unit_of_work import SqlAlchemyUnitOfWork
 

@@ -1,0 +1,607 @@
+openapi: 3.0.0
+x-stoplight:
+  id: 7gkgcsosvv5mh
+info:
+  title: openapi_mission
+  version: '1.0'
+  contact:
+    name: Vlad
+    email: ecoapptracker@gmail.com
+  description: Mission APIs
+servers:
+  - url: 'http://127.0.0.1:8000'
+paths:
+  '/mission/get/{mission_id}':
+    parameters:
+      - schema:
+          type: number
+        name: mission_id
+        in: path
+        required: true
+        description: mission identify
+    get:
+      summary: Get mission
+      tags:
+        - Mission
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionEntity'
+        '403':
+          description: User is not premium
+        '404':
+          description: Mission not active
+      operationId: get-mission-get-mission_id
+      description: Get mission by id
+  /mission/list:
+    get:
+      summary: Mission list
+      tags:
+        - Mission
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MissionEntity'
+        '403':
+          description: User is not premium
+      operationId: get-mission-list
+      description: 'Get mission list with filter, pagination, order objects'
+      parameters:
+        - schema:
+            type: boolean
+          in: query
+          name: active
+          description: filter object
+          allowEmptyValue: true
+        - schema: {}
+          in: query
+          name: pagination
+          description: pagination object
+          allowEmptyValue: true
+        - schema: {}
+          in: query
+          name: order
+          description: order object
+  /mission/user/create:
+    post:
+      tags:
+        - Mission User
+      summary: Create user mission
+      operationId: post-mission-user-create
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionUserEntity'
+        '403':
+          description: User is not premium
+        '404':
+          description: Mission is not active
+      description: Create user mission object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MissionUserCreateDTO'
+  '/mission/user/get/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: object id
+    get:
+      summary: Get user mission
+      tags:
+        - Mission User
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionUserEntity'
+        '403':
+          description: User is not premium
+      operationId: get-mission-user-get-id
+      description: Get user mission
+  /mission/user/list:
+    get:
+      summary: User mission list
+      tags:
+        - Mission User
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MissionUserEntity'
+        '403':
+          description: User is not premium
+      operationId: get-mission-user-list
+      description: Get user mission list
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: order
+          description: order object
+        - schema:
+            type: string
+          in: query
+          name: pagination
+          description: pagination object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MissionUserFilter'
+  '/mission/user/update/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: updating object id
+    patch:
+      tags: [Mission User]
+      summary: Update user mission
+      operationId: patch-mission-user-update-id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionUserEntity'
+        '403':
+          description: User is not premium
+        '404':
+          description: Mission status is not "Active"
+      description: Updating user mission object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MissionUserUpdateDTO'
+  '/mission/community/get/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: object id
+    get:
+      summary: Mission community
+      tags:
+        - Mission Community
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionCommunityEntity'
+        '403':
+          description: User is not premium
+      operationId: get-mission-community-get-id
+      description: Get mission community
+  /mission/community/create:
+    post:
+      tags: [Mission Community]
+      summary: Mission Community create
+      operationId: post-mission-community-create
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionCommunityEntity'
+        '403':
+          description: User is not premium or user has not permission for creating community mission
+        '404':
+          description: Entity not active
+      description: Mission Community create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MissionCommunityCreateDTO'
+  /mission/comminuty/list:
+    get:
+      summary: Mission community list
+      tags:
+        - Mission Community
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MissionCommunityEntity'
+        '403':
+          description: User is not premium
+      operationId: get-mission-comminuty-list
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MissionCommunityFilter'
+        description: ''
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: order
+          description: order object
+        - schema:
+            type: string
+          in: query
+          name: pagination
+          description: pagination object
+      description: Mission community list
+  '/mission/community/update/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: object id
+    patch:
+      tags: [Mission Community]
+      summary: Update mission community
+      operationId: patch-mission-community-update-id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionCommunityEntity'
+        '404':
+          description: Entity not found or not changed
+      description: Update mission community object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MissionCommunityUpdateDTO'
+components:
+  schemas:
+    MissionEntity:
+      title: MissionEntity
+      x-stoplight:
+        id: jvwvy9nsge8wh
+      type: object
+      description: Mission entity object
+      properties:
+        id:
+          type: integer
+          x-stoplight:
+            id: tbwxyncsg2dc2
+          description: |
+            Mission identify
+        name:
+          type: string
+          x-stoplight:
+            id: 4r2ho48el0kks
+          description: Mission name
+        active:
+          type: boolean
+          x-stoplight:
+            id: pfdkzz6lkhv72
+        description:
+          type: string
+          x-stoplight:
+            id: 83qsc3yx1btnj
+          description: Mission description
+        instruction:
+          type: string
+          x-stoplight:
+            id: a0yaoxnzsq0t4
+          description: Execution instruction
+        category_id:
+          type: integer
+          x-stoplight:
+            id: dxloi86j8fz94
+          description: ID of relation category object
+        language:
+          type: string
+          x-stoplight:
+            id: a69mwxl6sc7u9
+          description: Language enum
+    MissionFilter:
+      title: MissionFilter
+      x-stoplight:
+        id: x1oenrdwtq20c
+      type: object
+      description: Mission filter
+      properties:
+        active:
+          type: boolean
+          x-stoplight:
+            id: yxhcn9arbrksr
+          description: filter by active
+    MissionUserCreateDTO:
+      title: MissionUserCreateDTO
+      x-stoplight:
+        id: e0rgbpafyexdb
+      type: object
+      description: Mission User Create DTO
+      properties:
+        mission_id:
+          type: integer
+          x-stoplight:
+            id: 8f0apnjb8yz3t
+          description: mission identify
+        status:
+          type: string
+          x-stoplight:
+            id: 7tw2dvtz3bxhr
+    MissionUserEntity:
+      title: MissionUserEntity
+      x-stoplight:
+        id: 6x3raqsn82skp
+      type: object
+      properties:
+        id:
+          type: integer
+          x-stoplight:
+            id: t2tp1nwhwv451
+          description: Object identify
+        user_id:
+          type: integer
+          x-stoplight:
+            id: 3cwxkl1fovf1z
+          description: user id
+        mission_id:
+          type: integer
+          x-stoplight:
+            id: ecqg1dcki7f7t
+          description: mission id
+        date_start:
+          type: string
+          x-stoplight:
+            id: jojag0d2xlcdr
+          format: date-time
+          description: start datetime
+        date_close:
+          type: string
+          x-stoplight:
+            id: 8bu52xczv922x
+          format: date-time
+          description: close datetime
+        status:
+          type: object
+          x-stoplight:
+            id: 6ukndkc46pw0n
+    MissionUserFilter:
+      title: MissionUserFilter
+      x-stoplight:
+        id: loil8p43vih5f
+      type: object
+      properties:
+        mission_id:
+          type: integer
+          x-stoplight:
+            id: cefxcbx4lhsjg
+          description: mission id
+        status:
+          type: string
+          x-stoplight:
+            id: 6qzscrmxzf8xr
+          description: status enum
+    MissionUserUpdateDTO:
+      title: MissionUserUpdateDTO
+      x-stoplight:
+        id: kf5fcbfwpbwop
+      type: object
+      description: MissionUser updating object DTO
+      properties:
+        date_close:
+          type: string
+          x-stoplight:
+            id: 45bbr5hmyvbux
+          format: date-time
+          description: close datetime
+        status:
+          type: string
+          x-stoplight:
+            id: c8h947bwh2mnh
+    MissionCommunityEntity:
+      title: MissionCommunityEntity
+      x-stoplight:
+        id: p8oth02jy6okn
+      type: object
+      description: Mission community entity object
+      properties:
+        id:
+          type: integer
+          x-stoplight:
+            id: cvvoeqgqj035c
+          description: Mission community id
+        community_id:
+          type: integer
+          x-stoplight:
+            id: x57u635qv66wq
+          description: community id
+        mission_id:
+          type: integer
+          x-stoplight:
+            id: vpecth548awle
+          description: mission id
+        author:
+          type: string
+          x-stoplight:
+            id: 7at3um4kn9lfb
+          description: author name
+        date_start:
+          type: string
+          x-stoplight:
+            id: 6v67j03rvs5wl
+          format: date-time
+          description: datetime start of the mission
+        date_close:
+          type: string
+          x-stoplight:
+            id: wkhei4wvlntka
+          format: date-time
+          description: datetime close of the mission
+        status:
+          type: string
+          x-stoplight:
+            id: 4k1pza7b4q1tc
+        place:
+          type: string
+          x-stoplight:
+            id: brn486bixcmok
+          description: place of the mission
+        meeting_date:
+          type: string
+          x-stoplight:
+            id: uoo9u501ni5ac
+          format: date-time
+        people_required:
+          type: integer
+          x-stoplight:
+            id: qfzgmspupqx2t
+        people_max:
+          type: integer
+          x-stoplight:
+            id: ridgnw7h8cib5
+        comment:
+          type: string
+          x-stoplight:
+            id: huntlx4pnt2hd
+    MissionCommunityCreateDTO:
+      title: MissionCommunityCreateDTO
+      x-stoplight:
+        id: 3zctg40ukkc1g
+      type: object
+      description: Mission community create DTO object
+      properties:
+        mission_id:
+          type: integer
+          x-stoplight:
+            id: komhvzxiubl3w
+          description: mission id
+        author:
+          type: string
+          x-stoplight:
+            id: wk9xv39z4ythb
+        place:
+          type: string
+          x-stoplight:
+            id: tfndyua48vz50
+        meeting_date:
+          type: string
+          x-stoplight:
+            id: phh5ac1611kcw
+          format: date-time
+        people_required:
+          type: integer
+          x-stoplight:
+            id: llclkjooa1g93
+        people_max:
+          type: integer
+          x-stoplight:
+            id: tclrcglqeg9vk
+        comment:
+          type: string
+          x-stoplight:
+            id: 1lf8oz2y3t4vr
+        status:
+          type: string
+          x-stoplight:
+            id: yzy10m61f01g5
+    MissionCommunityFilter:
+      title: MissionCommunityFilter
+      x-stoplight:
+        id: 1bv20pb7uhf1v
+      type: object
+      properties:
+        community_id:
+          type: integer
+          x-stoplight:
+            id: pat5k1wo70qvf
+          description: community id
+        community_id_list:
+          type: array
+          x-stoplight:
+            id: kgzhhw9nsytl7
+          items:
+            x-stoplight:
+              id: eyiybwk2tivxh
+            type: integer
+        mission_id:
+          type: integer
+          x-stoplight:
+            id: l2l44k56t32v9
+          description: mission id
+        status:
+          type: string
+          x-stoplight:
+            id: 5ib95vg2wg0fs
+    MissionCommunityUpdateDTO:
+      title: MissionCommunityUpdateDTO
+      x-stoplight:
+        id: 1lv2lc17uguj1
+      type: object
+      properties:
+        date_close:
+          type: string
+          x-stoplight:
+            id: 13s0pcuvgb187
+          format: date-time
+        status:
+          type: string
+          x-stoplight:
+            id: k7ycdm86vrrjp
+        place:
+          type: string
+          x-stoplight:
+            id: ahotrsljv8rz6
+        meeting_date:
+          type: string
+          x-stoplight:
+            id: rl450j9gbgrgv
+          format: date-time
+        people_required:
+          type: integer
+          x-stoplight:
+            id: r6l2bqd7h5449
+        people_max:
+          type: integer
+          x-stoplight:
+            id: 2ph1e84blru0a
+        comment:
+          type: string
+          x-stoplight:
+            id: p7bz79fmdxpty
+tags:
+  - name: Mission
+    description: Missions endpoints
+  - name: Mission User
+    description: Mission User endpoints
+  - name: Mission Community
+    description: Mission Community endpoints

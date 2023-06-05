@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.const.translate import DEFAULT_LANGUANGE
 from src.core.entity.occupancy import OccupancyCategory
 from src.core.enum.language import LanguageEnum
 from src.core.exception.base import EntityNotFound
@@ -12,7 +13,7 @@ from src.data.models.challenges.occupancy import OccupancyCategoryTranslateModel
 
 def occupancy_model_to_entity(model: OccupancyCategoryTranslateModel) -> OccupancyCategory:
     return OccupancyCategory(
-        id=model.id,
+        id=model.category_id,
         name=model.name,
         language=model.language,
     )
@@ -28,12 +29,24 @@ class RepositoryOccupancyCategory(IRepositoryOccupancyCategory):
         )
         result = await self.db_context.scalar(stmt)
         if not result:
-            raise EntityNotFound(msg=f"Category={id} with lang={lang} not found")
+            stmt = select(OccupancyCategoryTranslateModel).where(
+                OccupancyCategoryTranslateModel.category_id == id,
+                OccupancyCategoryTranslateModel.language == DEFAULT_LANGUANGE,
+            )
+            result = await self.db_context.scalar(stmt)
+            if result is None:
+                raise EntityNotFound(msg=f"Category={id} with lang={lang} not found")
+
         return occupancy_model_to_entity(model=result)
 
     async def lst(self, lang: LanguageEnum) -> list[OccupancyCategory]:
         stmt = select(OccupancyCategoryTranslateModel).where(OccupancyCategoryTranslateModel.language == lang)
         result = await self.db_context.scalars(stmt)
         if not result:
-            raise EntityNotFound(msg=f"Occupancy with lang={lang} not found")
+            stmt = select(OccupancyCategoryTranslateModel).where(
+                OccupancyCategoryTranslateModel.language == DEFAULT_LANGUANGE
+            )
+            result = await self.db_context.scalars(stmt)
+            if not result:
+                raise EntityNotFound(msg=f"Occupancy with lang={lang} and default_lang={DEFAULT_LANGUANGE} not found")
         return [occupancy_model_to_entity(model=model) for model in result]

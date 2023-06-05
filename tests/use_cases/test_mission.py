@@ -73,9 +73,7 @@ async def test_mission_community_get(
 ):
     uow = SqlAlchemyUnitOfWork(pool)
     uc = mission_community_get.MissionCommunityGetUsecase(uow=uow)
-    res = await uc(
-        user=test_user, mission_id=test_community_mission.mission_id, community_id=test_community_mission.community_id
-    )
+    res = await uc(id=test_community_mission.id, user=test_user, community_id=test_community_mission.community_id)
     mission = res.item
     assert mission.community_id == test_community_mission.community_id
     assert mission.mission_id == test_community_mission.mission_id
@@ -96,9 +94,9 @@ async def test_mission_community_create(
     uow = SqlAlchemyUnitOfWork(pool)
     uc = mission_community_create.MissionCommunityCreateUsecase(uow=uow)
     res = await uc(
+        community_id=test_community_2.id,
         user=test_user_2,
         create_obj=MissionCommunityCreateDTO(
-            community_id=test_community_2.id,
             mission_id=test_mission.id,
             author=test_user_2.username,
         ),
@@ -118,8 +116,8 @@ async def test_mission_community_update(
     uow = SqlAlchemyUnitOfWork(pool)
     uc = mission_community_update.MissionCommunityUpdateUsecase(uow=uow)
     res = await uc(
+        id=test_community_mission.id,
         user=test_user,
-        mission_id=test_community_mission.mission_id,
         community_id=test_community_mission.community_id,
         update_obj=MissionCommunityUpdateDTO(status=OccupancyStatusEnum.FINISH),
     )
@@ -152,7 +150,7 @@ async def test_mission_community_list(
 async def test_mission_user_get(pool, test_user: User, test_user_mission: MissionUser):
     uow = SqlAlchemyUnitOfWork(pool)
     uc = mission_user_get.MissionUserGetUsecase(uow=uow)
-    res = await uc(user=test_user, mission_id=test_user_mission.mission_id)
+    res = await uc(user=test_user, id=test_user_mission.id)
     mission = res.item
     assert mission.user_id == test_user_mission.user_id
     assert mission.mission_id == test_user_mission.mission_id
@@ -177,8 +175,8 @@ async def test_mission_user_update(pool, test_user: User, test_user_mission: Mis
     uow = SqlAlchemyUnitOfWork(pool)
     uc = mission_user_update.MissionUserUpdateUsecase(uow=uow)
     res = await uc(
+        id=test_user_mission.id,
         user=test_user,
-        mission_id=test_user_mission.mission_id,
         update_obj=MissionUserUpdateDTO(status=OccupancyStatusEnum.FINISH),
     )
     mission = res.item

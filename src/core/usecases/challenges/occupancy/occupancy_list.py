@@ -21,6 +21,5 @@ class OccupancyCategoryList:
 
         async with self.uow as uow:
             category_list = await uow.occupancy_category.lst(lang=user.language)
-            # Может язык пользователя, передачу его в функцию сделать фильтром?
 
             return Result(items=category_list)

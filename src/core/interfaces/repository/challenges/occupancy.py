@@ -24,5 +24,5 @@ class IRepositoryOccupancyCategory(ABC):
             lang (LanguageEnum): Target of language
 
         Returns:
-            list[OccupancyCategory]: list of dto occupancy category entity object
+            list[OccupancyCategory]: list of occupancy category entity object
         """

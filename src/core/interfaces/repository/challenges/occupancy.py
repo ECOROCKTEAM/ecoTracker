@@ -1,28 +1,28 @@
 from abc import ABC, abstractmethod
 
-from src.core.dto.challenges.category import OccupancyCategoryDTO
+from src.core.entity.occupancy import OccupancyCategory
 from src.core.enum.language import LanguageEnum
 
 
 class IRepositoryOccupancyCategory(ABC):
     @abstractmethod
-    async def get(self, *, id: int, lang: LanguageEnum) -> OccupancyCategoryDTO:
+    async def get(self, *, id: int, lang: LanguageEnum) -> OccupancyCategory:
         """Get occupancy category
 
         Args:
             id (int): Id category
 
         Returns:
-            OccupancyCategoryDTO: DTO of occupancy category
+            OccupancyCategory: Occupancy category entity object
         """
 
     @abstractmethod
-    async def lst(self, lang: LanguageEnum) -> list[OccupancyCategoryDTO]:
+    async def lst(self, lang: LanguageEnum) -> list[OccupancyCategory]:
         """Get list of occupancy category
 
         Args:
             lang (LanguageEnum): Target of language
 
         Returns:
-            list[OccupancyCategoryDTO]: list of dto occupancy category
+            list[OccupancyCategory]: list of occupancy category entity object
         """

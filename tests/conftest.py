@@ -150,9 +150,7 @@ async def test_user_leave(pool: async_sessionmaker[AsyncSession]) -> User:
 @pytest_asyncio.fixture(scope="module")
 async def test_user_score(pool: async_sessionmaker[AsyncSession], test_user) -> ScoreUser:
     async with pool() as session:
-        score_user = UserScoreModel(
-            user_id=test_user.id, value=100, operation=ScoreOperationEnum.PLUS, status=OccupancyStatusEnum.ACTIVE
-        )
+        score_user = UserScoreModel(user_id=test_user.id, value=100, operation=ScoreOperationEnum.PLUS)
         session.add(score_user)
         await session.commit()
         return ScoreUser(user_id=score_user.user_id, value=score_user.value, operation=score_user.operation)
@@ -544,22 +542,16 @@ async def test_users_scores(pool: async_sessionmaker[AsyncSession], test_users) 
     val = 100
     async with pool() as sess:
         for user in test_users[:-2]:
-            user_score = UserScoreModel(
-                user_id=user.id, value=val, operation=ScoreOperationEnum.PLUS, status=OccupancyStatusEnum.ACTIVE
-            )
+            user_score = UserScoreModel(user_id=user.id, value=val, operation=ScoreOperationEnum.PLUS)
             val += 10
             sess.add(user_score)
             await sess.flush()
             await sess.refresh(user_score)
             user_score_list.append(user_score)
         await sess.commit()
-        min_value_user = UserScoreModel(
-            user_id=999, value=115, operation=ScoreOperationEnum.PLUS, status=OccupancyStatusEnum.ACTIVE
-        )
+        min_value_user = UserScoreModel(user_id=999, value=115, operation=ScoreOperationEnum.PLUS)
         sess.add(min_value_user)
-        max_value_user = UserScoreModel(
-            user_id=1000, value=100000, operation=ScoreOperationEnum.PLUS, status=OccupancyStatusEnum.ACTIVE
-        )
+        max_value_user = UserScoreModel(user_id=1000, value=100000, operation=ScoreOperationEnum.PLUS)
         sess.add(max_value_user)
         await sess.commit()
     user_score_list.append(max_value_user)
@@ -579,6 +571,7 @@ async def test_user_for_rating(test_users) -> User:
 async def test_user_mission(test_user_mission_model_list: list[UserMissionModel]) -> MissionUser:
     model = random.choice(test_user_mission_model_list)
     return MissionUser(
+        id=model.id,
         user_id=model.user_id,
         mission_id=model.mission_id,
         status=model.status,
@@ -702,9 +695,7 @@ async def user_operations_list(pool: async_sessionmaker[AsyncSession], test_user
     user_list: list[UserScoreModel] = []
     async with pool() as sess:
         for _ in range(10):
-            user_operation = UserScoreModel(
-                user_id=test_user.id, value=10, operation=ScoreOperationEnum.PLUS, status=OccupancyStatusEnum.ACTIVE
-            )
+            user_operation = UserScoreModel(user_id=test_user.id, value=10, operation=ScoreOperationEnum.PLUS)
             sess.add(user_operation)
             await sess.flush()
             await sess.refresh(user_operation)
@@ -716,6 +707,7 @@ async def user_operations_list(pool: async_sessionmaker[AsyncSession], test_user
 async def test_community_mission(test_community_mission_model_list: list[CommunityMissionModel]) -> MissionCommunity:
     model = random.choice(test_community_mission_model_list)
     return MissionCommunity(
+        id=model.id,
         community_id=model.community_id,
         mission_id=model.mission_id,
         status=model.status,

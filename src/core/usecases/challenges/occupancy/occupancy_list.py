@@ -11,7 +11,7 @@ class Result:
     items: list[OccupancyCategory]
 
 
-class OccupancyCategoryList:
+class OccupancyCategoryListUseCase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 

@@ -1,13 +1,6 @@
 from fastapi import APIRouter, Body, Depends, Path
 
 from src.core.dto.mock import MockObj
-from src.core.http.api.challenges.task.schemas.task import (
-    TaskUserEntity,
-    TaskUserFilterObject,
-    TaskUserPlanEntity,
-    TaskUserPlanFilterObject,
-)
-from src.core.http.api.depends import get_uow, get_user
 from src.core.interfaces.repository.challenges.task import (
     TaskUserFilter,
     TaskUserPlanFilter,
@@ -20,12 +13,19 @@ from src.core.usecases.challenges.task.task_user_plan_list import (
     UserTaskPlanListUseCase,
 )
 from src.core.usecases.challenges.task.task_user_reject import UserTaskRejectUseCase
+from src.http.api.challenges.task.schemas.task import (
+    TaskUserEntity,
+    TaskUserFilterObject,
+    TaskUserPlanEntity,
+    TaskUserPlanFilterObject,
+)
+from src.http.api.depends import get_uow, get_user
 
 router = APIRouter(tags=["Task User"])
 
 
 @router.get(
-    "/task/user/get/{task_id}",
+    "/task/user/{id}",
     responses={
         200: {"model": TaskUserEntity, "description": "OK"},
         401: {"description": "User not active"},
@@ -34,18 +34,18 @@ router = APIRouter(tags=["Task User"])
     response_model_by_alias=True,
 )
 async def get(
-    task_id: int = Path(default=None, description="task identify"),
+    id: int = Path(description="task identify"),
     user=Depends(get_user),
     uow=Depends(get_uow),
 ) -> TaskUserEntity:
     """Get user task"""
     uc = UserTaskGetUseCase(uow=uow)
-    result = await uc(user=user, obj_id=task_id)
+    result = await uc(user=user, obj_id=id)
     return result.item
 
 
 @router.get(
-    "/task/user/list",
+    "/task/user",
     responses={
         200: {"model": list[TaskUserEntity], "description": "OK"},
         401: {"description": "User not active"},
@@ -67,7 +67,7 @@ async def lst(
 
 
 @router.get(
-    "/task/user/plan/list",
+    "/task/user/plan",
     responses={
         200: {"model": list[TaskUserPlanEntity], "description": "OK"},
         401: {"description": "User not active"},
@@ -89,7 +89,7 @@ async def plan_lst(
 
 
 @router.post(
-    "/task/user/add/{task_id}",
+    "/task/user/{id}",
     responses={
         200: {"description": "OK"},
     },
@@ -97,18 +97,18 @@ async def plan_lst(
     response_model_by_alias=True,
 )
 async def add(
-    task_id: int = Path(default=None, description="task identify"),
+    id: int = Path(description="task identify"),
     user=Depends(get_user),
     uow=Depends(get_uow),
 ) -> TaskUserEntity:
     """Add task to user list"""
     uc = UserTaskAddUseCase(uow=uow)
-    result = await uc(user=user, task_id=task_id)
+    result = await uc(user=user, task_id=id)
     return result.item
 
 
 @router.patch(
-    "/task/user/complete/{task_id}",
+    "/task/user/complete/{obj_id}",
     responses={
         200: {"model": TaskUserEntity, "description": "OK"},
         401: {"description": "User not active"},
@@ -117,7 +117,7 @@ async def add(
     response_model_by_alias=True,
 )
 async def complete(
-    obj_id: int = Path(default=None, description="task identify"),
+    obj_id: int = Path(description="task identify"),
     user=Depends(get_user),
     uow=Depends(get_uow),
 ) -> TaskUserEntity:
@@ -128,7 +128,7 @@ async def complete(
 
 
 @router.patch(
-    "/task/user/reject/{task_id}",
+    "/task/user/reject/{obj_id}",
     responses={
         200: {"model": TaskUserEntity, "description": "OK"},
         401: {"description": "User not active"},
@@ -137,7 +137,7 @@ async def complete(
     response_model_by_alias=True,
 )
 async def reject(
-    obj_id: int = Path(default=None, description="task identify"),
+    obj_id: int = Path(description="task identify"),
     user=Depends(get_user),
     uow=Depends(get_uow),
 ) -> TaskUserEntity:

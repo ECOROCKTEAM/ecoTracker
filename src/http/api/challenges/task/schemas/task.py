@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 
 from pydantic import BaseModel, Field
 
@@ -23,13 +23,13 @@ class TaskUserFilterObject(BaseModel):
 
 class Task(BaseModel):
     """
-    id: The id of this TaskEntity [Optional.
-    score: The score of this TaskEntity [Optional.
-    category_id: The category_id of this TaskEntity [Optional.
-    name: The name of this TaskEntity [Optional.
-    active: The active of this TaskEntity [Optional.
-    description: The description of this TaskEntity [Optional.
-    language: The language of this TaskEntity [Optional.
+    id: The id of this TaskEntity.
+    score: The score of this TaskEntity.
+    category_id: The category_id of this TaskEntity.
+    name: The name of this TaskEntity.
+    active: The active of this TaskEntity.
+    description: The description of this TaskEntity.
+    language: The language of this TaskEntity.
     """
 
     id: int = Field(alias="id", default=None)
@@ -43,24 +43,24 @@ class Task(BaseModel):
 
 class TaskUserEntity(BaseModel):
     """
-    user_id: The user_id of this TaskUserEntity [Optional.
-    task_id: The task_id of this TaskUserEntity [Optional.
-    date_start: The date_start of this TaskUserEntity [Optional.
-    date_close: The date_close of this TaskUserEntity [Optional.
-    status: The status of this TaskUserEntity [Optional.
+    user_id: The user_id of this TaskUserEntity.
+    task_id: The task_id of this TaskUserEntity.
+    date_start: The date_start of this TaskUserEntity.
+    date_close: The date_close of this TaskUserEntity.
+    status: The status of this TaskUserEntity.
     """
 
     user_id: int = Field(alias="user_id", default=None)
     task_id: int = Field(alias="task_id", default=None)
-    date_start: date = Field(alias="date_start", default=None)
+    date_start: datetime = Field(alias="date_start", default=None)
     date_close: datetime = Field(alias="date_close", default=None)
     status: OccupancyStatusEnum = Field(alias="status", default=None)
 
 
 class TaskUserPlanEntity(BaseModel):
     """
-    user_id: The user_id of this TaskUserPlanEntity [Optional.
-    task_id: The task_id of this TaskUserPlanEntity [Optional.
+    user_id: The user_id of this TaskUserPlanEntity.
+    task_id: The task_id of this TaskUserPlanEntity.
     """
 
     user_id: int = Field(alias="user_id", default=None)

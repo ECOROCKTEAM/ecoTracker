@@ -1,14 +1,7 @@
-from fastapi import APIRouter, Body, Depends, Path
+from fastapi import APIRouter, Body, Depends, Path, Query
 
 from src.core.dto.challenges.mission import MissionUserCreateDTO, MissionUserUpdateDTO
 from src.core.dto.mock import MockObj
-from src.core.http.api.challenges.mission.schemas.mission_user import (
-    MissionUserCreateObject,
-    MissionUserEntity,
-    MissionUserFilterObject,
-    MissionUserUpdateObject,
-)
-from src.core.http.api.depends import get_uow, get_user
 from src.core.interfaces.repository.challenges.mission import MissionUserFilter
 from src.core.usecases.challenges.mission.mission_user_create import (
     MissionUserCreateUsecase,
@@ -20,12 +13,19 @@ from src.core.usecases.challenges.mission.mission_user_list import (
 from src.core.usecases.challenges.mission.mission_user_update import (
     MissionUserUpdateUsecase,
 )
+from src.http.api.challenges.mission.schemas.mission_user import (
+    MissionUserCreateObject,
+    MissionUserEntity,
+    MissionUserFilterObject,
+    MissionUserUpdateObject,
+)
+from src.http.api.depends import get_uow, get_user
 
 router = APIRouter(tags=["Mission User"])
 
 
 @router.get(
-    "/mission/user/get/{id}",
+    "/mission/user/{id}",
     responses={
         200: {"model": MissionUserEntity, "description": "OK"},
         403: {"description": "User is not premium"},
@@ -34,7 +34,7 @@ router = APIRouter(tags=["Mission User"])
     response_model_by_alias=True,
 )
 async def get(
-    id: int = Path(None, description="object id"),
+    id: int = Path(description="object id"),
     user=Depends(get_user),
     uow=Depends(get_uow),
 ) -> MissionUserEntity:
@@ -45,7 +45,7 @@ async def get(
 
 
 @router.get(
-    "/mission/user/list",
+    "/mission/user",
     responses={
         200: {"model": list[MissionUserEntity], "description": "OK"},
         403: {"description": "User is not premium"},
@@ -55,7 +55,7 @@ async def get(
     response_model_by_alias=True,
 )
 async def lst(
-    obj: MissionUserFilterObject = Body(None, description=""),
+    obj: MissionUserFilterObject = Query(None, description=""),
     user=Depends(get_user),
     uow=Depends(get_uow),
 ) -> list[MissionUserEntity]:
@@ -68,7 +68,7 @@ async def lst(
 
 
 @router.patch(
-    "/mission/user/update/{id}",
+    "/mission/user/{id}",
     responses={
         200: {"model": MissionUserEntity, "description": "OK"},
         403: {"description": "User is not premium"},
@@ -79,7 +79,7 @@ async def lst(
     response_model_by_alias=True,
 )
 async def patch(
-    id: int = Path(None, description="updating object id"),
+    id: int = Path(description="updating object id"),
     obj: MissionUserUpdateObject = Body(None, description="Updating object"),
     user=Depends(get_user),
     uow=Depends(get_uow),
@@ -91,7 +91,7 @@ async def patch(
 
 
 @router.post(
-    "/mission/user/create",
+    "/mission/user",
     responses={
         200: {"model": MissionUserEntity, "description": "OK"},
         403: {"description": "User is not premium"},

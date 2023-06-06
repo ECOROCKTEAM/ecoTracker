@@ -1,17 +1,10 @@
-from fastapi import APIRouter, Body, Depends, Path
+from fastapi import APIRouter, Body, Depends, Path, Query
 
 from src.core.dto.challenges.mission import (
     MissionCommunityCreateDTO,
     MissionCommunityUpdateDTO,
 )
 from src.core.dto.mock import MockObj
-from src.core.http.api.challenges.mission.schemas.mission_community import (
-    MissionCommunityCreateObject,
-    MissionCommunityEntity,
-    MissionCommunityFilterObject,
-    MissionCommunityUpdateObject,
-)
-from src.core.http.api.depends import get_uow, get_user
 from src.core.interfaces.repository.challenges.mission import MissionCommunityFilter
 from src.core.usecases.challenges.mission.mission_community_create import (
     MissionCommunityCreateUsecase,
@@ -25,6 +18,13 @@ from src.core.usecases.challenges.mission.mission_community_list import (
 from src.core.usecases.challenges.mission.mission_community_update import (
     MissionCommunityUpdateUsecase,
 )
+from src.http.api.challenges.mission.schemas.mission_community import (
+    MissionCommunityCreateObject,
+    MissionCommunityEntity,
+    MissionCommunityFilterObject,
+    MissionCommunityUpdateObject,
+)
+from src.http.api.depends import get_uow, get_user
 
 router = APIRouter(
     tags=["Mission Community"],
@@ -32,7 +32,7 @@ router = APIRouter(
 
 
 @router.get(
-    "/mission/comminuty/list",
+    "/mission/community",
     responses={
         200: {"model": list[MissionCommunityEntity], "description": "OK"},
         403: {"description": "User is not premium"},
@@ -41,7 +41,7 @@ router = APIRouter(
     response_model_by_alias=True,
 )
 async def lst(
-    filter_obj: MissionCommunityFilterObject = Body(default=None, description=""),
+    filter_obj: MissionCommunityFilterObject = Query(default=None, description=""),
     user=Depends(get_user),
     uow=Depends(get_uow),
 ) -> list[MissionCommunityEntity]:
@@ -57,7 +57,7 @@ async def lst(
 
 
 @router.get(
-    "/mission/community/get/{id}",
+    "/mission/community/{id}",
     responses={
         200: {"model": MissionCommunityEntity, "description": "OK"},
         403: {"description": "User is not premium"},
@@ -66,8 +66,8 @@ async def lst(
     response_model_by_alias=True,
 )
 async def get(
-    id: int = Path(None, description="object id"),
-    community_id: int = Path(default=None, description="community id"),
+    id: int = Path(description="object id"),
+    community_id: int = Path(description="community id"),
     user=Depends(get_user),
     uow=Depends(get_uow),
 ) -> MissionCommunityEntity:
@@ -78,7 +78,7 @@ async def get(
 
 
 @router.patch(
-    "/mission/community/update/{id}",
+    "/mission/community/{id}",
     responses={
         200: {"model": MissionCommunityEntity, "description": "OK"},
         404: {"description": "Entity not found or not changed"},
@@ -87,9 +87,9 @@ async def get(
     response_model_by_alias=True,
 )
 async def patch(
-    id: int = Path(None, description="object id"),
-    community_id: int = Path(default=None, description="community_id"),
-    obj: MissionCommunityUpdateObject = Body(None, description=""),
+    id: int = Path(description="object id"),
+    community_id: int = Query(description="community_id"),
+    obj: MissionCommunityUpdateObject = Body(default=None, description=""),
     user=Depends(get_user),
     uow=Depends(get_uow),
 ) -> MissionCommunityEntity:
@@ -105,7 +105,7 @@ async def patch(
 
 
 @router.post(
-    "/mission/community/create",
+    "/mission/community/",
     responses={
         200: {"model": MissionCommunityEntity, "description": "OK"},
         403: {"description": "User is not premium or user has not permission for creating community mission"},
@@ -115,12 +115,12 @@ async def patch(
     response_model_by_alias=True,
 )
 async def create(
-    community_id: int = Path(description="community_id"),
+    id: int = Query(description="community_id"),
     obj: MissionCommunityCreateObject = Body(default=None, description=""),
     user=Depends(get_user),
     uow=Depends(get_uow),
 ) -> MissionCommunityEntity:
     """Mission Community create"""
     uc = MissionCommunityCreateUsecase(uow=uow)
-    result = await uc(user=user, community_id=community_id, create_obj=MissionCommunityCreateDTO(**obj.dict()))
+    result = await uc(user=user, community_id=id, create_obj=MissionCommunityCreateDTO(**obj.dict()))
     return result.item

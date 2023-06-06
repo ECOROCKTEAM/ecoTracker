@@ -23,7 +23,7 @@ router = APIRouter(tags=["Mission"])
     summary="Get mission",
     response_model_by_alias=True,
 )
-async def get(
+async def mission_get(
     id: int = Path(description="mission identify"),
     user=Depends(get_user),
     uow=Depends(get_uow),
@@ -43,7 +43,7 @@ async def get(
     summary="Mission list",
     response_model_by_alias=True,
 )
-async def lst(
+async def mission_list(
     user=Depends(get_user),
     uow=Depends(get_uow),
     obj: MissionFilterObject = Query(description="Filter object"),

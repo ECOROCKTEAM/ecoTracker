@@ -33,7 +33,7 @@ router = APIRouter(tags=["Mission User"])
     summary="Get user mission",
     response_model_by_alias=True,
 )
-async def get(
+async def mission_user_get(
     id: int = Path(description="object id"),
     user=Depends(get_user),
     uow=Depends(get_uow),
@@ -54,7 +54,7 @@ async def get(
     summary="User mission list",
     response_model_by_alias=True,
 )
-async def lst(
+async def mission_user_list(
     obj: MissionUserFilterObject = Query(None, description=""),
     user=Depends(get_user),
     uow=Depends(get_uow),
@@ -78,7 +78,7 @@ async def lst(
     summary="Update user mission",
     response_model_by_alias=True,
 )
-async def patch(
+async def mission_user_update(
     id: int = Path(description="updating object id"),
     obj: MissionUserUpdateObject = Body(None, description="Updating object"),
     user=Depends(get_user),
@@ -101,7 +101,7 @@ async def patch(
     summary="Create user mission",
     response_model_by_alias=True,
 )
-async def create(
+async def mission_user_create(
     obj: MissionUserCreateObject = Body(None, description="Creating obj"),
     user=Depends(get_user),
     uow=Depends(get_uow),

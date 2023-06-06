@@ -20,7 +20,7 @@ router = APIRouter(tags=["Task"])
     summary="Get task",
     response_model_by_alias=True,
 )
-async def get(
+async def task_get(
     id: int = Path(description="task identify"),
     user=Depends(get_user),
     uow: IUnitOfWork = Depends(get_uow),
@@ -40,7 +40,7 @@ async def get(
     summary="Task list",
     response_model_by_alias=True,
 )
-async def lst(
+async def task_list(
     user=Depends(get_user),
     uow: IUnitOfWork = Depends(get_uow),
     filter_obj: TaskFilterObject = Query(default=None, description="Filter object"),

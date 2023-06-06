@@ -33,7 +33,7 @@ router = APIRouter(tags=["Task User"])
     summary="Get user task",
     response_model_by_alias=True,
 )
-async def get(
+async def task_user_get(
     id: int = Path(description="task identify"),
     user=Depends(get_user),
     uow=Depends(get_uow),
@@ -53,7 +53,7 @@ async def get(
     summary="List user tasks",
     response_model_by_alias=True,
 )
-async def lst(
+async def task_user_list(
     user=Depends(get_user),
     uow=Depends(get_uow),
     filter_obj: TaskUserFilterObject = Body(default=None, description="Filter object"),
@@ -75,7 +75,7 @@ async def lst(
     summary="Your GET endpoint",
     response_model_by_alias=True,
 )
-async def plan_lst(
+async def task_user_plan_list(
     user=Depends(get_user),
     uow=Depends(get_uow),
     filter_obj: TaskUserPlanFilterObject = Body(default=None, description="Filter object"),
@@ -96,7 +96,7 @@ async def plan_lst(
     summary="Add task to user list",
     response_model_by_alias=True,
 )
-async def add(
+async def task_user_add(
     id: int = Path(description="task identify"),
     user=Depends(get_user),
     uow=Depends(get_uow),
@@ -116,7 +116,7 @@ async def add(
     summary="Complete user task",
     response_model_by_alias=True,
 )
-async def complete(
+async def task_user_complete(
     obj_id: int = Path(description="task identify"),
     user=Depends(get_user),
     uow=Depends(get_uow),
@@ -136,7 +136,7 @@ async def complete(
     summary="Reject User Task",
     response_model_by_alias=True,
 )
-async def reject(
+async def task_user_reject(
     obj_id: int = Path(description="task identify"),
     user=Depends(get_user),
     uow=Depends(get_uow),

@@ -18,7 +18,7 @@ router = APIRouter(tags=["Score user"])
     summary="User score",
     response_model_by_alias=True,
 )
-async def score_user(
+async def score_user_get(
     id: int = Path(description="user id"),
     user=Depends(get_user),
     uow: IUnitOfWork = Depends(get_uow),

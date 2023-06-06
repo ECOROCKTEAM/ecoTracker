@@ -40,7 +40,7 @@ router = APIRouter(
     summary="Mission community list",
     response_model_by_alias=True,
 )
-async def lst(
+async def mission_community_list(
     filter_obj: MissionCommunityFilterObject = Query(default=None, description=""),
     user=Depends(get_user),
     uow=Depends(get_uow),
@@ -65,7 +65,7 @@ async def lst(
     summary="Mission community",
     response_model_by_alias=True,
 )
-async def get(
+async def mission_community_get(
     id: int = Path(description="object id"),
     community_id: int = Path(description="community id"),
     user=Depends(get_user),
@@ -86,7 +86,7 @@ async def get(
     summary="Update mission community",
     response_model_by_alias=True,
 )
-async def patch(
+async def mission_community_update(
     id: int = Path(description="object id"),
     community_id: int = Query(description="community_id"),
     obj: MissionCommunityUpdateObject = Body(default=None, description=""),
@@ -114,7 +114,7 @@ async def patch(
     summary="Mission Community create",
     response_model_by_alias=True,
 )
-async def create(
+async def mission_community_create(
     id: int = Query(description="community_id"),
     obj: MissionCommunityCreateObject = Body(default=None, description=""),
     user=Depends(get_user),

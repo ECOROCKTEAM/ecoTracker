@@ -20,7 +20,7 @@ router = APIRouter(tags=["Score community"])
     summary="Community score",
     response_model_by_alias=True,
 )
-async def score_community(
+async def score_community_get(
     id: int = Path(description="community identify"),
     user=Depends(get_user),
     uow: IUnitOfWork = Depends(get_uow),

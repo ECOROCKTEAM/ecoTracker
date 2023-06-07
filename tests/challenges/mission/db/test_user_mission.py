@@ -8,12 +8,11 @@ from src.core.dto.mock import MockObj
 from src.core.entity.mission import Mission, MissionUser
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
-from src.core.exception.base import EntityNotCreated, EntityNotFound, TranslateNotFound
+from src.core.exception.base import EntityNotCreated, EntityNotFound
 from src.core.interfaces.repository.challenges.mission import (
     MissionFilter,
     MissionUserFilter,
 )
-from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.data.models.challenges.mission import UserMissionModel
 from src.data.models.user.user import UserModel
 from src.data.repository.challenges.mission import RepositoryMission

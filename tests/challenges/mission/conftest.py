@@ -1,6 +1,5 @@
 from typing import AsyncGenerator, Tuple
 
-import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,7 +19,6 @@ from src.data.models.challenges.occupancy import (
 from src.data.models.community.community import CommunityModel
 from src.data.models.user.user import UserModel
 from src.data.repository.challenges.mission import RepositoryMission
-from tests.conftest import session
 
 
 @pytest_asyncio.fixture(scope="function")

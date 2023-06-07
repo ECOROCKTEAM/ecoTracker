@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Tuple
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,28 +6,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.dto.challenges.mission import (
     MissionCommunityCreateDTO,
     MissionCommunityUpdateDTO,
-    MissionUserCreateDTO,
-    MissionUserUpdateDTO,
 )
 from src.core.dto.mock import MockObj
-from src.core.entity.mission import Mission, MissionCommunity, MissionUser
+from src.core.entity.mission import Mission, MissionCommunity
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
-from src.core.exception.base import EntityNotCreated, EntityNotFound, TranslateNotFound
-from src.core.interfaces.repository.challenges.mission import (
-    MissionCommunityFilter,
-    MissionFilter,
-    MissionUserFilter,
-)
-from src.core.interfaces.unit_of_work import IUnitOfWork
-from src.data.models.challenges.mission import (
-    CommunityMissionModel,
-    MissionModel,
-    MissionTranslateModel,
-    UserMissionModel,
-)
+from src.core.exception.base import EntityNotCreated, EntityNotFound
+from src.core.interfaces.repository.challenges.mission import MissionCommunityFilter
+from src.data.models.challenges.mission import CommunityMissionModel
 from src.data.models.community.community import CommunityModel
-from src.data.models.user.user import UserModel
 from src.data.repository.challenges.mission import RepositoryMission
 
 

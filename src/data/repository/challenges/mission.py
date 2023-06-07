@@ -1,6 +1,9 @@
+import typing
 from dataclasses import asdict
 
+from asyncpg.exceptions import ForeignKeyViolationError
 from sqlalchemy import and_, insert, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.const.translate import DEFAULT_LANGUANGE
@@ -169,9 +172,14 @@ class RepositoryMission(IRepositoryMission):
 
     async def user_mission_create(self, *, user_id: int, obj: MissionUserCreateDTO) -> MissionUser:
         stmt = insert(UserMissionModel).values(user_id=user_id, **asdict(obj)).returning(UserMissionModel)
-        res = await self.db_context.scalar(stmt)
-        if res is None:
-            raise EntityNotCreated(msg="")
+        try:
+            res = await self.db_context.scalar(stmt)
+        except IntegrityError as error:
+            error.orig = typing.cast(BaseException, error.orig)  # just for types
+            if isinstance(error.orig.__cause__, ForeignKeyViolationError):
+                raise EntityNotCreated(msg="Not found fk") from error
+            raise EntityNotCreated(msg="") from error
+        res = typing.cast(UserMissionModel, res)  # just for types
         return mission_user_to_entity(res)
 
     async def user_mission_update(self, *, id: int, user_id: int, obj: MissionUserUpdateDTO) -> MissionUser:
@@ -211,7 +219,13 @@ class RepositoryMission(IRepositoryMission):
             .values(community_id=community_id, **asdict(obj))
             .returning(CommunityMissionModel)
         )
-        res = await self.db_context.scalar(stmt)
+        try:
+            res = await self.db_context.scalar(stmt)
+        except IntegrityError as error:
+            error.orig = typing.cast(BaseException, error.orig)  # just for types
+            if isinstance(error.orig.__cause__, ForeignKeyViolationError):
+                raise EntityNotCreated(msg="Not found fk") from error
+            raise EntityNotCreated(msg="") from error
         if res is None:
             raise EntityNotCreated(msg="")
         return mission_community_to_entity(res)

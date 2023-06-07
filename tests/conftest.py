@@ -94,6 +94,16 @@ async def test_user_model(session: AsyncSession) -> AsyncGenerator[UserModel, No
     await session.commit()
 
 
+@pytest_asyncio.fixture(scope="function")
+async def test_community_model(session: AsyncSession) -> AsyncGenerator[CommunityModel, None]:
+    model = CommunityModel(name="test", description="test", active=True, privacy=CommunityPrivacyEnum.PUBLIC)
+    session.add(model)
+    await session.commit()
+    yield model
+    await session.delete(model)
+    await session.commit()
+
+
 # @pytest_asyncio.fixture(scope="module")
 # async def test_user(pool: async_sessionmaker[AsyncSession]) -> User:
 #     async with pool() as sess:

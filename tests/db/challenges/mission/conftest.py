@@ -4,10 +4,11 @@ import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.entity.mission import Mission, MissionUser
+from src.core.entity.mission import Mission, MissionCommunity, MissionUser
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
 from src.data.models.challenges.mission import (
+    CommunityMissionModel,
     MissionModel,
     MissionTranslateModel,
     UserMissionModel,
@@ -16,6 +17,7 @@ from src.data.models.challenges.occupancy import (
     OccupancyCategoryModel,
     OccupancyCategoryTranslateModel,
 )
+from src.data.models.community.community import CommunityModel
 from src.data.models.user.user import UserModel
 from src.data.repository.challenges.mission import RepositoryMission
 from tests.conftest import session
@@ -33,7 +35,7 @@ async def repo(session: AsyncSession):
 
 
 @pytest_asyncio.fixture(scope="function")
-async def mission_model_ru(
+async def test_mission_model_ru(
     session: AsyncSession, category_model_ru: Tuple[OccupancyCategoryModel, OccupancyCategoryTranslateModel]
 ) -> AsyncGenerator[Tuple[MissionModel, MissionTranslateModel], None]:
     category, _ = category_model_ru
@@ -60,7 +62,7 @@ async def mission_model_ru(
 
 
 @pytest_asyncio.fixture(scope="function")
-async def mission_model_en(
+async def test_mission_model_en(
     session: AsyncSession, category_model_en: Tuple[OccupancyCategoryModel, OccupancyCategoryTranslateModel]
 ) -> AsyncGenerator[Tuple[MissionModel, MissionTranslateModel], None]:
     category, _ = category_model_en
@@ -89,9 +91,9 @@ async def mission_model_en(
 ## entity
 @pytest_asyncio.fixture(scope="function")
 async def test_mission_entity_ru(
-    mission_model_ru: Tuple[MissionModel, MissionTranslateModel]
+    test_mission_model_ru: Tuple[MissionModel, MissionTranslateModel]
 ) -> AsyncGenerator[Mission, None]:
-    mission, translate = mission_model_ru
+    mission, translate = test_mission_model_ru
     yield Mission(
         id=mission.id,
         name=translate.name,
@@ -106,9 +108,9 @@ async def test_mission_entity_ru(
 
 @pytest_asyncio.fixture(scope="function")
 async def test_mission_entity_en(
-    mission_model_en: Tuple[MissionModel, MissionTranslateModel]
+    test_mission_model_en: Tuple[MissionModel, MissionTranslateModel]
 ) -> AsyncGenerator[Mission, None]:
-    mission, translate = mission_model_en
+    mission, translate = test_mission_model_en
     yield Mission(
         id=mission.id,
         name=translate.name,
@@ -127,9 +129,9 @@ async def test_mission_entity_en(
 ## models
 @pytest_asyncio.fixture(scope="function")
 async def test_user_mission_model(
-    session: AsyncSession, mission_model_ru: Tuple[MissionModel, MissionTranslateModel], test_user_model: UserModel
+    session: AsyncSession, test_mission_model_ru: Tuple[MissionModel, MissionTranslateModel], test_user_model: UserModel
 ) -> AsyncGenerator[Tuple[UserModel, MissionModel, UserMissionModel], None]:
-    mission_model, _ = mission_model_ru
+    mission_model, _ = test_mission_model_ru
     model = UserMissionModel(user_id=test_user_model.id, mission_id=mission_model.id, status=OccupancyStatusEnum.ACTIVE)
     session.add(model)
     await session.commit()
@@ -147,12 +149,55 @@ async def test_user_mission_model(
 async def test_user_mission_entity(
     test_user_mission_model: Tuple[UserModel, MissionModel, UserMissionModel]
 ) -> AsyncGenerator[MissionUser, None]:
-    user, mission, user_mission = test_user_mission_model
+    _, _, user_mission = test_user_mission_model
     yield MissionUser(
-        id=mission.id,
-        user_id=user.id,
-        mission_id=mission.id,
+        id=user_mission.id,
+        user_id=user_mission.user_id,
+        mission_id=user_mission.mission_id,
         date_start=user_mission.date_start,
         date_close=user_mission.date_close,
         status=user_mission.status,
+    )
+
+
+# CommunityMission
+
+## models
+
+
+@pytest_asyncio.fixture(scope="function")
+async def test_community_mission_model(
+    session: AsyncSession,
+    test_mission_model_ru: Tuple[MissionModel, MissionTranslateModel],
+    test_community_model: CommunityModel,
+) -> AsyncGenerator[Tuple[CommunityModel, MissionModel, CommunityMissionModel], None]:
+    mission_model, _ = test_mission_model_ru
+    model = CommunityMissionModel(
+        community_id=test_community_model.id, mission_id=mission_model.id, author="t", status=OccupancyStatusEnum.ACTIVE
+    )
+    session.add(model)
+    await session.commit()
+
+    yield (test_community_model, mission_model, model)
+
+    await session.delete(model)
+    await session.commit()
+
+
+## entity
+
+
+@pytest_asyncio.fixture(scope="function")
+async def test_community_mission_entity(
+    test_community_mission_model: Tuple[CommunityModel, MissionModel, CommunityMissionModel]
+) -> AsyncGenerator[MissionCommunity, None]:
+    _, _, community_mission = test_community_mission_model
+    yield MissionCommunity(
+        id=community_mission.id,
+        community_id=community_mission.community_id,
+        mission_id=community_mission.mission_id,
+        author=community_mission.author,
+        date_start=community_mission.date_start,
+        date_close=community_mission.date_close,
+        status=community_mission.status,
     )

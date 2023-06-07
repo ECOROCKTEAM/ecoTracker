@@ -7,12 +7,8 @@ from src.core.dto.challenges.mission import MissionUserCreateDTO, MissionUserUpd
 from src.core.dto.mock import MockObj
 from src.core.entity.mission import Mission, MissionUser
 from src.core.enum.challenges.status import OccupancyStatusEnum
-from src.core.enum.language import LanguageEnum
 from src.core.exception.base import EntityNotCreated, EntityNotFound
-from src.core.interfaces.repository.challenges.mission import (
-    MissionFilter,
-    MissionUserFilter,
-)
+from src.core.interfaces.repository.challenges.mission import MissionUserFilter
 from src.data.models.challenges.mission import UserMissionModel
 from src.data.models.user.user import UserModel
 from src.data.repository.challenges.mission import RepositoryMission
@@ -40,32 +36,32 @@ async def test_get_user_mission_not_found(repo: RepositoryMission):
 # python -m pytest tests/challenges/mission/db/test_user_mission.py::test_create_user_mission_ok -v -s
 @pytest.mark.asyncio
 async def test_create_user_mission_ok(
-    session: AsyncSession, repo: RepositoryMission, test_user_model: UserModel, test_mission_entity_ru: Mission
+    session: AsyncSession, repo: RepositoryMission, test_user_model_ru: UserModel, test_mission_entity_ru: Mission
 ):
     default_kw = dict(
         order_obj=MockObj(),
         pagination_obj=MockObj(),
     )
     user_mission_list = await repo.user_mission_lst(
-        user_id=test_user_model.id, filter_obj=MissionUserFilter(), **default_kw
+        user_id=test_user_model_ru.id, filter_obj=MissionUserFilter(), **default_kw
     )
     assert len(user_mission_list) == 0
     user_mission = await repo.user_mission_create(
-        user_id=test_user_model.id,
+        user_id=test_user_model_ru.id,
         obj=MissionUserCreateDTO(
             mission_id=test_mission_entity_ru.id,
         ),
     )
     await session.commit()
     assert user_mission.id is not None
-    assert user_mission.user_id == test_user_model.id
+    assert user_mission.user_id == test_user_model_ru.id
     assert user_mission.mission_id == test_mission_entity_ru.id
     assert isinstance(user_mission.date_start, datetime)
     assert user_mission.date_close is None
     assert user_mission.status == OccupancyStatusEnum.ACTIVE
 
     user_mission_list = await repo.user_mission_lst(
-        user_id=test_user_model.id, filter_obj=MissionUserFilter(), **default_kw
+        user_id=test_user_model_ru.id, filter_obj=MissionUserFilter(), **default_kw
     )
     assert len(user_mission_list) == 1
 
@@ -80,7 +76,7 @@ async def test_create_user_mission_ok(
 async def test_create_user_mission_not_created(
     session: AsyncSession,
     repo: RepositoryMission,
-    test_user_model: UserModel,
+    test_user_model_ru: UserModel,
     test_mission_entity_ru: Mission,
 ):
     default_kw = dict(
@@ -88,7 +84,7 @@ async def test_create_user_mission_not_created(
         pagination_obj=MockObj(),
     )
     user_mission_list = await repo.user_mission_lst(
-        user_id=test_user_model.id, filter_obj=MissionUserFilter(), **default_kw
+        user_id=test_user_model_ru.id, filter_obj=MissionUserFilter(), **default_kw
     )
     assert len(user_mission_list) == 0
     with pytest.raises(EntityNotCreated):
@@ -99,9 +95,9 @@ async def test_create_user_mission_not_created(
             ),
         )
     await session.rollback()
-    await session.refresh(test_user_model)
+    await session.refresh(test_user_model_ru)
     user_mission_list = await repo.user_mission_lst(
-        user_id=test_user_model.id, filter_obj=MissionUserFilter(), **default_kw
+        user_id=test_user_model_ru.id, filter_obj=MissionUserFilter(), **default_kw
     )
     assert len(user_mission_list) == 0
 

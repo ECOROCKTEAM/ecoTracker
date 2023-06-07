@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from src.application.database.base import Base
 from src.core.enum.community.role import CommunityRoleEnum
+from src.core.enum.language import LanguageEnum
 from src.core.enum.score.operation import ScoreOperationEnum
 
 
@@ -17,6 +18,7 @@ class UserModel(Base):
     username: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str] = mapped_column()
     active: Mapped[bool] = mapped_column(default=True)
+    language: Mapped[LanguageEnum] = mapped_column()
 
 
 class UserContactModel(Base):
@@ -38,11 +40,13 @@ class UserSubscriptionModel(Base):
     until_date: Mapped[datetime] = mapped_column(DateTime)
 
 
+@dataclass
 class UserCommunityModel(Base):
     __tablename__ = "user_community"
+
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
     community_id: Mapped[int] = mapped_column(ForeignKey("community.id"), primary_key=True)
-    role: Mapped[CommunityRoleEnum]
+    role: Mapped[CommunityRoleEnum] = mapped_column()
 
 
 @dataclass

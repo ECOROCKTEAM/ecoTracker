@@ -10,7 +10,6 @@ from src.core.dto.challenges.mission import (
 from src.core.dto.mock import MockObj
 from src.core.entity.mission import Mission, MissionCommunity
 from src.core.enum.challenges.status import OccupancyStatusEnum
-from src.core.enum.language import LanguageEnum
 from src.core.exception.base import EntityNotCreated, EntityNotFound
 from src.core.interfaces.repository.challenges.mission import MissionCommunityFilter
 from src.data.models.challenges.mission import CommunityMissionModel
@@ -46,7 +45,7 @@ async def test_get_community_mission_not_found(repo: RepositoryMission):
 async def test_create_community_mission_ok(
     session: AsyncSession,
     repo: RepositoryMission,
-    test_community_model: CommunityModel,
+    test_community_model_public: CommunityModel,
     test_mission_entity_ru: Mission,
 ):
     default_kw = dict(
@@ -57,12 +56,12 @@ async def test_create_community_mission_ok(
     assert len(community_mission_list) == 0
 
     community_mission = await repo.community_mission_create(
-        community_id=test_community_model.id,
+        community_id=test_community_model_public.id,
         obj=MissionCommunityCreateDTO(mission_id=test_mission_entity_ru.id, author="t"),
     )
     assert community_mission.id is not None
     assert community_mission.mission_id == test_mission_entity_ru.id
-    assert community_mission.community_id == test_community_model.id
+    assert community_mission.community_id == test_community_model_public.id
     assert community_mission.author == "t"
     assert community_mission.status == OccupancyStatusEnum.ACTIVE
     assert isinstance(community_mission.date_start, datetime)
@@ -79,7 +78,7 @@ async def test_create_community_mission_ok(
 async def test_create_community_mission_not_created(
     session: AsyncSession,
     repo: RepositoryMission,
-    test_community_model: CommunityModel,
+    test_community_model_public: CommunityModel,
     test_mission_entity_ru: Mission,
 ):
     default_kw = dict(
@@ -93,7 +92,7 @@ async def test_create_community_mission_not_created(
             community_id=-1, obj=MissionCommunityCreateDTO(mission_id=test_mission_entity_ru.id, author="t")
         )
     await session.rollback()
-    await session.refresh(test_community_model)
+    await session.refresh(test_community_model_public)
     community_mission_list = await repo.community_mission_lst(filter_obj=MissionCommunityFilter(), **default_kw)
     assert len(community_mission_list) == 0
 

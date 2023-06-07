@@ -32,7 +32,7 @@ from src.data.models.user.user import UserModel
 from src.data.repository.challenges.mission import RepositoryMission
 
 
-# python -m pytest tests/db/challenges/mission/test_community_mission.py::test_get_community_mission_ok -v -s
+# python -m pytest tests/challenges/mission/db/test_community_mission.py::test_get_community_mission_ok -v -s
 @pytest.mark.asyncio
 async def test_get_community_mission_ok(repo: RepositoryMission, test_community_mission_entity: MissionCommunity):
     community_mission = await repo.community_mission_get(
@@ -48,14 +48,14 @@ async def test_get_community_mission_ok(repo: RepositoryMission, test_community_
     assert test_community_mission_entity.status == community_mission.status
 
 
-# python -m pytest tests/db/challenges/mission/test_community_mission.py::test_get_community_mission_not_found -v -s
+# python -m pytest tests/challenges/mission/db/test_community_mission.py::test_get_community_mission_not_found -v -s
 @pytest.mark.asyncio
 async def test_get_community_mission_not_found(repo: RepositoryMission):
     with pytest.raises(EntityNotFound):
         _ = await repo.community_mission_get(id=-1, community_id=1)
 
 
-# python -m pytest tests/db/challenges/mission/test_community_mission.py::test_create_community_mission_ok -v -s
+# python -m pytest tests/challenges/mission/db/test_community_mission.py::test_create_community_mission_ok -v -s
 @pytest.mark.asyncio
 async def test_create_community_mission_ok(
     session: AsyncSession,
@@ -88,7 +88,7 @@ async def test_create_community_mission_ok(
     await session.commit()
 
 
-# python -m pytest tests/db/challenges/mission/test_community_mission.py::test_create_community_mission_not_created -v -s
+# python -m pytest tests/challenges/mission/db/test_community_mission.py::test_create_community_mission_not_created -v -s
 @pytest.mark.asyncio
 async def test_create_community_mission_not_created(
     session: AsyncSession,
@@ -112,7 +112,7 @@ async def test_create_community_mission_not_created(
     assert len(community_mission_list) == 0
 
 
-# python -m pytest tests/db/challenges/mission/test_community_mission.py::test_update_community_mission_ok -v -s
+# python -m pytest tests/challenges/mission/db/test_community_mission.py::test_update_community_mission_ok -v -s
 @pytest.mark.asyncio
 async def test_update_community_mission_ok(
     session: AsyncSession,
@@ -146,7 +146,7 @@ async def test_update_community_mission_ok(
     assert updated_second.date_close > date_after_update
 
 
-# python -m pytest tests/db/challenges/mission/test_community_mission.py::test_update_community_mission_not_found -v -s
+# python -m pytest tests/challenges/mission/db/test_community_mission.py::test_update_community_mission_not_found -v -s
 @pytest.mark.asyncio
 async def test_update_community_mission_not_found(
     repo: RepositoryMission,
@@ -171,7 +171,7 @@ async def test_update_community_mission_not_found(
         )
 
 
-# python -m pytest tests/db/challenges/mission/test_community_mission.py::test_community_mission_lst -v -s
+# python -m pytest tests/challenges/mission/db/test_community_mission.py::test_community_mission_lst -v -s
 @pytest.mark.asyncio
 async def test_community_mission_lst(repo: RepositoryMission, test_community_mission_entity: MissionCommunity):
     default_kw = dict(

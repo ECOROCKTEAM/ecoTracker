@@ -19,7 +19,7 @@ from src.data.models.user.user import UserModel
 from src.data.repository.challenges.mission import RepositoryMission
 
 
-# python -m pytest tests/db/challenges/mission/test_user_mission.py::test_get_user_mission_ok -v -s
+# python -m pytest tests/challenges/mission/db/test_user_mission.py::test_get_user_mission_ok -v -s
 @pytest.mark.asyncio
 async def test_get_user_mission_ok(repo: RepositoryMission, test_user_mission_entity: MissionUser):
     user_mission = await repo.user_mission_get(id=test_user_mission_entity.id, user_id=test_user_mission_entity.user_id)
@@ -31,14 +31,14 @@ async def test_get_user_mission_ok(repo: RepositoryMission, test_user_mission_en
     assert test_user_mission_entity.status == user_mission.status
 
 
-# python -m pytest tests/db/challenges/mission/test_user_mission.py::test_get_user_mission_not_found -v -s
+# python -m pytest tests/challenges/mission/db/test_user_mission.py::test_get_user_mission_not_found -v -s
 @pytest.mark.asyncio
 async def test_get_user_mission_not_found(repo: RepositoryMission):
     with pytest.raises(EntityNotFound):
         _ = await repo.user_mission_get(id=-1, user_id=1)
 
 
-# python -m pytest tests/db/challenges/mission/test_user_mission.py::test_create_user_mission_ok -v -s
+# python -m pytest tests/challenges/mission/db/test_user_mission.py::test_create_user_mission_ok -v -s
 @pytest.mark.asyncio
 async def test_create_user_mission_ok(
     session: AsyncSession, repo: RepositoryMission, test_user_model: UserModel, test_mission_entity_ru: Mission
@@ -76,7 +76,7 @@ async def test_create_user_mission_ok(
     await session.commit()
 
 
-# python -m pytest tests/db/challenges/mission/test_user_mission.py::test_create_user_mission_not_created -v -s
+# python -m pytest tests/challenges/mission/db/test_user_mission.py::test_create_user_mission_not_created -v -s
 @pytest.mark.asyncio
 async def test_create_user_mission_not_created(
     session: AsyncSession,
@@ -107,7 +107,7 @@ async def test_create_user_mission_not_created(
     assert len(user_mission_list) == 0
 
 
-# python -m pytest tests/db/challenges/mission/test_user_mission.py::test_update_user_mission -v -s
+# python -m pytest tests/challenges/mission/db/test_user_mission.py::test_update_user_mission -v -s
 @pytest.mark.asyncio
 async def test_update_user_mission(
     session: AsyncSession,
@@ -141,7 +141,7 @@ async def test_update_user_mission(
     assert updated_second.date_close > date_after_update
 
 
-# python -m pytest tests/db/challenges/mission/test_user_mission.py::test_update_user_mission_not_found -v -s
+# python -m pytest tests/challenges/mission/db/test_user_mission.py::test_update_user_mission_not_found -v -s
 @pytest.mark.asyncio
 async def test_update_user_mission_not_found(
     repo: RepositoryMission,
@@ -162,7 +162,7 @@ async def test_update_user_mission_not_found(
         )
 
 
-# python -m pytest tests/db/challenges/mission/test_user_mission.py::test_user_mission_lst -v -s
+# python -m pytest tests/challenges/mission/db/test_user_mission.py::test_user_mission_lst -v -s
 @pytest.mark.asyncio
 async def test_user_mission_lst(repo: RepositoryMission, test_user_mission_entity: MissionUser):
     default_kw = dict(

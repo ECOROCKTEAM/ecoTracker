@@ -29,7 +29,6 @@ async def test_access_only_premium(
         order_obj=MockObj(),
         pagination_obj=MockObj(),
     )
-
     user_kw = dict(user=test_user_premium_ru_entity)
     usecase_map = (
         (mission_get.MissionGetUsecase, dict(**user_kw, id=1)),

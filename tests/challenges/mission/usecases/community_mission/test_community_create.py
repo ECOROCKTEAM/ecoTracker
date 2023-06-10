@@ -1,99 +1,95 @@
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.dto.challenges.mission import MissionCommunityCreateDTO
 from src.core.dto.m2m.user.community import UserCommunityDTO
-from src.core.dto.mock import MockObj
+from src.core.entity.community import Community
 from src.core.entity.mission import Mission, MissionCommunity
 from src.core.entity.user import User
-from src.core.enum.challenges.status import OccupancyStatusEnum
-from src.core.exception.base import EntityNotActive, EntityNotFound
-from src.core.interfaces.repository.challenges.mission import MissionCommunityFilter
+from src.core.exception.base import EntityNotActive
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.core.usecases.challenges.mission.mission_community_create import (
     MissionCommunityCreateUsecase,
 )
-from src.data.models.challenges.mission import CommunityMissionModel
-from src.data.models.community.community import CommunityModel
+from tests.fixtures.challenges.mission.usecase.community_mission import (
+    mock_community_mission_create,
+    mock_community_mission_get,
+)
+from tests.fixtures.challenges.mission.usecase.mission import (
+    mock_mission_get_default,
+    mock_mission_not_active,
+)
+from tests.fixtures.community.usecase.community import (
+    mock_community_get_default,
+    mock_community_get_not_active,
+)
+from tests.fixtures.community.usecase.user import (
+    mock_community_user_get_blocked,
+    mock_community_user_get_default,
+)
+from tests.fixtures.user.usecase.entity import fxe_user_default
 
 
 # python -m pytest tests/challenges/mission/usecases/community_mission/test_community_create.py::test_ok -v -s
 @pytest.mark.asyncio
 async def test_ok(
-    session: AsyncSession,
     uow: IUnitOfWork,
-    test_user_premium_ru_entity: User,
-    test_user_community_admin_dto: UserCommunityDTO,
-    test_mission_entity_ru: Mission,
+    fxe_user_default: User,
+    mock_mission_get_default: Mission,
+    mock_community_user_get_default: UserCommunityDTO,
+    mock_community_mission_get: MissionCommunity,
+    mock_community_get_default: Community,
+    mock_community_mission_create: MissionCommunity,
 ):
-    assert test_user_premium_ru_entity.id == test_user_community_admin_dto.user_id
     uc = MissionCommunityCreateUsecase(uow=uow)
     res = await uc(
-        user=test_user_premium_ru_entity,
-        community_id=test_user_community_admin_dto.community_id,
+        user=fxe_user_default,
+        community_id=1,
         create_obj=MissionCommunityCreateDTO(
-            mission_id=test_mission_entity_ru.id,
-            author=test_user_premium_ru_entity.username,
+            mission_id=1,
+            author="n",
         ),
     )
     mission = res.item
     assert isinstance(mission, MissionCommunity)
-    assert mission.id is not None
-    assert mission.community_id == test_user_community_admin_dto.community_id
-    assert mission.mission_id == test_mission_entity_ru.id
-    assert mission.status == OccupancyStatusEnum.ACTIVE
-    assert mission.author == test_user_premium_ru_entity.username
-
-    async with uow as _uow:
-        community_mission_list = await _uow.mission.community_mission_lst(
-            filter_obj=MissionCommunityFilter(),
-            order_obj=MockObj(),
-            pagination_obj=MockObj(),
-        )
-        assert len(community_mission_list) == 1
-
-    create_model = await session.get(entity=CommunityMissionModel, ident={"id": mission.id})
-    assert isinstance(create_model, CommunityMissionModel)
-    await session.delete(create_model)
-    await session.commit()
-
-
-# python -m pytest tests/challenges/mission/usecases/community_mission/test_community_create.py::test_user_not_in_community -v -s
-@pytest.mark.asyncio
-async def test_user_not_in_community(
-    uow: IUnitOfWork,
-    test_user_premium_ru_entity: User,
-    test_community_model_public: CommunityModel,
-    test_mission_entity_ru: Mission,
-):
-    uc = MissionCommunityCreateUsecase(uow=uow)
-    with pytest.raises(EntityNotFound):
-        await uc(
-            user=test_user_premium_ru_entity,
-            community_id=test_community_model_public.id,
-            create_obj=MissionCommunityCreateDTO(
-                mission_id=test_mission_entity_ru.id,
-                author=test_user_premium_ru_entity.username,
-            ),
-        )
+    assert mission.id == mock_community_mission_create.id
 
 
 # python -m pytest tests/challenges/mission/usecases/community_mission/test_community_create.py::test_user_incorrect_role -v -s
 @pytest.mark.asyncio
 async def test_user_incorrect_role(
     uow: IUnitOfWork,
-    test_user_premium_ru_entity: User,
-    test_user_community_user_dto: UserCommunityDTO,
-    test_mission_entity_ru: Mission,
+    fxe_user_default: User,
+    mock_community_user_get_blocked: UserCommunityDTO,
 ):
     uc = MissionCommunityCreateUsecase(uow=uow)
     with pytest.raises(PermissionError):
         await uc(
-            user=test_user_premium_ru_entity,
-            community_id=test_user_community_user_dto.community_id,
+            user=fxe_user_default,
+            community_id=1,
             create_obj=MissionCommunityCreateDTO(
-                mission_id=test_mission_entity_ru.id,
-                author=test_user_premium_ru_entity.username,
+                mission_id=1,
+                author="n",
+            ),
+        )
+
+
+# python -m pytest tests/challenges/mission/usecases/community_mission/test_community_create.py::test_community_not_active -v -s
+@pytest.mark.asyncio
+async def test_community_not_active(
+    uow: IUnitOfWork,
+    fxe_user_default: User,
+    mock_mission_get_default: Mission,
+    mock_community_user_get_default: UserCommunityDTO,
+    mock_community_get_not_active: Community,
+):
+    uc = MissionCommunityCreateUsecase(uow=uow)
+    with pytest.raises(EntityNotActive):
+        await uc(
+            user=fxe_user_default,
+            community_id=1,
+            create_obj=MissionCommunityCreateDTO(
+                mission_id=1,
+                author="n",
             ),
         )
 
@@ -102,17 +98,19 @@ async def test_user_incorrect_role(
 @pytest.mark.asyncio
 async def test_mission_not_active(
     uow: IUnitOfWork,
-    test_user_premium_ru_entity: User,
-    test_user_community_admin_dto: UserCommunityDTO,
-    test_mission_entity_not_active: Mission,
+    fxe_user_default: User,
+    mock_mission_not_active: Mission,
+    mock_community_user_get_default: UserCommunityDTO,
+    mock_community_mission_get: MissionCommunity,
+    mock_community_get_default: Community,
 ):
     uc = MissionCommunityCreateUsecase(uow=uow)
     with pytest.raises(EntityNotActive):
         await uc(
-            user=test_user_premium_ru_entity,
-            community_id=test_user_community_admin_dto.community_id,
+            user=fxe_user_default,
+            community_id=1,
             create_obj=MissionCommunityCreateDTO(
-                mission_id=test_mission_entity_not_active.id,
-                author=test_user_premium_ru_entity.username,
+                mission_id=1,
+                author="n",
             ),
         )

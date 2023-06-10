@@ -11,4 +11,5 @@ from src.data.models import *
 async def test_database_connect(session: AsyncSession):
     stmt = text("select 1")
     r = await session.execute(stmt)
-    print(r.fetchall())
+    result = r.one_or_none()
+    assert result is not None

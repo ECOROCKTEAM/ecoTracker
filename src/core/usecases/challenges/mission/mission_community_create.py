@@ -23,7 +23,7 @@ class MissionCommunityCreateUsecase:
             raise UserIsNotPremiumError(user_id=user.id)
         async with self.uow as uow:
             user_community = await uow.community.user_get(community_id=community_id, user_id=user.id)
-            if user_community.role in [CommunityRoleEnum.USER, CommunityRoleEnum.BLOCKED]:
+            if user_community.role not in [CommunityRoleEnum.ADMIN, CommunityRoleEnum.SUPERUSER]:
                 raise PermissionError("")
             community = await uow.community.get(id=community_id)
             if not community.active:

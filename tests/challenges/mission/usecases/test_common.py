@@ -16,20 +16,21 @@ from src.core.usecases.challenges.mission import (
     mission_user_list,
     mission_user_update,
 )
+from tests.fixtures.user.usecase.entity import fxe_user_default, fxe_user_not_premium
 
 
 # python -m pytest tests/challenges/mission/usecases/test_common.py::test_access_only_premium -v -s
 @pytest.mark.asyncio
 async def test_access_only_premium(
     uow: IUnitOfWork,
-    test_user_premium_ru_entity: User,
-    test_user_not_premium_entity: User,
+    fxe_user_default: User,
+    fxe_user_not_premium: User,
 ):
     default_kw_lst = dict(
         order_obj=MockObj(),
         pagination_obj=MockObj(),
     )
-    user_kw = dict(user=test_user_premium_ru_entity)
+    user_kw = dict(user=fxe_user_default)
     usecase_map = (
         (mission_get.MissionGetUsecase, dict(**user_kw, id=1)),
         (mission_list.MissionListUsecase, dict(**user_kw, **default_kw_lst, filter_obj="")),
@@ -51,7 +52,7 @@ async def test_access_only_premium(
         except Exception:
             pass
 
-    user_kw = dict(user=test_user_not_premium_entity)
+    user_kw = dict(user=fxe_user_not_premium)
     usecase_map = (
         (mission_get.MissionGetUsecase, dict(**user_kw, id=1)),
         (mission_list.MissionListUsecase, dict(**user_kw, **default_kw_lst, filter_obj="")),

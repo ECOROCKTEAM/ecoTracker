@@ -25,6 +25,7 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self.__session: AsyncSession | None = None
         self._community: IRepositoryCommunity | None = None
         self._task: IRepositoryTask | None = None
+        self._mission: IRepositoryMission | None = None
         self._score_user: IRepositoryUserScore | None = None
         self._score_community: IRepositoryCommunityScore | None = None
 

@@ -84,54 +84,54 @@ async def uow(pool: async_sessionmaker[AsyncSession]) -> AsyncGenerator[IUnitOfW
     yield SqlAlchemyUnitOfWork(pool)
 
 
-@pytest_asyncio.fixture(scope="function")
-async def test_user_model_ru(session: AsyncSession) -> AsyncGenerator[UserModel, None]:
-    model = UserModel(username="test", password="test", active=True, language=LanguageEnum.RU)
-    session.add(model)
-    await session.commit()
-    yield model
-    await session.delete(model)
-    await session.commit()
+# @pytest_asyncio.fixture(scope="function")
+# async def test_user_model_ru(session: AsyncSession) -> AsyncGenerator[UserModel, None]:
+#     model = UserModel(username="test", password="test", active=True, language=LanguageEnum.RU)
+#     session.add(model)
+#     await session.commit()
+#     yield model
+#     await session.delete(model)
+#     await session.commit()
 
 
-@pytest_asyncio.fixture(scope="function")
-async def test_user_model_en(session: AsyncSession) -> AsyncGenerator[UserModel, None]:
-    model = UserModel(username="test", password="test", active=True, language=LanguageEnum.EN)
-    session.add(model)
-    await session.commit()
-    yield model
-    await session.delete(model)
-    await session.commit()
+# @pytest_asyncio.fixture(scope="function")
+# async def test_user_model_en(session: AsyncSession) -> AsyncGenerator[UserModel, None]:
+#     model = UserModel(username="test", password="test", active=True, language=LanguageEnum.EN)
+#     session.add(model)
+#     await session.commit()
+#     yield model
+#     await session.delete(model)
+#     await session.commit()
 
 
-@pytest_asyncio.fixture(scope="function")
-async def test_community_model_public(session: AsyncSession) -> AsyncGenerator[CommunityModel, None]:
-    model = CommunityModel(name="test", description="test", active=True, privacy=CommunityPrivacyEnum.PUBLIC)
-    session.add(model)
-    await session.commit()
-    yield model
-    await session.delete(model)
-    await session.commit()
+# @pytest_asyncio.fixture(scope="function")
+# async def test_community_model_public(session: AsyncSession) -> AsyncGenerator[CommunityModel, None]:
+#     model = CommunityModel(name="test", description="test", active=True, privacy=CommunityPrivacyEnum.PUBLIC)
+#     session.add(model)
+#     await session.commit()
+#     yield model
+#     await session.delete(model)
+#     await session.commit()
 
 
-@pytest_asyncio.fixture(scope="function")
-async def test_community_model_private(session: AsyncSession) -> AsyncGenerator[CommunityModel, None]:
-    model = CommunityModel(name="test", description="test", active=True, privacy=CommunityPrivacyEnum.PRIVATE)
-    session.add(model)
-    await session.commit()
-    yield model
-    await session.delete(model)
-    await session.commit()
+# @pytest_asyncio.fixture(scope="function")
+# async def test_community_model_private(session: AsyncSession) -> AsyncGenerator[CommunityModel, None]:
+#     model = CommunityModel(name="test", description="test", active=True, privacy=CommunityPrivacyEnum.PRIVATE)
+#     session.add(model)
+#     await session.commit()
+#     yield model
+#     await session.delete(model)
+#     await session.commit()
 
 
-@pytest_asyncio.fixture(scope="function")
-async def test_community_model_not_active(session: AsyncSession) -> AsyncGenerator[CommunityModel, None]:
-    model = CommunityModel(name="test", description="test", active=False, privacy=CommunityPrivacyEnum.PUBLIC)
-    session.add(model)
-    await session.commit()
-    yield model
-    await session.delete(model)
-    await session.commit()
+# @pytest_asyncio.fixture(scope="function")
+# async def test_community_model_not_active(session: AsyncSession) -> AsyncGenerator[CommunityModel, None]:
+#     model = CommunityModel(name="test", description="test", active=False, privacy=CommunityPrivacyEnum.PUBLIC)
+#     session.add(model)
+#     await session.commit()
+#     yield model
+#     await session.delete(model)
+#     await session.commit()
 
 
 # @pytest_asyncio.fixture(scope="module")

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from datetime import date
 
 from src.core.dto.challenges.task import TaskUserCreateDTO
 from src.core.dto.mock import MockObj
@@ -76,10 +75,9 @@ class UserTaskAddUseCase:
             if len(user_plan_tasks) == max_count:
                 raise UserTaskMaxAmountError(user_id=user.id)
 
-            today = date.today()
             user_task_add = await uow.task.user_task_add(
                 user_id=user.id,
-                obj=TaskUserCreateDTO(date_start=today, task_id=task_id, status=OccupancyStatusEnum.ACTIVE),
+                obj=TaskUserCreateDTO(task_id=task_id, status=OccupancyStatusEnum.ACTIVE),
             )
 
             await uow.commit()

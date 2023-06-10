@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from datetime import datetime
 
 from src.core.dto.challenges.task import TaskUserUpdateDTO
 from src.core.entity.task import TaskUser
@@ -40,7 +39,7 @@ class UserTaskDeleteUseCase:
 
             task = await uow.task.user_task_update(
                 id=obj_id,
-                obj=TaskUserUpdateDTO(date_close=datetime.now(), status=OccupancyStatusEnum.REJECT),
+                obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.REJECT),
             )
 
         return Result(item=task)

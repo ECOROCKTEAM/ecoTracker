@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-from datetime import date, datetime
+from dataclasses import dataclass, field
+from datetime import datetime
 
 from src.core.enum.challenges.status import OccupancyStatusEnum
 
@@ -12,13 +12,15 @@ class TaskUserPlanCreateDTO:
 
 @dataclass
 class TaskUserCreateDTO:
-    date_start: date  # YY.MM.DD, mb auto in psql?
     task_id: int
-    date_close: datetime | None = None
     status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
 
 
 @dataclass
 class TaskUserUpdateDTO:
-    date_close: datetime | None = None
+    date_close: datetime | None = field(init=False, default=None)
     status: OccupancyStatusEnum | None = None
+
+    def __post_init__(self):
+        if self.status in [OccupancyStatusEnum.FINISH, OccupancyStatusEnum.REJECT]:
+            self.date_close = datetime.now()

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from datetime import datetime
 
 from src.core.dto.challenges.task import TaskUserUpdateDTO
 from src.core.dto.user.score import OperationWithScoreUserDTO
@@ -46,7 +45,7 @@ class UserTaskCompleteUseCase:
 
             result = await uow.task.user_task_update(
                 id=obj_id,
-                obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.FINISH, date_close=datetime.now()),
+                obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.FINISH),
             )
 
         return Result(item=result)

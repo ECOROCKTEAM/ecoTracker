@@ -12,7 +12,7 @@ from src.core.dto.challenges.task import (
 from src.core.dto.mock import MockObj
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
 from src.core.enum.language import LanguageEnum
-from src.core.exception.base import EntityNotCreated, EntityNotFound
+from src.core.exception.base import EntityNotCreated, EntityNotFound, TranslateNotFound
 from src.core.interfaces.repository.challenges.task import (
     IRepositoryTask,
     TaskFilter,
@@ -83,16 +83,16 @@ class RepositoryTask(IRepositoryTask):
             )
             task_translate = await self.db_context.scalar(task_default_lang)
             if task_translate is None:
-                raise EntityNotFound(msg=f"Task={task} with task_translate={task_translate} not found")
+                raise TranslateNotFound(msg=f"Task={task} with task_translate={task_translate} not found")
         return task_model_to_entity(model=task, translated_model=task_translate)
 
     async def lst(
         self, *, sorting_obj: MockObj, pagination_obj: MockObj, filter_obj: TaskFilter, lang: LanguageEnum
     ) -> list[Task]:
         where_clause = []
-        if filter_obj.category_id:
+        if filter_obj.category_id is not None:
             where_clause.append(TaskModel.category_id == filter_obj.category_id)
-        if filter_obj.active:
+        if filter_obj.active is not None:
             where_clause.append(TaskModel.active == filter_obj.active)
         stmt = (
             select(TaskModel, TaskTranslateModel)

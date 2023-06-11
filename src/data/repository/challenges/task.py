@@ -135,6 +135,7 @@ class RepositoryTask(IRepositoryTask):
         result = await self.db_context.scalar(stmt)
         if result is None:
             raise EntityNotCreated(msg=f"UserTask object with task_id={obj.task_id}, user_id={user_id} not created")
+        await self.db_context.refresh(result)
         return user_task_to_entity(model=result)
 
     async def user_task_get(self, *, id: int) -> TaskUser:
@@ -178,6 +179,7 @@ class RepositoryTask(IRepositoryTask):
         result = await self.db_context.scalar(stmt)
         if not result:
             raise EntityNotFound(msg=f"UserTask object={id} not found and was not updated")
+        await self.db_context.refresh(result)
         return user_task_to_entity(model=result)
 
     async def plan_create(self, *, obj: TaskUserPlanCreateDTO) -> TaskUserPlan:

@@ -39,7 +39,7 @@ class UserTaskModel(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     task_id: Mapped[int] = mapped_column(ForeignKey("task.id"), nullable=False)
     date_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    date_close: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    date_close: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=None)
     status: Mapped[OccupancyStatusEnum] = mapped_column()
 
 

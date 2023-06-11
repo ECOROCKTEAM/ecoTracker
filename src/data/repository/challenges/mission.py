@@ -180,6 +180,7 @@ class RepositoryMission(IRepositoryMission):
                 raise EntityNotCreated(msg="Not found fk") from error
             raise EntityNotCreated(msg="") from error
         res = typing.cast(UserMissionModel, res)  # just for types
+        await self.db_context.refresh(res)
         return mission_user_to_entity(res)
 
     async def user_mission_update(self, *, id: int, user_id: int, obj: MissionUserUpdateDTO) -> MissionUser:
@@ -197,6 +198,7 @@ class RepositoryMission(IRepositoryMission):
         res = await self.db_context.scalar(stmt)
         if not res:
             raise EntityNotFound(msg="")
+        await self.db_context.refresh(res)
         return mission_user_to_entity(res)
 
     async def user_mission_lst(
@@ -228,6 +230,7 @@ class RepositoryMission(IRepositoryMission):
             raise EntityNotCreated(msg="") from error
         if res is None:
             raise EntityNotCreated(msg="")
+        await self.db_context.refresh(res)
         return mission_community_to_entity(res)
 
     async def community_mission_get(self, *, id: int, community_id: int) -> MissionCommunity:
@@ -256,6 +259,7 @@ class RepositoryMission(IRepositoryMission):
         res = await self.db_context.scalar(stmt)
         if not res:
             raise EntityNotFound(msg="")
+        await self.db_context.refresh(res)
         return mission_community_to_entity(res)
 
     async def community_mission_lst(

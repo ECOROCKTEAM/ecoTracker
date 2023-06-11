@@ -127,7 +127,6 @@ async def test_update_user_task(
 
     assert isinstance(updated_second.date_close, datetime)
     assert updated_second.status == OccupancyStatusEnum.REJECT
-    print(updated_second.date_close, date_after_update)
     assert updated_second.date_close > date_after_update
 
 

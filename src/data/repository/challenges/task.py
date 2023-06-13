@@ -1,6 +1,9 @@
+import typing
 from dataclasses import asdict
 
+from asyncpg.exceptions import ForeignKeyViolationError
 from sqlalchemy import and_, delete, insert, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.const.translate import DEFAULT_LANGUANGE
@@ -184,7 +187,13 @@ class RepositoryTask(IRepositoryTask):
 
     async def plan_create(self, *, obj: TaskUserPlanCreateDTO) -> TaskUserPlan:
         stmt = insert(UserTaskPlanModel).values(**asdict(obj)).returning(UserTaskPlanModel)
-        result = await self.db_context.scalar(stmt)
+        try:
+            result = await self.db_context.scalar(stmt)
+        except IntegrityError as error:
+            error.orig = typing.cast(BaseException, error.orig)  # just for types
+            if isinstance(error.orig.__cause__, ForeignKeyViolationError):
+                raise EntityNotCreated(msg="Not found fk") from error
+            raise EntityNotCreated(msg="") from error
         if not result:
             raise EntityNotCreated(msg=f"UserTaskPlan with task_id={obj.task_id}, user_id={obj.user_id} not created")
         return plan_model_to_entity(model=result)

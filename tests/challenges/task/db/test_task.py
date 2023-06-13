@@ -1,5 +1,3 @@
-from time import sleep
-
 import pytest
 
 from src.core.dto.mock import MockObj

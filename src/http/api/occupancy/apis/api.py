@@ -13,7 +13,7 @@ router = APIRouter(tags=["Occupancy"])
 
 
 @router.get(
-    "/occupancy/{id}",
+    "/occupancies/{id}",
     responses={
         200: {"model": OccupancyCategorySchema, "description": "OK"},
         403: {"description": "User is not active"},
@@ -33,7 +33,7 @@ async def occupancy_get(
 
 
 @router.get(
-    "/occupancy",
+    "/occupancies",
     responses={
         200: {"model": list[OccupancyCategorySchema], "description": "OK"},
         403: {"description": "User is not active"},

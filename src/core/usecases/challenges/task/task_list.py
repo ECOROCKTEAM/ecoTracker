@@ -32,7 +32,7 @@ class TaskListUseCase:
 
         async with self.uow as uow:
             task_list = await uow.task.lst(
-                sorting_obj=sorting_obj,
+                order_obj=sorting_obj,
                 pagination_obj=paggination_obj,
                 filter_obj=filter_obj,
                 lang=user.language,

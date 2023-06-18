@@ -15,7 +15,7 @@ class Result:
 
 
 class CommunityDeleteUsecase:
-    def __init__(self, uow: IUnitOfWork) -> None:
+    def __init__(self, *, uow: IUnitOfWork) -> None:
         self.uow = uow
 
     async def __call__(self, *, user: User, community_id: int) -> Result:

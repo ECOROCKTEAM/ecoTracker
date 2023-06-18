@@ -1,8 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from uuid import uuid4
 
-from src.core.dto.community.invite import CommunityInviteDTO, CommunityInviteUpdateDTO
+from src.core.dto.community.invite import CommunityInviteUpdateDTO
+from src.core.entity.community import CommunityInvite
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
 from src.core.exception.community import CommunityDeactivatedError
@@ -15,10 +16,10 @@ from src.core.interfaces.unit_of_work import IUnitOfWork
 
 @dataclass
 class Result:
-    item: CommunityInviteDTO
+    item: CommunityInvite
 
 
-class CommunityGetInviteLinkUsecase:
+class CommunityGetInviteCodeUsecase:
     def __init__(self, *, uow: IUnitOfWork, invite_expire_sec: int) -> None:
         self.uow = uow
         self.invite_expire_sec = invite_expire_sec
@@ -35,7 +36,7 @@ class CommunityGetInviteLinkUsecase:
             if role.role not in (CommunityRoleEnum.ADMIN, CommunityRoleEnum.SUPERUSER):
                 raise UserIsNotCommunityAdminUserError(user_id=user.id, community_id=community_id)
             community_code = await uow.community.code_get(id=community_id)
-            if not community_code.code:
+            if not community_code.code or community_code.expire_time < datetime.utcnow():
                 obj = CommunityInviteUpdateDTO(
                     code=uuid4().hex, expire_time=datetime.utcnow() + timedelta(seconds=self.invite_expire_sec)
                 )
@@ -43,4 +44,4 @@ class CommunityGetInviteLinkUsecase:
                 await uow.commit()
 
             # create_link(community_code)
-            return Result(item=community_code)
+            return Result(item=CommunityInvite(**asdict(community_code)))

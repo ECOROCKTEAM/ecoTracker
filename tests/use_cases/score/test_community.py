@@ -15,7 +15,7 @@ async def test_score_get(
 ):
     uow = SqlAlchemyUnitOfWork(pool)
     uc = community_get_score.CommunityGetScoreUseCase(uow=uow)
-    result = await uc(community=community_for_rating, user=test_user)
+    result = await uc(community_id=community_for_rating.id, user=test_user)
     score = result.item
     assert score.community_id == community_for_rating.id
     assert isinstance(score.value, int)

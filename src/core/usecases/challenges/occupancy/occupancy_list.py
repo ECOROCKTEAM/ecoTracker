@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.core.dto.user.score import UserScoreDTO
+from src.core.entity.occupancy import OccupancyCategory
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError
 from src.core.interfaces.unit_of_work import IUnitOfWork
@@ -8,21 +8,18 @@ from src.core.interfaces.unit_of_work import IUnitOfWork
 
 @dataclass
 class Result:
-    item: UserScoreDTO
+    items: list[OccupancyCategory]
 
 
-class UserGetScoreUseCase:
-    def __init__(self, uow: IUnitOfWork):
+class OccupancyCategoryListUseCase:
+    def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def __call__(self, *, user: User, id: int) -> Result:
+    async def __call__(self, *, user: User) -> Result:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
 
         async with self.uow as uow:
-            score = await uow.score_user.user_get(user_id=id)
+            category_list = await uow.occupancy_category.lst(lang=user.language)
 
-            if score.value < 0:
-                score.value = 0
-
-        return Result(item=score)
+            return Result(items=category_list)

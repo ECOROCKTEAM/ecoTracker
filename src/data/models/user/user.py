@@ -5,12 +5,11 @@ from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.application.database.base import Base
-from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.community.role import CommunityRoleEnum
 from src.core.enum.score.operation import ScoreOperationEnum
 
 
-@dataclass  # TODO remove
+@dataclass
 class UserModel(Base):
     __tablename__ = "user"
 
@@ -18,12 +17,6 @@ class UserModel(Base):
     username: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str] = mapped_column()
     active: Mapped[bool] = mapped_column(default=True)
-
-    # contacts = relationship(
-    #     "ContactModel",
-    #     back_populates="user",
-    # )
-    # role
 
 
 class UserContactModel(Base):
@@ -60,11 +53,3 @@ class UserScoreModel(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     operation: Mapped[ScoreOperationEnum] = mapped_column()
     value: Mapped[int] = mapped_column()
-
-    # class UserTaskModel(Base):
-    #     __tablename__ = "user_task"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    task_id: Mapped[int] = mapped_column(ForeignKey("task.id"))
-    status: Mapped[OccupancyStatusEnum]

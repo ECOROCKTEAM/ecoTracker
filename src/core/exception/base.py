@@ -26,11 +26,19 @@ class EntityNotCreated(DomainError):
     """"""
 
 
+class EntityAlreadyUsage(DomainError):
+    """"""
+
+
 class EntityNotActive(DomainError):
     """"""
 
 
 class EntityNotChange(DomainError):
+    """"""
+
+
+class MaxAmountError(DomainError):
     """"""
 
 

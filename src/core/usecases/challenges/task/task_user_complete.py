@@ -6,8 +6,8 @@ from src.core.entity.task import TaskUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.score.operation import ScoreOperationEnum
-from src.core.exception.task import TaskDeactivatedError
-from src.core.exception.user import UserIsNotActivateError, UserTaskStatusError
+from src.core.exception.base import EntityNotChange
+from src.core.exception.user import UserIsNotActivateError
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
@@ -16,18 +16,18 @@ class Result:
     item: TaskUser
 
 
-class UserTaskCompleteUseCase:
+class UserTaskCompleteUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def __call__(self, *, user: User, obj_id: int) -> Result:
+    async def __call__(self, *, user: User, id: int) -> Result:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
 
         async with self.uow as uow:
-            user_task = await uow.task.user_task_get(id=obj_id)
+            user_task = await uow.task.user_task_get(id=id)
             if not user_task.status == OccupancyStatusEnum.ACTIVE:
-                raise UserTaskStatusError(obj_id=obj_id)
+                raise EntityNotChange(msg=f"user_task.id={id}")
 
             if user.is_premium:
                 """ """
@@ -36,15 +36,17 @@ class UserTaskCompleteUseCase:
                 """ """
 
             task = await uow.task.get(id=user_task.task_id, lang=user.language)
-            if not task.active:
-                raise TaskDeactivatedError(task_id=task.id)
+
+            # Пользователь взял, выполнил, хочет закрыть, а мы таск закрыли и такие- "Все, никогда его блять не сдашь!!"
+            # if not task.active:
+            #     raise TaskDeactivatedError(task_id=task.id)
 
             _ = await uow.score_user.add(
                 obj=OperationWithScoreUserDTO(user_id=user.id, value=task.score, operation=ScoreOperationEnum.PLUS)
             )
 
             result = await uow.task.user_task_update(
-                id=obj_id,
+                id=id,
                 obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.FINISH),
             )
 

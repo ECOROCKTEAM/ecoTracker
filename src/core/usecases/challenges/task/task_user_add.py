@@ -1,16 +1,13 @@
 from dataclasses import dataclass
 
+from src.core.const.task import MAX_TASK_AMOUNT_NOT_PREMIUM, MAX_TASK_AMOUNT_PREMIUM
 from src.core.dto.challenges.task import TaskUserCreateDTO
 from src.core.dto.mock import MockObj
 from src.core.entity.task import TaskUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
-from src.core.exception.task import TaskDeactivatedError
-from src.core.exception.user import (
-    TaskAlreadyTakenError,
-    UserIsNotActivateError,
-    UserTaskMaxAmountError,
-)
+from src.core.exception.base import EntityAlreadyUsage, EntityNotActive, MaxAmountError
+from src.core.exception.user import UserIsNotActivateError
 from src.core.interfaces.repository.challenges.task import (
     TaskUserFilter,
     TaskUserPlanFilter,
@@ -23,7 +20,7 @@ class Result:
     item: TaskUser
 
 
-class UserTaskAddUseCase:
+class UserTaskAddUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
@@ -34,21 +31,11 @@ class UserTaskAddUseCase:
         async with self.uow as uow:
             task = await uow.task.get(id=task_id, lang=user.language)
             if not task.active:
-                raise TaskDeactivatedError(task_id=task_id)
+                raise EntityNotActive(msg=f"task.id={task_id}")
 
-            task_exist = await uow.task.user_task_lst(
-                user_id=user.id,
-                filter_obj=TaskUserFilter(task_id=task_id, status=OccupancyStatusEnum.ACTIVE),
-                order_obj=MockObj(),
-                pagination_obj=MockObj(),
-            )
-
-            if task_exist:
-                raise TaskAlreadyTakenError(user_id=user.id, task_id=task_id)
-
-            max_count = 3
+            max_count = MAX_TASK_AMOUNT_NOT_PREMIUM
             if user.is_premium:
-                max_count = 10
+                max_count = MAX_TASK_AMOUNT_PREMIUM
 
             user_tasks = await uow.task.user_task_lst(
                 user_id=user.id,
@@ -57,8 +44,12 @@ class UserTaskAddUseCase:
                 order_obj=MockObj(),
             )
 
-            if len(user_tasks) == max_count:
-                raise UserTaskMaxAmountError(user_id=user.id)
+            for user_task in user_tasks:
+                if user_task.task_id == task_id:
+                    raise EntityAlreadyUsage(msg=f"{user.id=}, task.id={task_id}")
+
+            if len(user_tasks) > max_count:
+                raise MaxAmountError(msg=f"{user.id=}")
 
             user_plan_tasks = await uow.task.plan_lst(
                 user_id=user.id,
@@ -67,8 +58,8 @@ class UserTaskAddUseCase:
                 pagination_obj=MockObj(),
             )
 
-            if len(user_plan_tasks) == max_count:
-                raise UserTaskMaxAmountError(user_id=user.id)
+            if len(user_plan_tasks) > max_count:
+                raise MaxAmountError(msg=f"{user.id=}")
 
             user_task_add = await uow.task.user_task_add(
                 user_id=user.id,

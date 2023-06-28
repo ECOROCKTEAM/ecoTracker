@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from src.core.dto.mock import MockObj
 from src.core.entity.task import Task
@@ -10,10 +10,10 @@ from src.core.interfaces.unit_of_work import IUnitOfWork
 
 @dataclass
 class Result:
-    items: list[Task] = field(default_factory=list)
+    item: list[Task]
 
 
-class TaskListUseCase:
+class TaskListUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
@@ -21,8 +21,8 @@ class TaskListUseCase:
         self,
         *,
         user: User,
-        sorting_obj: MockObj,
-        paggination_obj: MockObj,
+        order_obj: MockObj,
+        pagination_obj: MockObj,
         filter_obj: TaskFilter,
     ) -> Result:
         if not user.active:
@@ -32,9 +32,9 @@ class TaskListUseCase:
 
         async with self.uow as uow:
             task_list = await uow.task.lst(
-                order_obj=sorting_obj,
-                pagination_obj=paggination_obj,
+                order_obj=order_obj,
+                pagination_obj=pagination_obj,
                 filter_obj=filter_obj,
                 lang=user.language,
             )
-        return Result(items=task_list)
+        return Result(item=task_list)

@@ -15,12 +15,12 @@ class UserGetScoreUseCase:
     def __init__(self, uow: IUnitOfWork):
         self.uow = uow
 
-    async def __call__(self, *, user: User) -> Result:
+    async def __call__(self, *, user: User, id: int) -> Result:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
 
         async with self.uow as uow:
-            score = await uow.score_user.user_get(user_id=user.id)
+            score = await uow.score_user.user_get(user_id=id)
 
             if score.value < 0:
                 score.value = 0

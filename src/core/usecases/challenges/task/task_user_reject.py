@@ -13,7 +13,7 @@ class Result:
     item: TaskUser
 
 
-class UserTaskDeleteUseCase:
+class UserTaskRejectUseCase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
@@ -27,12 +27,7 @@ class UserTaskDeleteUseCase:
                 raise UserTaskStatusError(obj_id=obj_id)
 
             if not user.is_premium:
-                """
-                Если у нас будет редис, может там хранить ключ с userid_task_deleted и значением int,
-                которое будет увеличиваться на +=1, когда обычный пользователь будет удалять у себя таск?
-
-                Если так, то тут будет get в redis и проверка значения.
-                """
+                """Проверка на удаление 3-x задач."""
 
             if user.is_premium:
                 """Проверка на удаление 10-ти задач."""

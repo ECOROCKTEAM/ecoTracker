@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
 from src.core.dto.community.score import CommunityScoreDTO
-from src.core.entity.community import Community
 from src.core.entity.user import User
 from src.core.exception.community import CommunityDeactivatedError
 from src.core.exception.user import UserIsNotActivateError, UserIsNotPremiumError
@@ -20,17 +19,19 @@ class CommunityGetScoreUseCase:
     async def __call__(
         self,
         *,
-        community: Community,
+        community_id: int,
         user: User,
     ) -> Result:
-        if not community.active:
-            raise CommunityDeactivatedError(community_id=community.id)
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
 
         async with self.uow as uow:
+            community = await uow.community.get(id=community_id)
+            if not community.active:
+                raise CommunityDeactivatedError(community_id=community.id)
+
             community_score = await uow.score_community.community_get(community_id=community.id)
 
             if community_score.value < 0:

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from src.core.enum.community.privacy import CommunityPrivacyEnum
 
@@ -12,3 +13,10 @@ class Community:
     description: str
     active: bool
     privacy: CommunityPrivacyEnum
+
+
+@dataclass
+class CommunityInvite:
+    community_id: int
+    code: str
+    expire_time: datetime

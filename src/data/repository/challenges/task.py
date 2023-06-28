@@ -90,7 +90,7 @@ class RepositoryTask(IRepositoryTask):
         return task_model_to_entity(model=task, translated_model=task_translate)
 
     async def lst(
-        self, *, sorting_obj: MockObj, pagination_obj: MockObj, filter_obj: TaskFilter, lang: LanguageEnum
+        self, *, order_obj: MockObj, pagination_obj: MockObj, filter_obj: TaskFilter, lang: LanguageEnum
     ) -> list[Task]:
         where_clause = []
         if filter_obj.category_id is not None:
@@ -129,12 +129,7 @@ class RepositoryTask(IRepositoryTask):
         ]
 
     async def user_task_add(self, *, user_id: int, obj: TaskUserCreateDTO) -> TaskUser:
-        stmt = (
-            update(UserTaskModel)
-            .where(UserTaskModel.user_id == user_id, UserTaskModel.task_id == obj.task_id)
-            .values(user_id=user_id, **asdict(obj))
-            .returning(UserTaskModel)
-        )
+        stmt = insert(UserTaskModel).values(user_id=user_id, **asdict(obj)).returning(UserTaskModel)
         result = await self.db_context.scalar(stmt)
         if result is None:
             raise EntityNotCreated(msg=f"UserTask object with task_id={obj.task_id}, user_id={user_id} not created")
@@ -144,7 +139,7 @@ class RepositoryTask(IRepositoryTask):
     async def user_task_get(self, *, id: int) -> TaskUser:
         stmt = select(UserTaskModel).where(UserTaskModel.id == id)
         result = await self.db_context.scalar(stmt)
-        if not result:
+        if result is None:
             raise EntityNotFound(msg=f"UserTask object with id={id} not found")
         return user_task_to_entity(model=result)
 
@@ -180,7 +175,7 @@ class RepositoryTask(IRepositoryTask):
             .returning(UserTaskModel)
         )
         result = await self.db_context.scalar(stmt)
-        if not result:
+        if result is None:
             raise EntityNotFound(msg=f"UserTask object={id} not found and was not updated")
         await self.db_context.refresh(result)
         return user_task_to_entity(model=result)
@@ -194,7 +189,7 @@ class RepositoryTask(IRepositoryTask):
             if isinstance(error.orig.__cause__, ForeignKeyViolationError):
                 raise EntityNotCreated(msg="Not found fk") from error
             raise EntityNotCreated(msg="") from error
-        if not result:
+        if result is None:
             raise EntityNotCreated(msg=f"UserTaskPlan with task_id={obj.task_id}, user_id={obj.user_id} not created")
         return plan_model_to_entity(model=result)
 
@@ -205,7 +200,7 @@ class RepositoryTask(IRepositoryTask):
             .returning(UserTaskPlanModel)
         )
         result = await self.db_context.scalar(stmt)
-        if not result:
+        if result is None:
             raise EntityNotFound(msg=f"UserTaskPlan with task_id={task_id}, user_id={user_id} not deleted")
         return plan_model_to_entity(model=result)
 

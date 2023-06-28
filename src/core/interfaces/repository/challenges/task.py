@@ -46,7 +46,7 @@ class IRepositoryTask(ABC):
 
     @abstractmethod
     async def lst(
-        self, *, filter_obj: TaskFilter, sorting_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
+        self, *, filter_obj: TaskFilter, order_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
     ) -> list[Task]:
         """List of tasks
 

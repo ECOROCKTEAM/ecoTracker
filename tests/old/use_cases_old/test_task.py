@@ -32,8 +32,6 @@ async def test_list(pool, test_task_model_list, test_user: User):
     test_task_ids = [m.id for m in test_task_model_list]
     uow = SqlAlchemyUnitOfWork(pool)
     uc = task_list.TaskListUseCase(uow=uow)
-    # async with uow as uow:
-    #     task = await uow.task.get(id=1337228, lang=test_user.language)
     result = await uc(user=test_user, sorting_obj=MockObj(), paggination_obj=MockObj(), filter_obj=TaskFilter())
     assert isinstance(result.items, list)
     for task in result.items:
@@ -123,7 +121,7 @@ async def test_task_reject(pool, test_user_task, test_user, test_task):
     band = timedelta(seconds=2)
     test_user.language = test_task.language
     uow = SqlAlchemyUnitOfWork(pool)
-    uc = task_user_reject.UserTaskDeleteUseCase(uow=uow)
+    uc = task_user_reject.UserTaskRejectUseCase(uow=uow)
     result = await uc(user=test_user, obj_id=test_user_task.id)
     user_task = result.item
     assert user_task.user_id == test_user.id

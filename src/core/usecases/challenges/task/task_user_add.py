@@ -36,11 +36,6 @@ class UserTaskAddUseCase:
             if not task.active:
                 raise TaskDeactivatedError(task_id=task_id)
 
-            """ 
-            Всё-таки придётся добавить в фильтр task_id потому, что иначе мы никак не сможем получить
-            нашу взятую/не взятую таскую. 
-            """
-
             task_exist = await uow.task.user_task_lst(
                 user_id=user.id,
                 filter_obj=TaskUserFilter(task_id=task_id, status=OccupancyStatusEnum.ACTIVE),

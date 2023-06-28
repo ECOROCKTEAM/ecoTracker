@@ -13,7 +13,7 @@ class Result:
     item: UserCommunityDTO
 
 
-class CommunityJoinByCode:
+class CommunityJoinByCodeUsecase:
     def __init__(self, *, uow: IUnitOfWork) -> None:
         self.uow = uow
 

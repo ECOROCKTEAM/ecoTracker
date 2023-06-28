@@ -130,7 +130,13 @@ class RepositoryTask(IRepositoryTask):
 
     async def user_task_add(self, *, user_id: int, obj: TaskUserCreateDTO) -> TaskUser:
         stmt = insert(UserTaskModel).values(user_id=user_id, **asdict(obj)).returning(UserTaskModel)
-        result = await self.db_context.scalar(stmt)
+        try:
+            result = await self.db_context.scalar(stmt)
+        except IntegrityError as error:
+            error.orig = typing.cast(BaseException, error.orig)  # just for types
+            if isinstance(error.orig.__cause__, ForeignKeyViolationError):
+                raise EntityNotCreated(msg="Not found fk") from error
+            raise EntityNotCreated(msg="") from error
         if result is None:
             raise EntityNotCreated(msg=f"UserTask object with task_id={obj.task_id}, user_id={user_id} not created")
         await self.db_context.refresh(result)

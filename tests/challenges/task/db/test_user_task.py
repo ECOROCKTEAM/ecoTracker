@@ -86,7 +86,7 @@ async def test_create_user_task_not_created(
     )
     user_task_list = await repo.user_task_lst(user_id=fxe_user_default.id, filter_obj=TaskUserFilter(), **default_kw)
     assert len(user_task_list) == 0
-    with pytest.raises(EntityNotCreated):
+    with pytest.raises(EntityNotCreated) as e:
         _ = await repo.user_task_add(
             user_id=-1,
             obj=TaskUserCreateDTO(

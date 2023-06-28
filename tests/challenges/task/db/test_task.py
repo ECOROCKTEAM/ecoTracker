@@ -44,7 +44,7 @@ async def test_get_not_translate(repo: IRepositoryTask, fxe_task_default: Task):
 async def test_lst(repo: IRepositoryTask, fxe_task_default: Task, fxe_task_en: Task):
     task_list = await repo.lst(
         filter_obj=TaskFilter(),
-        sorting_obj=MockObj(),
+        order_obj=MockObj(),
         pagination_obj=MockObj(),
         lang=LanguageEnum.RU,
     )
@@ -69,7 +69,7 @@ async def test_lst(repo: IRepositoryTask, fxe_task_default: Task, fxe_task_en: T
 # python -m pytest tests/challenges/task/db/test_task.py::test_lst_filter -v -s
 @pytest.mark.asyncio
 async def test_lst_filter(repo: IRepositoryTask, fxe_task_default: Task):
-    default_kw = dict(sorting_obj=MockObj(), pagination_obj=MockObj(), lang=LanguageEnum.RU)
+    default_kw = dict(order_obj=MockObj(), pagination_obj=MockObj(), lang=LanguageEnum.RU)
     task_list = await repo.lst(filter_obj=TaskFilter(active=True), **default_kw)  # type: ignore
     assert len(task_list) == 1
     task = task_list[0]

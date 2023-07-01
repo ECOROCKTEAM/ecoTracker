@@ -3,6 +3,7 @@ from collections.abc import AsyncGenerator
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.enum.language import LanguageEnum
 from src.data.models.challenges.occupancy import (
     OccupancyCategoryModel,
     OccupancyCategoryTranslateModel,
@@ -21,6 +22,25 @@ async def fxm_category_default(
     translate = OccupancyCategoryTranslateModel(
         name=get_random_str(), language=DEFAULT_TEST_LANGUAGE, category_id=model.id
     )
+    session.add(translate)
+    await session.commit()
+
+    yield model, translate
+
+    await session.delete(translate)
+    await session.flush()
+    await session.delete(model)
+    await session.commit()
+
+
+@pytest_asyncio.fixture(scope="function")
+async def fxm_category_en(
+    session: AsyncSession,
+) -> AsyncGenerator[tuple[OccupancyCategoryModel, OccupancyCategoryTranslateModel], None]:
+    model = OccupancyCategoryModel()
+    session.add(model)
+    await session.flush()
+    translate = OccupancyCategoryTranslateModel(name=get_random_str(), language=LanguageEnum.EN, category_id=model.id)
     session.add(translate)
     await session.commit()
 

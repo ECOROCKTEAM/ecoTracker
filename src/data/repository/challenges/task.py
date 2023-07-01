@@ -78,7 +78,7 @@ class RepositoryTask(IRepositoryTask):
         record = await self.db_context.execute(stmt)
         result = record.one_or_none()
         if result is None:
-            raise EntityNotFound(msg=f"Task obj={id} not found")
+            raise EntityNotFound(msg=f"Task.id={id} not found")
         task, task_translate = result
         if task_translate is None:
             task_default_lang = select(TaskTranslateModel).where(
@@ -90,7 +90,7 @@ class RepositoryTask(IRepositoryTask):
         return task_model_to_entity(model=task, translated_model=task_translate)
 
     async def lst(
-        self, *, order_obj: MockObj, pagination_obj: MockObj, filter_obj: TaskFilter, lang: LanguageEnum
+        self, *, filter_obj: TaskFilter, order_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
     ) -> list[Task]:
         where_clause = []
         if filter_obj.category_id is not None:

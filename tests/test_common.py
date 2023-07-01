@@ -6,7 +6,7 @@ from src.application.database.base import Base
 from src.data.models import *
 
 
-# python -m pytest tests/test_common.py::test_database_connect -v -s
+# pytest tests/test_common.py::test_database_connect -v -s
 @pytest.mark.asyncio
 async def test_database_connect(session: AsyncSession):
     stmt = text("select 1")

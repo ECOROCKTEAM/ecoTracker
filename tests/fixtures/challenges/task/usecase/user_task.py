@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import datetime
 
 import pytest_asyncio
@@ -33,7 +34,7 @@ async def mock_user_task_get_default(monkeypatch) -> TaskUser:
 
 
 @pytest_asyncio.fixture
-async def mock_user_task_get_finish_status(monkeypatch) -> TaskUser:
+async def mock_user_task_get_finish(monkeypatch) -> TaskUser:
     async def f(*args, **kwargs) -> TaskUser:
         return TaskUser(
             id=1337,
@@ -101,6 +102,28 @@ async def mock_user_task_lst(monkeypatch):
     async def f(*args, filter_obj: TaskUserFilter, **kwargs):
         assert isinstance(filter_obj, TaskUserFilter)
         return []
+
+    monkeypatch.setattr("src.data.repository.challenges.task.RepositoryTask.user_task_lst", f)
+
+
+@pytest_asyncio.fixture
+async def mock_user_task_check_filter(monkeypatch):
+    async def f(*args, filter_obj: TaskUserFilter, **kwargs):
+        assert isinstance(filter_obj, TaskUserFilter)
+        assert isinstance(filter_obj.task_id, int)
+        assert isinstance(filter_obj.task_active, bool)
+        assert isinstance(filter_obj.status, OccupancyStatusEnum)
+        assert len(asdict(filter_obj)) == 3
+        return [
+            TaskUser(
+                id=1337,
+                user_id=DEFAULT_TEST_USECASE_USER_ID,
+                task_id=DEFAULT_TEST_USECASE_TASK_ID,
+                date_start=datetime.now(),
+                date_close=None,
+                status=DEFAULT_TEST_OCCUPANCY_STATUS,
+            )
+        ]
 
     monkeypatch.setattr("src.data.repository.challenges.task.RepositoryTask.user_task_lst", f)
 
@@ -254,6 +277,22 @@ async def mock_user_task_plan_lst_ret_eq_max_premium(monkeypatch):
                 task_id=DEFAULT_TEST_USECASE_TASK_ID,
             )
             for i in range(MAX_TASK_AMOUNT_PREMIUM)
+        ]
+
+    monkeypatch.setattr("src.data.repository.challenges.task.RepositoryTask.plan_lst", f)
+
+
+@pytest_asyncio.fixture
+async def mock_user_task_plan_check_filter(monkeypatch):
+    async def f(*args, filter_obj: TaskUserPlanFilter, **kwargs):
+        assert isinstance(filter_obj, TaskUserPlanFilter)
+        assert isinstance(filter_obj.task_active, bool)
+        assert len(asdict(filter_obj)) == 1
+        return [
+            TaskUserPlan(
+                user_id=DEFAULT_TEST_USECASE_USER_ID,
+                task_id=DEFAULT_TEST_USECASE_TASK_ID,
+            )
         ]
 
     monkeypatch.setattr("src.data.repository.challenges.task.RepositoryTask.plan_lst", f)

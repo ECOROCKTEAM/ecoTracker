@@ -38,7 +38,7 @@ async def test_ok(
     res = await uc(user=fxe_user_default, task_id=1)
     task = res.item
     assert isinstance(task, TaskUser)
-    assert task.id is mock_user_task_add.id
+    assert task.id == mock_user_task_add.id
 
 
 # pytest tests/challenges/task/usecases/task_user/test_user_add.py::test_task_not_active -v -s

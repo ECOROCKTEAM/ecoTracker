@@ -10,7 +10,7 @@ from tests.fixtures.challenges.task.usecase.task import mock_task_get_default
 from tests.fixtures.challenges.task.usecase.user_task import (
     mock_user_task_add,
     mock_user_task_get_default,
-    mock_user_task_get_finish_status,
+    mock_user_task_get_finish,
     mock_user_task_update,
 )
 from tests.fixtures.score.usecase.user_score import mock_user_score_add
@@ -32,7 +32,7 @@ async def test_ok(
     res = await uc(user=fxe_user_default, id=1)
     task = res.item
     assert isinstance(task, TaskUser)
-    assert task.id is mock_user_task_add.id
+    assert task.id == mock_user_task_add.id
 
 
 # pytest tests/challenges/task/usecases/task_user/test_user_complete.py::test_not_active -v -s
@@ -41,7 +41,7 @@ async def test_not_active(
     uow: IUnitOfWork,
     fxe_user_default: User,
     mock_task_get_default: Task,
-    mock_user_task_get_finish_status: TaskUser,
+    mock_user_task_get_finish: TaskUser,
 ):
     uc = UserTaskCompleteUsecase(uow=uow)
     with pytest.raises(EntityNotChange):

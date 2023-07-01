@@ -15,5 +15,5 @@ from tests.fixtures.challenges.category.db.model import fxm_category_default
 async def fxe_category_default(
     fxm_category_default: tuple[OccupancyCategoryModel, OccupancyCategoryTranslateModel]
 ) -> AsyncGenerator[OccupancyCategory, None]:
-    _, translate = fxm_category_default
-    yield occupancy_model_to_entity(translate)
+    model, translate = fxm_category_default
+    yield occupancy_model_to_entity(model, translate)

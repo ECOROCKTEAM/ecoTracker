@@ -22,6 +22,7 @@ async def fxm_category_default(
         name=get_random_str(), language=DEFAULT_TEST_LANGUAGE, category_id=model.id
     )
     session.add(translate)
+    await session.commit()
 
     yield model, translate
 

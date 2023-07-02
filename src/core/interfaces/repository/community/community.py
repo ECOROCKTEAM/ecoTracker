@@ -15,7 +15,6 @@ from src.core.enum.community.role import CommunityRoleEnum
 
 @dataclass
 class CommunityFilter:
-    name: str | None = None
     active: bool | None = None
     user_id: int | None = None
 

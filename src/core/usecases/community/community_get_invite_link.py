@@ -1,4 +1,4 @@
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from uuid import uuid4
 
@@ -43,5 +43,10 @@ class CommunityGetInviteCodeUsecase:
                 community_code = await uow.community.code_set(id=community_id, obj=obj)
                 await uow.commit()
 
-            # create_link(community_code)
-            return Result(item=CommunityInvite(**asdict(community_code)))
+            return Result(
+                item=CommunityInvite(
+                    community_id=community_code.community_id,
+                    code=community_code.code,
+                    expire_time=community_code.expire_time,
+                )
+            )

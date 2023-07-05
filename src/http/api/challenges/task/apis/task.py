@@ -1,11 +1,16 @@
-from fastapi import APIRouter, Depends, Path, Query
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Path
 
 from src.core.dto.mock import MockObj
-from src.core.interfaces.repository.challenges.task import TaskFilter
+from src.core.interfaces.repository.challenges.task import (
+    TaskFilter,
+    task_filter_query_params,
+)
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.core.usecases.challenges.task.task_get import TaskGetUseCase
 from src.core.usecases.challenges.task.task_list import TaskListUseCase
-from src.http.api.challenges.task.schemas.task import Task, TaskFilterObject
+from src.http.api.challenges.task.schemas.task import Task
 from src.http.api.depends import get_uow, get_user
 
 router = APIRouter(tags=["Task"])
@@ -41,9 +46,9 @@ async def task_get(
     response_model_by_alias=True,
 )
 async def task_list(
+    filter_obj: Annotated[dict, Depends(task_filter_query_params)],
     user=Depends(get_user),
     uow: IUnitOfWork = Depends(get_uow),
-    filter_obj: TaskFilterObject = Query(default=None, description="Filter object"),
 ) -> list[Task]:
     """Get task list"""
     uc = TaskListUseCase(uow=uow)
@@ -51,6 +56,6 @@ async def task_list(
         user=user,
         sorting_obj=MockObj(),
         paggination_obj=MockObj(),
-        filter_obj=TaskFilter(**filter_obj.dict()),
+        filter_obj=TaskFilter(**filter_obj),
     )
     return result.items

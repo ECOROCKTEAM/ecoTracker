@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Body, Depends, Path, Query
+from typing import Annotated
+
+from fastapi import APIRouter, Body, Depends, Path
 
 from src.core.dto.challenges.mission import MissionUserCreateDTO, MissionUserUpdateDTO
 from src.core.dto.mock import MockObj
@@ -16,8 +18,8 @@ from src.core.usecases.challenges.mission.mission_user_update import (
 from src.http.api.challenges.mission.schemas.mission_user import (
     MissionUserCreateObject,
     MissionUserEntity,
-    MissionUserFilterObject,
     MissionUserUpdateObject,
+    mission_user_filter_query_params,
 )
 from src.http.api.depends import get_uow, get_user
 
@@ -55,15 +57,13 @@ async def mission_user_get(
     response_model_by_alias=True,
 )
 async def mission_user_list(
-    obj: MissionUserFilterObject = Query(None, description=""),
+    obj: Annotated[dict, Depends(mission_user_filter_query_params)],
     user=Depends(get_user),
     uow=Depends(get_uow),
 ) -> list[MissionUserEntity]:
     """Get user mission list"""
     uc = MissionUserListUsecase(uow=uow)
-    result = await uc(
-        user=user, filter_obj=MissionUserFilter(**obj.dict()), order_obj=MockObj(), pagination_obj=MockObj()
-    )
+    result = await uc(user=user, filter_obj=MissionUserFilter(**obj), order_obj=MockObj(), pagination_obj=MockObj())
     return result.item
 
 

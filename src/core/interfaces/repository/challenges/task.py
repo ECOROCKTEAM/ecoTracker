@@ -18,6 +18,13 @@ class TaskFilter:
     category_id: int | None = None
 
 
+async def task_filter_query_params(
+    active: bool | None = None,
+    category_id: int | None = None,
+) -> dict:
+    return {"active": active, "category_id": category_id}
+
+
 @dataclass
 class TaskUserFilter:
     task_id: int | None = None

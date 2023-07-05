@@ -37,16 +37,11 @@ class MissionUserEntity(BaseModel):
     status: OccupancyStatusEnum = Field(alias="status", default=OccupancyStatusEnum.ACTIVE)
 
 
-class MissionUserFilterObject(BaseModel):
-    """
-    MissionUserFilter - a model defined in OpenAPI
-
-        mission_id: The mission_id of this MissionUserFilter.
-        status: The status of this MissionUserFilter.
-    """
-
-    mission_id: int = Field(alias="mission_id", default=None)
-    status: OccupancyStatusEnum = Field(alias="status", default=OccupancyStatusEnum.ACTIVE)
+async def mission_user_filter_query_params(
+    mission_id: int | None = None,
+    status: OccupancyStatusEnum | None = OccupancyStatusEnum.ACTIVE,
+) -> dict:
+    return {"mission_id": mission_id, "status": status}
 
 
 class MissionUserUpdateObject(BaseModel):

@@ -3,14 +3,8 @@ from pydantic import BaseModel, Field
 from src.core.enum.language import LanguageEnum
 
 
-class MissionFilterObject(BaseModel):
-    """
-    MissionFilter - a model defined in OpenAPI
-
-        active: The active of this MissionFilter.
-    """
-
-    active: bool = Field(alias="active", default=True)
+async def mission_filter_query_params(active: bool | None = True) -> dict:
+    return {"active": active}
 
 
 class MissionEntity(BaseModel):

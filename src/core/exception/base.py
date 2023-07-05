@@ -14,7 +14,7 @@ class RepoError(BaseError):
     """"""
 
 
-class PermissionError(Exception):
+class PermissionError(DomainError):
     """"""
 
 
@@ -35,6 +35,14 @@ class EntityNotActive(DomainError):
 
 
 class EntityNotChange(DomainError):
+    """"""
+
+
+class PrivacyError(DomainError):
+    """"""
+
+
+class LogicError(DomainError):
     """"""
 
 

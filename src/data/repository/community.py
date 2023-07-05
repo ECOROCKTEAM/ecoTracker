@@ -137,6 +137,8 @@ class RepositoryCommunity(IRepositoryCommunity):
         where_clause = [CommunityModel.id == id]
         if filter_obj.role_list:
             where_clause.append(UserCommunityModel.role.in_(filter_obj.role_list))
+        if filter_obj.user_id__in is not None:
+            where_clause.append(UserCommunityModel.user_id.in_(filter_obj.user_id__in))
         stmt = stmt.where(*where_clause)
         res = await self.db_context.scalars(stmt)
         return [user_community_model_to_dto(model) for model in res]

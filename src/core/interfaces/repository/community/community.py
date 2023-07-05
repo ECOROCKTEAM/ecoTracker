@@ -22,6 +22,7 @@ class CommunityFilter:
 @dataclass
 class CommunityUserFilter:
     role_list: list[CommunityRoleEnum] | None = field(default_factory=list)
+    user_id__in: list[int] | None = None
 
 
 class IRepositoryCommunity(ABC):

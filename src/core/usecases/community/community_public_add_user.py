@@ -2,11 +2,9 @@ from dataclasses import dataclass
 
 from src.core.dto.m2m.user.community import UserCommunityCreateDTO, UserCommunityDTO
 from src.core.entity.user import User
+from src.core.enum.community.privacy import CommunityPrivacyEnum
 from src.core.enum.community.role import CommunityRoleEnum
-from src.core.exception.community import (
-    CommunityDeactivatedError,
-    CommunityPrivacyError,
-)
+from src.core.exception.base import EntityNotActive, PrivacyError
 from src.core.exception.user import UserIsNotPremiumError
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
@@ -26,9 +24,9 @@ class CommunityPublicAddUserUsecase:
         async with self.uow as uow:
             community = await uow.community.get(id=community_id)
             if not community.active:
-                raise CommunityDeactivatedError(community_id=community_id)
-            if not community.privacy.PUBLIC:
-                raise CommunityPrivacyError(community_id=community_id)
+                raise EntityNotActive(msg=f"{community_id=}")
+            if community.privacy == CommunityPrivacyEnum.PRIVATE:
+                raise PrivacyError(msg=f"{community_id=}")
             role = await uow.community.user_add(
                 obj=UserCommunityCreateDTO(user_id=user.id, community_id=community.id, role=CommunityRoleEnum.USER)
             )

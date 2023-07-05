@@ -36,7 +36,11 @@ class CommunityGetInviteCodeUsecase:
             if role.role not in (CommunityRoleEnum.ADMIN, CommunityRoleEnum.SUPERUSER):
                 raise UserIsNotCommunityAdminUserError(user_id=user.id, community_id=community_id)
             community_code = await uow.community.code_get(id=community_id)
-            if not community_code.code or community_code.expire_time < datetime.utcnow():
+            if (
+                community_code.code is None
+                or community_code.expire_time is None
+                or community_code.expire_time < datetime.utcnow()
+            ):
                 obj = CommunityInviteUpdateDTO(
                     code=uuid4().hex, expire_time=datetime.utcnow() + timedelta(seconds=self.invite_expire_sec)
                 )

@@ -17,8 +17,8 @@ from tests.fixtures.community.db.model import (
     fxm_community_default,
     fxm_community_default_2,
 )
+from tests.fixtures.community.db.user.model import fxm_user_community_default
 from tests.fixtures.user.db.model import fxm_user_default
-from tests.fixtures.user_community.db.model import fxm_user_community_default
 
 
 # pytest tests/main/community/db/test_community.py::test_get_ok -v -s

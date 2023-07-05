@@ -27,8 +27,8 @@ from tests.fixtures.challenges.mission.db.entity import fxe_mission_default
 from tests.fixtures.challenges.mission.db.model import fxm_mission_default
 from tests.fixtures.community.db.entity import fxe_community_default
 from tests.fixtures.community.db.model import fxm_community_default
+from tests.fixtures.community.db.user.model import fxm_user_community_default
 from tests.fixtures.user.db.model import fxm_user_default
-from tests.fixtures.user_community.db.model import fxm_user_community_default
 
 
 # pytest tests/main/challenges/mission/db/test_community_mission.py::test_get_community_mission_ok -v -s

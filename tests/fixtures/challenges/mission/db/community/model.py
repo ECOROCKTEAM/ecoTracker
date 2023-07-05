@@ -10,9 +10,9 @@ from src.data.models.challenges.mission import (
 )
 from src.data.models.user.user import UserCommunityModel
 from tests.fixtures.challenges.mission.db.model import fxm_mission_default
+from tests.fixtures.community.db.user.model import fxm_user_community_default
 from tests.fixtures.const import DEFAULT_TEST_OCCUPANCY_STATUS
 from tests.fixtures.user.db.model import fxm_user_default
-from tests.fixtures.user_community.db.model import fxm_user_community_default
 from tests.utils import get_random_str
 
 

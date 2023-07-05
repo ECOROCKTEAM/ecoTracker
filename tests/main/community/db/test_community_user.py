@@ -15,10 +15,20 @@ from src.data.models.user.user import UserCommunityModel
 from src.data.repository.community import IRepositoryCommunity
 from tests.fixtures.community.db.entity import fxe_community_default
 from tests.fixtures.community.db.model import fxm_community_default
+from tests.fixtures.community.db.user.entity import (
+    fxe_user_community_admin,
+    fxe_user_community_default,
+    fxm_user_community_superuser,
+)
+from tests.fixtures.community.db.user.model import (
+    fxm_user_community_admin,
+    fxm_user_community_default,
+)
 from tests.fixtures.user.db.entity import fxe_user_default
-from tests.fixtures.user.db.model import fxm_user_default
-from tests.fixtures.user_community.db.entity import fxe_user_community_default
-from tests.fixtures.user_community.db.model import fxm_user_community_default
+from tests.fixtures.user.db.model import fxm_user_default, fxm_user_default_2
+from tests.main.challenges.mission.usecases.community_mission.conftest import (
+    test_user_community_admin_dto,
+)
 
 
 # pytest tests/main/community/db/test_community_user.py::test_get_ok -v -s
@@ -106,16 +116,45 @@ async def test_add_fail_uniq(
 
 # pytest tests/main/community/db/test_community_user.py::test_lst -v -s
 @pytest.mark.asyncio
-async def test_lst(repo: IRepositoryCommunity, fxe_user_community_default: UserCommunityDTO):
+async def test_lst(
+    repo: IRepositoryCommunity,
+    fxm_user_community_superuser: UserCommunityDTO,
+    fxm_user_community_admin: UserCommunityDTO,
+):
     uc_list = await repo.user_list(
-        id=fxe_user_community_default.community_id,
-        filter_obj=CommunityUserFilter(role_list=[fxe_user_community_default.role]),
+        id=fxm_user_community_admin.community_id,
+        filter_obj=CommunityUserFilter(
+            role_list=[fxm_user_community_admin.role], user_id__in=[fxm_user_community_admin.user_id]
+        ),
     )
     assert len(uc_list) == 1
     uc = uc_list[0]
-    assert fxe_user_community_default.user_id == uc.user_id
-    assert fxe_user_community_default.community_id == uc.community_id
-    assert fxe_user_community_default.role == uc.role
+    assert fxm_user_community_admin.user_id == uc.user_id
+    assert fxm_user_community_admin.community_id == uc.community_id
+    assert fxm_user_community_admin.role == uc.role
+
+    uc_list = await repo.user_list(
+        id=fxm_user_community_admin.community_id,
+        filter_obj=CommunityUserFilter(
+            role_list=[fxm_user_community_superuser.role], user_id__in=[fxm_user_community_superuser.user_id]
+        ),
+    )
+    assert len(uc_list) == 1
+    uc = uc_list[0]
+    assert fxm_user_community_superuser.user_id == uc.user_id
+    assert fxm_user_community_superuser.community_id == uc.community_id
+    assert fxm_user_community_superuser.role == uc.role
+
+    uc_list = await repo.user_list(
+        id=fxm_user_community_admin.community_id,
+        filter_obj=CommunityUserFilter(
+            user_id__in=[fxm_user_community_superuser.user_id, fxm_user_community_admin.user_id]
+        ),
+    )
+    assert len(uc_list) == 2
+    user_ids = [x.user_id for x in uc_list]
+    assert fxm_user_community_admin.user_id in user_ids
+    assert fxm_user_community_superuser.user_id in user_ids
 
 
 # pytest tests/main/community/db/test_community_user.py::test_role_update_ok -v -s

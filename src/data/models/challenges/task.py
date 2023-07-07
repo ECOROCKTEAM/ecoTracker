@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -10,8 +9,11 @@ from src.application.database.base import Base
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
 
-if TYPE_CHECKING:
-    from src.data.models.challenges.occupancy import OccupancyCategoryModel
+# from typing import TYPE_CHECKING
+
+
+# if TYPE_CHECKING:
+#     from src.data.models.challenges.occupancy import OccupancyCategoryModel
 
 
 @dataclass
@@ -23,7 +25,7 @@ class TaskModel(Base):
     active: Mapped[bool] = mapped_column()
     category_id: Mapped[int] = mapped_column(ForeignKey("occupancy_category.id"))
 
-    category: Mapped["OccupancyCategoryModel"] = relationship(lazy="joined", back_populates="tasks")
+    # category: Mapped["OccupancyCategoryModel"] = relationship(lazy="joined", back_populates="tasks")
     translations: Mapped[list["TaskTranslateModel"]] = relationship(lazy="selectin", back_populates="task")
 
 

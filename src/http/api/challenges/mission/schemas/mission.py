@@ -3,8 +3,9 @@ from pydantic import BaseModel, Field
 from src.core.enum.language import LanguageEnum
 
 
-async def mission_filter_query_params(active: bool | None = True) -> dict:
-    return {"active": active}
+class MissionFilterQueryParams:
+    def __init__(self, active: bool | None = True) -> None:
+        self.active = active
 
 
 class MissionEntity(BaseModel):

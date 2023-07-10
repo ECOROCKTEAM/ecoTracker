@@ -29,9 +29,10 @@ def create_app() -> FastAPI:
     app = FastAPI(lifespan=lifespan)
 
     app.include_router(community_router)
-    app.include_router(mission_router)
-    app.include_router(mission_user_router)
     app.include_router(mission_community_router)
+    app.include_router(mission_user_router)
+    app.include_router(mission_router)
+    app.include_router(task_user_router)
     app.include_router(task_router)
     app.include_router(task_user_router)
     app.include_router(score_user_router)

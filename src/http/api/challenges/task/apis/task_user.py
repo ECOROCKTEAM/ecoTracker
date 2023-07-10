@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Body, Depends, Path
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Path
 
 from src.core.dto.mock import MockObj
 from src.core.interfaces.repository.challenges.task import (
@@ -15,17 +17,39 @@ from src.core.usecases.challenges.task.task_user_plan_list import (
 from src.core.usecases.challenges.task.task_user_reject import UserTaskRejectUseCase
 from src.http.api.challenges.task.schemas.task import (
     TaskUserEntity,
-    TaskUserFilterObject,
+    TaskUserFilterQueryParams,
     TaskUserPlanEntity,
-    TaskUserPlanFilterObject,
+    TaskUserPlanFilterQueryParams,
 )
-from src.http.api.depends import get_uow, get_user
+from src.http.api.deps import get_uow, get_user
 
 router = APIRouter(tags=["Task User"])
 
 
 @router.get(
-    "/task/user/{id}",
+    "/tasks/users",
+    responses={
+        200: {"model": list[TaskUserEntity], "description": "OK"},
+        401: {"description": "User not active"},
+    },
+    summary="List user tasks",
+    response_model_by_alias=True,
+)
+async def task_user_list(
+    filter_obj: Annotated[TaskUserFilterQueryParams, Depends()],
+    user=Depends(get_user),
+    uow=Depends(get_uow),
+) -> list[TaskUserEntity]:
+    """Get list of user tasks"""
+    uc = UserTaskListUseCase(uow=uow)
+    result = await uc(
+        user=user, order_obj=MockObj(), pagination_obj=MockObj(), filter_obj=TaskUserFilter(**filter_obj.__dict__)
+    )
+    return result.items
+
+
+@router.get(
+    "/tasks/{id}/users",
     responses={
         200: {"model": TaskUserEntity, "description": "OK"},
         401: {"description": "User not active"},
@@ -45,29 +69,7 @@ async def task_user_get(
 
 
 @router.get(
-    "/task/user",
-    responses={
-        200: {"model": list[TaskUserEntity], "description": "OK"},
-        401: {"description": "User not active"},
-    },
-    summary="List user tasks",
-    response_model_by_alias=True,
-)
-async def task_user_list(
-    user=Depends(get_user),
-    uow=Depends(get_uow),
-    filter_obj: TaskUserFilterObject = Body(default=None, description="Filter object"),
-) -> list[TaskUserEntity]:
-    """Get list of user tasks"""
-    uc = UserTaskListUseCase(uow=uow)
-    result = await uc(
-        user=user, order_obj=MockObj(), pagination_obj=MockObj(), filter_obj=TaskUserFilter(**filter_obj.dict())
-    )
-    return result.items
-
-
-@router.get(
-    "/task/user/plan",
+    "/tasks/users/plans",
     responses={
         200: {"model": list[TaskUserPlanEntity], "description": "OK"},
         401: {"description": "User not active"},
@@ -76,20 +78,20 @@ async def task_user_list(
     response_model_by_alias=True,
 )
 async def task_user_plan_list(
+    filter_obj: Annotated[TaskUserPlanFilterQueryParams, Depends()],
     user=Depends(get_user),
     uow=Depends(get_uow),
-    filter_obj: TaskUserPlanFilterObject = Body(default=None, description="Filter object"),
 ) -> list[TaskUserPlanEntity]:
     """Get User Task Plan list"""
     uc = UserTaskPlanListUseCase(uow=uow)
     result = await uc(
-        user=user, filter_obj=TaskUserPlanFilter(**filter_obj.dict()), order_obj=MockObj(), pagination_obj=MockObj()
+        user=user, filter_obj=TaskUserPlanFilter(**filter_obj.__dict__), order_obj=MockObj(), pagination_obj=MockObj()
     )
     return result.items
 
 
 @router.post(
-    "/task/user/{id}",
+    "/tasks/users/{id}",
     responses={
         200: {"description": "OK"},
     },
@@ -108,7 +110,7 @@ async def task_user_add(
 
 
 @router.patch(
-    "/task/user/complete/{obj_id}",
+    "/tasks/users/complete/{obj_id}",
     responses={
         200: {"model": TaskUserEntity, "description": "OK"},
         401: {"description": "User not active"},
@@ -128,7 +130,7 @@ async def task_user_complete(
 
 
 @router.patch(
-    "/task/user/reject/{obj_id}",
+    "/tasks/users/reject/{obj_id}",
     responses={
         200: {"model": TaskUserEntity, "description": "OK"},
         401: {"description": "User not active"},

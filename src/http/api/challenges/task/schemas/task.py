@@ -11,14 +11,24 @@ class TaskFilterObject(BaseModel):
     category_id: int = Field(alias="category_id", default=None)
 
 
-class TaskUserPlanFilterObject(BaseModel):
-    task_active: bool = Field(alias="task_active", default=True)
+class TaskUserPlanFilterQueryParams:
+    def __init__(
+        self,
+        task_active: bool | None = None,
+    ) -> None:
+        self.task_active = task_active
 
 
-class TaskUserFilterObject(BaseModel):
-    task_id: int = Field(alias="task_id", default=None)
-    task_active: bool = Field(alias="task_active", default=True)
-    status: OccupancyStatusEnum = Field(alias="status", default=OccupancyStatusEnum.ACTIVE)
+class TaskUserFilterQueryParams:
+    def __init__(
+        self,
+        task_id: int | None = None,
+        task_active: bool | None = True,
+        status: OccupancyStatusEnum | None = OccupancyStatusEnum.ACTIVE,
+    ) -> None:
+        self.task_id = task_id
+        self.task_active = task_active
+        self.status = status
 
 
 class Task(BaseModel):

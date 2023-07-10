@@ -2,14 +2,14 @@ from fastapi import APIRouter, Depends, Path
 
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.core.usecases.score.user.user_get_score import UserGetScoreUseCase
-from src.http.api.depends import get_uow, get_user
+from src.http.api.deps import get_uow, get_user
 from src.http.api.score.schemas.score import UserScoreDTO
 
 router = APIRouter(tags=["Score user"])
 
 
 @router.get(
-    "/score/user/{id}",
+    "/scores/users/{id}",
     responses={
         200: {"model": UserScoreDTO, "description": "OK"},
         401: {"description": "User not active"},

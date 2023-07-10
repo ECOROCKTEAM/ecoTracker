@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from fastapi import Query
 from pydantic import BaseModel, Field
 
 from src.core.enum.challenges.status import OccupancyStatusEnum
@@ -67,18 +68,18 @@ class MissionCommunityEntity(BaseModel):
     comment: str = Field(alias="comment", default=None)
 
 
-async def mission_community_filter_query_params(
-    community_id: int | None = None,
-    community_id_list: list[int] | None = None,
-    mission_id: int | None = None,
-    status: OccupancyStatusEnum | None = OccupancyStatusEnum.ACTIVE,
-) -> dict:
-    return {
-        "commynity_id": community_id,
-        "community_id_list": community_id_list,
-        "mission_id": mission_id,
-        "status": status,
-    }
+class MissionCommunityFilterQueryParams:
+    def __init__(
+        self,
+        community_id: int | None = None,
+        community_id_list: list[int] = Query(default=None),
+        mission_id: int | None = None,
+        status: OccupancyStatusEnum | None = OccupancyStatusEnum.ACTIVE,
+    ) -> None:
+        self.community_id = community_id
+        self.community_id_list = community_id_list
+        self.mission_id = mission_id
+        self.status = status
 
 
 class MissionCommunityUpdateObject(BaseModel):

@@ -23,18 +23,16 @@ from src.core.usecases.challenges.mission.mission_community_update import (
 from src.http.api.challenges.mission.schemas.mission_community import (
     MissionCommunityCreateObject,
     MissionCommunityEntity,
+    MissionCommunityFilterQueryParams,
     MissionCommunityUpdateObject,
-    mission_community_filter_query_params,
 )
-from src.http.api.depends import get_uow, get_user
+from src.http.api.deps import get_uow, get_user
 
-router = APIRouter(
-    tags=["Mission Community"],
-)
+router = APIRouter(tags=["Mission Community"])
 
 
 @router.get(
-    "/mission/community",
+    "/missions/communities",
     responses={
         200: {"model": list[MissionCommunityEntity], "description": "OK"},
         403: {"description": "User is not premium"},
@@ -43,7 +41,7 @@ router = APIRouter(
     response_model_by_alias=True,
 )
 async def mission_community_list(
-    filter_obj: Annotated[dict, Depends(mission_community_filter_query_params)],
+    filter_obj: Annotated[MissionCommunityFilterQueryParams, Depends()],
     user=Depends(get_user),
     uow=Depends(get_uow),
 ) -> list[MissionCommunityEntity]:
@@ -51,7 +49,7 @@ async def mission_community_list(
     uc = MissionCommunityListUsecase(uow=uow)
     result = await uc(
         user=user,
-        filter_obj=MissionCommunityFilter(**filter_obj),
+        filter_obj=MissionCommunityFilter(**filter_obj.__dict__),
         order_obj=MockObj(),
         pagination_obj=MockObj(),
     )
@@ -59,7 +57,7 @@ async def mission_community_list(
 
 
 @router.get(
-    "/mission/community/{id}",
+    "/missions/{mission_id}/communities/{community_id}",
     responses={
         200: {"model": MissionCommunityEntity, "description": "OK"},
         403: {"description": "User is not premium"},
@@ -68,19 +66,19 @@ async def mission_community_list(
     response_model_by_alias=True,
 )
 async def mission_community_get(
-    id: int = Path(description="object id"),
+    mission_id: int = Path(description="object id"),
     community_id: int = Path(description="community id"),
     user=Depends(get_user),
     uow=Depends(get_uow),
 ) -> MissionCommunityEntity:
     """Get mission community"""
     uc = MissionCommunityGetUsecase(uow=uow)
-    result = await uc(user=user, id=id, community_id=community_id)
+    result = await uc(user=user, id=mission_id, community_id=community_id)
     return result.item
 
 
 @router.patch(
-    "/mission/community/{id}",
+    "/missions/{mission_id}/communities",
     responses={
         200: {"model": MissionCommunityEntity, "description": "OK"},
         404: {"description": "Entity not found or not changed"},
@@ -89,7 +87,7 @@ async def mission_community_get(
     response_model_by_alias=True,
 )
 async def mission_community_update(
-    id: int = Path(description="object id"),
+    mission_id: int = Path(description="object id"),
     community_id: int = Query(description="community_id"),
     obj: MissionCommunityUpdateObject = Body(default=None, description=""),
     user=Depends(get_user),
@@ -99,7 +97,7 @@ async def mission_community_update(
     uc = MissionCommunityUpdateUsecase(uow=uow)
     result = await uc(
         user=user,
-        id=id,
+        id=mission_id,
         community_id=community_id,
         update_obj=MissionCommunityUpdateDTO(**obj.dict()),
     )
@@ -107,7 +105,7 @@ async def mission_community_update(
 
 
 @router.post(
-    "/mission/community/",
+    "/missions/communities/",
     responses={
         200: {"model": MissionCommunityEntity, "description": "OK"},
         403: {"description": "User is not premium or user has not permission for creating community mission"},

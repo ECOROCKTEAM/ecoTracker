@@ -5,19 +5,19 @@ from fastapi import APIRouter, Depends, Path
 from src.core.dto.mock import MockObj
 from src.core.interfaces.repository.challenges.task import (
     TaskFilter,
-    task_filter_query_params,
+    TaskFilterQueryParams,
 )
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.core.usecases.challenges.task.task_get import TaskGetUseCase
 from src.core.usecases.challenges.task.task_list import TaskListUseCase
 from src.http.api.challenges.task.schemas.task import Task
-from src.http.api.depends import get_uow, get_user
+from src.http.api.deps import get_uow, get_user
 
 router = APIRouter(tags=["Task"])
 
 
 @router.get(
-    "/task/{id}",
+    "/tasks/{id}",
     responses={
         200: {"model": Task, "description": "OK"},
         422: {"description": "User not active"},
@@ -37,7 +37,7 @@ async def task_get(
 
 
 @router.get(
-    "/task",
+    "/tasks",
     responses={
         200: {"model": list[Task], "description": "OK"},
         422: {"description": "User not active"},
@@ -46,7 +46,7 @@ async def task_get(
     response_model_by_alias=True,
 )
 async def task_list(
-    filter_obj: Annotated[dict, Depends(task_filter_query_params)],
+    filter_obj: Annotated[TaskFilterQueryParams, Depends()],
     user=Depends(get_user),
     uow: IUnitOfWork = Depends(get_uow),
 ) -> list[Task]:
@@ -56,6 +56,6 @@ async def task_list(
         user=user,
         sorting_obj=MockObj(),
         paggination_obj=MockObj(),
-        filter_obj=TaskFilter(**filter_obj),
+        filter_obj=TaskFilter(**filter_obj.__dict__),
     )
     return result.items

@@ -37,11 +37,14 @@ class MissionUserEntity(BaseModel):
     status: OccupancyStatusEnum = Field(alias="status", default=OccupancyStatusEnum.ACTIVE)
 
 
-async def mission_user_filter_query_params(
-    mission_id: int | None = None,
-    status: OccupancyStatusEnum | None = OccupancyStatusEnum.ACTIVE,
-) -> dict:
-    return {"mission_id": mission_id, "status": status}
+class MissionUserFilterQueryParams:
+    def __init__(
+        self,
+        mission_id: int | None = None,
+        status: OccupancyStatusEnum | None = OccupancyStatusEnum.ACTIVE,
+    ) -> None:
+        self.mission_id = mission_id
+        self.status = status
 
 
 class MissionUserUpdateObject(BaseModel):

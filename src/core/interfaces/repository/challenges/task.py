@@ -18,11 +18,14 @@ class TaskFilter:
     category_id: int | None = None
 
 
-async def task_filter_query_params(
-    active: bool | None = None,
-    category_id: int | None = None,
-) -> dict:
-    return {"active": active, "category_id": category_id}
+class TaskFilterQueryParams:
+    def __init__(
+        self,
+        active: bool | None = None,
+        category_id: int | None = None,
+    ) -> None:
+        self.active = active
+        self.category_id = category_id
 
 
 @dataclass

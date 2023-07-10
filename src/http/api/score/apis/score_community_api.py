@@ -4,14 +4,14 @@ from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.core.usecases.score.community.community_get_score import (
     CommunityGetScoreUseCase,
 )
-from src.http.api.depends import get_uow, get_user
+from src.http.api.deps import get_uow, get_user
 from src.http.api.score.schemas.score import CommunityScoreDTO
 
 router = APIRouter(tags=["Score community"])
 
 
 @router.get(
-    "/score/community/{id}",
+    "/scores/communities/{id}",
     responses={
         200: {"model": CommunityScoreDTO, "description": "OK"},
         401: {"description": "User not active"},

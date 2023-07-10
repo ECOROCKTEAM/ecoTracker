@@ -1,10 +1,14 @@
+from datetime import datetime, timedelta
+
 import pytest_asyncio
 
 from src.core.dto.community.community import CommunityCreateDTO
+from src.core.dto.community.invite import CommunityInviteDTO, CommunityInviteUpdateDTO
 from src.core.entity.community import Community
 from src.core.enum.community.privacy import CommunityPrivacyEnum
 from src.core.interfaces.repository.community.community import CommunityFilter
 from tests.fixtures.const import DEFAULT_TEST_USECASE_COMMUNITY_ID
+from tests.utils import get_random_str
 
 
 @pytest_asyncio.fixture
@@ -140,3 +144,37 @@ async def mock_community_get_by_code_not_active(monkeypatch) -> Community:
 
     monkeypatch.setattr("src.data.repository.community.RepositoryCommunity.get_by_code", f)
     return await f()
+
+
+@pytest_asyncio.fixture
+async def mock_community_code_get_default(monkeypatch) -> CommunityInviteDTO:
+    async def f(*args, **kwargs) -> CommunityInviteDTO:
+        return CommunityInviteDTO(
+            community_id=DEFAULT_TEST_USECASE_COMMUNITY_ID,
+            code=get_random_str(),
+            expire_time=datetime.now() + timedelta(seconds=30),
+        )
+
+    monkeypatch.setattr("src.data.repository.community.RepositoryCommunity.code_get", f)
+    return await f()
+
+
+@pytest_asyncio.fixture
+async def mock_community_code_get_code_none(monkeypatch) -> CommunityInviteDTO:
+    async def f(*args, **kwargs) -> CommunityInviteDTO:
+        return CommunityInviteDTO(community_id=DEFAULT_TEST_USECASE_COMMUNITY_ID, code=None, expire_time=None)
+
+    monkeypatch.setattr("src.data.repository.community.RepositoryCommunity.code_get", f)
+    return await f()
+
+
+@pytest_asyncio.fixture
+async def mock_community_code_set_default(monkeypatch):
+    async def f(self, id, obj: CommunityInviteUpdateDTO) -> CommunityInviteDTO:
+        return CommunityInviteDTO(
+            community_id=id,
+            code=obj.code,
+            expire_time=obj.expire_time,
+        )
+
+    monkeypatch.setattr("src.data.repository.community.RepositoryCommunity.code_set", f)

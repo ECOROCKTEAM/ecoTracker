@@ -8,10 +8,10 @@ from src.core.interfaces.unit_of_work import IUnitOfWork
 
 @dataclass
 class Result:
-    items: list[OccupancyCategory]
+    item: list[OccupancyCategory]
 
 
-class OccupancyCategoryListUseCase:
+class OccupancyCategoryListUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
@@ -22,4 +22,4 @@ class OccupancyCategoryListUseCase:
         async with self.uow as uow:
             category_list = await uow.occupancy_category.lst(lang=user.language)
 
-            return Result(items=category_list)
+        return Result(item=category_list)

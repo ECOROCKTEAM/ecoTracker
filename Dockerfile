@@ -1,4 +1,4 @@
-FROM python:3.10 as builder
+FROM python:3.10-alpine as builder
 
 WORKDIR /app
 
@@ -6,13 +6,12 @@ RUN python3 -m venv /venv
 ENV PATH="/venv/bin:$PATH"
 
 RUN pip install --upgrade pip
-
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY ./src ./src
 
 
-FROM python:3.10 as test_runner
+FROM python:3.10-alpine as test_runner
 WORKDIR /app
 COPY --from=builder /venv /venv
 COPY --from=builder /app .
@@ -22,4 +21,4 @@ COPY requirements-test.txt ./
 RUN pip install -r requirements-test.txt
 COPY . .
 
-CMD ["python", "-m", "pytest", "tests/", "-v"]
+CMD pytest tests/main -v

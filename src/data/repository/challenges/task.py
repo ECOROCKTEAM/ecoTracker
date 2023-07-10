@@ -1,6 +1,9 @@
+import typing
 from dataclasses import asdict
 
+from asyncpg.exceptions import ForeignKeyViolationError
 from sqlalchemy import and_, delete, insert, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.const.translate import DEFAULT_LANGUANGE
@@ -12,7 +15,7 @@ from src.core.dto.challenges.task import (
 from src.core.dto.mock import MockObj
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
 from src.core.enum.language import LanguageEnum
-from src.core.exception.base import EntityNotCreated, EntityNotFound
+from src.core.exception.base import EntityNotCreated, EntityNotFound, TranslateNotFound
 from src.core.interfaces.repository.challenges.task import (
     IRepositoryTask,
     TaskFilter,
@@ -75,7 +78,7 @@ class RepositoryTask(IRepositoryTask):
         record = await self.db_context.execute(stmt)
         result = record.one_or_none()
         if result is None:
-            raise EntityNotFound(msg=f"Task obj={id} not found")
+            raise EntityNotFound(msg=f"Task.id={id} not found")
         task, task_translate = result
         if task_translate is None:
             task_default_lang = select(TaskTranslateModel).where(
@@ -83,16 +86,16 @@ class RepositoryTask(IRepositoryTask):
             )
             task_translate = await self.db_context.scalar(task_default_lang)
             if task_translate is None:
-                raise EntityNotFound(msg=f"Task={task} with task_translate={task_translate} not found")
+                raise TranslateNotFound(msg=f"Task={task} with task_translate={task_translate} not found")
         return task_model_to_entity(model=task, translated_model=task_translate)
 
     async def lst(
-        self, *, order_obj: MockObj, pagination_obj: MockObj, filter_obj: TaskFilter, lang: LanguageEnum
+        self, *, filter_obj: TaskFilter, order_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
     ) -> list[Task]:
         where_clause = []
-        if filter_obj.category_id:
+        if filter_obj.category_id is not None:
             where_clause.append(TaskModel.category_id == filter_obj.category_id)
-        if filter_obj.active:
+        if filter_obj.active is not None:
             where_clause.append(TaskModel.active == filter_obj.active)
         stmt = (
             select(TaskModel, TaskTranslateModel)
@@ -127,9 +130,16 @@ class RepositoryTask(IRepositoryTask):
 
     async def user_task_add(self, *, user_id: int, obj: TaskUserCreateDTO) -> TaskUser:
         stmt = insert(UserTaskModel).values(user_id=user_id, **asdict(obj)).returning(UserTaskModel)
-        result = await self.db_context.scalar(stmt)
-        if not result:
-            raise EntityNotFound(msg=f"Task for {user_id=} not created")
+        try:
+            result = await self.db_context.scalar(stmt)
+        except IntegrityError as error:
+            error.orig = typing.cast(BaseException, error.orig)  # just for types
+            if isinstance(error.orig.__cause__, ForeignKeyViolationError):
+                raise EntityNotCreated(msg="Not found fk") from error
+            raise EntityNotCreated(msg="") from error
+        if result is None:
+            raise EntityNotCreated(msg=f"UserTask object with task_id={obj.task_id}, user_id={user_id} not created")
+        await self.db_context.refresh(result)
         return user_task_to_entity(model=result)
 
     async def user_task_get(self, *, id: int) -> TaskUser:
@@ -173,11 +183,18 @@ class RepositoryTask(IRepositoryTask):
         result = await self.db_context.scalar(stmt)
         if result is None:
             raise EntityNotFound(msg=f"UserTask object={id} not found and was not updated")
+        await self.db_context.refresh(result)
         return user_task_to_entity(model=result)
 
     async def plan_create(self, *, obj: TaskUserPlanCreateDTO) -> TaskUserPlan:
         stmt = insert(UserTaskPlanModel).values(**asdict(obj)).returning(UserTaskPlanModel)
-        result = await self.db_context.scalar(stmt)
+        try:
+            result = await self.db_context.scalar(stmt)
+        except IntegrityError as error:
+            error.orig = typing.cast(BaseException, error.orig)  # just for types
+            if isinstance(error.orig.__cause__, ForeignKeyViolationError):
+                raise EntityNotCreated(msg="Not found fk") from error
+            raise EntityNotCreated(msg="") from error
         if result is None:
             raise EntityNotCreated(msg=f"UserTaskPlan with task_id={obj.task_id}, user_id={obj.user_id} not created")
         return plan_model_to_entity(model=result)

@@ -10,10 +10,10 @@ from src.core.interfaces.unit_of_work import IUnitOfWork
 
 @dataclass
 class Result:
-    items: list[TaskUserPlan]
+    item: list[TaskUserPlan]
 
 
-class UserTaskPlanListUseCase:
+class UserTaskPlanListUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
@@ -31,4 +31,4 @@ class UserTaskPlanListUseCase:
                 pagination_obj=pagination_obj,
             )
 
-        return Result(items=plan_list)
+        return Result(item=plan_list)

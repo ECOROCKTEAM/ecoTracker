@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import datetime
 
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
@@ -28,5 +28,5 @@ class TaskUser:
     user_id: int
     task_id: int
     status: OccupancyStatusEnum
-    date_start: date  # YY.MM.DD
+    date_start: datetime
     date_close: datetime | None  # YY.MM.DD HH:mm:SS

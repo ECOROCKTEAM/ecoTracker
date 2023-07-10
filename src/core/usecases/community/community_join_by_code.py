@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from src.core.dto.m2m.user.community import UserCommunityCreateDTO, UserCommunityDTO
 from src.core.entity.user import User
 from src.core.enum.community.role import CommunityRoleEnum
-from src.core.exception.community import CommunityDeactivatedError
+from src.core.exception.base import EntityNotActive
 from src.core.exception.user import UserIsNotPremiumError
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
@@ -24,7 +24,7 @@ class CommunityJoinByCodeUsecase:
         async with self.uow as uow:
             community = await uow.community.get_by_code(code)
             if not community.active:
-                raise CommunityDeactivatedError(community_id=community.id)
+                raise EntityNotActive(msg=f"community_id={community.id}")
             role = await uow.community.user_add(
                 obj=UserCommunityCreateDTO(user_id=user.id, community_id=community.id, role=CommunityRoleEnum.USER)
             )

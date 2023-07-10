@@ -11,7 +11,7 @@ class Result:
     item: OccupancyCategory
 
 
-class OccupancyCategoryGetUseCase:
+class OccupancyCategoryGetUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
@@ -22,4 +22,4 @@ class OccupancyCategoryGetUseCase:
         async with self.uow as uow:
             category = await uow.occupancy_category.get(id=id, lang=user.language)
 
-            return Result(item=category)
+        return Result(item=category)

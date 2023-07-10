@@ -44,10 +44,12 @@ class MissionCommunityUpdateUsecase:
             )
             if update_obj.status == OccupancyStatusEnum.FINISH:
                 base_mission = await uow.mission.get(id=community_mission.mission_id, lang=user.language)
-                await uow.score_community.add(
+                score = await uow.score_community.add(
                     obj=CommunityOperationWithScoreDTO(
                         community_id=community_id, value=base_mission.score, operation=ScoreOperationEnum.PLUS
                     )
                 )
+                if score.community_id != community_id:
+                    raise EntityNotChange(msg="")
             await uow.commit()
         return Result(item=updated_community_mission)

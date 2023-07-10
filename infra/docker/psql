@@ -2,4 +2,4 @@
 
 
 docker build -t mylocalpsql:latest --file=./localpsql/localPsql.dockerfile .
-docker run --name localpsql -d -p 5432:5432 --network host --env-file=./localpsql/localpsql.env mylocalpsql:latest
+docker run --name localpsql -d -p 5432:5432 --network host --env-file=./localpsql/localpsql.env mylocalpsql

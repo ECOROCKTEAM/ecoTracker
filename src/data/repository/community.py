@@ -1,6 +1,9 @@
+import typing
 from dataclasses import asdict
 
+from asyncpg.exceptions import ForeignKeyViolationError, UniqueViolationError
 from sqlalchemy import delete, func, insert, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.dto.community.community import CommunityCreateDTO, CommunityUpdateDTO
@@ -13,7 +16,7 @@ from src.core.dto.m2m.user.community import (
 from src.core.dto.mock import MockObj
 from src.core.entity.community import Community
 from src.core.enum.community.role import CommunityRoleEnum
-from src.core.exception.base import EntityNotFound
+from src.core.exception.base import EntityNotChange, EntityNotCreated, EntityNotFound
 from src.core.interfaces.repository.community.community import (
     CommunityFilter,
     CommunityUserFilter,
@@ -51,7 +54,13 @@ class RepositoryCommunity(IRepositoryCommunity):
 
     async def create(self, *, obj: CommunityCreateDTO) -> Community:
         stmt = insert(CommunityModel).values(**asdict(obj)).returning(CommunityModel)
-        res = await self.db_context.scalar(stmt)
+        try:
+            res = await self.db_context.scalar(stmt)
+        except IntegrityError as error:
+            error.orig = typing.cast(BaseException, error.orig)  # just for types
+            if isinstance(error.orig.__cause__, UniqueViolationError):
+                raise EntityNotCreated(msg="Uniq failed") from error
+            raise EntityNotCreated(msg="") from error
         if not res:
             raise EntityNotFound(msg="")
         return model_to_dto(res)
@@ -63,7 +72,13 @@ class RepositoryCommunity(IRepositoryCommunity):
             .values(**as_dict_skip_none(obj))
             .returning(CommunityModel)
         )
-        res = await self.db_context.scalar(stmt)
+        try:
+            res = await self.db_context.scalar(stmt)
+        except IntegrityError as error:
+            error.orig = typing.cast(BaseException, error.orig)  # just for types
+            if isinstance(error.orig.__cause__, UniqueViolationError):
+                raise EntityNotChange(msg="Uniq failed") from error
+            raise EntityNotChange(msg="") from error
         if not res:
             raise EntityNotFound(msg="")
         return model_to_dto(res)
@@ -90,7 +105,15 @@ class RepositoryCommunity(IRepositoryCommunity):
 
     async def user_add(self, *, obj: UserCommunityCreateDTO) -> UserCommunityDTO:
         stmt = insert(UserCommunityModel).values(asdict(obj)).returning(UserCommunityModel)
-        res = await self.db_context.scalar(stmt)
+        try:
+            res = await self.db_context.scalar(stmt)
+        except IntegrityError as error:
+            error.orig = typing.cast(BaseException, error.orig)  # just for types
+            if isinstance(error.orig.__cause__, ForeignKeyViolationError):
+                raise EntityNotCreated(msg="Not found fk") from error
+            if isinstance(error.orig.__cause__, UniqueViolationError):
+                raise EntityNotCreated(msg="Uniq fail") from error
+            raise EntityNotCreated(msg="") from error
         if not res:
             raise EntityNotFound(msg="")
         return user_community_model_to_dto(res)
@@ -114,6 +137,8 @@ class RepositoryCommunity(IRepositoryCommunity):
         where_clause = [CommunityModel.id == id]
         if filter_obj.role_list:
             where_clause.append(UserCommunityModel.role.in_(filter_obj.role_list))
+        if filter_obj.user_id__in is not None:
+            where_clause.append(UserCommunityModel.user_id.in_(filter_obj.user_id__in))
         stmt = stmt.where(*where_clause)
         res = await self.db_context.scalars(stmt)
         return [user_community_model_to_dto(model) for model in res]
@@ -151,6 +176,7 @@ class RepositoryCommunity(IRepositoryCommunity):
         res = await self.db_context.scalar(stmt)
         if not res:
             raise EntityNotFound(msg="")
+        await self.db_context.refresh(res)
         return model_to_invite_dto(res)
 
     async def code_get(self, *, id: int) -> CommunityInviteDTO:

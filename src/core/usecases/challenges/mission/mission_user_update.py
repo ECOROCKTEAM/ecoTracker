@@ -30,10 +30,12 @@ class MissionUserUpdateUsecase:
             updated_user_mission = await uow.mission.user_mission_update(id=id, user_id=user.id, obj=update_obj)
             if update_obj.status == OccupancyStatusEnum.FINISH:
                 base_mission = await uow.mission.get(id=user_mission.mission_id, lang=user.language)
-                await uow.score_user.add(
+                score = await uow.score_user.add(
                     obj=OperationWithScoreUserDTO(
                         user_id=user.id, value=base_mission.score, operation=ScoreOperationEnum.PLUS
                     )
                 )
+                if score.user_id != user.id:
+                    raise EntityNotChange(msg="")
             await uow.commit()
         return Result(item=updated_user_mission)

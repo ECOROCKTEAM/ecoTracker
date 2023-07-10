@@ -18,5 +18,5 @@ class Community:
 @dataclass
 class CommunityInvite:
     community_id: int
-    code: str
-    expire_time: datetime
+    code: str | None
+    expire_time: datetime | None

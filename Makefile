@@ -39,5 +39,6 @@ pre-commit:
 
 .PHONY: tests
 tests:
-
+	export DOCKER_BUILDKIT=0
+	export COMPOSE_DOCKER_CLI_BUILD=0
 	docker compose -f docker-compose.test.yaml up --force-recreate -V --build --exit-code-from test-runner

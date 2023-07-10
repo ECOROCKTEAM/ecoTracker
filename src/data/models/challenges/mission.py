@@ -48,7 +48,7 @@ class UserMissionModel(Base):
     )
     mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
     date_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    date_close: Mapped[datetime | None] = mapped_column(default=None)
+    date_close: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=None)
     status: Mapped[OccupancyStatusEnum] = mapped_column()
 
 
@@ -66,5 +66,5 @@ class CommunityMissionModel(Base):
     place: Mapped[str | None] = mapped_column()
     comment: Mapped[str | None] = mapped_column()
     date_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    date_close: Mapped[datetime | None] = mapped_column(default=None)
+    date_close: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=None)
     status: Mapped[OccupancyStatusEnum] = mapped_column()

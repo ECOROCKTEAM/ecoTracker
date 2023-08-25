@@ -32,11 +32,11 @@ class MissionUser:
 
 
 @dataclass
-class MissionCommunity:
+class MissionGroup:
     """Сущность миссии сообщества"""
 
     id: int
-    community_id: int
+    group_id: int
     mission_id: int
     author: str
     date_start: datetime

@@ -2,13 +2,13 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 from src.core.dto.challenges.mission import (
-    MissionCommunityCreateDTO,
-    MissionCommunityUpdateDTO,
+    MissionGroupCreateDTO,
+    MissionGroupUpdateDTO,
     MissionUserCreateDTO,
     MissionUserUpdateDTO,
 )
 from src.core.dto.mock import MockObj
-from src.core.entity.mission import Mission, MissionCommunity, MissionUser
+from src.core.entity.mission import Mission, MissionGroup, MissionUser
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
 
@@ -25,9 +25,9 @@ class MissionUserFilter:
 
 
 @dataclass
-class MissionCommunityFilter:
-    community_id: int | None = None
-    community_id_list: list[int] | None = None
+class MissionGroupFilter:
+    group_id: int | None = None
+    group_id_list: list[int] | None = None
     mission_id: int | None = None
     status: OccupancyStatusEnum | None = None
 
@@ -119,50 +119,48 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    async def community_mission_create(self, *, community_id: int, obj: MissionCommunityCreateDTO) -> MissionCommunity:
+    async def group_mission_create(self, *, group_id: int, obj: MissionGroupCreateDTO) -> MissionGroup:
         """Создать миссию для сообщест ва
 
         Args:
-            obj (MissionCommunityCreateDTO): Объект создания
+            obj (MissionGroupCreateDTO): Объект создания
 
         Returns:
-            MissionCommunity: Сущность миссии сообщества
+            MissionGroup: Сущность миссии сообщества
         """
 
     @abstractmethod
-    async def community_mission_get(self, *, id: int, community_id: int) -> MissionCommunity:
+    async def group_mission_get(self, *, id: int, group_id: int) -> MissionGroup:
         """Получить миссию сообщества
 
         Args:
             id (int): ID Сущности миссии сообщества
-            community_id (int): ID сообщества
+            group_id (int): ID сообщества
 
         Returns:
-            MissionCommunity: Сущность миссии сообщества
+            MissionGroup: Сущность миссии сообщества
         """
 
     @abstractmethod
-    async def community_mission_update(
-        self, *, id: int, community_id: int, obj: MissionCommunityUpdateDTO
-    ) -> MissionCommunity:
+    async def group_mission_update(self, *, id: int, group_id: int, obj: MissionGroupUpdateDTO) -> MissionGroup:
         """Обновить миссию сообщества
 
         Args:
             id (int): ID Сущности миссии сообщества
-            obj (MissionCommunityUpdateDTO): Объект обновления
+            obj (MissionGroupUpdateDTO): Объект обновления
 
         Returns:
-            MissionCommunity: Сущность миссии сообщества
+            MissionGroup: Сущность миссии сообщества
         """
 
     @abstractmethod
-    async def community_mission_lst(
+    async def group_mission_lst(
         self,
         *,
-        filter_obj: MissionCommunityFilter,
+        filter_obj: MissionGroupFilter,
         order_obj: MockObj,
         pagination_obj: MockObj,
-    ) -> list[MissionCommunity]:
+    ) -> list[MissionGroup]:
         """Получить список миссий сообщества
 
         Args:
@@ -171,5 +169,5 @@ class IRepositoryMission(ABC):
             pagination_obj (MockObj): Объект пагинации
 
         Returns:
-            List[MissionCommunity]: Список сущностей миссии сообщества
+            List[MissionGroup]: Список сущностей миссии сообщества
         """

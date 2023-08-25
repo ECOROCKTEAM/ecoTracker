@@ -53,11 +53,11 @@ class UserMissionModel(Base):
 
 
 @dataclass
-class CommunityMissionModel(Base):
-    __tablename__ = "community_mission"
+class GroupMissionModel(Base):
+    __tablename__ = "group_mission"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    community_id: Mapped[int] = mapped_column(ForeignKey("community.id"))
+    group_id: Mapped[int] = mapped_column(ForeignKey("group.id"))
     mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
     author: Mapped[str] = mapped_column()
     meeting_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=False))

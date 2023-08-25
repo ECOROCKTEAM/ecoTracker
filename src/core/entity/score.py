@@ -11,7 +11,7 @@ class ScoreUser:
 
 
 @dataclass
-class ScoreCommunity:
-    community_id: int
+class ScoreGroup:
+    group_id: int
     value: int
     operation: ScoreOperationEnum

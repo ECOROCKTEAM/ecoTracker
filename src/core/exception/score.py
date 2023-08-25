@@ -5,5 +5,5 @@ class UserOperationScoreError(RepoError):
     msg = "Operation={operation} for user={user_id} not allowed"
 
 
-class CommunityOperationScoreError(RepoError):
-    msg = "Operation={operation} for community={community_id} not allowed"
+class GroupOperationScoreError(RepoError):
+    msg = "Operation={operation} for group={group_id} not allowed"

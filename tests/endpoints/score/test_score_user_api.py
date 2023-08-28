@@ -13,7 +13,7 @@ def test_get_score_user_get_user_id(client: TestClient):
     headers = {}
     response = client.request(
         "GET",
-        "/score/get_user/{user_id}".format(user_id="user_id_example"),
+        "/score/user/{user_id}".format(user_id="user_id_example"),
         headers=headers,
     )
 

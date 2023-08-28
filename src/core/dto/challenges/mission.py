@@ -23,7 +23,7 @@ class MissionUserUpdateDTO(UpdateDTO):
 
 
 @dataclass
-class MissionCommunityCreateDTO:
+class MissionGroupCreateDTO:
     mission_id: int
     author: str
     place: str | None = None
@@ -35,7 +35,7 @@ class MissionCommunityCreateDTO:
 
 
 @dataclass
-class MissionCommunityUpdateDTO(UpdateDTO):
+class MissionGroupUpdateDTO(UpdateDTO):
     date_close: datetime | None | UnsetType = field(init=False, default=UNSET)
     status: OccupancyStatusEnum | None | UnsetType = UNSET
     place: str | None | UnsetType = UNSET

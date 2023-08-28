@@ -5,15 +5,15 @@ from src.core.interfaces.repository.challenges.occupancy import (
     IRepositoryOccupancyCategory,
 )
 from src.core.interfaces.repository.challenges.task import IRepositoryTask
-from src.core.interfaces.repository.community.community import IRepositoryCommunity
-from src.core.interfaces.repository.score.community import IRepositoryCommunityScore
+from src.core.interfaces.repository.group.group import IRepositoryGroup
+from src.core.interfaces.repository.score.group import IRepositoryGroupScore
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
 
 
 class IUnitOfWork(ABC):
     @property
     @abstractmethod
-    def community(self) -> IRepositoryCommunity:
+    def group(self) -> IRepositoryGroup:
         ...
 
     @property
@@ -23,7 +23,7 @@ class IUnitOfWork(ABC):
 
     @property
     @abstractmethod
-    def score_community(self) -> IRepositoryCommunityScore:
+    def score_group(self) -> IRepositoryGroupScore:
         ...
 
     @property

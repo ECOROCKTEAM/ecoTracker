@@ -1,15 +1,15 @@
 from pydantic import BaseModel, Field
 
 
-class CommunityScoreDTO(BaseModel):
+class GroupScoreDTO(BaseModel):
     """
-    CommunityScoreDTO - a model defined in OpenAPI
+    GroupScoreDTO - a model defined in OpenAPI
 
-        community_id: The community_id of this CommunityScoreDTO.
-        value: The value of this CommunityScoreDTO.
+        group_id: The group_id of this GroupScoreDTO.
+        value: The value of this GroupScoreDTO.
     """
 
-    community_id: int = Field(alias="community_id", default=None)
+    group_id: int = Field(alias="group_id", default=None)
     value: int = Field(alias="value", default=None)
 
 

@@ -9,12 +9,12 @@ class UserPermissionError(UserError, PermissionError):
     msg_template = "user_id={user_id} permission problem"
 
 
-class UserIsNotCommunitySuperUserError(UserPermissionError):
-    msg_template = "User with user_id={user_id} is not super user in community with community={community_id}"
+class UserIsNotGroupSuperUserError(UserPermissionError):
+    msg_template = "User with user_id={user_id} is not super user in group with group={group_id}"
 
 
-class UserIsNotCommunityAdminUserError(UserPermissionError):
-    msg_template = "User with user_id={user_id} is not admin user in community with community={community_id}"
+class UserIsNotGroupAdminUserError(UserPermissionError):
+    msg_template = "User with user_id={user_id} is not admin user in group with group={group_id}"
 
 
 class UserIsNotPremiumError(UserPermissionError):

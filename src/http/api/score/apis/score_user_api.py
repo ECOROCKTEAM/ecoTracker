@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Path
 
 from src.core.interfaces.unit_of_work import IUnitOfWork
-from src.core.usecases.score.user.user_get_score import UserGetScoreUseCase
+from src.core.usecases.score.user.user_get_score import UserGetScoreUsecase
 from src.http.api.depends import get_uow, get_user
 from src.http.api.score.schemas.score import UserScoreDTO
 
@@ -24,6 +24,6 @@ async def score_user_get(
     uow: IUnitOfWork = Depends(get_uow),
 ) -> UserScoreDTO:
     """Get user score"""
-    uc = UserGetScoreUseCase(uow=uow)
+    uc = UserGetScoreUsecase(uow=uow)
     result = await uc(user=user, id=id)
     return result.item

@@ -5,14 +5,14 @@ from src.core.interfaces.repository.challenges.task import (
     TaskUserFilter,
     TaskUserPlanFilter,
 )
-from src.core.usecases.challenges.task.task_user_add import UserTaskAddUseCase
-from src.core.usecases.challenges.task.task_user_complete import UserTaskCompleteUseCase
-from src.core.usecases.challenges.task.task_user_get import UserTaskGetUseCase
-from src.core.usecases.challenges.task.task_user_list import UserTaskListUseCase
+from src.core.usecases.challenges.task.task_user_add import UserTaskAddUsecase
+from src.core.usecases.challenges.task.task_user_complete import UserTaskCompleteUsecase
+from src.core.usecases.challenges.task.task_user_get import UserTaskGetUsecase
+from src.core.usecases.challenges.task.task_user_list import UserTaskListUsecase
 from src.core.usecases.challenges.task.task_user_plan_list import (
-    UserTaskPlanListUseCase,
+    UserTaskPlanListUsecase,
 )
-from src.core.usecases.challenges.task.task_user_reject import UserTaskRejectUseCase
+from src.core.usecases.challenges.task.task_user_reject import UserTaskRejectUsecase
 from src.http.api.challenges.task.schemas.task import (
     TaskUserEntity,
     TaskUserFilterObject,
@@ -39,7 +39,7 @@ async def task_user_get(
     uow=Depends(get_uow),
 ) -> TaskUserEntity:
     """Get user task"""
-    uc = UserTaskGetUseCase(uow=uow)
+    uc = UserTaskGetUsecase(uow=uow)
     result = await uc(user=user, obj_id=id)
     return result.item
 
@@ -59,7 +59,7 @@ async def task_user_list(
     filter_obj: TaskUserFilterObject = Body(default=None, description="Filter object"),
 ) -> list[TaskUserEntity]:
     """Get list of user tasks"""
-    uc = UserTaskListUseCase(uow=uow)
+    uc = UserTaskListUsecase(uow=uow)
     result = await uc(
         user=user, order_obj=MockObj(), pagination_obj=MockObj(), filter_obj=TaskUserFilter(**filter_obj.dict())
     )
@@ -81,7 +81,7 @@ async def task_user_plan_list(
     filter_obj: TaskUserPlanFilterObject = Body(default=None, description="Filter object"),
 ) -> list[TaskUserPlanEntity]:
     """Get User Task Plan list"""
-    uc = UserTaskPlanListUseCase(uow=uow)
+    uc = UserTaskPlanListUsecase(uow=uow)
     result = await uc(
         user=user, filter_obj=TaskUserPlanFilter(**filter_obj.dict()), order_obj=MockObj(), pagination_obj=MockObj()
     )
@@ -102,7 +102,7 @@ async def task_user_add(
     uow=Depends(get_uow),
 ) -> TaskUserEntity:
     """Add task to user list"""
-    uc = UserTaskAddUseCase(uow=uow)
+    uc = UserTaskAddUsecase(uow=uow)
     result = await uc(user=user, task_id=id)
     return result.item
 
@@ -122,7 +122,7 @@ async def task_user_complete(
     uow=Depends(get_uow),
 ) -> TaskUserEntity:
     """Complete user task"""
-    uc = UserTaskCompleteUseCase(uow=uow)
+    uc = UserTaskCompleteUsecase(uow=uow)
     result = await uc(user=user, obj_id=obj_id)
     return result.item
 
@@ -142,6 +142,6 @@ async def task_user_reject(
     uow=Depends(get_uow),
 ) -> TaskUserEntity:
     """Reject User Task"""
-    uc = UserTaskRejectUseCase(uow=uow)
+    uc = UserTaskRejectUsecase(uow=uow)
     result = await uc(user=user, obj_id=obj_id)
     return result.item

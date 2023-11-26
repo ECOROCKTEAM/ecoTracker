@@ -14,7 +14,7 @@ from src.core.usecases.group.group_leave import GroupLeaveUsecase
 from src.core.usecases.group.group_list import GroupListUsecase
 from src.core.usecases.group.group_public_add_user import GroupPublicAddUserUsecase
 from src.core.usecases.group.group_update import GroupUpdateUsecase
-from src.http.api.deps import get_uow, get_user
+from src.http.api.depends import get_uow, get_user
 
 from ..models.group import Group
 from ..models.group_create import GroupCreate

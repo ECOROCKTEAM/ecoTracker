@@ -13,7 +13,7 @@ class Result:
     items: list[UserRatingDTO]
 
 
-class UserGetRatingUseCase:
+class UserGetRatingUsecase:
     def __init__(self, uow: IUnitOfWork):
         self.uow = uow
 

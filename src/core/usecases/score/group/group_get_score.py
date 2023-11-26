@@ -12,7 +12,7 @@ class Result:
     item: GroupScoreDTO
 
 
-class GroupGetScoreUseCase:
+class GroupGetScoreUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 

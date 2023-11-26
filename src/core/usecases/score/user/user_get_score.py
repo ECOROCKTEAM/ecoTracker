@@ -11,7 +11,7 @@ class Result:
     item: UserScoreDTO
 
 
-class UserGetScoreUseCase:
+class UserGetScoreUsecase:
     def __init__(self, uow: IUnitOfWork):
         self.uow = uow
 

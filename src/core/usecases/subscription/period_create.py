@@ -15,7 +15,7 @@ class Result:
     item: SubscriptionPeriodDTO
 
 
-class SubscriptionPeriodCreateUseCase:
+class SubscriptionPeriodCreateUsecase:
     def __init__(self, repo: ISubscriptionRepository) -> None:
         self.repo = repo
 

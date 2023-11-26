@@ -14,7 +14,7 @@ class Result:
     items: list[Subscription]
 
 
-class SubscriptionListUseCase:
+class SubscriptionListUsecase:
     def __init__(self, repo: ISubscriptionRepository) -> None:
         self.repo = repo
 

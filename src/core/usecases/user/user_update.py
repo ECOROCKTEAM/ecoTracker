@@ -9,7 +9,7 @@ class Result:
     item: User
 
 
-class UserUpdateUseCase:
+class UserUpdateUsecase:
     def __init__(self, repo: IUserRepository) -> None:
         self.repo = repo
 

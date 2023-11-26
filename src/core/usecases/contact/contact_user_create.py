@@ -12,7 +12,7 @@ class Result:
     item: ContactUserDTO
 
 
-class ContactUserCreateUseCase:
+class ContactUserCreateUsecase:
     def __init__(self, repo: IUserContactRepository) -> None:
         self.repo = repo
 

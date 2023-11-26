@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Path
 
 from src.core.interfaces.unit_of_work import IUnitOfWork
-from src.core.usecases.score.group.group_get_score import GroupGetScoreUseCase
+from src.core.usecases.score.group.group_get_score import GroupGetScoreUsecase
 from src.http.api.depends import get_uow, get_user
 from src.http.api.score.schemas.score import GroupScoreDTO
 
@@ -24,6 +24,6 @@ async def score_group_get(
     uow: IUnitOfWork = Depends(get_uow),
 ) -> GroupScoreDTO:
     """Get Group score"""
-    uc = GroupGetScoreUseCase(uow=uow)
+    uc = GroupGetScoreUsecase(uow=uow)
     result = await uc(group_id=id, user=user)
     return result.item

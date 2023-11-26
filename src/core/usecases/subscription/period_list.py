@@ -13,7 +13,7 @@ class Result:
     items: list[SubscriptionPeriodDTO]
 
 
-class SubscriptionPeriodListUseCase:
+class SubscriptionPeriodListUsecase:
     def __init__(self, repo: ISubscriptionRepository) -> None:
         self.repo = repo
 

@@ -10,7 +10,7 @@ class Result:
     id: int
 
 
-class ContactUserDeleteUseCase:
+class ContactUserDeleteUsecase:
     def __init__(self, repo: IUserContactRepository) -> None:
         self.repo = repo
 

@@ -13,7 +13,7 @@ class Result:
     item: Subscription
 
 
-class SubscriptionGetUseCase:
+class SubscriptionGetUsecase:
     def __init__(self, repo: ISubscriptionRepository) -> None:
         self.repo = repo
 

@@ -13,7 +13,7 @@ class Result:
     item: User
 
 
-class UserCreateUseCase:
+class UserCreateUsecase:
     def __init__(self, user_repo: IUserRepository, subscription_repo: ISubscriptionRepository) -> None:
         self.user_repo = user_repo
         self.sub_repo = subscription_repo

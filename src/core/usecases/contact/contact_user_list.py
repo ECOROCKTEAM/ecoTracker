@@ -12,7 +12,7 @@ class Result:
     items: list[ContactUserDTO] = field(default_factory=list)
 
 
-class ContactUserListUseCase:
+class ContactUserListUsecase:
     def __init__(self, repo: IUserContactRepository) -> None:
         self.repo = repo
 

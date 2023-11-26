@@ -19,7 +19,7 @@ class Result:
     item: UserSubscription
 
 
-class UserSubscriptionUpdateUseCase:
+class UserSubscriptionUpdateUsecase:
     def __init__(
         self,
         user_sub_repo: IUserSubscriptionRepository,

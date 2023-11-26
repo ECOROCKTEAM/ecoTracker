@@ -11,7 +11,7 @@ class Result:
     item: ContactUserDTO
 
 
-class ContactUserUpdateUseCase:
+class ContactUserUpdateUsecase:
     def __init__(self, repo: IUserContactRepository) -> None:
         self.repo = repo
 

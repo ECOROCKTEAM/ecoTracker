@@ -18,7 +18,7 @@ from src.data.unit_of_work import SqlAlchemyUnitOfWork
 fake = faker.Faker()
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="session")
 def event_loop():
     loop = asyncio.get_event_loop()
     yield loop
@@ -31,6 +31,7 @@ def event_loop():
 
 
 @pytest_asyncio.fixture(scope="package")
+@pytest.mark.asyncio
 async def pool() -> AsyncGenerator[async_sessionmaker[AsyncSession], None]:
     print(settings.DATABASE_URL, flush=True)
     engine = create_async_engine(url=settings.DATABASE_URL)

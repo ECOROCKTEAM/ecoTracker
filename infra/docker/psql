@@ -1,5 +1,3 @@
 #!/usr/bin/fish
 
-
-docker build -t mylocalpsql:latest --file=./localpsql/localPsql.dockerfile .
-docker run --name localpsql -d -p 5432:5432 --network host --env-file=./localpsql/localpsql.env mylocalpsql
+docker run --name localpsql -d -p 5432:5432 --env-file=./localpsql/localpsql.env postgres:15-alpine

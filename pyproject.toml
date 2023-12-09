@@ -1,33 +1,3 @@
-[tool.poetry]
-name = "ecotracker"
-version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
-
-[tool.poetry.dependencies]
-python = "^3.10"
-alembic = "^1.10.4"
-pydantic = {extras = ["dotenv"], version = "^1.10.7"}
-asyncpg = "^0.27.0"
-fastapi = {extras = ["all"], version = "^0.96.0"}
-uvicorn = "^0.24.0.post1"
-
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.0.263"
-pre-commit = "^3.2.2"
-pytest = "^7.3.1"
-pytest-asyncio = "^0.21.0"
-black = "^23.3.0"
-click = "^8.1.3"
-pyclean = "^2.7.0"
-faker = "^18.7.0"
-isort = "^5.12.0"
-httpx = "^0.25.2"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
 [tool.ruff]
 # Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
 select = ["E", "F", "B", "UP", "SIM"]

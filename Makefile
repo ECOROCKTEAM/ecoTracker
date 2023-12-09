@@ -4,6 +4,10 @@ CMD:=.venv/bin/python
 setup:
 	python3.10 -m venv .venv && ${CMD} -m pip install -r requirements.txt
 
+.PHONY: db
+db:
+	bash -c "cd infra/docker && ./psql && ./pgadmin"
+
 .PHONY: clean
 clean:
 	${CMD} -m pyclean .

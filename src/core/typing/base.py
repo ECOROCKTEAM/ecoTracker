@@ -1,9 +1,6 @@
-from typing import Union
-
-
 class UNSET:
     """"""
 
 
-VariableValueType = Union[int, str, bool]
+VariableValueType = int | str | bool
 UnsetType = type[UNSET]

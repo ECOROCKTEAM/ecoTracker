@@ -17,8 +17,8 @@ COPY --from=builder /venv /venv
 COPY --from=builder /app .
 ENV PATH="/venv/bin:$PATH"
 
-COPY requirements-test.txt ./
-RUN pip install -r requirements-test.txt
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
 COPY . .
 
-CMD pytest tests/main -v
+ENTRYPOINT pytest tests/main -v -x

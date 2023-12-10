@@ -18,14 +18,14 @@ class Task:
 
 @dataclass
 class TaskUserPlan:
-    user_id: int
+    user_id: str
     task_id: int
 
 
 @dataclass
 class TaskUser:
     id: int
-    user_id: int
+    user_id: str
     task_id: int
     status: OccupancyStatusEnum
     date_start: datetime

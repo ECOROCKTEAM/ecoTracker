@@ -117,7 +117,7 @@ class RepositoryGroup(IRepositoryGroup):
         self,
         *,
         group_id: int,
-        user_id: int,
+        user_id: str,
     ) -> UserGroupDTO:
         stmt = select(UserGroupModel).where(UserGroupModel.user_id == user_id, UserGroupModel.group_id == group_id)
         res = await self.db_context.scalar(stmt)
@@ -136,7 +136,7 @@ class RepositoryGroup(IRepositoryGroup):
         res = await self.db_context.scalars(stmt)
         return [user_group_model_to_dto(model) for model in res]
 
-    async def user_role_update(self, *, group_id: int, user_id: int, obj: UserGroupUpdateDTO) -> UserGroupDTO:
+    async def user_role_update(self, *, group_id: int, user_id: str, obj: UserGroupUpdateDTO) -> UserGroupDTO:
         stmt = (
             update(UserGroupModel)
             .where(UserGroupModel.group_id == group_id, UserGroupModel.user_id == user_id)
@@ -148,7 +148,7 @@ class RepositoryGroup(IRepositoryGroup):
             raise EntityNotFound(msg="")
         return user_group_model_to_dto(res)
 
-    async def user_remove(self, *, group_id: int, user_id: int) -> bool:
+    async def user_remove(self, *, group_id: int, user_id: str) -> bool:
         stmt = (
             delete(UserGroupModel)
             .where(UserGroupModel.group_id == group_id, UserGroupModel.user_id == user_id)

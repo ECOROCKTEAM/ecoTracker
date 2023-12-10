@@ -5,7 +5,7 @@ from src.core.enum.group.role import GroupRoleEnum
 
 @dataclass
 class UserGroupDTO:
-    user_id: int
+    user_id: str
     group_id: int
     role: GroupRoleEnum
 
@@ -17,6 +17,6 @@ class UserGroupUpdateDTO:
 
 @dataclass
 class UserGroupCreateDTO:
-    user_id: int
+    user_id: str
     group_id: int
     role: GroupRoleEnum

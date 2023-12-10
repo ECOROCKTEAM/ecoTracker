@@ -50,7 +50,7 @@ class TaskUserEntity(BaseModel):
     status: The status of this TaskUserEntity.
     """
 
-    user_id: int = Field(alias="user_id", default=None)
+    user_id: str = Field(alias="user_id", default=None)
     task_id: int = Field(alias="task_id", default=None)
     date_start: datetime = Field(alias="date_start", default=None)
     date_close: datetime = Field(alias="date_close", default=None)
@@ -63,5 +63,5 @@ class TaskUserPlanEntity(BaseModel):
     task_id: The task_id of this TaskUserPlanEntity.
     """
 
-    user_id: int = Field(alias="user_id", default=None)
+    user_id: str = Field(alias="user_id", default=None)
     task_id: int = Field(alias="task_id", default=None)

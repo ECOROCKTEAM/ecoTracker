@@ -158,7 +158,7 @@ class RepositoryMission(IRepositoryMission):
             entity_list.append(mission_to_entity(model=mission, model_translate=mission_translate))
         return entity_list
 
-    async def user_mission_get(self, *, id: int, user_id: int) -> MissionUser:
+    async def user_mission_get(self, *, id: int, user_id: str) -> MissionUser:
         stmt = select(UserMissionModel).where(
             and_(
                 UserMissionModel.id == id,
@@ -170,7 +170,7 @@ class RepositoryMission(IRepositoryMission):
             raise EntityNotFound(msg="")
         return mission_user_to_entity(model)
 
-    async def user_mission_create(self, *, user_id: int, obj: MissionUserCreateDTO) -> MissionUser:
+    async def user_mission_create(self, *, user_id: str, obj: MissionUserCreateDTO) -> MissionUser:
         stmt = insert(UserMissionModel).values(user_id=user_id, **asdict(obj)).returning(UserMissionModel)
         try:
             res = await self.db_context.scalar(stmt)
@@ -183,7 +183,7 @@ class RepositoryMission(IRepositoryMission):
         await self.db_context.refresh(res)
         return mission_user_to_entity(res)
 
-    async def user_mission_update(self, *, id: int, user_id: int, obj: MissionUserUpdateDTO) -> MissionUser:
+    async def user_mission_update(self, *, id: int, user_id: str, obj: MissionUserUpdateDTO) -> MissionUser:
         stmt = (
             update(UserMissionModel)
             .where(
@@ -202,7 +202,7 @@ class RepositoryMission(IRepositoryMission):
         return mission_user_to_entity(res)
 
     async def user_mission_lst(
-        self, *, user_id: int, filter_obj: MissionUserFilter, order_obj: MockObj, pagination_obj: MockObj
+        self, *, user_id: str, filter_obj: MissionUserFilter, order_obj: MockObj, pagination_obj: MockObj
     ) -> list[MissionUser]:
         stmt = select(UserMissionModel)
         where_clause = []

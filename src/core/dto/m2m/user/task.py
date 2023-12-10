@@ -5,7 +5,7 @@ from src.core.enum.challenges.status import OccupancyStatusEnum
 
 @dataclass
 class UserTaskCreateDTO:
-    user_id: int
+    user_id: str
     task_id: int
     occupancy: OccupancyStatusEnum
 

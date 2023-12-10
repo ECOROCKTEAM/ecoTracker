@@ -184,7 +184,7 @@ async def group_join_by_code(
 )
 async def group_leave(
     group_id: int = Path(description="group id"),
-    user_id: int = Path(description="user id"),
+    user_id: str = Path(description="user id"),
     current_user=Depends(get_user),
     uow: IUnitOfWork = Depends(get_uow),
 ) -> bool:
@@ -207,7 +207,7 @@ async def group_leave(
 )
 async def group_role_update(
     group_id: int = Path(description="group id"),
-    user_id: int = Path(description="user id"),
+    user_id: str = Path(description="user id"),
     group_role_data: GroupRoleUpdate = Body(None, description=""),
     current_user=Depends(get_user),
     uow: IUnitOfWork = Depends(get_uow),

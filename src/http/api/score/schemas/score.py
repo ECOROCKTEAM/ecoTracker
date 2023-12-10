@@ -21,5 +21,5 @@ class UserScoreDTO(BaseModel):
         value: The value of this UserScoreDTO.
     """
 
-    user_id: int = Field(alias="user_id", default=None)
+    user_id: str = Field(alias="user_id", default=None)
     value: int = Field(alias="value", default=None)

@@ -49,7 +49,7 @@
 
 # @dataclass
 # class MissionUserCreateDTO:
-#     user_id: int
+#     user_id: str
 #     mission_id: int
 #     status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
 
@@ -63,7 +63,7 @@
 # @dataclass
 # class MissionUser(MissionBase):
 #     id: int
-#     user_id: int
+#     user_id: str
 #     status: OccupancyStatusEnum
 
 

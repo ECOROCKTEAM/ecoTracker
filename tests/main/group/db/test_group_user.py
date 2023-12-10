@@ -44,7 +44,7 @@ async def test_get_ok(repo: IRepositoryGroup, fxe_user_group_default: UserGroupD
 @pytest.mark.asyncio
 async def test_get_not_found(repo: IRepositoryGroup):
     with pytest.raises(EntityNotFound):
-        await repo.user_get(group_id=1, user_id=1)
+        await repo.user_get(group_id=1, user_id="1")
 
 
 # pytest tests/main/group/db/test_group_user.py::test_add_ok -v -s
@@ -85,7 +85,7 @@ async def test_add_fail_fk(
 
     with pytest.raises(EntityNotCreated):
         await repo.user_add(
-            obj=UserGroupCreateDTO(group_id=fxe_group_default.id, user_id=66666, role=GroupRoleEnum.ADMIN)
+            obj=UserGroupCreateDTO(group_id=fxe_group_default.id, user_id="66666", role=GroupRoleEnum.ADMIN)
         )
     await session.rollback()
 
@@ -162,7 +162,7 @@ async def test_role_update_not_found(
     repo: IRepositoryGroup,
 ):
     with pytest.raises(EntityNotFound):
-        await repo.user_role_update(group_id=1, user_id=1, obj=UserGroupUpdateDTO(role=GroupRoleEnum.BLOCKED))
+        await repo.user_role_update(group_id=1, user_id="1", obj=UserGroupUpdateDTO(role=GroupRoleEnum.BLOCKED))
 
 
 # pytest tests/main/group/db/test_group_user.py::test_user_remove_ok -v -s
@@ -192,6 +192,6 @@ async def test_user_remove_false(
     session: AsyncSession,
     repo: IRepositoryGroup,
 ):
-    status = await repo.user_remove(group_id=6666, user_id=6666)
+    status = await repo.user_remove(group_id=6666, user_id="6666")
     await session.commit()
     assert status is False

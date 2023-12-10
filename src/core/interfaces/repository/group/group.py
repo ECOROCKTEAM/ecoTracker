@@ -16,13 +16,13 @@ from src.core.enum.group.role import GroupRoleEnum
 @dataclass
 class GroupFilter:
     active: bool | None = None
-    user_id: int | None = None
+    user_id: str | None = None
 
 
 @dataclass
 class GroupUserFilter:
     role_list: list[GroupRoleEnum] | None = field(default_factory=list)
-    user_id__in: list[int] | None = None
+    user_id__in: list[str] | None = None
 
 
 class IRepositoryGroup(ABC):
@@ -126,11 +126,11 @@ class IRepositoryGroup(ABC):
         self,
         *,
         group_id: int,
-        user_id: int,
+        user_id: str,
     ) -> UserGroupDTO:
         """Получить связь сообщество-пользователь
         Args:
-            user_id (int): Id пользователя
+            user_id (str): Id пользователя
             group_id: Id сообщества
         Returns:
             UserGroupDTO: Объект связи пользователя и сообщества
@@ -155,11 +155,11 @@ class IRepositoryGroup(ABC):
         """
 
     @abstractmethod
-    async def user_role_update(self, *, group_id: int, user_id: int, obj: UserGroupUpdateDTO) -> UserGroupDTO:
+    async def user_role_update(self, *, group_id: int, user_id: str, obj: UserGroupUpdateDTO) -> UserGroupDTO:
         """Обновить роль пользователя в сообществе
 
         Args:
-            user_id (int): Id пользователя
+            user_id (str): Id пользователя
             group_id: Id сообщества
             obj (UserGroupUpdateDTO): DTO объект обновления роли пользователя в сообществе
 
@@ -176,12 +176,12 @@ class IRepositoryGroup(ABC):
         self,
         *,
         group_id: int,
-        user_id: int,
+        user_id: str,
     ) -> bool:
         """Удалить пользователя из сообщества
 
         Args:
-            user_id (int): Id пользователя
+            user_id (str): Id пользователя
             group_id: Id сообщества
 
         Returns:

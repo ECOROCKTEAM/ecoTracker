@@ -128,7 +128,7 @@ class RepositoryTask(IRepositoryTask):
             for models in holder.values()
         ]
 
-    async def user_task_add(self, *, user_id: int, obj: TaskUserCreateDTO) -> TaskUser:
+    async def user_task_add(self, *, user_id: str, obj: TaskUserCreateDTO) -> TaskUser:
         stmt = insert(UserTaskModel).values(user_id=user_id, **asdict(obj)).returning(UserTaskModel)
         try:
             result = await self.db_context.scalar(stmt)
@@ -152,7 +152,7 @@ class RepositoryTask(IRepositoryTask):
     async def user_task_lst(
         self,
         *,
-        user_id: int,
+        user_id: str,
         filter_obj: TaskUserFilter,
         order_obj: MockObj,
         pagination_obj: MockObj,
@@ -199,7 +199,7 @@ class RepositoryTask(IRepositoryTask):
             raise EntityNotCreated(msg=f"UserTaskPlan with task_id={obj.task_id}, user_id={obj.user_id} not created")
         return plan_model_to_entity(model=result)
 
-    async def plan_delete(self, *, user_id: int, task_id: int) -> TaskUserPlan:
+    async def plan_delete(self, *, user_id: str, task_id: int) -> TaskUserPlan:
         stmt = (
             delete(UserTaskPlanModel)
             .where(UserTaskPlanModel.user_id == user_id, UserTaskPlanModel.task_id == task_id)
@@ -211,7 +211,7 @@ class RepositoryTask(IRepositoryTask):
         return plan_model_to_entity(model=result)
 
     async def plan_lst(
-        self, *, user_id: int, filter_obj: TaskUserPlanFilter, order_obj: MockObj, pagination_obj: MockObj
+        self, *, user_id: str, filter_obj: TaskUserPlanFilter, order_obj: MockObj, pagination_obj: MockObj
     ) -> list[TaskUserPlan]:
         stmt = select(UserTaskPlanModel)
         where_clause = []

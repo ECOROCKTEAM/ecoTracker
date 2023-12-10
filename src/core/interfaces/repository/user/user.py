@@ -33,11 +33,11 @@ class IUserRepository(ABC):
         """
 
     @abstractmethod
-    async def update_subscription(self, *, user_id: int, sub_id: int) -> User:
+    async def update_subscription(self, *, user_id: str, sub_id: int) -> User:
         """Update user subscription
 
         Args:
-            user_id (int): user identify
+            user_id (str): user identify
             sub_id (int): subscription identify
 
         Returns:

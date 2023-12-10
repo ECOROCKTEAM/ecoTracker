@@ -12,11 +12,11 @@ from src.core.entity.score import ScoreUser
 
 class IRepositoryUserScore(ABC):
     @abstractmethod
-    async def user_get(self, *, user_id: int) -> UserScoreDTO:
+    async def user_get(self, *, user_id: str) -> UserScoreDTO:
         """Get user score
 
         Args:
-            user_id (int): user identify
+            user_id (str): user identify
 
         Returns:
             UserRating: DTO of user score object

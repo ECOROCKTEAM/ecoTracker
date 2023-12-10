@@ -60,9 +60,7 @@ class UserSubscriptionUpdateUsecase:
             await self.user_repo.update_subscription(user_id=user.id, sub_id=obj.subscription_id)
             await self.user_sub_repo.delete(user_id=user.id, sub_id=id_user_paid_sub)
 
-            user_sub = await self.user_sub_repo.get(
-                user_id=user.id, sub_id=user.subscription.id
-            )  # Мб тут Юзера вернуть?... Лишний запрос мб?
+            user_sub = await self.user_sub_repo.get(user_id=user.id, sub_id=user.subscription.id)
 
             return Result(item=user_sub)
 

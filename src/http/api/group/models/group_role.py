@@ -15,7 +15,7 @@ class GroupRole(BaseModel):
         user_id: The user_id of this GroupRole [Optional].
     """
 
-    user_id: int = Field(alias="user_id", default=None)
+    user_id: str = Field(alias="user_id", default=None)
     group_id: int = Field(alias="group_id", default=None)
     role: GroupRoleEnum = Field(alias="role", default=None)
 

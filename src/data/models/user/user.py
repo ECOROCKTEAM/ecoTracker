@@ -14,7 +14,7 @@ from src.core.enum.score.operation import ScoreOperationEnum
 class UserModel(Base):
     __tablename__ = "user"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[str] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str] = mapped_column()
     active: Mapped[bool] = mapped_column(default=True)
@@ -25,7 +25,7 @@ class UserContactModel(Base):
     __tablename__ = "user_contact"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[str] = mapped_column(ForeignKey("user.id"))
     contact_id: Mapped[str] = mapped_column(ForeignKey("contact.id"), unique=True)
     active: Mapped[bool] = mapped_column(default=True)
 
@@ -34,7 +34,7 @@ class UserSubscriptionModel(Base):
     __tablename__ = "user_subscription"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[str] = mapped_column(ForeignKey("user.id"))
     subscription_id: Mapped[int] = mapped_column(ForeignKey("subscription.id"))
     cancelled: Mapped[bool] = mapped_column(default=True)
     until_date: Mapped[datetime] = mapped_column(DateTime)
@@ -44,7 +44,7 @@ class UserSubscriptionModel(Base):
 class UserGroupModel(Base):
     __tablename__ = "user_group"
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("user.id"), primary_key=True)
     group_id: Mapped[int] = mapped_column(ForeignKey("group.id"), primary_key=True)
     role: Mapped[GroupRoleEnum] = mapped_column()
 
@@ -54,6 +54,6 @@ class UserScoreModel(Base):
     __tablename__ = "user_score"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[str] = mapped_column(ForeignKey("user.id"))
     operation: Mapped[ScoreOperationEnum] = mapped_column()
     value: Mapped[int] = mapped_column()

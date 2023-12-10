@@ -66,7 +66,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    async def user_mission_get(self, *, id: int, user_id: int) -> MissionUser:
+    async def user_mission_get(self, *, id: int, user_id: str) -> MissionUser:
         """Получить миссию пользователя
 
         Args:
@@ -77,7 +77,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    async def user_mission_create(self, *, user_id: int, obj: MissionUserCreateDTO) -> MissionUser:
+    async def user_mission_create(self, *, user_id: str, obj: MissionUserCreateDTO) -> MissionUser:
         """Создать миссию для пользователя
 
         Args:
@@ -88,7 +88,7 @@ class IRepositoryMission(ABC):
         """
 
     @abstractmethod
-    async def user_mission_update(self, *, id: int, user_id: int, obj: MissionUserUpdateDTO) -> MissionUser:
+    async def user_mission_update(self, *, id: int, user_id: str, obj: MissionUserUpdateDTO) -> MissionUser:
         """Обновить миссию для пользователя
 
         Args:
@@ -102,7 +102,7 @@ class IRepositoryMission(ABC):
     async def user_mission_lst(
         self,
         *,
-        user_id: int,
+        user_id: str,
         filter_obj: MissionUserFilter,
         order_obj: MockObj,
         pagination_obj: MockObj,

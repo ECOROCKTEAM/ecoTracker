@@ -72,11 +72,11 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def user_task_add(self, *, user_id: int, obj: TaskUserCreateDTO) -> TaskUser:
+    async def user_task_add(self, *, user_id: str, obj: TaskUserCreateDTO) -> TaskUser:
         """Создать задание для пользователя
 
         Args:
-            user_id (int): ID of user
+            user_id (str): ID of user
             obj (TaskUserCreateDTO): Объект создания
 
         Returns:
@@ -99,7 +99,7 @@ class IRepositoryTask(ABC):
     async def user_task_lst(
         self,
         *,
-        user_id: int,
+        user_id: str,
         filter_obj: TaskUserFilter | None = None,
         order_obj: MockObj | None = None,
         pagination_obj: MockObj | None = None,
@@ -107,7 +107,7 @@ class IRepositoryTask(ABC):
         """Получить список заданий пользователя
 
         Args:
-            user_id (int): ID of user
+            user_id (str): ID of user
             filter_obj (TaskUserFilter): Объект фильтрации
             order_obj (MockObj): Объект порядка
             pagination_obj (MockObj): Объект пагинации
@@ -128,11 +128,11 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def plan_delete(self, *, user_id: int, task_id: int) -> TaskUserPlan:
+    async def plan_delete(self, *, user_id: str, task_id: int) -> TaskUserPlan:
         """Удалить план задач
 
         Args:
-            user_id (int): ID of user
+            user_id (str): ID of user
             task_id (int): ID of task
 
         Returns:
@@ -143,7 +143,7 @@ class IRepositoryTask(ABC):
     async def plan_lst(
         self,
         *,
-        user_id: int,
+        user_id: str,
         filter_obj: TaskUserPlanFilter | None = None,
         order_obj: MockObj | None = None,
         pagination_obj: MockObj | None = None,
@@ -151,7 +151,7 @@ class IRepositoryTask(ABC):
         """Получить список плана задач
 
         Args:
-            user_id (int): ID of user
+            user_id (str): ID of user
             filter_obj (MockObj): Объект фильтрации
             order_obj (MockObj): Объект порядка
             pagination_obj (MockObj): Объект пагинации

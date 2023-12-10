@@ -56,7 +56,7 @@ async def test_group_not_active_fail(
         await uc(
             user=fxe_user_default,
             group_id=1,
-            user_id=1,
+            user_id="1",
             update_obj=UserGroupUpdateDTO(role=GroupRoleEnum.SUPERUSER),
         )
 
@@ -69,7 +69,7 @@ async def test_not_found_current_user(
     mock_group_get_default: Group,
     mock_group_user_list_ret_not_found_current_user: list[UserGroupDTO],
 ):
-    fxe_user_default.id = -1
+    fxe_user_default.id = "-1"
     target_user = mock_group_user_list_ret_not_found_current_user[0]
     uc = GroupChangeUserRoleUsecase(uow=uow)
     with pytest.raises(EntityNotFound, match="Not found current user user_id=-1"):
@@ -94,7 +94,7 @@ async def test_not_found_target_user(
         await uc(
             user=fxe_user_default,
             group_id=1,
-            user_id=-1,
+            user_id="-1",
             update_obj=UserGroupUpdateDTO(role=GroupRoleEnum.SUPERUSER),
         )
 

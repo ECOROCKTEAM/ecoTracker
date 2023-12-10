@@ -123,7 +123,7 @@ async def task_user_complete(
 ) -> TaskUserEntity:
     """Complete user task"""
     uc = UserTaskCompleteUsecase(uow=uow)
-    result = await uc(user=user, obj_id=obj_id)
+    result = await uc(user=user, id=obj_id)
     return result.item
 
 
@@ -143,5 +143,5 @@ async def task_user_reject(
 ) -> TaskUserEntity:
     """Reject User Task"""
     uc = UserTaskRejectUsecase(uow=uow)
-    result = await uc(user=user, obj_id=obj_id)
+    result = await uc(user=user, id=obj_id)
     return result.item

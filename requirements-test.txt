@@ -1,3 +1,0 @@
-pytest
-pytest_asyncio
-faker

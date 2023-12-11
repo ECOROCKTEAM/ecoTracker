@@ -6,6 +6,20 @@ from src.core.entity.user import User, UserCreateDTO, UserUpdateDTO
 
 class IUserRepository(ABC):
     @abstractmethod
+    async def get(self, *, user_id: str) -> User | None:
+        """User get
+
+        Args:
+            user_id (str): user identify
+
+        Returns:
+            User: user entity
+
+        Raises:
+            EntityNotFound: User is not found
+        """
+
+    @abstractmethod
     async def create(self, *, user_obj: UserCreateDTO, sub_obj: Subscription) -> User:
         """Create user
 

@@ -8,9 +8,29 @@ from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.interfaces.repository.group.group import IRepositoryGroup
 from src.core.interfaces.repository.score.group import IRepositoryGroupScore
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
+from src.core.interfaces.repository.subscription.subscription import (
+    ISubscriptionRepository,
+)
+from src.core.interfaces.repository.user.subscription import IUserSubscriptionRepository
+from src.core.interfaces.repository.user.user import IUserRepository
 
 
 class IUnitOfWork(ABC):
+    @property
+    @abstractmethod
+    def user_subscription(self) -> IUserSubscriptionRepository:
+        ...
+
+    @property
+    @abstractmethod
+    def subscription(self) -> ISubscriptionRepository:
+        ...
+
+    @property
+    @abstractmethod
+    def user(self) -> IUserRepository:
+        ...
+
     @property
     @abstractmethod
     def group(self) -> IRepositoryGroup:

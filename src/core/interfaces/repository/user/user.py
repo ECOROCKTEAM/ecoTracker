@@ -6,7 +6,7 @@ from src.core.entity.user import User, UserCreateDTO, UserUpdateDTO
 
 class IUserRepository(ABC):
     @abstractmethod
-    async def get(self, *, user_id: str) -> User | None:
+    async def get(self, *, user_id: str) -> User:
         """User get
 
         Args:

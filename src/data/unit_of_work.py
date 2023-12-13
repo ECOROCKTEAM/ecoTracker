@@ -8,6 +8,11 @@ from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.interfaces.repository.group.group import IRepositoryGroup
 from src.core.interfaces.repository.score.group import IRepositoryGroupScore
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
+from src.core.interfaces.repository.subscription.subscription import (
+    ISubscriptionRepository,
+)
+from src.core.interfaces.repository.user.subscription import IUserSubscriptionRepository
+from src.core.interfaces.repository.user.user import IUserRepository
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.data.repository.challenges.mission import RepositoryMission
 from src.data.repository.challenges.occupancy_category import (
@@ -17,6 +22,9 @@ from src.data.repository.challenges.task import RepositoryTask
 from src.data.repository.group import RepositoryGroup
 from src.data.repository.score.group_score import GroupScoreRepository
 from src.data.repository.score.user_score import UserScoreRepository
+from src.data.repository.subscription import SubscriptionRepository
+from src.data.repository.user import UserRepository
+from src.data.repository.user_subscription import UserSubscriptionRepository
 
 
 class SqlAlchemyUnitOfWork(IUnitOfWork):
@@ -28,6 +36,27 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self._mission: IRepositoryMission | None = None
         self._score_user: IRepositoryUserScore | None = None
         self._score_group: IRepositoryGroupScore | None = None
+        self._user_subscription: IUserSubscriptionRepository | None = None
+        self._user: IUserRepository | None = None
+        self._subscription: ISubscriptionRepository | None = None
+
+    @property
+    def user(self) -> IUserRepository:
+        if self._user:
+            return self._user
+        raise ValueError("UoW not in context")
+
+    @property
+    def subscription(self) -> ISubscriptionRepository:
+        if self._subscription:
+            return self._subscription
+        raise ValueError("UoW not in context")
+
+    @property
+    def user_subscription(self) -> IUserSubscriptionRepository:
+        if self._user_subscription:
+            return self._user_subscription
+        raise ValueError("UoW not in context")
 
     @property
     def score_user(self) -> IRepositoryUserScore:
@@ -79,6 +108,9 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self._occupancy_category = RepositoryOccupancyCategory(self._session)
         self._score_user = UserScoreRepository(self._session)
         self._score_group = GroupScoreRepository(self._session)
+        self._user_subscription = UserSubscriptionRepository(self._session)
+        self._subscription = SubscriptionRepository(self._session)
+        self._user = UserRepository(self._session)
         return self
 
     async def __aexit__(self, *args):

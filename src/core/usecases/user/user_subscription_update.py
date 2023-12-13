@@ -7,11 +7,7 @@ from src.core.dto.m2m.user.subscription import (
 )
 from src.core.dto.mock import MockObj
 from src.core.entity.user import User
-from src.core.interfaces.repository.subscription.subscription import (
-    ISubscriptionRepository,
-)
-from src.core.interfaces.repository.user.subscription import IUserSubscriptionRepository
-from src.core.interfaces.repository.user.user import IUserRepository
+from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
 @dataclass
@@ -22,27 +18,19 @@ class Result:
 class UserSubscriptionUpdateUsecase:
     def __init__(
         self,
-        user_sub_repo: IUserSubscriptionRepository,
-        sub_repo: ISubscriptionRepository,
-        user_repo: IUserRepository,
+        uow: IUnitOfWork,
     ) -> None:
-        self.user_sub_repo = user_sub_repo
-        self.sub_repo = sub_repo
-        self.user_repo = user_repo
+        self.uow = uow
 
     async def __call__(self, user: User, obj: UserSubscriptionUpdateDTO) -> Result:
         if user.is_premium and user.subscription.id == obj.subscription_id:
             """If user wants to extend date of paid subscription."""
 
-            old_user_sub = await self.user_sub_repo.get(user_id=user.id, sub_id=user.subscription.id)
+            old_user_sub = await self.uow.user_subscription.get(user_id=user.id, sub_id=user.subscription.id)
             old_until_date = old_user_sub.until_date
             obj.until_date += old_until_date
 
-            await self.user_sub_repo.delete(user_id=user.id, sub_id=user.subscription.id)
-            # Некоторые методы имеют переменные, но нигде не используюся потом. Можно заменить на андерскор (_).
-            # Подумал, что имена переменных дадут понять,
-            # что я удаляю именно старую подписку\обновляю на обычную подписку\удаляю старую платную и тп.
-            # Если нужно -> изменю на _
+            await self.uow.user_subscription.delete(user_id=user.id, sub_id=user.subscription.id)
 
             new_obj = UserSubscriptionCreateDTO(
                 user_id=user.id,
@@ -50,17 +38,17 @@ class UserSubscriptionUpdateUsecase:
                 until_date=obj.until_date,
             )
 
-            new_user_paid_sub = await self.user_sub_repo.create(obj=new_obj)
+            new_user_paid_sub = await self.uow.user_subscription.create(obj=new_obj)
             return Result(item=new_user_paid_sub)
 
         if user.is_premium and obj.subscription_id != user.subscription.id:
             """If the user subscription has ended."""
 
             id_user_paid_sub = user.subscription.id
-            await self.user_repo.update_subscription(user_id=user.id, sub_id=obj.subscription_id)
-            await self.user_sub_repo.delete(user_id=user.id, sub_id=id_user_paid_sub)
+            await self.uow.user.update_subscription(user_id=user.id, sub_id=obj.subscription_id)
+            await self.uow.user_subscription.delete(user_id=user.id, sub_id=id_user_paid_sub)
 
-            user_sub = await self.user_sub_repo.get(user_id=user.id, sub_id=user.subscription.id)
+            user_sub = await self.uow.user_subscription.get(user_id=user.id, sub_id=user.subscription.id)
 
             return Result(item=user_sub)
 
@@ -73,31 +61,11 @@ class UserSubscriptionUpdateUsecase:
                 until_date=obj.until_date,
             )  # type: ignore
 
-            new_paid_sub = await self.user_sub_repo.create(obj=obj)  # type: ignore
-            await self.user_repo.update_subscription(user_id=user.id, sub_id=obj.subscription_id)
+            new_paid_sub = await self.uow.user_subscription.create(obj=obj)  # type: ignore
+            await self.uow.user.update_subscription(user_id=user.id, sub_id=obj.subscription_id)
             return Result(item=new_paid_sub)
 
-        await self.sub_repo.list(filter_obj=MockObj)[0]  # type: ignore
+        await self.uow.subscription.list(filter_obj=MockObj)[0]  # type: ignore
 
-        # Пока коммент не удалял, чтобы помнить про cancelled
-
-        # Хотим ли мы вообще иметь поле cancelled в подписке? Смысл с этого поля? Отменить подписку? Зачем?
-        # Допустим, что у нас пользователь отменил платную подписку, хотя я вряд ли такое допускаю, что возможно.
-        # Что тогда? Может просто тогда менять саму подписку с платной, на бесплатную,
-        # если ему уже так захотелось "отмениться"?
-
-        # Если у нас пользователь купил подписку на месяц,
-        # к примеру и решил её продлить спустя 10 дней пользования ещё на 10 дней вперёд.
-        # Если мы наш obj просто передадим в репозиторий так, как есть,
-        # то он обновит наши значения без добавления уже имеющегося времени подписки.
-        # Нам может здесь, в usecase, получить текущую подписку,
-        # взять until_date из текущей подписки и просуммировать с обновляемым значением until_date.
-        # И уже в таком виде передавать? Или опять же: это сделать дальше, когда будем работать с бд?
-
-        # У нас стандартная подписка (не прем) будем иметь неограниченный срок действия.
-        # Как нам его присваивать? В каком виде?
-        # Может можно поставить в модели это поле как nullable=True
-        # и если пользователь будет получать стандарт подписку, то поле будет просто null?
-
-        sub = await self.user_sub_repo.update(obj=obj)
+        sub = await self.uow.user_subscription.update(obj=obj)
         return Result(item=sub)

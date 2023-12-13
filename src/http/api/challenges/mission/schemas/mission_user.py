@@ -30,7 +30,7 @@ class MissionUserEntity(BaseModel):
     """
 
     id: int = Field(alias="id", default=None)
-    user_id: int = Field(alias="user_id", default=None)
+    user_id: str = Field(alias="user_id", default=None)
     mission_id: int = Field(alias="mission_id", default=None)
     date_start: datetime = Field(alias="date_start", default=None)
     date_close: datetime = Field(alias="date_close", default=None)

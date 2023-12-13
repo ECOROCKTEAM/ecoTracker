@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends
 
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.core.usecases.score.user.user_get_score import UserGetScoreUsecase
@@ -9,7 +9,7 @@ router = APIRouter(tags=["Score user"])
 
 
 @router.get(
-    "/score/user/{id}",
+    "/score/user/{user.id}",
     responses={
         200: {"model": UserScoreDTO, "description": "OK"},
         401: {"description": "User not active"},
@@ -19,11 +19,10 @@ router = APIRouter(tags=["Score user"])
     response_model_by_alias=True,
 )
 async def score_user_get(
-    id: int = Path(description="user id"),
     user=Depends(get_user),
     uow: IUnitOfWork = Depends(get_uow),
 ) -> UserScoreDTO:
     """Get user score"""
     uc = UserGetScoreUsecase(uow=uow)
-    result = await uc(user=user, id=id)
+    result = await uc(user=user)
     return result.item

@@ -24,7 +24,7 @@ class MissionUser:
     """Сущность миссии пользователя"""
 
     id: int
-    user_id: int
+    user_id: str
     mission_id: int
     date_start: datetime
     date_close: datetime | None

@@ -43,7 +43,7 @@ class UserMissionModel(Base):
     __tablename__ = "user_mission"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(
+    user_id: Mapped[str] = mapped_column(
         ForeignKey("user.id"),
     )
     mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))

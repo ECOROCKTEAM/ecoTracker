@@ -5,7 +5,7 @@ from src.core.enum.score.operation import ScoreOperationEnum
 
 @dataclass
 class ScoreUser:
-    user_id: int
+    user_id: str
     value: int
     operation: ScoreOperationEnum
 

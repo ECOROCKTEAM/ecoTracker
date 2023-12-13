@@ -26,4 +26,5 @@ async def test_ok(
     )
     # active filter was changed to true
     group_list = res.item
+
     assert len(group_list) == 0

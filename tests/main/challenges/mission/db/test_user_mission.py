@@ -38,7 +38,7 @@ async def test_get_user_mission_ok(repo: RepositoryMission, fxe_user_mission_def
 @pytest.mark.asyncio
 async def test_get_user_mission_not_found(repo: RepositoryMission):
     with pytest.raises(EntityNotFound):
-        _ = await repo.user_mission_get(id=-1, user_id=1)
+        _ = await repo.user_mission_get(id=-1, user_id="1")
 
 
 # pytest tests/main/challenges/mission/db/test_user_mission.py::test_create_user_mission_ok -v -s
@@ -94,7 +94,7 @@ async def test_create_user_mission_not_created(
     assert len(user_mission_list) == 0
     with pytest.raises(EntityNotCreated):
         _ = await repo.user_mission_create(
-            user_id=-1,
+            user_id="-1",
             obj=MissionUserCreateDTO(
                 mission_id=fxe_mission_default.id,
             ),
@@ -152,12 +152,12 @@ async def test_update_user_mission_not_found(
         )
     with pytest.raises(EntityNotFound):
         _ = await repo.user_mission_update(
-            id=fxe_user_mission_default.id, user_id=-1, obj=MissionUserUpdateDTO(status=OccupancyStatusEnum.FINISH)
+            id=fxe_user_mission_default.id, user_id="-1", obj=MissionUserUpdateDTO(status=OccupancyStatusEnum.FINISH)
         )
 
     with pytest.raises(EntityNotFound):
         _ = await repo.user_mission_update(
-            id=-1, user_id=-1, obj=MissionUserUpdateDTO(status=OccupancyStatusEnum.FINISH)
+            id=-1, user_id="-1", obj=MissionUserUpdateDTO(status=OccupancyStatusEnum.FINISH)
         )
 
 

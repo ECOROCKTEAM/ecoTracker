@@ -18,7 +18,7 @@ class GroupChangeUserRoleUsecase:
     def __init__(self, *, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def __call__(self, *, user: User, group_id: int, user_id: int, update_obj: UserGroupUpdateDTO) -> Result:
+    async def __call__(self, *, user: User, group_id: int, user_id: str, update_obj: UserGroupUpdateDTO) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
         async with self.uow as uow:

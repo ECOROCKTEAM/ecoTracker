@@ -100,7 +100,7 @@ async def mock_group_lst_check_filter(monkeypatch):
     async def f(*args, filter_obj: GroupFilter, **kwargs) -> list[Group]:
         assert isinstance(filter_obj, GroupFilter)
         assert isinstance(filter_obj.active, bool)
-        assert isinstance(filter_obj.user_id, int)
+        assert isinstance(filter_obj.user_id, str)
         assert filter_obj.active is True
         return []
 

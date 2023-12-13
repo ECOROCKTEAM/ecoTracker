@@ -37,7 +37,7 @@ class UserScoreRepository(IRepositoryUserScore):
             raise EntityNotFound(msg=f"User={obj.user_id} not found")
         return score_model_to_entity(model=result)
 
-    async def user_get(self, *, user_id: int) -> UserScoreDTO:
+    async def user_get(self, *, user_id: str) -> UserScoreDTO:
         stmt = select(UserScoreModel).where(UserScoreModel.user_id == user_id)
         result = await self.db_context.scalars(stmt)
         if not result:

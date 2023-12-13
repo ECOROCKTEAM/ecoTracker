@@ -127,7 +127,7 @@ async def mock_group_user_list_ret_superusers_10(monkeypatch) -> list[UserGroupD
     async def f(*args, **kwargs) -> list[UserGroupDTO]:
         return [
             UserGroupDTO(
-                user_id=x,
+                user_id=str(x),
                 group_id=DEFAULT_TEST_USECASE_GROUP_ID,
                 role=GroupRoleEnum.SUPERUSER,
             )
@@ -178,12 +178,12 @@ async def mock_group_user_list_ret_admin_superuser(monkeypatch) -> list[UserGrou
     async def f(*args, **kwargs) -> list[UserGroupDTO]:
         return [
             UserGroupDTO(
-                user_id=1,
+                user_id="1",
                 group_id=DEFAULT_TEST_USECASE_GROUP_ID,
                 role=GroupRoleEnum.ADMIN,
             ),
             UserGroupDTO(
-                user_id=2,
+                user_id="2",
                 group_id=DEFAULT_TEST_USECASE_GROUP_ID,
                 role=GroupRoleEnum.SUPERUSER,
             ),

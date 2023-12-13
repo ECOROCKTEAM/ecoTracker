@@ -48,7 +48,7 @@ class IUserContactRepository(ABC):
     async def list(
         self,
         *,
-        user_id: int,
+        user_id: str,
         filter_obj: MockObj | None = None,
         sorting_obj: MockObj | None = None,
         order_obj: MockObj | None = None,
@@ -56,7 +56,7 @@ class IUserContactRepository(ABC):
         """User contact list
 
         Args:
-            user_id (int): user identify
+            user_id (str): user identify
             filter_obj (MockObj): Some filter item
             sorting_obj (MockObj): Some sorting obj
             order_obj (MockObj): Some order obj

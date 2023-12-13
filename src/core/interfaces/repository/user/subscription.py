@@ -20,11 +20,11 @@ class IUserSubscriptionRepository(ABC):
         """
 
     @abstractmethod
-    async def get(self, *, user_id: int, sub_id: int) -> UserSubscription:
+    async def get(self, *, user_id: str, sub_id: int) -> UserSubscription:
         """Get user subscription object
 
         Args:
-            user_id (int): user identify
+            user_id (str): user identify
             sub_id (int): subscription identify
 
         Returns:
@@ -51,11 +51,11 @@ class IUserSubscriptionRepository(ABC):
         """
 
     @abstractmethod
-    async def delete(self, user_id: int, sub_id: int) -> int:
+    async def delete(self, user_id: str, sub_id: int) -> int:
         """Delete user subscription object
 
         Args:
-            user_id (int): user identify
+            user_id (str): user identify
             sub_id (int): subscription identify
 
         Returns:

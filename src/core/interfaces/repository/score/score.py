@@ -29,11 +29,11 @@
 #         """
 
 #     @abstractmethod
-#     async def user_get(self, *, user_id: int) -> UserRatingDTO:
+#     async def user_get(self, *, user_id: str) -> UserRatingDTO:
 #         """Get user score
 
 #         Args:
-#             user_id (int): user identify
+#             user_id (str): user identify
 
 #         Returns:
 #             UserRatingDTO: DTO of user score object

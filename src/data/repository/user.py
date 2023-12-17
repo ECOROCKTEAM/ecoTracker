@@ -18,5 +18,5 @@ class UserRepository(IUserRepository):
     async def update(self, *, obj: UserUpdateDTO) -> User:
         return await super().update(obj=obj)
 
-    async def update_subscription(self, *, user_id: int, sub_id: int) -> User:
+    async def update_subscription(self, *, user_id: str, sub_id: int) -> User:
         return await super().update_subscription(user_id=user_id, sub_id=sub_id)

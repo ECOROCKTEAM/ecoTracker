@@ -16,7 +16,7 @@ from tests.fixtures.challenges.mission.usecase.user_mission import (
     mock_user_mission_get,
     mock_user_mission_update,
 )
-from tests.fixtures.const import DEFAULT_TEST_USECASE_USER_ID
+from tests.fixtures.const import DEFAULT_TEST_USECASE_MISSION_ID
 from tests.fixtures.score.usecase.user_score import mock_user_score_add
 from tests.fixtures.user.usecase.entity import fxe_user_default
 
@@ -34,7 +34,7 @@ async def test_ok(
     uc = MissionUserUpdateUsecase(uow=uow)
     res = await uc(
         user=fxe_user_default,
-        id=DEFAULT_TEST_USECASE_USER_ID,
+        id=DEFAULT_TEST_USECASE_MISSION_ID,
         update_obj=MissionUserUpdateDTO(status=OccupancyStatusEnum.FINISH),
     )
     mission = res.item

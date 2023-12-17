@@ -12,13 +12,13 @@ class UserSubscriptionRepository(IUserSubscriptionRepository):
     def __init__(self, db_context: AsyncSession) -> None:
         self.db_context = db_context
 
-    async def delete(self, user_id: int, sub_id: int) -> int:
+    async def delete(self, user_id: str, sub_id: int) -> int:
         return await super().delete(user_id, sub_id)
 
     async def update(self, *, obj: UserSubscriptionUpdateDTO) -> UserSubscription:
         return await super().update(obj=obj)
 
-    async def get(self, *, user_id: int, sub_id: int) -> UserSubscription:
+    async def get(self, *, user_id: str, sub_id: int) -> UserSubscription:
         return await super().get(user_id=user_id, sub_id=sub_id)
 
     async def list(self) -> list[UserSubscription]:

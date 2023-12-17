@@ -9,6 +9,7 @@ pytest-asyncio==0.20.1
 SQLAlchemy==2.0.12
 uvicorn==0.24.0.post1
 pydantic[dotenv]==1.10.7
+firebase_admin==6.3.0
 pre-commit==3.5.0
 ruff==0.1.7
 black==23.11.0

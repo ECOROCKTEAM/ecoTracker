@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     DATABASE_HOST: str
     DATABASE_PORT: str
 
+    FIREBASE_SECRET_PATH: str
+    FIREBASE_APP_NAME: str
+
     @property
     def DATABASE_URL(self) -> str:
         return f"postgresql+asyncpg://{self.DATABASE_USER}:{self.DATABASE_PASSWORD}@{self.DATABASE_HOST}:{self.DATABASE_PORT}/{self.DATABASE_NAME}"

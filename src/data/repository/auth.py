@@ -13,7 +13,7 @@ def firebase_user_to_dto(obj) -> UserFirebase:
         firebase_app_name=obj.aud,
         auth_time=obj.auth_time,
         email=obj.email,
-        provider=AuthProviderEnum.GOOGLE,
+        provider=AuthProviderEnum.GOOGLE,  # TODO GET PROVIDER FROM OBJ
     )
 
 
@@ -22,6 +22,7 @@ class AuthProviderRepository(IAuthProviderRepository):
         self._fb_app = firebase_app
 
     async def get_firebase_user_by_token(self, token: str, check_revoked: bool = True) -> UserFirebase:
+        # TODO HANLE ERRORS
         decoded_token = await self._fb_app.verify_token(token=token, check_revoked=check_revoked)
         user = await self._fb_app.get_user(id=decoded_token["uid"])
         return firebase_user_to_dto(user)

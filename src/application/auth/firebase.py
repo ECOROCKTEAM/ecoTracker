@@ -18,6 +18,9 @@ def singleton(cls):
     return getinstance
 
 
+# TODO HANDLE ERRORS
+
+
 @singleton
 class FirebaseApplication(IFirebaseApplication):
     def __init__(self, name: str, secret_path: str) -> None:

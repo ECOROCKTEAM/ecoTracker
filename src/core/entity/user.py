@@ -23,6 +23,7 @@ class User:
 
 @dataclass
 class UserCreateDTO:
+    id: str
     username: str
     password: str
     active: bool

@@ -31,7 +31,7 @@ class IUserRepository(ABC):
 
         Raises:
             RepoError: Repository error
-            UserDidNotCreated: User didn't created
+            UserDidNotCreated: User not created
 
         """
 

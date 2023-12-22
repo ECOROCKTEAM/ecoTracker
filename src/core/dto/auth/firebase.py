@@ -4,12 +4,34 @@ from src.core.enum.auth.providers import AuthProviderEnum
 
 
 @dataclass
-class UserFirebase:
+class TokenIdentity:
+    user_id: str
+    name: str
+    email: str
+    email_verified: bool
+    pic: str
+    auth_time: int
+    provider: str
+    provider_data: dict
+    iss: str
+    aud: str
+    uid: str
+    iat: int
+    exp: int
+
+
+@dataclass
+class ProviderIdentity:
+    type: AuthProviderEnum
+    data: dict
+
+
+@dataclass
+class UserIdentity:
     id: str
     name: str
     active: bool
     pic: str
-    firebase_app_name: str
-    auth_time: int
     email: str
-    provider: AuthProviderEnum
+    email_verified: bool
+    provider: ProviderIdentity

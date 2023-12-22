@@ -14,6 +14,10 @@ class RepoError(BaseError):
     """"""
 
 
+class AuthError(DomainError):
+    """"""
+
+
 class PermissionError(DomainError):
     """"""
 

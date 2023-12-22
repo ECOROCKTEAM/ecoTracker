@@ -22,6 +22,16 @@ from src.data.unit_of_work import SqlAlchemyUnitOfWork
 fake = faker.Faker()
 
 
+def get_request_param(request, wait_type):
+    if not hasattr(request, "param"):
+        return
+    if request.param is None and wait_type is None:
+        return request.param
+    if request.param is not None and isinstance(request.param, wait_type):
+        return request.param
+    raise NotImplementedError(f"Fail with request param: {request.param}")
+
+
 @pytest.fixture(scope="session")
 def event_loop():
     loop = asyncio.get_event_loop()
@@ -34,14 +44,19 @@ def event_loop():
     loop.close()
 
 
-@pytest.fixture(scope="session")
-def firebase_app() -> IFirebaseApplication:
+@pytest.fixture(scope="function")
+def firebase_app(request) -> IFirebaseApplication:
     app = FirebaseApplication(name=settings.FIREBASE_APP_NAME, secret_path=settings.FIREBASE_SECRET_PATH)
     app.setup()
+    params: dict | None = get_request_param(request=request, wait_type=dict)
+    if params is None:
+        return app
+    if params.get("mock_verify_token"):
+        app.verify_token = params.get("mock_verify_token")  # type: ignore
     return app
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def auth_provider_repository(firebase_app: IFirebaseApplication) -> IAuthProviderRepository:
     return AuthProviderRepository(firebase_app=firebase_app)
 

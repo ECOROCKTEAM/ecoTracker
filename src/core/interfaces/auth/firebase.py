@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from firebase_admin._user_mgt import UserRecord
+from src.core.dto.auth.firebase import TokenIdentity, UserIdentity
 
 
 class IFirebaseApplication(ABC):
@@ -14,9 +14,9 @@ class IFirebaseApplication(ABC):
         ...
 
     @abstractmethod
-    async def verify_token(self, token: str, check_revoked: bool = True) -> dict:
+    async def verify_token(self, token: str, check_revoked: bool = True) -> TokenIdentity:
         ...
 
     @abstractmethod
-    async def get_user(self, id: str) -> UserRecord:
+    async def get_user(self, id: str) -> UserIdentity:
         ...

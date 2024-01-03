@@ -32,7 +32,7 @@ class SubscriptionCreateDTO(TranslationMixin):
 
 
 @dataclass
-class Subscription(TranslationMixin):
+class _Subscription(TranslationMixin):
     id: int
     type: SubscriptionTypeEnum
     period: SubscriptionPeriodDTO
@@ -40,3 +40,8 @@ class Subscription(TranslationMixin):
 
     def __post_init__(self):
         self._validate_translations(seq=self.translations)
+
+
+@dataclass
+class Subscription:
+    """Mock"""

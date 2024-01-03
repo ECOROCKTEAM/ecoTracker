@@ -11,16 +11,17 @@ class Result:
     item: User
 
 
-class UserGetUsecase:
+class UserMeUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
     async def __call__(self, *, user_id: str) -> Result:
-        user = await self.uow.user.get(user_id=user_id)
-        if not user:
-            raise EntityNotFound(user_id=user_id)
+        async with self.uow as uow:
+            user = await uow.user.get(user_id=user_id)
+            if not user:
+                raise EntityNotFound(msg=user_id)
 
-        if not user.active:
-            raise UserIsNotActivateError(user_id=user_id)
+            if not user.active:
+                raise UserIsNotActivateError(user_id=user_id)
 
-        return Result(item=user)
+            return Result(item=user)

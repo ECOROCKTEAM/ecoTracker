@@ -1,18 +1,19 @@
-from dataclasses import dataclass
+# from dataclasses import dataclass
 
-from src.core.entity.user import User, UserUpdateDTO
-from src.core.interfaces.unit_of_work import IUnitOfWork
+# from src.core.entity.user import User, UserUpdateDTO
+# from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
-@dataclass
-class Result:
-    item: User
+# @dataclass
+# class Result:
+#     item: User
 
 
 class UserUpdateUsecase:
-    def __init__(self, uow: IUnitOfWork) -> None:
-        self.uow = uow
+    raise NotImplementedError
+    # def __init__(self, uow: IUnitOfWork) -> None:
+    #     self.uow = uow
 
-    async def __call__(self, *, obj: UserUpdateDTO) -> Result:
-        user = await self.uow.user.update(obj=obj)
-        return Result(item=user)
+    # async def __call__(self, *, obj: UserUpdateDTO) -> Result:
+    #     user = await self.uow.user.update(obj=obj)
+    #     return Result(item=user)

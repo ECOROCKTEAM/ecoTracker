@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.entity.subscription import Subscription
 from src.core.entity.user import User, UserCreateDTO, UserUpdateDTO
-from src.core.exception.base import EntityNotChange, EntityNotFound
+from src.core.exception.base import EntityNotChange, EntityNotCreated, EntityNotFound
 from src.core.interfaces.repository.user.user import IUserRepository
 from src.data.models.user.user import UserModel
 
@@ -43,7 +43,7 @@ class UserRepository(IUserRepository):
             error.orig = cast(BaseException, error.orig)
             if isinstance(error.orig.__cause__, UniqueViolationError):
                 raise EntityNotChange(msg="Uniq failed") from error
-            raise EntityNotChange(msg="") from error
+            raise EntityNotCreated(msg="") from error
         if not res:
             raise EntityNotFound(msg="")
 

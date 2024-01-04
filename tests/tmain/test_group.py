@@ -13,9 +13,9 @@ from src.core.interfaces.repository.group.group import GroupFilter, IRepositoryG
 from tests.dataloader import dataloader
 
 
-# pytest tests/tmain/test_group.py::test_signle -v -s
+# pytest tests/tmain/test_group.py::test_tracking -v -s
 @pytest.mark.asyncio
-async def test_signle(dl: dataloader):
+async def test_tracking(dl: dataloader):
     print()
     u = await dl.user_loader.create()
     u2 = await dl.user_loader.create()

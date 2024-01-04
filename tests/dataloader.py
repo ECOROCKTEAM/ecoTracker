@@ -194,6 +194,7 @@ class dataloader:
         self._loader_instance_holder = {}
 
     async def __aenter__(self):
+        print()
         return self
 
     async def __aexit__(self, exc_type, exc, tb):

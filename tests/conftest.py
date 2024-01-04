@@ -18,6 +18,7 @@ from src.core.interfaces.repository.auth import IAuthProviderRepository
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.data.repository.auth import AuthProviderRepository
 from src.data.unit_of_work import SqlAlchemyUnitOfWork
+from tests.dataloader import dataloader
 
 fake = faker.Faker()
 
@@ -83,3 +84,9 @@ async def session(pool: async_sessionmaker[AsyncSession]) -> AsyncGenerator[Asyn
 @pytest_asyncio.fixture(scope="function")
 async def uow(pool: async_sessionmaker[AsyncSession]) -> AsyncGenerator[IUnitOfWork, None]:
     yield SqlAlchemyUnitOfWork(pool)
+
+
+@pytest_asyncio.fixture(scope="function")
+async def dl(session: AsyncSession):
+    async with dataloader(session=session) as dl:
+        yield dl

@@ -34,5 +34,10 @@ class SettingsTest(Settings):
         env_file = "test.env"
 
 
-config = dict(dev=SettingsDev, test=SettingsTest)
+class SettingsProd(Settings):
+    class Config:
+        env_file = "prod.env"
+
+
+config = dict(dev=SettingsDev, test=SettingsTest, prod=SettingsProd)
 settings: Settings = config[os.environ.get("APP_ENV", "dev").lower()]()  # type: ignore

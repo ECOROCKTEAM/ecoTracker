@@ -3,6 +3,7 @@ CMD:=.venv/bin/python
 .PHONY: setup
 setup:
 	python3.10 -m venv .venv && ${CMD} -m pip install -r requirements.txt
+	docker network create ecotracker-network
 
 .PHONY: localdb
 localdb:
@@ -51,16 +52,22 @@ pre-commit:
 tests:
 	export DOCKER_BUILDKIT=0
 	export COMPOSE_DOCKER_CLI_BUILD=0
-	docker compose -f docker-compose.testrunner.yaml up --force-recreate --remove-orphans -V --build --exit-code-from test_runner && echo "TEST IS 100% OK"
+	docker compose -f docker-compose.testrunner.yaml up --force-recreate -V --build --exit-code-from test_runner && echo "TEST IS 100% OK"
 
 .PHONY: dev_run
 dev_run:
 	export DOCKER_BUILDKIT=0
 	export COMPOSE_DOCKER_CLI_BUILD=0
-	docker compose -f docker-compose.dev.yaml up -d --force-recreate --remove-orphans -V --build
+	docker compose -f docker-compose.dev.yaml up -d --force-recreate -V --build
 
 .PHONY: dev_stop
 dev_stop:
 	export DOCKER_BUILDKIT=0
 	export COMPOSE_DOCKER_CLI_BUILD=0
-	docker compose -f docker-compose.dev.yaml down -v
+	docker compose -f docker-compose.dev.yaml down
+
+.PHONY: monitoring
+monitoring:
+	export DOCKER_BUILDKIT=0
+	export COMPOSE_DOCKER_CLI_BUILD=0
+	docker compose -f docker-compose.monitoring.yaml up -V

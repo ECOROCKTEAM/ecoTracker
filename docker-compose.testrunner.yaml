@@ -5,6 +5,7 @@ services:
     build:
       context: .
       target: test_runner
+      dockerfile: testrunner.Dockerfile
     depends_on:
       - db
     env_file:

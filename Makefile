@@ -51,4 +51,4 @@ pre-commit:
 tests:
 	export DOCKER_BUILDKIT=0
 	export COMPOSE_DOCKER_CLI_BUILD=0
-	docker compose -f docker-compose.test.yaml up --force-recreate -V --build --exit-code-from test-runner && echo "TEST IS 100% OK"
+	docker compose -f docker-compose.testrunner.yaml up --force-recreate -V --build --exit-code-from test-runner && echo "TEST IS 100% OK"

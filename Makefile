@@ -4,9 +4,15 @@ CMD:=.venv/bin/python
 setup:
 	python3.10 -m venv .venv && ${CMD} -m pip install -r requirements.txt
 
-.PHONY: db
-db:
-	bash -c "cd infra/docker && ./psql && ./pgadmin"
+.PHONY: localdb
+localdb:
+	docker run --name psql -d -p 5432:5432 --env-file=infra/dev/docker/db.env postgres:15-alpine
+	docker run --name pgadmin --link psql -d -p 5050:80 --env-file=infra/dev/docker/pgadmin.env dpage/pgadmin4
+
+.PHONY: localdbclean
+localdbclean:
+	docker rm -f pgadmin
+	docker rm -f psql
 
 .PHONY: clean
 clean:

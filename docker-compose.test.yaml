@@ -14,6 +14,6 @@ services:
   db:
     image: postgres:15-alpine
     volumes:
-      - ./infra/docker/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+      - ./infra/common/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
     env_file:
-      - infra/docker/test_db/test.env
+      - infra/test_runner/docker/db.env

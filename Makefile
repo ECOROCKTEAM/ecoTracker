@@ -51,4 +51,16 @@ pre-commit:
 tests:
 	export DOCKER_BUILDKIT=0
 	export COMPOSE_DOCKER_CLI_BUILD=0
-	docker compose -f docker-compose.testrunner.yaml up --force-recreate -V --build --exit-code-from test-runner && echo "TEST IS 100% OK"
+	docker compose -f docker-compose.testrunner.yaml up --force-recreate --remove-orphans -V --build --exit-code-from test_runner && echo "TEST IS 100% OK"
+
+.PHONY: dev_run
+dev_run:
+	export DOCKER_BUILDKIT=0
+	export COMPOSE_DOCKER_CLI_BUILD=0
+	docker compose -f docker-compose.dev.yaml up -d --force-recreate --remove-orphans -V --build
+
+.PHONY: dev_stop
+dev_stop:
+	export DOCKER_BUILDKIT=0
+	export COMPOSE_DOCKER_CLI_BUILD=0
+	docker compose -f docker-compose.dev.yaml down -v

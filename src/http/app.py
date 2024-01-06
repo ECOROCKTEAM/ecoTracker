@@ -2,20 +2,16 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from src.application.database.manager import db_manager
 from src.application.settings import settings
-
-# from .api.challenges.mission.apis.mission import router as mission_router
-# from .api.challenges.mission.apis.mission_user import router as mission_user_router
-# from .api.challenges.mission.apis.mission_group import router as mission_group_router
-# from .api.challenges.task.apis.task import router as task_router
-# from .api.challenges.task.apis.task_user import router as task_user_router
-# from .api.group.apis.group_api import router as group_router
-# from .api.occupancy.apis.api import router as occupancy_router
-# from .api.score.apis.score_group_api import router as score_group_router
-# from .api.score.apis.score_user_api import router as score_user_router
+from src.http.api.depends.deps import (
+    get_uow,
+    get_uow_stub,
+    get_user_dev,
+    get_user_prod,
+    get_user_stub,
+)
 from src.http.api.user.router import router as user_router
-
-from .api.depends import db_manager
 
 
 @asynccontextmanager
@@ -27,6 +23,13 @@ async def lifespan(app: FastAPI):
 
 def create_app() -> FastAPI:
     app = FastAPI(lifespan=lifespan)
+    app.dependency_overrides[get_uow_stub] = get_uow
+    # print(F"APP ENV = {settings.APP_ENV.lower()}")
+    if settings.APP_ENV.lower() == "prod":
+        app.dependency_overrides[get_user_stub] = get_user_prod
+    else:
+        app.dependency_overrides[get_user_stub] = get_user_dev
+
     app.include_router(user_router)
     # app.include_router(group_router)
     # app.include_router(mission_router)

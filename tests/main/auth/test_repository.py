@@ -8,7 +8,7 @@ from src.core.interfaces.repository.auth import IAuthProviderRepository
 
 # Tests commented bcs need deps from env
 
-# # pytest tests/main/auth/test_repository.py::test_get_user_by_token -v -s
+# pytest tests/main/auth/test_repository.py::test_get_user_by_token -v -s
 # async def test_get_user_by_token(auth_provider_repository: IAuthProviderRepository):
 #     token = os.environ.get("FB_USER_TOKEN")
 #     if token is None:

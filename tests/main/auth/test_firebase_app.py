@@ -1,6 +1,9 @@
 import os
 
-from src.application.auth.firebase import FirebaseApplication
+from src.application.auth.firebase import (
+    FirebaseApplication,
+    FirebaseApplicationSingleton,
+)
 from src.application.settings import settings
 from src.core.dto.auth.firebase import ProviderIdentity, TokenIdentity, UserIdentity
 from src.core.interfaces.auth.firebase import IFirebaseApplication
@@ -8,13 +11,24 @@ from src.core.interfaces.auth.firebase import IFirebaseApplication
 
 # pytest tests/main/auth/test_firebase_app.py::test_app_singleton -v -s
 def test_app_singleton():
+    app = FirebaseApplicationSingleton(name=settings.FIREBASE_APP_NAME, secret_path=settings.FIREBASE_SECRET_PATH)
+    app.setup()
+    app_id = id(app)
+    app2 = FirebaseApplicationSingleton(name=settings.FIREBASE_APP_NAME, secret_path=settings.FIREBASE_SECRET_PATH)
+    assert app2._is_setup is True
+    app2_id = id(app2)
+    assert app_id == app2_id
+
+
+# pytest tests/main/auth/test_firebase_app.py::test_app_default -v -s
+def test_app_default():
     app = FirebaseApplication(name=settings.FIREBASE_APP_NAME, secret_path=settings.FIREBASE_SECRET_PATH)
     app.setup()
     app_id = id(app)
     app2 = FirebaseApplication(name=settings.FIREBASE_APP_NAME, secret_path=settings.FIREBASE_SECRET_PATH)
-    assert app2._is_setup
+    assert app2._is_setup is False
     app2_id = id(app2)
-    assert app_id == app2_id
+    assert app_id != app2_id
 
 
 # Tests commented bcs need deps from env

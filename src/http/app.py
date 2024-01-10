@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from src.application.auth.firebase import FirebaseApplicationSingleton
 from src.application.database.manager import db_manager
 from src.application.settings import settings
 from src.http.api.depends.deps import (
@@ -30,6 +31,10 @@ def create_app() -> FastAPI:
     else:
         app.dependency_overrides[get_user_stub] = get_user_dev
 
+    # Initial firebase
+    FirebaseApplicationSingleton(name=settings.FIREBASE_APP_NAME, secret_path=settings.FIREBASE_SECRET_PATH)
+
+    # Routers
     app.include_router(user_router)
     # app.include_router(group_router)
     # app.include_router(mission_router)

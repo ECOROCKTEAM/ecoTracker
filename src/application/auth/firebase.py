@@ -7,24 +7,13 @@ from firebase_admin._user_mgt import ProviderUserInfo, UserRecord
 from src.core.dto.auth.firebase import ProviderIdentity, TokenIdentity, UserIdentity
 from src.core.enum.auth.providers import AuthProviderEnum
 from src.core.interfaces.auth.firebase import IFirebaseApplication
-
-
-def singleton(cls):
-    instances = {}
-
-    def getinstance(*args, **kwargs):
-        if cls not in instances:
-            instances[cls] = cls(*args, **kwargs)
-        return instances[cls]
-
-    return getinstance
+from src.utils import singleton
 
 
 class FirebaseError(Exception):
     """"""
 
 
-@singleton
 class FirebaseApplication(IFirebaseApplication):
     def __init__(self, name: str, secret_path: str) -> None:
         self._name = name
@@ -98,6 +87,14 @@ class FirebaseApplication(IFirebaseApplication):
     def setup(self):
         if not self._is_setup:
             credential = firebase_admin.credentials.Certificate(self._secret_path)
-            # That create app in global firebase_admin scope..
-            self._app = firebase_admin.initialize_app(credential=credential, name=self._name)
+            try:
+                # That create app in global firebase_admin scope..
+                self._app = firebase_admin.initialize_app(credential=credential, name=self._name)
+            except ValueError:
+                self._app = firebase_admin.get_app(name=self.name)
         self._is_setup = True
+
+
+@singleton
+class FirebaseApplicationSingleton(FirebaseApplication):
+    ...

@@ -25,7 +25,7 @@ class UserMeUsecase:
             try:
                 user_identity = await self.auth_provider.get_user_by_token(token=token)
             except Exception as e:
-                raise AuthError(msg=f"Error in getting by token: {e}") from e
+                raise AuthError(msg=f"User not found by token: {e}") from e
 
             try:
                 user = await uow.user.get(user_id=user_identity.id)
@@ -42,7 +42,7 @@ class UserMeUsecase:
                 )
                 await uow.commit()
 
-            if all([user, not user.active]):
+            if not user.active:
                 raise UserIsNotActivateError(user_id=user_identity.id)
 
             return Result(item=user)

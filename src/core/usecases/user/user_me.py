@@ -26,7 +26,6 @@ class UserMeUsecase:
                 user_identity = await self.auth_provider.get_user_by_token(token=token)
             except Exception as e:
                 raise AuthError(msg=f"User not found by token: {e}") from e
-
             try:
                 user = await uow.user.get(user_id=user_identity.id)
             except EntityNotFound:
@@ -49,10 +48,11 @@ class UserMeUsecase:
 
 
 class UserMeUsecaseDevelop:
-    def __init__(self, uow: IUnitOfWork) -> None:
+    def __init__(self, uow: IUnitOfWork, auth_provider: IAuthProviderRepository) -> None:
         self.uow = uow
+        self.auth_provider = auth_provider
 
-    async def __call__(self, *, user_id: Any) -> Result:
+    async def __call__(self, *, token: Any) -> Result:
         return Result(
             item=User(
                 id="id_1337_fake",

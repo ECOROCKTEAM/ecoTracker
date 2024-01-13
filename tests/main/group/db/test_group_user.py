@@ -9,7 +9,7 @@ from src.core.dto.m2m.user.group import (
 from src.core.entity.group import Group
 from src.core.entity.user import User
 from src.core.enum.group.role import GroupRoleEnum
-from src.core.exception.base import EntityNotCreated, EntityNotFound
+from src.core.exception.base import EntityNotCreated, EntityNotDeleted, EntityNotFound
 from src.core.interfaces.repository.group.group import GroupUserFilter
 from src.data.models.user.user import UserGroupModel
 from src.data.repository.group import IRepositoryGroup
@@ -113,7 +113,7 @@ async def test_lst(
 ):
     uc_list = await repo.user_list(
         id=fxm_user_group_admin.group_id,
-        filter_obj=GroupUserFilter(role_list=[fxm_user_group_admin.role], user_id__in=[fxm_user_group_admin.user_id]),
+        filter_obj=GroupUserFilter(role__in=[fxm_user_group_admin.role], user_id__in=[fxm_user_group_admin.user_id]),
     )
     assert len(uc_list) == 1
     uc = uc_list[0]
@@ -124,7 +124,7 @@ async def test_lst(
     uc_list = await repo.user_list(
         id=fxm_user_group_admin.group_id,
         filter_obj=GroupUserFilter(
-            role_list=[fxm_user_group_superuser.role], user_id__in=[fxm_user_group_superuser.user_id]
+            role__in=[fxm_user_group_superuser.role], user_id__in=[fxm_user_group_superuser.user_id]
         ),
     )
     assert len(uc_list) == 1
@@ -192,6 +192,6 @@ async def test_user_remove_false(
     session: AsyncSession,
     repo: IRepositoryGroup,
 ):
-    status = await repo.user_remove(group_id=6666, user_id="6666")
+    with pytest.raises(EntityNotDeleted):
+        await repo.user_remove(group_id=6666, user_id="6666")
     await session.commit()
-    assert status is False

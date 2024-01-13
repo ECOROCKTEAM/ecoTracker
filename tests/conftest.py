@@ -66,7 +66,7 @@ def auth_provider_repository(firebase_app: IFirebaseApplication) -> IAuthProvide
 @pytest_asyncio.fixture(scope="package")
 @pytest.mark.asyncio
 async def pool() -> AsyncGenerator[async_sessionmaker[AsyncSession], None]:
-    print(settings.DATABASE_URL, flush=True)
+    # print(settings.DATABASE_URL, flush=True)
     engine = create_async_engine(url=settings.DATABASE_URL)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

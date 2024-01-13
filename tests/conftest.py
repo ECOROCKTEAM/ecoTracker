@@ -35,12 +35,13 @@ def get_request_param(request, wait_type):
 
 @pytest.fixture(scope="session")
 def event_loop():
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     yield loop
 
-    pending = asyncio.tasks.all_tasks(loop)
-    loop.run_until_complete(asyncio.gather(*pending))
-    loop.run_until_complete(asyncio.sleep(1))
+    # pending = asyncio.tasks.all_tasks(loop)
+    # loop.run_until_complete(asyncio.gather(*pending))
+    # loop.run_until_complete(asyncio.sleep(1))
 
     loop.close()
 

@@ -57,7 +57,7 @@ class EntityLoaderBase(ABC, Generic[T]):
         for pk_name in self._pk_names:
             pk_values[pk_name] = getattr(model, pk_name)
         self._create_stack.append(pk_values)
-        print(f"{self.__class__.__name__} ADD: {pk_values}")
+        # print(f"{self.__class__.__name__} ADD: {pk_values}")
         return model
 
     async def _get(self, model: Type[T], cond: list) -> T:
@@ -181,7 +181,7 @@ def loader_track(func):
             loader = func(self)
             self._loader_instance_holder[func_name] = loader
         selected_instance = self._loader_instance_holder[func_name]
-        print(f"Ret {func_name=} {id(selected_instance)}")
+        # print(f"Ret {func_name=} {id(selected_instance)}")
         return selected_instance
 
     return wrapper
@@ -206,7 +206,7 @@ class dataloader:
         for loader_name in reversed(self._loader_call_stack):
             instance = self._loader_instance_holder[loader_name]
             await instance._delete_created()
-            print(f"{instance.__class__.__name__} -> deleted count {len(instance._create_stack)}")
+            # print(f"{instance.__class__.__name__} -> deleted count {len(instance._create_stack)}")
 
     async def commit(self):
         await self.session.commit()

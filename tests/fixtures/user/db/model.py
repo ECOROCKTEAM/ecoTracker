@@ -52,7 +52,7 @@ async def fxm_user_not_active(session: AsyncSession) -> AsyncGenerator[UserModel
 
 @pytest_asyncio.fixture(scope="function")
 async def fxm_user_default_3(session: AsyncSession) -> AsyncGenerator[UserModel, None]:
-    model = UserModel(id="aboba_id", username="test", password="", active=False, language=DEFAULT_TEST_LANGUAGE)
+    model = UserModel(id="aboba_id", username="test", password="", active=True, language=DEFAULT_TEST_LANGUAGE)
     session.add(model)
     await session.commit()
 

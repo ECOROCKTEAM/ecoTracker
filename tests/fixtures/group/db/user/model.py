@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.enum.group.role import GroupRoleEnum
 from src.data.models.group.group import GroupModel
 from src.data.models.user.user import UserGroupModel, UserModel
-from src.http.api.group.models.group_role import GroupRole
 from tests.fixtures.const import DEFAULT_TEST_USER_GROUP_ROLE
 from tests.fixtures.group.db.model import fxm_group_default
 from tests.fixtures.user.db.model import fxm_user_default, fxm_user_default_2

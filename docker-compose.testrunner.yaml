@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  test_runner:
+    build:
+      context: .
+      target: test_runner
+    depends_on:
+      - test_runner_db
+    env_file:
+      - testrunner.env
+    environment:
+      - APP_ENV=test
+    entrypoint: pytest tests/main -v -x
+
+  test_runner_db:
+    image: postgres:15-alpine
+    volumes:
+      - ./infra/common/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    env_file:
+      - infra/test_runner/docker/db.env

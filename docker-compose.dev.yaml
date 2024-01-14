@@ -1,0 +1,31 @@
+version: '3.8'
+
+networks:
+  ecotracker-network:
+    external: true
+
+services:
+  dev_web_app:
+    build:
+      context: .
+      target: web_app
+    depends_on:
+      - dev_db
+    env_file:
+      - dev.env
+    environment:
+      - APP_ENV=dev
+    entrypoint: uvicorn --factory src.http.app:create_app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      - ecotracker-network
+
+  dev_db:
+    image: postgres:15-alpine
+    volumes:
+      - ./infra/common/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    env_file:
+      - infra/dev/docker/db.env
+    networks:
+      - ecotracker-network

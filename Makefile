@@ -3,10 +3,17 @@ CMD:=.venv/bin/python
 .PHONY: setup
 setup:
 	python3.10 -m venv .venv && ${CMD} -m pip install -r requirements.txt
+	docker network create ecotracker-network
 
-.PHONY: db
-db:
-	bash -c "cd infra/docker && ./psql && ./pgadmin"
+.PHONY: localdb
+localdb:
+	docker run --name psql -d -p 5432:5432 --env-file=infra/dev/docker/db.env postgres:15-alpine
+	docker run --name pgadmin --link psql -d -p 5050:80 --env-file=infra/dev/docker/pgadmin.env dpage/pgadmin4
+
+.PHONY: localdbclean
+localdbclean:
+	docker rm -f pgadmin
+	docker rm -f psql
 
 .PHONY: clean
 clean:
@@ -45,4 +52,22 @@ pre-commit:
 tests:
 	export DOCKER_BUILDKIT=0
 	export COMPOSE_DOCKER_CLI_BUILD=0
-	docker compose -f docker-compose.test.yaml up --force-recreate -V --build --exit-code-from test-runner && echo "TEST IS 100% OK"
+	docker compose -f docker-compose.testrunner.yaml up --force-recreate -V --build --exit-code-from test_runner && echo "TEST IS 100% OK"
+
+.PHONY: dev_run
+dev_run:
+	export DOCKER_BUILDKIT=0
+	export COMPOSE_DOCKER_CLI_BUILD=0
+	docker compose -f docker-compose.dev.yaml up -d --force-recreate -V --build
+
+.PHONY: dev_stop
+dev_stop:
+	export DOCKER_BUILDKIT=0
+	export COMPOSE_DOCKER_CLI_BUILD=0
+	docker compose -f docker-compose.dev.yaml down
+
+.PHONY: monitoring
+monitoring:
+	export DOCKER_BUILDKIT=0
+	export COMPOSE_DOCKER_CLI_BUILD=0
+	docker compose -f docker-compose.monitoring.yaml up -V

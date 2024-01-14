@@ -2,7 +2,7 @@ from src.core.dto.auth.firebase import ProviderIdentity, TokenIdentity, UserIden
 from src.core.enum.auth.providers import AuthProviderEnum
 
 
-async def mock_firebase_user(id: str) -> UserIdentity:
+async def mock_get_user(id: str) -> UserIdentity:
     return UserIdentity(
         id="aboba_id",
         name="test",

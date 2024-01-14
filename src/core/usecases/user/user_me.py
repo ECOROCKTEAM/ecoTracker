@@ -41,16 +41,15 @@ class UserMeUsecase:
                 )
                 await uow.commit()
 
-            if not user.active:
-                raise UserIsNotActivateError(user_id=user_identity.id)
+        if not user.active:
+            raise UserIsNotActivateError(user_id=user_identity.id)
 
-            return Result(item=user)
+        return Result(item=user)
 
 
 class UserMeUsecaseDevelop:
-    def __init__(self, uow: IUnitOfWork, auth_provider: IAuthProviderRepository) -> None:
+    def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
-        self.auth_provider = auth_provider
 
     async def __call__(self, *, token: Any) -> Result:
         return Result(

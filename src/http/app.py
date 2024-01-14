@@ -24,15 +24,16 @@ async def lifespan(app: FastAPI):
 
 def create_app() -> FastAPI:
     app = FastAPI(lifespan=lifespan)
+
+    # Initial firebase
+    FirebaseApplicationSingleton(name=settings.FIREBASE_APP_NAME, secret_path=settings.FIREBASE_SECRET_PATH)
+
     app.dependency_overrides[get_uow_stub] = get_uow
     # print(F"APP ENV = {settings.APP_ENV.lower()}")
     if settings.APP_ENV.lower() == "prod":
         app.dependency_overrides[get_user_stub] = get_user_prod
     else:
         app.dependency_overrides[get_user_stub] = get_user_dev
-
-    # Initial firebase
-    FirebaseApplicationSingleton(name=settings.FIREBASE_APP_NAME, secret_path=settings.FIREBASE_SECRET_PATH)
 
     # Routers
     app.include_router(user_router)

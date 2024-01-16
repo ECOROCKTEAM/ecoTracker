@@ -49,7 +49,7 @@ def get_auth_provider_prod() -> IAuthProviderRepository:
 async def get_user_prod(
     token: Annotated[str, Depends(token_header)],
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],
-    auth_provider: Annotated[IAuthProviderRepository, Depends(get_auth_provider_prod)],
+    auth_provider: Annotated[IAuthProviderRepository, Depends(get_auth_provider_stub)],
 ) -> User:
     print(f"prod {token=}")
     # something do with token and get user id

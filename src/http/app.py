@@ -6,6 +6,8 @@ from src.application.auth.firebase import FirebaseApplicationSingleton
 from src.application.database.manager import db_manager
 from src.application.settings import settings
 from src.http.api.depends.deps import (
+    get_auth_provider_prod,
+    get_auth_provider_stub,
     get_uow,
     get_uow_stub,
     get_user_dev,
@@ -32,6 +34,7 @@ def create_app() -> FastAPI:
     # print(F"APP ENV = {settings.APP_ENV.lower()}")
     if settings.APP_ENV.lower() == "prod":
         app.dependency_overrides[get_user_stub] = get_user_prod
+        app.dependency_overrides[get_auth_provider_stub] = get_auth_provider_prod
     else:
         app.dependency_overrides[get_user_stub] = get_user_dev
 

@@ -28,7 +28,10 @@ def create_app() -> FastAPI:
     app = FastAPI(lifespan=lifespan)
 
     # Initial firebase
-    FirebaseApplicationSingleton(name=settings.FIREBASE_APP_NAME, secret_path=settings.FIREBASE_SECRET_PATH)
+    firebase_app = FirebaseApplicationSingleton(
+        name=settings.FIREBASE_APP_NAME, secret_path=settings.FIREBASE_SECRET_PATH
+    )
+    firebase_app.setup()
 
     app.dependency_overrides[get_uow_stub] = get_uow
     # print(F"APP ENV = {settings.APP_ENV.lower()}")

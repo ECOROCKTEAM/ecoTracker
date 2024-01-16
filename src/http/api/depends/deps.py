@@ -43,7 +43,6 @@ def get_auth_provider_prod() -> IAuthProviderRepository:
     firebase_app = FirebaseApplicationSingleton(
         name=settings.FIREBASE_APP_NAME, secret_path=settings.FIREBASE_SECRET_PATH
     )
-    firebase_app.setup()
     return AuthProviderRepository(firebase_app=firebase_app)
 
 

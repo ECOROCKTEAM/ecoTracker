@@ -28,7 +28,6 @@ class UserContactModel(Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("user.id"))
     contact_id: Mapped[str] = mapped_column(ForeignKey("contact.id"), unique=True)
     active: Mapped[bool] = mapped_column(default=True)
-    is_favorite: Mapped[bool] = mapped_column(default=False)
 
 
 class UserSubscriptionModel(Base):

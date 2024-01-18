@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Index
+from sqlalchemy import DateTime, ForeignKey, Index, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.application.database.base import Base
@@ -31,6 +31,7 @@ class UserContactModel(Base):
     is_favorite: Mapped[bool] = mapped_column(default=False)
 
     __table_args__ = (
+        UniqueConstraint("user_id", "contact_id", name="uix_user_contact"),
         Index(
             "indx_user_id_is_favorite", "user_id", "is_favorite", unique=True, postgresql_where=(is_favorite.is_(True))
         ),

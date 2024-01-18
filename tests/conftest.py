@@ -53,6 +53,8 @@ def firebase_app(request) -> IFirebaseApplication:
         return app
     if params.get("mock_verify_token"):
         app.verify_token = params.get("mock_verify_token")  # type: ignore
+        if params.get("mock_get_user"):
+            app.get_user = params.get("mock_get_user")  # type: ignore
     return app
 
 

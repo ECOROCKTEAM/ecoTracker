@@ -31,9 +31,13 @@ class UserContactModel(Base):
     is_favorite: Mapped[bool] = mapped_column(default=False)
 
     __table_args__ = (
-        UniqueConstraint("user_id", "contact_id", name="uix_user_contact"),
+        UniqueConstraint("user_id", "contact_id"),
         Index(
-            "indx_user_id_is_favorite", "user_id", "is_favorite", unique=True, postgresql_where=(is_favorite.is_(True))
+            "ix__uq_user_id_is_favorite",
+            "user_id",
+            "is_favorite",
+            unique=True,
+            postgresql_where=(is_favorite.is_(True)),
         ),
     )
 

@@ -52,7 +52,7 @@ async def test_fail_user_contacts_index_ck(session: AsyncSession):
     with pytest.raises(IntegrityError) as e:
         session.add_all([user_contact_1, user_contact_2])
         await session.commit()
-    print(f"test_fail_user_contacts_index_ck: {e.value=}")
+    assert "ix_uq_user_id_is_favorite" in str(e.value)
     await session.rollback()
 
     await session.delete(user)
@@ -79,8 +79,7 @@ async def test_fail_user_contacts_uniq_ck(session: AsyncSession):
     with pytest.raises(IntegrityError) as e:
         session.add_all([user_contact_1, user_contact_2])
         await session.commit()
-
-    print(f"test_fail_user_contacts_uniq_ck: {e.value=}")
+    assert "user_contact_user_id_contact_id_key" in str(e.value)
     await session.rollback()
 
     await session.delete(user)

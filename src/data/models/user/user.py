@@ -33,7 +33,7 @@ class UserContactModel(Base):
     __table_args__ = (
         UniqueConstraint("user_id", "contact_id"),
         Index(
-            "ix__uq_user_id_is_favorite",
+            "ix_uq_user_id_is_favorite",
             "user_id",
             "is_favorite",
             unique=True,

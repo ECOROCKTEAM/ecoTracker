@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey
+from sqlalchemy import DateTime, ForeignKey, Index, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.application.database.base import Base
@@ -28,6 +28,18 @@ class UserContactModel(Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("user.id"))
     contact_id: Mapped[str] = mapped_column(ForeignKey("contact.id"), unique=True)
     active: Mapped[bool] = mapped_column(default=True)
+    is_favorite: Mapped[bool] = mapped_column(default=False)
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "contact_id"),
+        Index(
+            "ix_uq_user_id_is_favorite",
+            "user_id",
+            "is_favorite",
+            unique=True,
+            postgresql_where=(is_favorite.is_(True)),
+        ),
+    )
 
 
 class UserSubscriptionModel(Base):

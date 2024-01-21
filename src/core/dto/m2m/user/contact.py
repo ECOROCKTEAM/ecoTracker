@@ -9,6 +9,7 @@ class ContactUserUpdateDTO:
     contact_id: int
     contact: ContactDTO | None = None
     active: bool | None = None
+    is_favorite: bool | None = None
 
 
 @dataclass
@@ -17,6 +18,7 @@ class ContactUserDTO:
     user_id: str
     contact: ContactDTO
     active: bool
+    is_favorite: bool
 
 
 @dataclass
@@ -25,3 +27,4 @@ class ContactUserCreateDTO:
     value: str
     type: ContactTypeEnum
     active: bool = True
+    is_favorite: bool = False

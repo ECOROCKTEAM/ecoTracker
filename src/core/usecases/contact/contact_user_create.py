@@ -4,7 +4,7 @@ from src.core.dto.m2m.user.contact import ContactUserCreateDTO, ContactUserDTO
 from src.core.dto.user.contact import ContactCreateDTO
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError
-from src.core.interfaces.repository.user.contact import IUserContactRepository
+from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
 @dataclass
@@ -13,18 +13,17 @@ class Result:
 
 
 class ContactUserCreateUsecase:
-    def __init__(self, repo: IUserContactRepository) -> None:
-        self.repo = repo
+    def __init__(self, uow: IUnitOfWork) -> None:
+        self.uow = uow
 
     async def __call__(self, *, user: User, obj: ContactCreateDTO) -> Result:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
 
-        contact = await self.repo.create(
-            obj=ContactUserCreateDTO(
-                user_id=user.id,
-                value=obj.value,
-                type=obj.type,
+        async with self.uow as uow:
+            contact_user = await uow.user_contact.create(
+                obj=ContactUserCreateDTO(user_id=user.id, value=obj.value, type=obj.type)
             )
-        )
-        return Result(item=contact)
+
+            await uow.commit()
+        return Result(item=contact_user)

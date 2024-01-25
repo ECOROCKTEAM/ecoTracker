@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from src.core.dto.m2m.user.contact import ContactUserDTO
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotActivateError
-from src.core.interfaces.repository.user.contact import IUserContactRepository
+from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
 @dataclass
@@ -12,12 +12,14 @@ class Result:
 
 
 class ContactUserGetUsecase:
-    def __init__(self, repo: IUserContactRepository) -> None:
-        self.repo = repo
+    def __init__(self, uow: IUnitOfWork) -> None:
+        self.uow = uow
 
-    async def __call__(self, *, user: User, contact_id: int) -> Result:
+    async def __call__(self, *, user: User, id: int) -> Result:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
 
-        contact = await self.repo.get(id=contact_id)
-        return Result(item=contact)
+        async with self.uow as uow:
+            contact_user = await uow.user_contact.get(user_id=user.id, contact_id=id)
+
+        return Result(item=contact_user)

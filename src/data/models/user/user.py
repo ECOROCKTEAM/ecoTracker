@@ -16,7 +16,6 @@ class UserModel(Base):
 
     id: Mapped[str] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(unique=True)
-    password: Mapped[str] = mapped_column()
     active: Mapped[bool] = mapped_column(default=True)
     language: Mapped[LanguageEnum] = mapped_column()
 

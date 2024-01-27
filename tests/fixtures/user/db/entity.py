@@ -11,7 +11,6 @@ def user_model_to_entity(model: UserModel) -> User:
     return User(
         id=model.id,
         username=model.username,
-        password=model.password,
         active=model.active,
         language=model.language,
         subscription="",  # type: ignore

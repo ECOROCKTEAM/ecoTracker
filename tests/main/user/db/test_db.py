@@ -11,7 +11,7 @@ from tests.fixtures.const import DEFAULT_TEST_LANGUAGE
 # pytest tests/main/user/db/test_db.py::test_user_contacts_ok -v -s
 @pytest.mark.asyncio
 async def test_user_contacts_ok(session: AsyncSession):
-    user = UserModel(id="Lana Del Rey", username="Roma", password="", active=True, language=DEFAULT_TEST_LANGUAGE)
+    user = UserModel(id="Lana Del Rey", username="Roma", active=True, language=DEFAULT_TEST_LANGUAGE)
     contact_1 = ContactModel(value="some@gmail.com", type=ContactTypeEnum.GMAIL)
 
     contact_2 = ContactModel(value="42", type=ContactTypeEnum.PHONE)
@@ -38,7 +38,7 @@ async def test_user_contacts_ok(session: AsyncSession):
 # pytest tests/main/user/db/test_db.py::test_fail_user_contacts_index_ck -v -s
 @pytest.mark.asyncio
 async def test_fail_user_contacts_index_ck(session: AsyncSession):
-    user = UserModel(id="Lana Del Rey", username="Roma", password="", active=True, language=DEFAULT_TEST_LANGUAGE)
+    user = UserModel(id="Lana Del Rey", username="Roma", active=True, language=DEFAULT_TEST_LANGUAGE)
     contact_1 = ContactModel(value="some@gmail.com", type=ContactTypeEnum.GMAIL)
     contact_2 = ContactModel(value="42", type=ContactTypeEnum.PHONE)
 
@@ -64,7 +64,7 @@ async def test_fail_user_contacts_index_ck(session: AsyncSession):
 # pytest tests/main/user/db/test_db.py::test_fail_user_contacts_uniq_ck -v -s
 @pytest.mark.asyncio
 async def test_fail_user_contacts_uniq_ck(session: AsyncSession):
-    user = UserModel(id="Lana Del Rey", username="Roma", password="", active=True, language=DEFAULT_TEST_LANGUAGE)
+    user = UserModel(id="Lana Del Rey", username="Roma", active=True, language=DEFAULT_TEST_LANGUAGE)
     contact_1 = ContactModel(value="some@gmail.com", type=ContactTypeEnum.GMAIL)
     contact_2 = ContactModel(value="42", type=ContactTypeEnum.PHONE)
 

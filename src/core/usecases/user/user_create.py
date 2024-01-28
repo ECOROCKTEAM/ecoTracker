@@ -23,7 +23,6 @@ class UserCreateUseCase:
         async with self.uow as uow:
             subscription = Subscription()
             user = await uow.user.create(user_obj=obj, sub_obj=subscription)
-            await uow.commit()
 
             _ = await uow.user_contact.create(
                 obj=ContactUserCreateDTO(

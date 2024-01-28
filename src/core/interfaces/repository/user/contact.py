@@ -30,6 +30,17 @@ class UserContactOrder:
 
 class IUserContactRepository(ABC):
     @abstractmethod
+    async def get_favorite(self, *, user_id: str) -> ContactUserDTO:
+        """Get user favorite contact
+
+        Args:
+            user_id (str): User identify
+
+        Returns:
+            ContactUserDTO: User contact object DTO
+        """
+
+    @abstractmethod
     async def delete(self, *, contact_id: int, user_id: str) -> int:
         """Delete user contact
 

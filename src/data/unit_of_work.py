@@ -25,6 +25,7 @@ from src.data.repository.score.group_score import GroupScoreRepository
 from src.data.repository.score.user_score import UserScoreRepository
 from src.data.repository.subscription import SubscriptionRepository
 from src.data.repository.user import UserRepository
+from src.data.repository.user_contacts import UserContactRepository
 from src.data.repository.user_subscription import UserSubscriptionRepository
 
 
@@ -119,6 +120,7 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self._user_subscription = UserSubscriptionRepository(self._session)
         self._subscription = SubscriptionRepository(self._session)
         self._user = UserRepository(self._session)
+        self._user_contact = UserContactRepository(self._session)
         return self
 
     async def __aexit__(self, *args):

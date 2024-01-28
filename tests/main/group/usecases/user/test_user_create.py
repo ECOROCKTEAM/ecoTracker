@@ -11,9 +11,7 @@ from tests.utils import get_random_str
 @pytest.mark.asyncio
 async def test_user_create(uow: IUnitOfWork):
     uc = UserCreateUseCase(uow=uow)
-    obj = UserCreateDTO(
-        id=get_random_str(), username=get_random_str(), password="", active=True, language=DEFAULT_TEST_LANGUAGE
-    )
+    obj = UserCreateDTO(id=get_random_str(), username=get_random_str(), active=True, language=DEFAULT_TEST_LANGUAGE)
     user_create = await uc(obj=obj)
     result = user_create.item
     assert isinstance(result, User)

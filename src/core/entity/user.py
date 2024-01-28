@@ -10,7 +10,6 @@ class User:
 
     id: str
     username: str
-    password: str
     active: bool
     subscription: Subscription
     language: LanguageEnum
@@ -25,7 +24,6 @@ class User:
 class UserCreateDTO:
     id: str
     username: str
-    password: str
     active: bool
     language: LanguageEnum
 
@@ -34,6 +32,5 @@ class UserCreateDTO:
 class UserUpdateDTO:
     user_id: str  # username reference
     username: str | None = None
-    password: str | None = None
     active: bool | None = None
     language: LanguageEnum | None = None

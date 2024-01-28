@@ -33,7 +33,6 @@ class UserMeUsecase:
                     user_obj=UserCreateDTO(
                         id=user_identity.id,
                         username=user_identity.name,
-                        password="",
                         active=True,
                         language=LanguageEnum.EN,
                     ),
@@ -56,7 +55,6 @@ class UserMeUsecaseDevelop:
             item=User(
                 id="id_1337_fake",
                 username="Shrek Shrekovi4 (dev)",
-                password="was removed",
                 active=True,
                 subscription=Subscription(),
                 language=LanguageEnum.EN,

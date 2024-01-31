@@ -6,6 +6,9 @@ from src.core.interfaces.repository.challenges.occupancy import (
 )
 from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.interfaces.repository.group.group import IRepositoryGroup
+from src.core.interfaces.repository.notifications.notifications import (
+    INotificationRepository,
+)
 from src.core.interfaces.repository.score.group import IRepositoryGroupScore
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
 from src.core.interfaces.repository.subscription.subscription import (
@@ -54,6 +57,11 @@ class IUnitOfWork(ABC):
     @property
     @abstractmethod
     def task(self) -> IRepositoryTask:
+        ...
+
+    @property
+    @abstractmethod
+    def notifications(self) -> INotificationRepository:
         ...
 
     @property

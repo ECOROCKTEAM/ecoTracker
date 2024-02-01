@@ -148,9 +148,7 @@ class UserLoader(EntityLoaderBase[UserModel]):
         active: bool = True,
         language: LanguageEnum = LanguageEnum.EN,
     ) -> UserModel:
-        model = UserModel(
-            id=id or uuid(), username=username or uuid(), password=uuid(), active=active, language=language
-        )
+        model = UserModel(id=id or uuid(), username=username or uuid(), active=active, language=language)
         return await self._add(model)
 
     async def get(

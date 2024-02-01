@@ -17,7 +17,6 @@ def model_to_dto(model: UserModel) -> User:
     return User(
         id=model.id,
         username=model.username,
-        password=model.password,
         subscription=Subscription(),
         active=model.active,
         language=model.language,

@@ -11,7 +11,6 @@ def fxe_user_default() -> User:
         id=DEFAULT_TEST_USECASE_USER_ID,
         active=True,
         username=get_random_str(),
-        password=get_random_str(),
         language=DEFAULT_TEST_LANGUAGE,
         subscription="",  # type: ignore
     )
@@ -29,7 +28,6 @@ def fxe_user_not_premium() -> User:
         id=DEFAULT_TEST_USECASE_USER_ID,
         active=True,
         username=get_random_str(),
-        password=get_random_str(),
         language=DEFAULT_TEST_LANGUAGE,
         subscription="",  # type: ignore
     )

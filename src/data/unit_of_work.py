@@ -11,6 +11,7 @@ from src.core.interfaces.repository.score.user import IRepositoryUserScore
 from src.core.interfaces.repository.subscription.subscription import (
     ISubscriptionRepository,
 )
+from src.core.interfaces.repository.user.contact import IUserContactRepository
 from src.core.interfaces.repository.user.subscription import IUserSubscriptionRepository
 from src.core.interfaces.repository.user.user import IUserRepository
 from src.core.interfaces.unit_of_work import IUnitOfWork
@@ -24,6 +25,7 @@ from src.data.repository.score.group_score import GroupScoreRepository
 from src.data.repository.score.user_score import UserScoreRepository
 from src.data.repository.subscription import SubscriptionRepository
 from src.data.repository.user import UserRepository
+from src.data.repository.user_contacts import UserContactRepository
 from src.data.repository.user_subscription import UserSubscriptionRepository
 
 
@@ -39,6 +41,13 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self._user_subscription: IUserSubscriptionRepository | None = None
         self._user: IUserRepository | None = None
         self._subscription: ISubscriptionRepository | None = None
+        self._user_contact: IUserContactRepository | None = None
+
+    @property
+    def user_contact(self) -> IUserContactRepository:
+        if self._user_contact:
+            return self._user_contact
+        raise ValueError("UoW not in context")
 
     @property
     def user(self) -> IUserRepository:
@@ -111,6 +120,7 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self._user_subscription = UserSubscriptionRepository(self._session)
         self._subscription = SubscriptionRepository(self._session)
         self._user = UserRepository(self._session)
+        self._user_contact = UserContactRepository(self._session)
         return self
 
     async def __aexit__(self, *args):

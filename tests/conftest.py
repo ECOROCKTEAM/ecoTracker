@@ -60,9 +60,9 @@ def firebase_app(request) -> IFirebaseApplication:
     return app
 
 
-@pytest.fixture(scope="function")
-def auth_provider_repository(firebase_app: IFirebaseApplication) -> IAuthProviderRepository:
-    return AuthProviderRepository(firebase_app=firebase_app)
+# @pytest.fixture(scope="function")
+# def repo_auth(firebase_app: IFirebaseApplication) -> IAuthProviderRepository:
+#     return AuthProviderRepository(firebase_app=firebase_app)
 
 
 @pytest_asyncio.fixture(scope="package")

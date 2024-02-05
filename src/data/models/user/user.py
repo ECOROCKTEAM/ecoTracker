@@ -8,6 +8,7 @@ from src.application.database.base import Base
 from src.core.enum.group.role import GroupRoleEnum
 from src.core.enum.language import LanguageEnum
 from src.core.enum.score.operation import ScoreOperationEnum
+from src.core.enum.user.contact import ContactTypeEnum
 
 
 @dataclass
@@ -25,12 +26,13 @@ class UserContactModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[str] = mapped_column(ForeignKey("user.id"))
-    contact_id: Mapped[str] = mapped_column(ForeignKey("contact.id"), unique=True)
+    value: Mapped[str]
+    type: Mapped[ContactTypeEnum] = mapped_column()
     active: Mapped[bool] = mapped_column(default=True)
     is_favorite: Mapped[bool] = mapped_column(default=False)
 
     __table_args__ = (
-        UniqueConstraint("user_id", "contact_id"),
+        UniqueConstraint("user_id", "value", "type", name="uq_user_contact_user_id_values_types"),
         Index(
             "ix_uq_user_id_is_favorite",
             "user_id",

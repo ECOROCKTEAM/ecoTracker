@@ -20,6 +20,6 @@ class ContactUserGetUsecase:
             raise UserIsNotActivateError(user_id=user.id)
 
         async with self.uow as uow:
-            contact_user = await uow.user_contact.get(user_id=user.id, contact_id=id)
+            contact_user = await uow.user_contact.get(id=id)
 
         return Result(item=contact_user)

@@ -1,11 +1,11 @@
 import pytest
-from sqlalchemy import and_, update
+from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.dto.m2m.user.contact import ContactUserDTO
 from src.core.enum.user.contact import ContactTypeEnum
 from src.core.exception.base import EntityNotFound
-from src.data.models.user.contact import ContactModel
 from src.data.models.user.user import UserContactModel, UserModel
 from tests.fixtures.const import DEFAULT_TEST_LANGUAGE
 
@@ -14,10 +14,11 @@ from tests.fixtures.const import DEFAULT_TEST_LANGUAGE
 @pytest.mark.asyncio
 async def test_user_create_with_contact(session: AsyncSession):
     user = UserModel(id="Lana Del Rey", username="Roma", active=True, language=DEFAULT_TEST_LANGUAGE)
-    contact = ContactModel(value=user.username, type=ContactTypeEnum.GMAIL)
-    session.add_all([user, contact])
+    session.add(user)
     await session.commit()
-    user_contact = UserContactModel(user_id=user.id, contact_id=contact.id, active=True, is_favorite=True)
+    user_contact = UserContactModel(
+        user_id=user.id, value="test@gmail.com", type=ContactTypeEnum.GMAIL, active=True, is_favorite=True
+    )
     session.add(user_contact)
     await session.commit()
 
@@ -25,7 +26,6 @@ async def test_user_create_with_contact(session: AsyncSession):
     await session.commit()
 
     await session.delete(user)
-    await session.delete(contact)
     await session.commit()
 
 
@@ -33,21 +33,22 @@ async def test_user_create_with_contact(session: AsyncSession):
 @pytest.mark.asyncio
 async def test_user_contact_set_favorite(session: AsyncSession):
     user = UserModel(id="Lana Del Rey", username="Roma", active=True, language=DEFAULT_TEST_LANGUAGE)
-    contact_1 = ContactModel(value="some@gmail.com", type=ContactTypeEnum.GMAIL)
 
-    contact_2 = ContactModel(value="42", type=ContactTypeEnum.PHONE)
-    session.add_all([user, contact_1, contact_2])
+    session.add(user)
     await session.flush()
-
-    user_contact_1 = UserContactModel(user_id=user.id, contact_id=contact_1.id, active=True, is_favorite=True)
-    user_contact_2 = UserContactModel(user_id=user.id, contact_id=contact_2.id, active=True, is_favorite=False)
+    user_contact_1 = UserContactModel(
+        user_id=user.id, value="test@gmail.com", type=ContactTypeEnum.GMAIL, active=True, is_favorite=True
+    )
+    user_contact_2 = UserContactModel(
+        user_id=user.id, value="+88005553535", type=ContactTypeEnum.PHONE, active=True, is_favorite=False
+    )
 
     session.add_all([user_contact_1, user_contact_2])
     await session.commit()
 
     stmt_1 = (
         update(UserContactModel)
-        .where(and_(UserContactModel.user_id == user.id, UserContactModel.contact_id == user_contact_1.id))
+        .where(UserContactModel.id == user_contact_1.id)
         .values(is_favorite=False)
         .returning(UserContactModel)
     )
@@ -56,7 +57,7 @@ async def test_user_contact_set_favorite(session: AsyncSession):
         raise EntityNotFound(msg="")
     stmt_2 = (
         update(UserContactModel)
-        .where(and_(UserContactModel.user_id == user.id, UserContactModel.contact_id == user_contact_2.id))
+        .where(UserContactModel.id == user_contact_2.id)
         .values(is_favorite=True)
         .returning(UserContactModel)
     )
@@ -71,8 +72,6 @@ async def test_user_contact_set_favorite(session: AsyncSession):
     await session.commit()
 
     await session.delete(user)
-    await session.delete(contact_1)
-    await session.delete(contact_2)
     await session.commit()
 
 
@@ -80,15 +79,15 @@ async def test_user_contact_set_favorite(session: AsyncSession):
 @pytest.mark.asyncio
 async def test_user_contacts_ok(session: AsyncSession):
     user = UserModel(id="Lana Del Rey", username="Roma", active=True, language=DEFAULT_TEST_LANGUAGE)
-    contact_1 = ContactModel(value="some@gmail.com", type=ContactTypeEnum.GMAIL)
-
-    contact_2 = ContactModel(value="42", type=ContactTypeEnum.PHONE)
-
-    session.add_all([user, contact_1, contact_2])
+    session.add(user)
     await session.flush()
 
-    user_contact_1 = UserContactModel(user_id=user.id, contact_id=contact_1.id, active=True, is_favorite=True)
-    user_contact_2 = UserContactModel(user_id=user.id, contact_id=contact_2.id, active=True, is_favorite=False)
+    user_contact_1 = UserContactModel(
+        user_id=user.id, value="test@gmail.com", type=ContactTypeEnum.GMAIL, active=True, is_favorite=True
+    )
+    user_contact_2 = UserContactModel(
+        user_id=user.id, value="+88005553535", type=ContactTypeEnum.PHONE, active=True, is_favorite=False
+    )
 
     session.add_all([user_contact_1, user_contact_2])
     await session.commit()
@@ -98,8 +97,6 @@ async def test_user_contacts_ok(session: AsyncSession):
     await session.commit()
 
     await session.delete(user)
-    await session.delete(contact_1)
-    await session.delete(contact_2)
     await session.commit()
 
 
@@ -107,14 +104,15 @@ async def test_user_contacts_ok(session: AsyncSession):
 @pytest.mark.asyncio
 async def test_fail_user_contacts_index_ck(session: AsyncSession):
     user = UserModel(id="Lana Del Rey", username="Roma", active=True, language=DEFAULT_TEST_LANGUAGE)
-    contact_1 = ContactModel(value="some@gmail.com", type=ContactTypeEnum.GMAIL)
-    contact_2 = ContactModel(value="42", type=ContactTypeEnum.PHONE)
-
-    session.add_all([user, contact_1, contact_2])
+    session.add(user)
     await session.flush()
 
-    user_contact_1 = UserContactModel(user_id=user.id, contact_id=contact_1.id, active=True, is_favorite=True)
-    user_contact_2 = UserContactModel(user_id=user.id, contact_id=contact_2.id, active=True, is_favorite=True)
+    user_contact_1 = UserContactModel(
+        user_id=user.id, value="test@gmail.com", type=ContactTypeEnum.GMAIL, active=True, is_favorite=True
+    )
+    user_contact_2 = UserContactModel(
+        user_id=user.id, value="+88005553535", type=ContactTypeEnum.PHONE, active=True, is_favorite=True
+    )
     await session.commit()
 
     with pytest.raises(IntegrityError) as e:
@@ -124,8 +122,6 @@ async def test_fail_user_contacts_index_ck(session: AsyncSession):
     await session.rollback()
 
     await session.delete(user)
-    await session.delete(contact_1)
-    await session.delete(contact_2)
     await session.commit()
 
 
@@ -133,24 +129,20 @@ async def test_fail_user_contacts_index_ck(session: AsyncSession):
 @pytest.mark.asyncio
 async def test_fail_user_contacts_uniq_ck(session: AsyncSession):
     user = UserModel(id="Lana Del Rey", username="Roma", active=True, language=DEFAULT_TEST_LANGUAGE)
-    contact_1 = ContactModel(value="some@gmail.com", type=ContactTypeEnum.GMAIL)
-    contact_2 = ContactModel(value="42", type=ContactTypeEnum.PHONE)
-
-    session.add_all([user, contact_1, contact_2])
-    await session.flush()
-
-    user_contact_1 = UserContactModel(user_id=user.id, contact_id=contact_1.id, active=True, is_favorite=True)
-    user_contact_2 = UserContactModel(user_id=user.id, contact_id=contact_1.id, active=True, is_favorite=False)
-
+    session.add(user)
     await session.commit()
 
+    user_contact_1 = UserContactModel(
+        user_id=user.id, value="test@gmail.com", type=ContactTypeEnum.GMAIL, active=True, is_favorite=True
+    )
+    user_contact_2 = UserContactModel(
+        user_id=user.id, value="test@gmail.com", type=ContactTypeEnum.GMAIL, active=True, is_favorite=False
+    )
     with pytest.raises(IntegrityError) as e:
         session.add_all([user_contact_1, user_contact_2])
         await session.commit()
-    assert "user_contact_user_id_contact_id_key" in str(e.value)
+    assert "uq_user_contact_user_id_values_types" in str(e.value)
     await session.rollback()
 
     await session.delete(user)
-    await session.delete(contact_1)
-    await session.delete(contact_2)
     await session.commit()

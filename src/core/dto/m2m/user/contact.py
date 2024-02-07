@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 
-from src.core.dto.user.contact import ContactDTO
 from src.core.enum.user.contact import ContactTypeEnum
 
 
 @dataclass
 class ContactUserUpdateDTO:
-    contact_id: int
-    contact: ContactDTO | None = None
+    id: int
+    value: str | None = None
+    type: ContactTypeEnum | None = None
     active: bool | None = None
 
 
@@ -15,14 +15,14 @@ class ContactUserUpdateDTO:
 class ContactUserDTO:
     id: int
     user_id: str
-    contact: ContactDTO
+    value: str
+    type: ContactTypeEnum
     active: bool
     is_favorite: bool
 
 
 @dataclass
 class ContactUserCreateDTO:
-    user_id: str
     value: str
     type: ContactTypeEnum
     active: bool = True

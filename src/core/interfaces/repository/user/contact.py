@@ -34,54 +34,52 @@ class IUserContactRepository(ABC):
         """Get user favorite contact
 
         Args:
-            user_id (str): User identify
+            user_id (str): user identify
 
         Returns:
             ContactUserDTO: User contact object DTO
         """
 
     @abstractmethod
-    async def delete(self, *, contact_id: int, user_id: str) -> int:
+    async def delete(self, *, id: int) -> int:
         """Delete user contact
 
         Args:
-            contact_id (int): Contact identify
-            user_id (str): User identify
+            id (int): User contact identify
 
         Returns:
-            int: Deleted contact identify
+            int: Deleted user contact identify
         """
 
     @abstractmethod
-    async def get(self, *, user_id: str, contact_id: int) -> ContactUserDTO:
-        """Get one user contact object
+    async def get(self, *, id: int) -> ContactUserDTO:
+        """Get user contact object
 
         Args:
-            user_id (str): User identify
-            contact_id (int): Contact identify
+            id (int): User contact identify
 
         Returns:
             ContactUserDTO: User contact object DTO
         """
 
     @abstractmethod
-    async def set_favorite(self, *, user_id: str, contact_id: int, is_favorite: bool) -> ContactUserDTO:
+    async def set_favorite(self, *, id: int, is_favorite: bool) -> ContactUserDTO:
         """Set contact as favorite
 
         Args:
-            user_id (str): User identify
-            contact_id (int): Contact identify
-            is_favorite (bool): Set is favorite to user contact value
+            id (int): User contact identify
+            is_favorite (bool): Set as favorite/unfavorite to user contact value
 
         Returns:
             ContactUserDTO: ContactUserDTO entity
         """
 
     @abstractmethod
-    async def create(self, *, obj: ContactUserCreateDTO) -> ContactUserDTO:
+    async def create(self, *, user_id: str, obj: ContactUserCreateDTO) -> ContactUserDTO:
         """Create user contact
 
         Args:
+            user_id (str): user identify
             obj (ContactUserCreateDTO): DTO for create user contact object
 
         Returns:
@@ -89,17 +87,14 @@ class IUserContactRepository(ABC):
         """
 
     @abstractmethod
-    async def update(self, *, user_id: str, obj: ContactUserUpdateDTO) -> ContactUserDTO:
+    async def update(self, *, obj: ContactUserUpdateDTO) -> ContactUserDTO:
         """Update user contact
 
         Args:
-            user_id (str): User identify
             obj (ContactUserUpdateDTO): DTO for update
-        Args:
-            contact_id: int of user contact object
 
         Returns:
-            int: id of deleted contact
+            ContactUserDTO: DTO of user contact object
         """
 
     @abstractmethod
@@ -107,9 +102,9 @@ class IUserContactRepository(ABC):
         self,
         *,
         user_id: str,
-        filter_obj: UserContactFilter | None = None,
-        sorting_obj: UserContactSorting | None = None,
-        order_obj: UserContactOrder | None = None,
+        filter_obj: UserContactFilter,
+        sorting_obj: UserContactSorting,
+        order_obj: UserContactOrder,
     ) -> list[ContactUserDTO]:
         """User contact list
 

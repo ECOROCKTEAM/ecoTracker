@@ -24,9 +24,10 @@ class UserCreateUseCase:
             user = await uow.user.create(obj=obj)
 
             _ = await uow.user_contact.create(
+                user_id=user.id,
                 obj=ContactUserCreateDTO(
-                    user_id=user.id, value=user.username, type=ContactTypeEnum.GMAIL, is_favorite=True, active=True
-                )
+                    value=user.username, type=ContactTypeEnum.GMAIL, is_favorite=True, active=True
+                ),
             )
 
             await uow.commit()

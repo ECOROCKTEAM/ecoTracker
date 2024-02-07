@@ -32,8 +32,8 @@ class ContactUserListUsecase:
             raise UserIsNotActivateError(user_id=user.id)
 
         async with self.uow as uow:
-            contact = await uow.user_contact.list(
+            user_contacts = await uow.user_contact.list(
                 user_id=user.id, filter_obj=filter_obj, sorting_obj=sorting_obj, order_obj=order_obj
             )
 
-        return Result(items=contact)
+        return Result(items=user_contacts)

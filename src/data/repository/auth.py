@@ -9,7 +9,6 @@ class AuthProviderRepository(IAuthProviderRepository):
         self._fb_app = firebase_app
 
     async def get_user_by_token(self, token: str, check_revoked: bool = True) -> UserIdentity:
-        print("REAL AUTH")
         try:
             token_identity = await self._fb_app.verify_token(token=token, check_revoked=check_revoked)
         except Exception as e:

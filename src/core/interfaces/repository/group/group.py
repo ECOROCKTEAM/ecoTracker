@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from src.core.dto.group.group import GroupCreateDTO, GroupUpdateDTO
 from src.core.dto.group.invite import GroupInviteDTO, GroupInviteUpdateDTO
@@ -21,7 +21,7 @@ class GroupFilter:
 
 @dataclass
 class GroupUserFilter:
-    role_list: list[GroupRoleEnum] | None = field(default_factory=list)
+    role__in: list[GroupRoleEnum] | None = None
     user_id__in: list[str] | None = None
 
 

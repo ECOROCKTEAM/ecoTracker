@@ -55,7 +55,7 @@ class RepositoryOccupancyCategory(IRepositoryOccupancyCategory):
             )
             oc_translate = await self.db_context.scalar(oc_default_lang)
             if oc_translate is None:
-                raise TranslateNotFound(msg=f"OccupancyCategory={oc} with lang={lang} not found")
+                raise TranslateNotFound(msg=f"OccupancyCategory={oc.id} with lang={lang.name} not found")
         return occupancy_model_to_entity(model=oc, translated_model=oc_translate)
 
     async def lst(self, *, lang: LanguageEnum) -> list[OccupancyCategory]:
@@ -82,7 +82,7 @@ class RepositoryOccupancyCategory(IRepositoryOccupancyCategory):
                 )
                 result = await self.db_context.scalar(oc_default_lang)
                 if not result:
-                    raise TranslateNotFound(msg=f"{oc=}, {oc_translate=}")
+                    raise TranslateNotFound(msg=f"OccupancyCategory translate for lang={lang.name} not found")
                 holder[oc.id]["translate"] = result
             else:
                 holder[oc.id]["translate"] = oc_translate

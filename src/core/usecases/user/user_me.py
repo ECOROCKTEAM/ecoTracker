@@ -27,16 +27,16 @@ class UserMeUsecase:
             except Exception as e:
                 raise AuthError(msg=f"User not found by token: {e}") from e
             try:
-                user = await uow.user.get(user_id=user_identity.id)
+                user = await uow.user.get(id=user_identity.id)
             except EntityNotFound:
                 user = await uow.user.create(
-                    user_obj=UserCreateDTO(
+                    obj=UserCreateDTO(
                         id=user_identity.id,
                         username=user_identity.name,
                         active=True,
                         language=LanguageEnum.EN,
                     ),
-                    sub_obj=Subscription(),
+                    # sub_obj=Subscription(),
                 )
                 await uow.commit()
 

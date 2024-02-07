@@ -30,6 +30,10 @@ class EntityNotCreated(DomainError):
     """"""
 
 
+class EntityNotDeleted(DomainError):
+    """"""
+
+
 class EntityAlreadyUsage(DomainError):
     """"""
 

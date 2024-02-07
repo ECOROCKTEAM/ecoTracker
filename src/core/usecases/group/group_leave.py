@@ -21,7 +21,7 @@ class GroupLeaveUsecase:
             group_user = await uow.group.user_get(group_id=group_id, user_id=user.id)
             if group_user.role == GroupRoleEnum.SUPERUSER:
                 superuser_list = await uow.group.user_list(
-                    id=group_id, filter_obj=GroupUserFilter(role_list=[GroupRoleEnum.SUPERUSER])
+                    id=group_id, filter_obj=GroupUserFilter(role__in=[GroupRoleEnum.SUPERUSER])
                 )
                 if len(superuser_list) == 1:
                     raise LogicError(msg=f"{user.id=}, {group_id=}")

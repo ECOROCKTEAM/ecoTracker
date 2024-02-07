@@ -9,7 +9,6 @@ class ContactUserUpdateDTO:
     contact_id: int
     contact: ContactDTO | None = None
     active: bool | None = None
-    is_favorite: bool | None = None
 
 
 @dataclass

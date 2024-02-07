@@ -11,15 +11,15 @@ class Result:
     item: ContactUserDTO
 
 
-class ContactUserGetUsecase:
+class ContactUserGetFavoriteUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def __call__(self, *, user: User, id: int) -> Result:
+    async def __call__(self, user: User) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(user_id=user.id)
+            raise UserIsNotActivateError(msg="")
 
         async with self.uow as uow:
-            contact_user = await uow.user_contact.get(user_id=user.id, contact_id=id)
+            contact_user = await uow.user_contact.get_favorite(user_id=user.id)
 
         return Result(item=contact_user)

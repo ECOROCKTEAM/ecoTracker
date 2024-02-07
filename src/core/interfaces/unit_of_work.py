@@ -11,11 +11,17 @@ from src.core.interfaces.repository.score.user import IRepositoryUserScore
 from src.core.interfaces.repository.subscription.subscription import (
     ISubscriptionRepository,
 )
+from src.core.interfaces.repository.user.contact import IUserContactRepository
 from src.core.interfaces.repository.user.subscription import IUserSubscriptionRepository
 from src.core.interfaces.repository.user.user import IUserRepository
 
 
 class IUnitOfWork(ABC):
+    @property
+    @abstractmethod
+    def user_contact(self) -> IUserContactRepository:
+        ...
+
     @property
     @abstractmethod
     def user_subscription(self) -> IUserSubscriptionRepository:

@@ -16,7 +16,12 @@ from src.core.dto.m2m.user.group import (
 from src.core.dto.mock import MockObj
 from src.core.entity.group import Group
 from src.core.enum.group.role import GroupRoleEnum
-from src.core.exception.base import EntityNotChange, EntityNotCreated, EntityNotFound
+from src.core.exception.base import (
+    EntityNotChange,
+    EntityNotCreated,
+    EntityNotDeleted,
+    EntityNotFound,
+)
 from src.core.interfaces.repository.group.group import (
     GroupFilter,
     GroupUserFilter,
@@ -128,8 +133,8 @@ class RepositoryGroup(IRepositoryGroup):
     async def user_list(self, *, id: int, filter_obj: GroupUserFilter) -> list[UserGroupDTO]:
         stmt = select(UserGroupModel).join(GroupModel)
         where_clause = [GroupModel.id == id]
-        if filter_obj.role_list:
-            where_clause.append(UserGroupModel.role.in_(filter_obj.role_list))
+        if filter_obj.role__in:
+            where_clause.append(UserGroupModel.role.in_(filter_obj.role__in))
         if filter_obj.user_id__in is not None:
             where_clause.append(UserGroupModel.user_id.in_(filter_obj.user_id__in))
         stmt = stmt.where(*where_clause)
@@ -155,7 +160,10 @@ class RepositoryGroup(IRepositoryGroup):
             .returning(UserGroupModel.group_id)
         )
         res = await self.db_context.scalar(stmt)
-        return bool(res)
+        res_bool = bool(res)
+        if not res_bool:
+            raise EntityNotDeleted(msg="")
+        return res_bool
 
     async def code_set(self, *, id: int, obj: GroupInviteUpdateDTO) -> GroupInviteDTO:
         stmt = (

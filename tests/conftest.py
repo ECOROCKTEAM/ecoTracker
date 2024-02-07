@@ -18,6 +18,7 @@ from src.core.interfaces.repository.auth import IAuthProviderRepository
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.data.repository.auth import AuthProviderRepository
 from src.data.unit_of_work import SqlAlchemyUnitOfWork
+from tests.dataloader import dataloader
 
 fake = faker.Faker()
 
@@ -34,12 +35,13 @@ def get_request_param(request, wait_type):
 
 @pytest.fixture(scope="session")
 def event_loop():
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     yield loop
 
-    pending = asyncio.tasks.all_tasks(loop)
-    loop.run_until_complete(asyncio.gather(*pending))
-    loop.run_until_complete(asyncio.sleep(1))
+    # pending = asyncio.tasks.all_tasks(loop)
+    # loop.run_until_complete(asyncio.gather(*pending))
+    # loop.run_until_complete(asyncio.sleep(1))
 
     loop.close()
 
@@ -58,15 +60,15 @@ def firebase_app(request) -> IFirebaseApplication:
     return app
 
 
-@pytest.fixture(scope="function")
-def auth_provider_repository(firebase_app: IFirebaseApplication) -> IAuthProviderRepository:
-    return AuthProviderRepository(firebase_app=firebase_app)
+# @pytest.fixture(scope="function")
+# def repo_auth(firebase_app: IFirebaseApplication) -> IAuthProviderRepository:
+#     return AuthProviderRepository(firebase_app=firebase_app)
 
 
 @pytest_asyncio.fixture(scope="package")
 @pytest.mark.asyncio
 async def pool() -> AsyncGenerator[async_sessionmaker[AsyncSession], None]:
-    print(settings.DATABASE_URL, flush=True)
+    # print(settings.DATABASE_URL, flush=True)
     engine = create_async_engine(url=settings.DATABASE_URL)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -85,3 +87,9 @@ async def session(pool: async_sessionmaker[AsyncSession]) -> AsyncGenerator[Asyn
 @pytest_asyncio.fixture(scope="function")
 async def uow(pool: async_sessionmaker[AsyncSession]) -> AsyncGenerator[IUnitOfWork, None]:
     yield SqlAlchemyUnitOfWork(pool)
+
+
+@pytest_asyncio.fixture(scope="function")
+async def dl(session: AsyncSession):
+    async with dataloader(session=session) as dl:
+        yield dl

@@ -19,9 +19,9 @@ from tests.fixtures.user.db.model import fxm_user_default_3
     [{"mock_verify_token": mock_verify_token_random_user_id, "mock_get_user": mock_get_user}],
     indirect=["firebase_app"],
 )
-async def test_user_auto_register_ok(uow: IUnitOfWork, auth_provider_repository: IAuthProviderRepository, session):
+async def test_user_auto_register_ok(uow: IUnitOfWork, repo_auth: IAuthProviderRepository, session):
     token = "aboba"
-    uc = UserMeUsecase(uow=uow, auth_provider=auth_provider_repository)
+    uc = UserMeUsecase(uow=uow, auth_provider=repo_auth)
     user = await uc(token=token)
     result = user.item
     assert result.id == "aboba_id"
@@ -42,11 +42,11 @@ async def test_user_auto_register_ok(uow: IUnitOfWork, auth_provider_repository:
 @pytest.mark.asyncio
 async def test_user_already_exist(
     uow: IUnitOfWork,
-    auth_provider_repository: IAuthProviderRepository,
+    repo_auth: IAuthProviderRepository,
     fxm_user_default_3,
 ):
     token = "aboba"
-    uc = UserMeUsecase(uow=uow, auth_provider=auth_provider_repository)
+    uc = UserMeUsecase(uow=uow, auth_provider=repo_auth)
     user = await uc(token=token)
     result = user.item
     assert result.id == "aboba_id"

@@ -31,7 +31,9 @@ class ContactUserSetFaforiteUsecase:
             if not user_contact.active:
                 raise ContactIsNotActiveError(msg=f"{id=}")
 
-            _ = await uow.user_contact.set_favorite(id=id, is_favorite=False)
+            _ = await uow.user_contact.set_favorite(id=current_favorite_user_contact.id, is_favorite=False)
+
+            await uow.commit()
 
             new_favorite_user_contact = await uow.user_contact.set_favorite(id=id, is_favorite=True)
 

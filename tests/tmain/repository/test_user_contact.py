@@ -173,10 +173,7 @@ async def test_user_contact_delete_fail(dl: dataloader, user_contact_repo: IUser
         await user_contact_repo.delete(id=id)
     assert f"User contact {id=} not found" in str(error.value)
 
-
-# pytest tests/tmain/repository/test_user_contact.py::test_user_contact_set_favorite_ok -v -s
-@pytest.mark.asyncio
-async def test_user_contact_set_favorite_ok(dl: dataloader, user_contact_repo: IUserContactRepository):
+    # pytest tests/tmain/repository/test_user_contpytest tests/tmain/repository/test_user_contact.py::test_user_contact_delete_fail -v -s: dataloader, user_contact_repo: IUserContactRepository):
     user = await dl.user_loader.create()
     user_contact_model = await dl.user_contact_loader.create(user_id=user.id, is_favorite=False)
 

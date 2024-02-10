@@ -45,7 +45,7 @@ class UserContactRepository(IUserContactRepository):
         return model_to_dto(model=res)
 
     async def get_favorite(self, *, user_id: str) -> ContactUserDTO:
-        stmt = select(UserContactModel).where(UserContactModel.user_id == user_id, UserContactModel.is_favorite.is_True)
+        stmt = select(UserContactModel).where(UserContactModel.user_id == user_id, UserContactModel.is_favorite)
         res = await self.db_context.scalar(stmt)
         if not res:
             raise EntityNotFound(msg="")
@@ -78,9 +78,9 @@ class UserContactRepository(IUserContactRepository):
             error.orig = cast(BaseException, error.orig)  # just for types
             if isinstance(error.orig.__cause__, UniqueViolationError):
                 raise EntityNotCreated(msg="Uniq failed") from error
-            raise EntityNotCreated(msg="Uniq failed") from error
+            raise EntityNotCreated(msg="") from error
         if not res:
-            raise EntityNotCreated(msg="Uniq failed")
+            raise EntityNotFound(msg="")
         return model_to_dto(model=res)
 
     async def update(self, *, obj: ContactUserUpdateDTO) -> ContactUserDTO:
@@ -96,9 +96,9 @@ class UserContactRepository(IUserContactRepository):
             error.orig = cast(BaseException, error.orig)  # just for types
             if isinstance(error.orig.__cause__, UniqueViolationError):
                 raise EntityNotChange(msg="Uniq failed") from error
-            raise EntityNotChange(msg="Uniq failed") from error
+            raise EntityNotChange(msg="") from error
         if not res:
-            raise EntityNotFound(msg="Entity not found")
+            raise EntityNotFound(msg="")
         return model_to_dto(model=res)
 
     async def list(
@@ -120,5 +120,5 @@ class UserContactRepository(IUserContactRepository):
         stmt = stmt.where(*where_clause)
         res = await self.db_context.scalars(stmt)
         if not res:
-            raise EntityNotFound(msg="Entity not found")
+            raise EntityNotFound(msg="")
         return [model_to_dto(item) for item in res]

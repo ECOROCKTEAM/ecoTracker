@@ -14,6 +14,8 @@ class UserRatingDTO:
 class UserScoreDTO:
     user_id: str
     value: int
+    task_totaly_completed: int
+    mission_totaly_completed: int
 
 
 @dataclass
@@ -21,6 +23,8 @@ class OperationWithScoreUserDTO:
     user_id: str
     value: int
     operation: ScoreOperationEnum
+    task_totaly_completed: int | None = 0
+    mission_totaly_completed: int | None = 0
 
 
 @dataclass

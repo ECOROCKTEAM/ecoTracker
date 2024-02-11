@@ -37,17 +37,16 @@ class UserTaskCompleteUsecase:
 
             task = await uow.task.get(id=user_task.task_id, lang=user.language)
 
-            # Пользователь взял, выполнил, хочет закрыть, а мы таск закрыли и такие- "Все, никогда его блять не сдашь!!"
-            # if not task.active:
-            #     raise TaskDeactivatedError(task_id=task.id)
-
             _ = await uow.score_user.add(
-                obj=OperationWithScoreUserDTO(user_id=user.id, value=task.score, operation=ScoreOperationEnum.PLUS)
+                obj=OperationWithScoreUserDTO(
+                    user_id=user.id, value=task.score, operation=ScoreOperationEnum.PLUS, task_totaly_completed=1
+                )
             )
 
             result = await uow.task.user_task_update(
                 id=id,
                 obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.FINISH),
             )
+            await uow.commit()
 
         return Result(item=result)

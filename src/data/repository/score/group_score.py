@@ -19,7 +19,12 @@ from src.data.models.group.group import GroupScoreModel
 
 
 def score_model_to_entity(model: GroupScoreModel) -> ScoreGroup:
-    return ScoreGroup(group_id=model.group_id, value=model.value, operation=model.operation)
+    return ScoreGroup(
+        group_id=model.group_id,
+        value=model.value,
+        operation=model.operation,
+        mission_totaly_completed=model.mission_totaly_completed,
+    )
 
 
 class GroupScoreRepository(IRepositoryGroupScore):
@@ -39,13 +44,15 @@ class GroupScoreRepository(IRepositoryGroupScore):
 
         if not result:
             raise EntityNotFound(msg=f"group={group_id} not found")
-        group_rating = GroupScoreDTO(group_id=group_id, value=0)
+        group_rating = GroupScoreDTO(group_id=group_id, value=0, mission_totaly_completed=0)
 
         for obj in result:
             if obj.operation == ScoreOperationEnum.PLUS:
                 group_rating.value += obj.value
+                group_rating.mission_totaly_completed += obj.mission_totaly_completed
             elif obj.operation == ScoreOperationEnum.MINUS:
                 group_rating.value -= obj.value
+                group_rating.mission_totaly_completed -= obj.mission_totaly_completed
 
         return group_rating
 

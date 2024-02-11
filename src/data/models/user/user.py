@@ -68,5 +68,7 @@ class UserScoreModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[str] = mapped_column(ForeignKey("user.id"))
+    task_totaly_completed: Mapped[int] = mapped_column()
+    mission_totaly_completed: Mapped[int] = mapped_column()
     operation: Mapped[ScoreOperationEnum] = mapped_column()
     value: Mapped[int] = mapped_column()

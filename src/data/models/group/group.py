@@ -30,3 +30,4 @@ class GroupScoreModel(Base):
     group_id: Mapped[int] = mapped_column(ForeignKey("group.id"))
     operation: Mapped[ScoreOperationEnum] = mapped_column()
     value: Mapped[int] = mapped_column()
+    mission_totaly_completed: Mapped[int] = mapped_column()

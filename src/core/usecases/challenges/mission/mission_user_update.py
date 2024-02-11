@@ -32,7 +32,10 @@ class MissionUserUpdateUsecase:
                 base_mission = await uow.mission.get(id=user_mission.mission_id, lang=user.language)
                 score = await uow.score_user.add(
                     obj=OperationWithScoreUserDTO(
-                        user_id=user.id, value=base_mission.score, operation=ScoreOperationEnum.PLUS
+                        user_id=user.id,
+                        value=base_mission.score,
+                        operation=ScoreOperationEnum.PLUS,
+                        mission_totaly_completed=1,
                     )
                 )
                 if score.user_id != user.id:

@@ -23,6 +23,8 @@ def score_model_to_entity(model: UserScoreModel) -> ScoreUser:
         user_id=model.user_id,
         value=model.value,
         operation=model.operation,
+        task_totaly_completed=model.task_totaly_completed,
+        mission_totaly_completed=model.mission_totaly_completed,
     )
 
 
@@ -42,15 +44,16 @@ class UserScoreRepository(IRepositoryUserScore):
         result = await self.db_context.scalars(stmt)
         if not result:
             raise EntityNotFound(msg=f"User={user_id} not found")
-        user_score = UserScoreDTO(
-            user_id=user_id,
-            value=0,
-        )
+        user_score = UserScoreDTO(user_id=user_id, value=0, task_totaly_completed=0, mission_totaly_completed=0)
         for obj in result:
             if obj.operation == ScoreOperationEnum.PLUS:
                 user_score.value += obj.value
+                user_score.task_totaly_completed += obj.task_totaly_completed
+                user_score.mission_totaly_completed += obj.mission_totaly_completed
             elif obj.operation == ScoreOperationEnum.MINUS:
                 user_score.value -= obj.value
+                user_score.task_totaly_completed -= obj.task_totaly_completed
+                user_score.mission_totaly_completed -= obj.mission_totaly_completed
 
         return user_score
 

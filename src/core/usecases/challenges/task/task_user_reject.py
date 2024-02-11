@@ -37,5 +37,6 @@ class UserTaskRejectUsecase:
                 id=id,
                 obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.REJECT),
             )
+            await uow.commit()
 
         return Result(item=task)

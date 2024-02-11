@@ -42,7 +42,10 @@ class MissionGroupUpdateUsecase:
                 base_mission = await uow.mission.get(id=group_mission.mission_id, lang=user.language)
                 score = await uow.score_group.add(
                     obj=GroupOperationWithScoreDTO(
-                        group_id=group_id, value=base_mission.score, operation=ScoreOperationEnum.PLUS
+                        group_id=group_id,
+                        value=base_mission.score,
+                        operation=ScoreOperationEnum.PLUS,
+                        mission_totaly_completed=1,
                     )
                 )
                 if score.group_id != group_id:

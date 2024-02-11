@@ -15,6 +15,7 @@ async def mock_group_score_add(monkeypatch) -> ScoreGroup:
             group_id=DEFAULT_TEST_USECASE_GROUP_ID,
             value=DEFAULT_TEST_CHALLENGE_SCORE,
             operation=ScoreOperationEnum.PLUS,
+            mission_totaly_completed=1,
         )
 
     monkeypatch.setattr("src.data.repository.score.group_score.GroupScoreRepository.add", f)

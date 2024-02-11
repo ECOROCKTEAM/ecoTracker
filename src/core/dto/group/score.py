@@ -14,6 +14,7 @@ class GroupRatingDTO:
 class GroupScoreDTO:
     group_id: int
     value: int
+    mission_totaly_completed: int
 
 
 @dataclass
@@ -27,3 +28,4 @@ class GroupOperationWithScoreDTO:
     group_id: int
     value: int
     operation: ScoreOperationEnum
+    mission_totaly_completed: int

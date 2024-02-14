@@ -36,7 +36,7 @@ async def test_user_contact_get_ok(
     user = await dl.user_loader.create()
     user_contact_create = await dl.user_contact_loader.create(user_id=user.id, **asdict(create_data))
 
-    user_contact = await user_contact_repo.get(id=user_contact_create.id)
+    user_contact = await user_contact_repo.get(id=user_contact_create.id, user_id=user.id)
 
     asrt_result["id"] = user_contact_create.id
     asrt_result["user_id"] = user.id
@@ -69,7 +69,7 @@ async def test_user_contact_create_ok(
     asrt_result["id"] = user_contact_create.id
     asrt_result["user_id"] = user.id
 
-    user_contact = await user_contact_repo.get(id=user_contact_create.id)
+    user_contact = await user_contact_repo.get(id=user_contact_create.id, user_id=user.id)
 
     assert asrt_result == asdict(user_contact)
     assert asrt_result == asdict(user_contact_create)
@@ -157,7 +157,7 @@ async def test_user_contact_delete_ok(dl: dataloader, user_contact_repo: IUserCo
     user = await dl.user_loader.create()
     user_contact_model = await dl.user_contact_loader.create(user_id=user.id)
 
-    user_contact_delete = await user_contact_repo.delete(id=user_contact_model.id)
+    user_contact_delete = await user_contact_repo.delete(id=user_contact_model.id, user_id=user.id)
 
     assert isinstance(user_contact_delete, int)
     assert user_contact_delete == user_contact_model.id
@@ -166,11 +166,11 @@ async def test_user_contact_delete_ok(dl: dataloader, user_contact_repo: IUserCo
 # pytest tests/tmain/repository/test_user_contact.py::test_user_contact_delete_fail -v -s
 @pytest.mark.asyncio
 async def test_user_contact_delete_fail(dl: dataloader, user_contact_repo: IUserContactRepository):
-    user_model = await dl.user_loader.create()
+    user = await dl.user_loader.create()
 
     with pytest.raises(EntityNotFound) as error:
         id = 1
-        await user_contact_repo.delete(id=id)
+        await user_contact_repo.delete(id=id, user_id=user.id)
     assert f"User contact {id=} not found" in str(error.value)
 
     # pytest tests/tmain/repository/test_user_contpytest tests/tmain/repository/test_user_contact.py::test_user_contact_delete_fail -v -s: dataloader, user_contact_repo: IUserContactRepository):
@@ -195,7 +195,7 @@ async def test_user_contact_update_ok(
     user = await dl.user_loader.create()
     user_contact_model = await dl.user_contact_loader.create(user_id=user.id, id=update_obj.id)
 
-    user_contact = await user_contact_repo.update(obj=update_obj)
+    user_contact = await user_contact_repo.update(obj=update_obj, user_id=user.id)
 
     assert user_contact.id == user_contact_model.id
     assert user_contact.user_id == user.id
@@ -218,7 +218,7 @@ async def test_user_contact_update_unique_fail(dl: dataloader, user_contact_repo
     )
 
     with pytest.raises(EntityNotChange) as error:
-        await user_contact_repo.update(obj=update_obj)
+        await user_contact_repo.update(obj=update_obj, user_id=user.id)
     assert "Uniq failed" in str(error.value)
 
 

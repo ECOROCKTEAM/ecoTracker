@@ -20,7 +20,7 @@ class ContactUserUpdateUsecase:
             raise UserIsNotActivateError(user_id=user.id)
 
         async with self.uow as uow:
-            contact_user_update = await uow.user_contact.update(obj=update_obj)
+            contact_user_update = await uow.user_contact.update(obj=update_obj, user_id=user.id)
 
             await uow.commit()
 

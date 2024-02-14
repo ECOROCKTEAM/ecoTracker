@@ -41,22 +41,24 @@ class IUserContactRepository(ABC):
         """
 
     @abstractmethod
-    async def delete(self, *, id: int) -> int:
+    async def delete(self, *, id: int, user_id: str) -> int:
         """Delete user contact
 
         Args:
             id (int): User contact identify
+            user_id(str): User ID
 
         Returns:
             int: Deleted user contact identify
         """
 
     @abstractmethod
-    async def get(self, *, id: int) -> ContactUserDTO:
+    async def get(self, *, id: int, user_id: str) -> ContactUserDTO:
         """Get user contact object
 
         Args:
             id (int): User contact identify
+            user_id(str): User ID
 
         Returns:
             ContactUserDTO: User contact object DTO
@@ -87,11 +89,12 @@ class IUserContactRepository(ABC):
         """
 
     @abstractmethod
-    async def update(self, *, obj: ContactUserUpdateDTO) -> ContactUserDTO:
+    async def update(self, *, obj: ContactUserUpdateDTO, user_id: str) -> ContactUserDTO:
         """Update user contact
 
         Args:
             obj (ContactUserUpdateDTO): DTO for update
+            user_id(str): User ID
 
         Returns:
             ContactUserDTO: DTO of user contact object

@@ -37,22 +37,28 @@ class UserContactRepository(IUserContactRepository):
     def __init__(self, db_context: AsyncSession) -> None:
         self.db_context = db_context
 
-    async def get(self, *, id: int) -> ContactUserDTO:
-        stmt = select(UserContactModel).where(UserContactModel.id == id)
+    async def get(self, *, id: int, user_id: str) -> ContactUserDTO:
+        stmt = select(UserContactModel).where(UserContactModel.id == id, UserContactModel.user_id == user_id)
         res = await self.db_context.scalar(stmt)
         if not res:
             raise EntityNotFound(msg=f"User contact {id=} not found")
         return model_to_dto(model=res)
 
     async def get_favorite(self, *, user_id: str) -> ContactUserDTO:
-        stmt = select(UserContactModel).where(UserContactModel.user_id == user_id, UserContactModel.is_favorite)
+        stmt = select(UserContactModel).where(
+            UserContactModel.user_id == user_id, UserContactModel.is_favorite.is_(True)
+        )
         res = await self.db_context.scalar(stmt)
         if not res:
             raise EntityNotFound(msg="")
         return model_to_dto(model=res)
 
-    async def delete(self, *, id: int) -> int:
-        stmt = delete(UserContactModel).where(UserContactModel.id == id).returning(UserContactModel.id)
+    async def delete(self, *, id: int, user_id: str) -> int:
+        stmt = (
+            delete(UserContactModel)
+            .where(UserContactModel.id == id, UserContactModel.user_id == user_id)
+            .returning(UserContactModel.id)
+        )
         res = await self.db_context.scalar(stmt)
         if not res:
             raise EntityNotFound(msg=f"User contact {id=} not found")
@@ -80,13 +86,13 @@ class UserContactRepository(IUserContactRepository):
                 raise EntityNotCreated(msg="Uniq failed") from error
             raise EntityNotCreated(msg="") from error
         if not res:
-            raise EntityNotFound(msg="")
+            raise EntityNotCreated(msg=f"Entity for {user_id=} was not created")
         return model_to_dto(model=res)
 
-    async def update(self, *, obj: ContactUserUpdateDTO) -> ContactUserDTO:
+    async def update(self, *, obj: ContactUserUpdateDTO, user_id: str) -> ContactUserDTO:
         stmt = (
             update(UserContactModel)
-            .where(UserContactModel.id == obj.id)
+            .where(UserContactModel.id == obj.id, UserContactModel.user_id == user_id)
             .values(**as_dict_skip_none(obj))
             .returning(UserContactModel)
         )

@@ -36,15 +36,21 @@ class GroupUserListUsecase:
 
             group = await uow.group.get(id=group_id)
 
+            privileged_roles = (GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER)
+
             if group.privacy == GroupPrivacyEnum.PUBLIC:
                 if not group.active:
                     raise EntityNotActive(msg=f"{group.id}")
 
-                if user_group.role not in (GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER) or not user_group:
-                    filter_obj.role__in = [GroupRoleEnum.USER]
+                if user_group.role not in privileged_roles or not user_group:
+                    if not filter_obj.role__in:
+                        filter_obj.role__in = [GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER, GroupRoleEnum.USER]
+                    elif GroupRoleEnum.BLOCKED in filter_obj.role__in:
+                        raise PermissionError(msg=f"{user.id=} can not see BLOCKED users in group")
+
                     result = await uow.group.user_list(id=group_id, filter_obj=filter_obj)
 
-                if user_group.role in (GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER):
+                elif user_group.role in privileged_roles:
                     result = await uow.group.user_list(id=group_id, filter_obj=filter_obj)
 
             if group.privacy == GroupPrivacyEnum.PRIVATE:
@@ -54,10 +60,15 @@ class GroupUserListUsecase:
                 if not group.active:
                     raise EntityNotActive(msg=f"{group.id}")
 
-                if user_group.role in (GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER):
+                if user_group.role in privileged_roles:
                     result = await uow.group.user_list(id=group_id, filter_obj=filter_obj)
-                if user_group.role == GroupRoleEnum.USER:
-                    filter_obj.role__in = [GroupRoleEnum.USER]
+
+                elif user_group.role not in privileged_roles:
+                    if not filter_obj.role__in:
+                        filter_obj.role__in = [GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER, GroupRoleEnum.USER]
+                    elif GroupRoleEnum.BLOCKED in filter_obj.role__in:
+                        raise PermissionError(msg=f"{user.id=} can not see BLOCKED users in group")
+
                     result = await uow.group.user_list(id=group_id, filter_obj=filter_obj)
 
         return Result(items=result)

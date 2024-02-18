@@ -86,7 +86,7 @@ class UserContactRepository(IUserContactRepository):
                 raise EntityNotCreated(msg="Uniq failed") from error
             raise EntityNotCreated(msg="") from error
         if not res:
-            raise EntityNotCreated(msg=f"Entity for {user_id=} was not created")
+            raise EntityNotCreated(msg=f"{user_id=}, {obj.value=}")
         return model_to_dto(model=res)
 
     async def update(self, *, obj: ContactUserUpdateDTO, user_id: str) -> ContactUserDTO:

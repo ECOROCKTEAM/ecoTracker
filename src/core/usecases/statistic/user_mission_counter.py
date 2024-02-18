@@ -12,7 +12,7 @@ class Result:
     item: MissionUserCounterDTO
 
 
-class UserMissionFinishedCounterUsecase:
+class UserMissionsFinishedCounterUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
@@ -23,6 +23,6 @@ class UserMissionFinishedCounterUsecase:
             raise UserIsNotPremiumError(msg=f"{user.id=}")
 
         async with self.uow as uow:
-            user_counter = await uow.user_statistic.mission_counter(user_id=user.id)
+            mission_counter = await uow.user_statistic.mission_counter(user_id=user.id)
 
-        return Result(item=user_counter)
+        return Result(item=mission_counter)

@@ -11,7 +11,7 @@ class Result:
     item: TaskUserCounterDTO
 
 
-class UserTaskFinishedCounterUsecase:
+class UserTasksFinishedCounterUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
@@ -20,6 +20,6 @@ class UserTaskFinishedCounterUsecase:
             raise EntityNotActive(msg=f"{user.id=}")
 
         async with self.uow as uow:
-            user_counter = await uow.user_statistic.task_counter(user_id=user.id)
+            task_counter = await uow.user_statistic.task_counter(user_id=user.id)
 
-        return Result(item=user_counter)
+        return Result(item=task_counter)

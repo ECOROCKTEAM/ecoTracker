@@ -4,7 +4,7 @@ from src.core.dto.m2m.user.group import UserGroupDTO
 from src.core.entity.user import User
 from src.core.enum.group.privacy import GroupPrivacyEnum
 from src.core.enum.group.role import GroupRoleEnum
-from src.core.exception.base import EntityNotActive
+from src.core.exception.base import EntityNotActive, EntityNotFound
 from src.core.exception.user import (
     PermissionError,
     UserIsNotActivateError,
@@ -20,6 +20,8 @@ class Result:
 
 
 class GroupUserListUsecase:
+    _PRIVILEGED_ROLES = (GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER)
+
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
@@ -30,45 +32,43 @@ class GroupUserListUsecase:
             raise UserIsNotPremiumError(user_id=user.id)
 
         async with self.uow as uow:
-            user_group = await uow.group.user_get(group_id=group_id, user_id=user.id)
-            if user_group.role == GroupRoleEnum.BLOCKED:
-                raise PermissionError(msg=f"{user.id=} is BLOCKED")
-
             group = await uow.group.get(id=group_id)
+            if not group.active:
+                raise EntityNotActive(msg=f"{group_id=}")
 
-            privileged_roles = (GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER)
+            try:
+                user_group = await uow.group.user_get(group_id=group_id, user_id=user.id)
+                if user_group.role == GroupRoleEnum.BLOCKED:
+                    raise PermissionError(msg=f"{user.id=} is BLOCKED")
+            except EntityNotFound:
+                user_group = None
 
             if group.privacy == GroupPrivacyEnum.PUBLIC:
-                if not group.active:
-                    raise EntityNotActive(msg=f"{group.id}")
+                filter_obj = await self._resolve_filter_public(user_group=user_group, filter_obj=filter_obj)
+            elif group.privacy == GroupPrivacyEnum.PRIVATE:
+                filter_obj = await self._resolve_filter_private(user_group=user_group, filter_obj=filter_obj)
 
-                if user_group.role not in privileged_roles or not user_group:
-                    if not filter_obj.role__in:
-                        filter_obj.role__in = [GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER, GroupRoleEnum.USER]
-                    elif GroupRoleEnum.BLOCKED in filter_obj.role__in:
-                        raise PermissionError(msg=f"{user.id=} can not see BLOCKED users in group")
-
-                    result = await uow.group.user_list(id=group_id, filter_obj=filter_obj)
-
-                elif user_group.role in privileged_roles:
-                    result = await uow.group.user_list(id=group_id, filter_obj=filter_obj)
-
-            if group.privacy == GroupPrivacyEnum.PRIVATE:
-                if not user_group:
-                    raise PermissionError(msg=f"{user.id=} not in group")
-
-                if not group.active:
-                    raise EntityNotActive(msg=f"{group.id}")
-
-                if user_group.role in privileged_roles:
-                    result = await uow.group.user_list(id=group_id, filter_obj=filter_obj)
-
-                elif user_group.role not in privileged_roles:
-                    if not filter_obj.role__in:
-                        filter_obj.role__in = [GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER, GroupRoleEnum.USER]
-                    elif GroupRoleEnum.BLOCKED in filter_obj.role__in:
-                        raise PermissionError(msg=f"{user.id=} can not see BLOCKED users in group")
-
-                    result = await uow.group.user_list(id=group_id, filter_obj=filter_obj)
-
+        result = await self.uow.group.user_list(id=group_id, filter_obj=filter_obj)
         return Result(items=result)
+
+    async def _resolve_filter_public(
+        self, user_group: UserGroupDTO | None, filter_obj: GroupUserFilter
+    ) -> GroupUserFilter:
+        if user_group is None or user_group.role not in self._PRIVILEGED_ROLES:
+            if not filter_obj.role__in:
+                filter_obj.role__in = [GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER, GroupRoleEnum.USER]
+            if GroupRoleEnum.BLOCKED in filter_obj.role__in:
+                raise PermissionError(msg="User cannot see BLOCKED users in public group")
+        return filter_obj
+
+    async def _resolve_filter_private(
+        self, user_group: UserGroupDTO | None, filter_obj: GroupUserFilter
+    ) -> GroupUserFilter:
+        if user_group is None:
+            raise PermissionError(msg="User outside a private group cannot see any users in it")
+        if user_group.role not in self._PRIVILEGED_ROLES:
+            if not filter_obj.role__in:
+                filter_obj.role__in = [GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER, GroupRoleEnum.USER]
+            if GroupRoleEnum.BLOCKED in filter_obj.role__in:
+                raise PermissionError(msg=f"user.id={user_group.user_id} cannot see BLOCKED users in private group")
+        return filter_obj

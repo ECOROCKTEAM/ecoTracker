@@ -94,7 +94,6 @@ async def test_user_contact_create_fail_index(
             user_id=user.id,
             obj=ContactUserCreateDTO(value="+1234567890", type=ContactTypeEnum.PHONE, active=True, is_favorite=True),
         )
-        await dl.commit()
     assert "Uniq failed" in str(error.value)
 
 
@@ -116,7 +115,6 @@ async def test_user_contact_create_unique_fail(
 
     with pytest.raises(EntityNotCreated) as error:
         await user_contact_repo.create(user_id=user.id, obj=create_obj)
-        await dl.commit()
     assert "Uniq failed" in str(error.value)
 
 

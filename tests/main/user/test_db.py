@@ -146,3 +146,40 @@ async def test_fail_user_contacts_uniq_ck(session: AsyncSession):
 
     await session.delete(user)
     await session.commit()
+
+
+# pytest tests/main/user/test_user_contact.py::test_user_contact_set_favorite_ok -v -s
+@pytest.mark.asyncio
+async def test_user_contact_set_favorite_ok(session: AsyncSession):
+    user = UserModel(id="Test", username="Test", active=True, language=DEFAULT_TEST_LANGUAGE)
+
+    session.add(user)
+    await session.commit()
+
+    user_contact_current_favorite = UserContactModel(
+        user_id=user.id, value="old", type=ContactTypeEnum.GMAIL, active=True, is_favorite=True
+    )
+
+    user_contact_new_favorite = UserContactModel(
+        user_id=user.id, value="new", type=ContactTypeEnum.GMAIL, active=True, is_favorite=False
+    )
+
+    session.add_all([user_contact_current_favorite, user_contact_new_favorite])
+    await session.commit()
+
+    current_favorite_set_unfavorite = (
+        update(UserContactModel)
+        .where(UserContactModel.id == user_contact_current_favorite.id)
+        .values(is_favorite=False)
+        .returning(UserContactModel)
+    )
+
+    new_favorite = (
+        update(UserContactModel)
+        .where(UserContactModel.id == user_contact_new_favorite.id)
+        .values(is_favorite=True)
+        .returning(UserContactModel)
+    )
+
+    res_unfavorite = await session.scalar(current_favorite_set_unfavorite)
+    res_favorite = await session.scalar(new_favorite)

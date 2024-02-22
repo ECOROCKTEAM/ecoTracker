@@ -29,6 +29,7 @@ from tests.fixtures.group.usecase.user import (
     mock_group_user_get_blocked,
     mock_group_user_get_user,
     mock_group_user_list_ret_admin_superuser,
+    mock_group_user_list_ret_superusers_10,
     mock_group_user_list_ret_user_user,
 )
 from tests.fixtures.user.db.model import fxm_user_default
@@ -76,7 +77,7 @@ async def test_group_user_list_not_in_group_with_blocked_filter_error(
     filter_obj = GroupUserFilter(role__in=[GroupRoleEnum.BLOCKED])
     with pytest.raises(PermissionError) as e:
         await uc(user=fxe_user_default, group_id=mock_group_get_default.id, filter_obj=filter_obj)
-    assert "User outside a group cannot see BLOCKED users in group" in str(e.value)
+    assert "User cannot see BLOCKED users in public group" in str(e.value)
 
 
 # pytest tests/main/group/usecases/user/test_user_list.py::test_group_user_list_user_in_group_with_blocked_filter_error -v -s
@@ -88,7 +89,7 @@ async def test_group_user_list_user_in_group_with_blocked_filter_error(
     filter_obj = GroupUserFilter(role__in=[GroupRoleEnum.BLOCKED])
     with pytest.raises(PermissionError) as e:
         await uc(user=fxe_user_default, group_id=mock_group_get_default.id, filter_obj=filter_obj)
-    assert f"{fxe_user_default.id}" in str(e.value)
+    assert "User cannot see BLOCKED users in public group" in str(e.value)
 
 
 # pytest tests/main/group/usecases/user/test_user_list.py::test_group_user_list_group_not_active_error -v -s

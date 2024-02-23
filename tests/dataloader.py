@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from functools import wraps
 from nis import cat
+from random import randint
 from typing import Generic, Type, TypeVar, get_args
 from uuid import uuid4
 from venv import create
@@ -15,6 +16,7 @@ from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.group.privacy import GroupPrivacyEnum
 from src.core.enum.group.role import GroupRoleEnum
 from src.core.enum.language import LanguageEnum
+from src.core.enum.user.contact import ContactTypeEnum
 from src.data.models.challenges.mission import (
     GroupMissionModel,
     MissionModel,
@@ -26,7 +28,7 @@ from src.data.models.challenges.occupancy import (
 )
 from src.data.models.challenges.task import TaskModel, TaskTranslateModel, UserTaskModel
 from src.data.models.group.group import GroupModel
-from src.data.models.user.user import UserGroupModel, UserModel
+from src.data.models.user.user import UserContactModel, UserGroupModel, UserModel
 
 T = TypeVar("T")
 
@@ -207,6 +209,33 @@ class UserGroupLoader(EntityLoaderBase[UserGroupModel]):
         return await self._get(UserGroupModel, cond)
 
 
+class UserContactLoader(EntityLoaderBase[UserContactModel]):
+    async def create(
+        self,
+        id: int | None = None,
+        user_id: str | None = None,
+        value: str = "test@gmail.com",
+        type: ContactTypeEnum = ContactTypeEnum.GMAIL,
+        active: bool = True,
+        is_favorite: bool = True,
+    ) -> UserContactModel:
+        model = UserContactModel(
+            id=id or randint(1, 10000),
+            user_id=user_id or uuid(),
+            value=value,
+            type=type,
+            active=active,
+            is_favorite=is_favorite,
+        )
+        return await self._add(model=model)
+
+    async def get(self, id: int | None = None) -> UserContactModel | None:
+        cond = []
+        if id is not None:
+            cond.append(UserContactModel.id == id)
+        return await self._get(model=UserContactModel, cond=cond)
+
+
 class UserLoader(EntityLoaderBase[UserModel]):
     async def create(
         self,
@@ -381,6 +410,11 @@ class dataloader:
 
     async def rollback(self):
         await self.session.rollback()
+
+    @property
+    @loader_track
+    def user_contact_loader(self) -> UserContactLoader:
+        return UserContactLoader(session=self.session)
 
     @property
     @loader_track

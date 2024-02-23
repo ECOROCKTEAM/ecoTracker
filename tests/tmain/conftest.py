@@ -5,6 +5,7 @@ from src.core.interfaces.auth.firebase import IFirebaseApplication
 from src.core.interfaces.repository.auth import IAuthProviderRepository
 from src.core.interfaces.repository.statistic.group import IRepositoryGroupStatistic
 from src.core.interfaces.repository.statistic.user import IRepositoryUserStatistic
+from src.core.interfaces.repository.user.contact import IUserContactRepository
 from src.data.repository.auth import AuthProviderRepository
 from src.data.repository.challenges.occupancy_category import (
     IRepositoryOccupancyCategory,
@@ -15,8 +16,14 @@ from src.data.repository.group import IRepositoryGroup, RepositoryGroup
 from src.data.repository.statistic.group import GroupStatisticRepository
 from src.data.repository.statistic.user import UserStatisticRepository
 from src.data.repository.user import IUserRepository, UserRepository
+from src.data.repository.user_contacts import UserContactRepository
 
 # Repository
+
+
+@pytest.fixture(scope="function")
+def user_contact_repo(session: AsyncSession) -> IUserContactRepository:
+    return UserContactRepository(db_context=session)
 
 
 @pytest.fixture(scope="function")

@@ -2,11 +2,11 @@ import pytest
 
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.interfaces.repository.statistic.group import IRepositoryGroupStatistic
+from src.core.interfaces.repository.statistic.occupancy import OccupancyStatisticFilter
 from tests.dataloader import dataloader
 
 
-@pytest.mark.asyncio
-async def test_group_mission_finished_list_first(dl: dataloader) -> tuple[int, int]:
+async def _test_group_mission_finished_list_first(dl: dataloader) -> tuple[int, int]:
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     category = await dl.create_category()
@@ -27,8 +27,7 @@ async def test_group_mission_finished_list_first(dl: dataloader) -> tuple[int, i
     return group.id, finished_missions
 
 
-@pytest.mark.asyncio
-async def test_group_mission_finished_list_second(dl: dataloader) -> tuple[int, int]:
+async def _test_group_mission_finished_list_second(dl: dataloader) -> tuple[int, int]:
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     category = await dl.create_category()
@@ -49,8 +48,7 @@ async def test_group_mission_finished_list_second(dl: dataloader) -> tuple[int, 
     return group.id, finished_missions
 
 
-@pytest.mark.asyncio
-async def test_group_mission_finished_list_third(dl: dataloader) -> tuple[int, int]:
+async def _test_group_mission_finished_list_third(dl: dataloader) -> tuple[int, int]:
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     category = await dl.create_category()
@@ -76,9 +74,9 @@ async def test_group_mission_finished_list_third(dl: dataloader) -> tuple[int, i
 @pytest.mark.parametrize(
     "arrange_func",
     [
-        test_group_mission_finished_list_first,
-        test_group_mission_finished_list_second,
-        test_group_mission_finished_list_third,
+        _test_group_mission_finished_list_first,
+        _test_group_mission_finished_list_second,
+        _test_group_mission_finished_list_third,
     ],
 )
 async def test_group_missions_finished_ok(
@@ -86,7 +84,9 @@ async def test_group_missions_finished_ok(
 ):
     group_id, finished_missions = await arrange_func(dl=dl)
 
-    group_mission_counter = await repo_group_statistic.mission_counter(group_id=group_id)
+    group_mission_counter = await repo_group_statistic.mission_counter(
+        group_id=group_id, filter_obj=OccupancyStatisticFilter(status__in=[OccupancyStatusEnum.FINISH])
+    )
 
     assert group_id == group_mission_counter.group_id
     assert finished_missions == group_mission_counter.counter

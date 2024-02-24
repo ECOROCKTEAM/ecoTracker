@@ -101,7 +101,7 @@ class OccupancyCategoryTranslateLoader(EntityLoaderBase[OccupancyCategoryTransla
         return await self._add(model)
 
     async def get(self) -> OccupancyCategoryTranslateModel | None:
-        return await super().get()
+        return await super().get()  # type: ignore
 
 
 class OccupancyCategoryLoader(EntityLoaderBase[OccupancyCategoryModel]):
@@ -118,10 +118,10 @@ class OccupancyCategoryLoader(EntityLoaderBase[OccupancyCategoryModel]):
 
 class TaskTranslateLoader(EntityLoaderBase[TaskTranslateModel]):
     async def create(self) -> TaskTranslateModel:
-        return await super().create()
+        return await super().create()  # type: ignore
 
     async def get(self) -> TaskTranslateModel | None:
-        return await super().get()
+        return await super().get()  # type: ignore
 
 
 class TaskLoader(EntityLoaderBase[TaskModel]):

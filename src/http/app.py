@@ -5,16 +5,7 @@ from fastapi import FastAPI
 from src.application.auth.firebase import FirebaseApplicationSingleton
 from src.application.database.manager import db_manager
 from src.application.settings import settings
-from src.http.api.depends.deps import (
-    get_auth_provider_prod,
-    get_auth_provider_stub,
-    get_uow,
-    get_uow_stub,
-    get_user_dev,
-    get_user_prod,
-    get_user_stub,
-)
-from src.http.api.user.router import router as user_router
+from src.http.configure import setup_fastapi
 
 
 @asynccontextmanager
@@ -33,16 +24,8 @@ def create_app() -> FastAPI:
     )
     firebase_app.setup()
 
-    app.dependency_overrides[get_uow_stub] = get_uow
-    # print(F"APP ENV = {settings.APP_ENV.lower()}")
-    if settings.APP_ENV.lower() == "prod":
-        app.dependency_overrides[get_user_stub] = get_user_prod
-        app.dependency_overrides[get_auth_provider_stub] = get_auth_provider_prod
-    else:
-        app.dependency_overrides[get_user_stub] = get_user_dev
+    setup_fastapi(app=app, settings=settings)
 
-    # Routers
-    app.include_router(user_router)
     # app.include_router(group_router)
     # app.include_router(mission_router)
     # app.include_router(mission_user_router)

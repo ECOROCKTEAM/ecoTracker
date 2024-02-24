@@ -1,3 +1,6 @@
+from typing import Any
+
+from sqlalchemy import JSON
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -24,3 +27,4 @@ def create_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSessi
 
 class Base(DeclarativeBase):
     __allow_unmapped__ = True
+    type_annotation_map = {dict[str, Any]: JSON}

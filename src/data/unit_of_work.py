@@ -6,6 +6,9 @@ from src.core.interfaces.repository.challenges.occupancy import (
 )
 from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.interfaces.repository.group.group import IRepositoryGroup
+from src.core.interfaces.repository.notifications.notifications import (
+    INotificationRepository,
+)
 from src.core.interfaces.repository.score.group import IRepositoryGroupScore
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
 from src.core.interfaces.repository.statistic.group import IRepositoryGroupStatistic
@@ -23,6 +26,7 @@ from src.data.repository.challenges.occupancy_category import (
 )
 from src.data.repository.challenges.task import RepositoryTask
 from src.data.repository.group import RepositoryGroup
+from src.data.repository.notification import NotificationRepository
 from src.data.repository.score.group_score import GroupScoreRepository
 from src.data.repository.score.user_score import UserScoreRepository
 from src.data.repository.statistic.group import GroupStatisticRepository
@@ -48,6 +52,7 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self._user_contact: IUserContactRepository | None = None
         self._user_statistic: IRepositoryUserStatistic | None = None
         self._group_statistic: IRepositoryGroupStatistic | None = None
+        self._notifications: INotificationRepository | None = None
 
     @property
     def group_statistic(self) -> IRepositoryGroupStatistic:
@@ -122,6 +127,12 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         raise ValueError("UoW not in context")
 
     @property
+    def notifications(self) -> INotificationRepository:
+        if self._notifications:
+            return self._notifications
+        raise ValueError("UoW not in context")
+
+    @property
     def _session(self) -> AsyncSession:
         if self.__session is None:
             raise ValueError("UoW not in context")
@@ -141,6 +152,7 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self._user_contact = UserContactRepository(self._session)
         self._user_statistic = UserStatisticRepository(self._session)
         self._group_statistic = GroupStatisticRepository(self.__session)
+        self._notifications = NotificationRepository(self._session)
         return self
 
     async def __aexit__(self, *args):

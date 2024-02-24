@@ -25,5 +25,5 @@ class ContactUserDTO:
 class ContactUserCreateDTO:
     value: str
     type: ContactTypeEnum
-    active: bool = True
-    is_favorite: bool = False
+    active: bool
+    is_favorite: bool

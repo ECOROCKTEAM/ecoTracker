@@ -6,6 +6,7 @@ from src.core.dto.m2m.user.contact import (
     ContactUserDTO,
     ContactUserUpdateDTO,
 )
+from src.core.dto.utils import SortObj
 from src.core.enum.user.contact import ContactTypeEnum
 
 
@@ -13,18 +14,6 @@ from src.core.enum.user.contact import ContactTypeEnum
 class UserContactFilter:
     is_favorite: bool | None = None
     active: bool | None = None
-    type: ContactTypeEnum | None = None
-
-
-@dataclass
-class UserContactSorting:
-    type: ContactTypeEnum | None = None
-    active: bool | None = None
-    is_favorite: bool | None = None
-
-
-@dataclass
-class UserContactOrder:
     type: ContactTypeEnum | None = None
 
 
@@ -101,13 +90,12 @@ class IUserContactRepository(ABC):
         """
 
     @abstractmethod
-    async def list(
+    async def lst(
         self,
         *,
         user_id: str,
         filter_obj: UserContactFilter,
-        sorting_obj: UserContactSorting,
-        order_obj: UserContactOrder,
+        sorting_obj: SortObj,
     ) -> list[ContactUserDTO]:
         """User contact list
 

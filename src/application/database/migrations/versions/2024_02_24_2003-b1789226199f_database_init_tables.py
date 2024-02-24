@@ -1,15 +1,16 @@
-"""Database init tables v1
+"""Database init tables
 
-Revision ID: ba580636b488
+Revision ID: b1789226199f
 Revises: 
-Create Date: 2023-04-30 15:13:07.775539
+Create Date: 2024-02-24 20:03:24.101579
 
 """
+
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "ba580636b488"
+revision = "b1789226199f"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,52 +26,33 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
-        "community",
+        "group",
+        sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("description", sa.String(), nullable=False),
         sa.Column("active", sa.Boolean(), nullable=False),
-        sa.Column(
-            "privacy",
-            sa.Enum("PUBLICK", "PRIVATE", name="communityprivacyenum"),
-            nullable=False,
-        ),
-        sa.PrimaryKeyConstraint("name"),
+        sa.Column("privacy", sa.Enum("PUBLIC", "PRIVATE", name="groupprivacyenum"), nullable=False),
+        sa.Column("code", sa.String(), nullable=True),
+        sa.Column("code_expire_time", sa.DateTime(), nullable=True),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("code"),
         sa.UniqueConstraint("name"),
     )
-    op.create_table(
-        "contact",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("value", sa.String(), nullable=False),
-        sa.Column("type", sa.Enum("PHONE", "MAIL", name="contacttypeenum"), nullable=False),
-        sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_table(
-        "occupancy_category",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_table(
-        "role_application",
-        sa.Column("role", sa.String(), autoincrement=False, nullable=False),
-        sa.PrimaryKeyConstraint("role"),
-    )
+    op.create_table("occupancy_category", sa.Column("id", sa.Integer(), nullable=False), sa.PrimaryKeyConstraint("id"))
     op.create_table(
         "subscription_period",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("value", sa.String(), nullable=False),
-        sa.Column(
-            "unit",
-            sa.Enum("DAY", "WEEK", "MONTH", name="subscriptionperiodunitenum"),
-            nullable=False,
-        ),
+        sa.Column("unit", sa.Enum("DAY", "WEEK", "MONTH", name="subscriptionperiodunitenum"), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
         "user",
+        sa.Column("id", sa.String(), nullable=False),
         sa.Column("username", sa.String(), nullable=False),
-        sa.Column("password", sa.String(), nullable=False),
         sa.Column("active", sa.Boolean(), nullable=False),
-        sa.PrimaryKeyConstraint("username"),
+        sa.Column("language", sa.Enum("RU", "EN", "FR", name="languageenum"), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("username"),
     )
     op.create_table(
@@ -81,11 +63,7 @@ def upgrade() -> None:
         sa.Column("entity_pointer", sa.String(), nullable=False),
         sa.Column("counter", sa.Integer(), nullable=False),
         sa.Column("active", sa.Boolean(), nullable=False),
-        sa.Column(
-            "status",
-            sa.Enum("ACTIVE", "FINISH", name="achievementstatusenum"),
-            nullable=False,
-        ),
+        sa.Column("status", sa.Enum("ACTIVE", "FINISH", name="achievementstatusenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["achievement_id"],
             ["achievement.id"],
@@ -98,7 +76,7 @@ def upgrade() -> None:
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("description", sa.String(), nullable=False),
         sa.Column("achievement_id", sa.Integer(), nullable=False),
-        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
+        sa.Column("language", sa.Enum("RU", "EN", "FR", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["achievement_id"],
             ["achievement.id"],
@@ -106,30 +84,14 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
-        "community_invite",
+        "group_score",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("community", sa.String(), nullable=False),
-        sa.Column("code", sa.String(), nullable=False),
-        sa.Column("expire_time", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["community"],
-            ["community.name"],
-        ),
-        sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_table(
-        "community_score",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("community", sa.String(), nullable=False),
-        sa.Column(
-            "operation",
-            sa.Enum("PLUS", "MINUS", name="scoreoperationenum"),
-            nullable=False,
-        ),
+        sa.Column("group_id", sa.Integer(), nullable=False),
+        sa.Column("operation", sa.Enum("PLUS", "MINUS", name="scoreoperationenum"), nullable=False),
         sa.Column("value", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
-            ["community"],
-            ["community.name"],
+            ["group_id"],
+            ["group.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -151,21 +113,18 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("category_id", sa.Integer(), nullable=False),
-        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
+        sa.Column("language", sa.Enum("RU", "EN", "FR", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["category_id"],
             ["occupancy_category.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("category_id", "language"),
     )
     op.create_table(
         "subscription",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "type",
-            sa.Enum("USUAL", "PREMIUM", name="subscriptiontypeenum"),
-            nullable=False,
-        ),
+        sa.Column("type", sa.Enum("USUAL", "PREMIUM", name="subscriptiontypeenum"), nullable=False),
         sa.Column("period_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["period_id"],
@@ -177,6 +136,7 @@ def upgrade() -> None:
         "task",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("score", sa.Integer(), nullable=False),
+        sa.Column("active", sa.Boolean(), nullable=False),
         sa.Column("category_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["category_id"],
@@ -185,91 +145,77 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
-        "user_community",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("username", sa.String(), nullable=False),
-        sa.Column("community_name", sa.String(), nullable=False),
-        sa.Column(
-            "role",
-            sa.Enum("SUPERUSER", "ADMIN", "USER", "BLOCKED", name="communityroleenum"),
-            nullable=False,
-        ),
-        sa.ForeignKeyConstraint(
-            ["community_name"],
-            ["community.name"],
-        ),
-        sa.ForeignKeyConstraint(
-            ["username"],
-            ["user.username"],
-        ),
-        sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_table(
         "user_contact",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("username", sa.String(), nullable=False),
-        sa.Column("contact_id", sa.Integer(), nullable=False),
-        sa.Column("active", sa.Boolean(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["contact_id"],
-            ["contact.id"],
+        sa.Column("user_id", sa.String(), nullable=False),
+        sa.Column("value", sa.String(), nullable=False),
+        sa.Column(
+            "type",
+            sa.Enum("PHONE", "MAIL", "TELEGRAM", "WHATSAPP", "GMAIL", "FACEBOOK", "CUSTOM", name="contacttypeenum"),
+            nullable=False,
         ),
+        sa.Column("active", sa.Boolean(), nullable=False),
+        sa.Column("is_favorite", sa.Boolean(), nullable=False),
         sa.ForeignKeyConstraint(
-            ["username"],
-            ["user.username"],
+            ["user_id"],
+            ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("contact_id"),
+        sa.UniqueConstraint("user_id", "value", "type", name="uq_user_contact_user_id_values_types"),
+    )
+    op.create_index(
+        "ix_uq_user_id_is_favorite",
+        "user_contact",
+        ["user_id", "is_favorite"],
+        unique=True,
+        postgresql_where=sa.text("is_favorite IS true"),
     )
     op.create_table(
-        "user_role_application",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("username", sa.String(), nullable=False),
-        sa.Column("role", sa.String(), nullable=False),
+        "user_group",
+        sa.Column("user_id", sa.String(), nullable=False),
+        sa.Column("group_id", sa.Integer(), nullable=False),
+        sa.Column("role", sa.Enum("SUPERUSER", "ADMIN", "USER", "BLOCKED", name="grouproleenum"), nullable=False),
         sa.ForeignKeyConstraint(
-            ["role"],
-            ["role_application.role"],
+            ["group_id"],
+            ["group.id"],
         ),
         sa.ForeignKeyConstraint(
-            ["username"],
-            ["user.username"],
+            ["user_id"],
+            ["user.id"],
         ),
-        sa.PrimaryKeyConstraint("id"),
+        sa.PrimaryKeyConstraint("user_id", "group_id"),
     )
     op.create_table(
         "user_score",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("username", sa.String(), nullable=False),
-        sa.Column(
-            "operation",
-            sa.Enum("PLUS", "MINUS", name="scoreoperationenum"),
-            nullable=False,
-        ),
+        sa.Column("user_id", sa.String(), nullable=False),
+        sa.Column("operation", sa.Enum("PLUS", "MINUS", name="scoreoperationenum"), nullable=False),
         sa.Column("value", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
-            ["username"],
-            ["user.username"],
+            ["user_id"],
+            ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
-        "community_mission",
+        "group_mission",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("meeting_date", sa.DateTime(), nullable=False),
+        sa.Column("group_id", sa.Integer(), nullable=False),
+        sa.Column("mission_id", sa.Integer(), nullable=False),
+        sa.Column("author", sa.String(), nullable=False),
+        sa.Column("meeting_date", sa.DateTime(), nullable=True),
         sa.Column("people_required", sa.Integer(), nullable=True),
         sa.Column("people_max", sa.Integer(), nullable=True),
         sa.Column("place", sa.String(), nullable=True),
         sa.Column("comment", sa.String(), nullable=True),
-        sa.Column("community", sa.String(), nullable=False),
-        sa.Column("mission_id", sa.Integer(), nullable=False),
+        sa.Column("date_start", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column("date_close", sa.DateTime(timezone=True), nullable=True),
         sa.Column(
-            "status",
-            sa.Enum("ACTIVE", "FINISH", "REJECT", "OVERDUE", name="occupancystatusenum"),
-            nullable=False,
+            "status", sa.Enum("ACTIVE", "FINISH", "REJECT", "OVERDUE", name="occupancystatusenum"), nullable=False
         ),
         sa.ForeignKeyConstraint(
-            ["community"],
-            ["community.name"],
+            ["group_id"],
+            ["group.id"],
         ),
         sa.ForeignKeyConstraint(
             ["mission_id"],
@@ -284,19 +230,20 @@ def upgrade() -> None:
         sa.Column("description", sa.String(), nullable=False),
         sa.Column("instruction", sa.String(), nullable=False),
         sa.Column("mission_id", sa.Integer(), nullable=False),
-        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
+        sa.Column("language", sa.Enum("RU", "EN", "FR", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["mission_id"],
             ["mission.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("mission_id", "language"),
     )
     op.create_table(
         "subscription_translate",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("subscription_id", sa.Integer(), nullable=False),
-        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
+        sa.Column("language", sa.Enum("RU", "EN", "FR", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["subscription_id"],
             ["subscription.id"],
@@ -309,7 +256,7 @@ def upgrade() -> None:
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("description", sa.String(), nullable=False),
         sa.Column("task_id", sa.Integer(), nullable=False),
-        sa.Column("language", sa.Enum("RU", "EN", name="languageenum"), nullable=False),
+        sa.Column("language", sa.Enum("RU", "EN", "FR", name="languageenum"), nullable=False),
         sa.ForeignKeyConstraint(
             ["task_id"],
             ["task.id"],
@@ -319,27 +266,27 @@ def upgrade() -> None:
     op.create_table(
         "user_mission",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("username", sa.String(), autoincrement=False, nullable=False),
-        sa.Column("mission_id", sa.Integer(), autoincrement=False, nullable=False),
+        sa.Column("user_id", sa.String(), nullable=False),
+        sa.Column("mission_id", sa.Integer(), nullable=False),
+        sa.Column("date_start", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column("date_close", sa.DateTime(timezone=True), nullable=True),
         sa.Column(
-            "status",
-            sa.Enum("ACTIVE", "FINISH", "REJECT", "OVERDUE", name="occupancystatusenum"),
-            nullable=False,
+            "status", sa.Enum("ACTIVE", "FINISH", "REJECT", "OVERDUE", name="occupancystatusenum"), nullable=False
         ),
         sa.ForeignKeyConstraint(
             ["mission_id"],
             ["mission.id"],
         ),
         sa.ForeignKeyConstraint(
-            ["username"],
-            ["user.username"],
+            ["user_id"],
+            ["user.id"],
         ),
-        sa.PrimaryKeyConstraint("id", "username", "mission_id"),
+        sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
         "user_subscription",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("username", sa.String(), nullable=False),
+        sa.Column("user_id", sa.String(), nullable=False),
         sa.Column("subscription_id", sa.Integer(), nullable=False),
         sa.Column("cancelled", sa.Boolean(), nullable=False),
         sa.Column("until_date", sa.DateTime(), nullable=False),
@@ -348,60 +295,74 @@ def upgrade() -> None:
             ["subscription.id"],
         ),
         sa.ForeignKeyConstraint(
-            ["username"],
-            ["user.username"],
+            ["user_id"],
+            ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
         "user_task",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("username", sa.String(), nullable=False),
+        sa.Column("user_id", sa.String(), nullable=False),
         sa.Column("task_id", sa.Integer(), nullable=False),
+        sa.Column("date_start", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column("date_close", sa.DateTime(timezone=True), nullable=True),
         sa.Column(
-            "status",
-            sa.Enum("ACTIVE", "FINISH", "REJECT", "OVERDUE", name="occupancystatusenum"),
-            nullable=False,
+            "status", sa.Enum("ACTIVE", "FINISH", "REJECT", "OVERDUE", name="occupancystatusenum"), nullable=False
         ),
         sa.ForeignKeyConstraint(
             ["task_id"],
             ["task.id"],
         ),
         sa.ForeignKeyConstraint(
-            ["username"],
-            ["user.username"],
+            ["user_id"],
+            ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_table(
+        "user_task_plan",
+        sa.Column("user_id", sa.String(), autoincrement=False, nullable=False),
+        sa.Column("task_id", sa.Integer(), autoincrement=False, nullable=False),
+        sa.ForeignKeyConstraint(
+            ["task_id"],
+            ["task.id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["user_id"],
+            ["user.id"],
+        ),
+        sa.PrimaryKeyConstraint("user_id", "task_id"),
     )
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_table("user_task_plan")
     op.drop_table("user_task")
     op.drop_table("user_subscription")
     op.drop_table("user_mission")
     op.drop_table("task_translate")
     op.drop_table("subscription_translate")
     op.drop_table("mission_translate")
-    op.drop_table("community_mission")
+    op.drop_table("group_mission")
     op.drop_table("user_score")
-    op.drop_table("user_role_application")
+    op.drop_table("user_group")
+    op.drop_index(
+        "ix_uq_user_id_is_favorite", table_name="user_contact", postgresql_where=sa.text("is_favorite IS true")
+    )
     op.drop_table("user_contact")
-    op.drop_table("user_community")
     op.drop_table("task")
     op.drop_table("subscription")
     op.drop_table("occupancy_category_translate")
     op.drop_table("mission")
-    op.drop_table("community_score")
-    op.drop_table("community_invite")
+    op.drop_table("group_score")
     op.drop_table("achievement_translate")
     op.drop_table("achievement_progress")
     op.drop_table("user")
     op.drop_table("subscription_period")
-    op.drop_table("role_application")
     op.drop_table("occupancy_category")
-    op.drop_table("contact")
-    op.drop_table("community")
+    op.drop_table("group")
     op.drop_table("achievement")
     # ### end Alembic commands ###

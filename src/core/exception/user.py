@@ -1,4 +1,13 @@
-from src.core.exception.base import DomainError, PermissionError, RepoError
+from src.core.exception.base import (
+    DomainError,
+    EntityNotActive,
+    PermissionError,
+    RepoError,
+)
+
+
+class UserNotActive(EntityNotActive):
+    msg_template = "User={id} not active"
 
 
 class UserError(DomainError):

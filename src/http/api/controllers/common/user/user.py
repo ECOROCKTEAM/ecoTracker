@@ -11,4 +11,4 @@ router = APIRouter()
 
 @router.get("/me")
 async def user_me(user: Annotated[User, Depends(get_user_stub)]) -> UserSchema:
-    return UserSchema.from_entity(user=user)
+    return UserSchema.from_obj(user=user)

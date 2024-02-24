@@ -1,13 +1,13 @@
-from src.core.exception.base import RepoError
+from src.core.exception.base import DomainError, EntityNotActive
 
 
-class ContactValueError(RepoError):
-    msg_template = "Value={value} is not correct"
+class ContactNotActive(EntityNotActive):
+    msg_template = "Contact={id} not active"
 
 
-class ContactIsFavoriteError(RepoError):
+class ContactIsFavoriteError(DomainError):
     msg_template = "Contact={value} is favorite"
 
 
-class ContactIsNotActiveError(RepoError):
+class ContactIsNotActiveError(DomainError):
     msg_template = "Contact={valie} active error"

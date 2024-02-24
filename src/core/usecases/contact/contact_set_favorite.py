@@ -2,8 +2,9 @@ from dataclasses import dataclass
 
 from src.core.dto.m2m.user.contact import ContactUserDTO
 from src.core.entity.user import User
-from src.core.exception.contact import ContactIsFavoriteError, ContactIsNotActiveError
-from src.core.exception.user import UserIsNotActivateError
+from src.core.exception.base import LogicError
+from src.core.exception.contact import ContactNotActive
+from src.core.exception.user import UserNotActive
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
@@ -12,24 +13,24 @@ class Result:
     item: ContactUserDTO
 
 
-class ContactUserSetFaforiteUsecase:
+class ContactUserSetFavoriteUsecase:
     def __init__(self, *, uow: IUnitOfWork) -> None:
         self.uow = uow
 
     async def __call__(self, *, user: User, id: int) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(msg=f"User={user.id} is not active")
+            raise UserNotActive(id=user.id)
 
         async with self.uow as uow:
             current_favorite_user_contact = await uow.user_contact.get_favorite(user_id=user.id)
 
             if current_favorite_user_contact.id == id:
-                raise ContactIsFavoriteError(msg=f"{id=}")
+                raise LogicError(msg=f"Current contact={id} is already favorite")
 
             user_contact = await uow.user_contact.get(id=id, user_id=user.id)
 
             if not user_contact.active:
-                raise ContactIsNotActiveError(msg=f"{id=}")
+                raise ContactNotActive(id=user_contact.id)
 
             _ = await uow.user_contact.set_favorite(id=current_favorite_user_contact.id, is_favorite=False)
 

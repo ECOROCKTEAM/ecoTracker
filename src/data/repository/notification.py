@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import func, select, update
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.entity.notification import Notification
@@ -47,7 +47,7 @@ class NotificationRepository(INotificationRepository):
 
     async def lst(self, *, user_id: str, filter_obj: NotificationFilter, lang: LanguageEnum) -> list[Notification]:
         stmt = select(NotificationModel).where(
-            NotificationModel.user_id == user_id or NotificationModel.user_id.is_(None)
+            or_(NotificationModel.user_id == user_id, NotificationModel.user_id.is_(None))
         )
         if filter_obj.from_ is not None:
             stmt = stmt.where(NotificationModel.created_at >= filter_obj.from_)
@@ -62,7 +62,7 @@ class NotificationRepository(INotificationRepository):
         return [model_to_dto(models) for models in res]
 
     async def count(self, *, user_id: str, filter_obj: NotificationFilter, lang: LanguageEnum) -> int:
-        stmt = select(func.count("*")).select_from(NotificationModel).where(NotificationModel.user_id == user_id)
+        stmt = select(func.count(NotificationModel.id)).where(NotificationModel.user_id == user_id)
         if filter_obj.from_ is not None:
             stmt = stmt.where(NotificationModel.created_at >= filter_obj.from_)
         if filter_obj.to_ is not None:

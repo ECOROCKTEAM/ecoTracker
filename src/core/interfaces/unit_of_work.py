@@ -11,6 +11,8 @@ from src.core.interfaces.repository.notifications.notifications import (
 )
 from src.core.interfaces.repository.score.group import IRepositoryGroupScore
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
+from src.core.interfaces.repository.statistic.group import IRepositoryGroupStatistic
+from src.core.interfaces.repository.statistic.user import IRepositoryUserStatistic
 from src.core.interfaces.repository.subscription.subscription import (
     ISubscriptionRepository,
 )
@@ -20,6 +22,16 @@ from src.core.interfaces.repository.user.user import IUserRepository
 
 
 class IUnitOfWork(ABC):
+    @property
+    @abstractmethod
+    def user_statistic(self) -> IRepositoryUserStatistic:
+        ...
+
+    @property
+    @abstractmethod
+    def group_statistic(self) -> IRepositoryGroupStatistic:
+        ...
+
     @property
     @abstractmethod
     def user_contact(self) -> IUserContactRepository:

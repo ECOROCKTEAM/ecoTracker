@@ -2,11 +2,9 @@ import random
 from abc import ABC, abstractmethod
 from datetime import datetime
 from functools import wraps
-from nis import cat
 from random import randint
 from typing import Generic, Type, TypeVar, get_args
 from uuid import uuid4
-from venv import create
 
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession

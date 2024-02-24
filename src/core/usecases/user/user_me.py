@@ -1,7 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
 
-from src.core.entity.subscription import Subscription
 from src.core.entity.user import User, UserCreateDTO
 from src.core.enum.language import LanguageEnum
 from src.core.exception.base import AuthError, EntityNotFound
@@ -36,7 +34,6 @@ class UserMeUsecase:
                         active=True,
                         language=LanguageEnum.EN,
                     ),
-                    # sub_obj=Subscription(),
                 )
                 await uow.commit()
 
@@ -44,19 +41,3 @@ class UserMeUsecase:
             raise UserIsNotActivateError(user_id=user_identity.id)
 
         return Result(item=user)
-
-
-class UserMeUsecaseDevelop:
-    def __init__(self, uow: IUnitOfWork) -> None:
-        self.uow = uow
-
-    async def __call__(self, *, token: Any) -> Result:
-        return Result(
-            item=User(
-                id="id_1337_fake",
-                username="Shrek Shrekovi4 (dev)",
-                active=True,
-                subscription=Subscription(),
-                language=LanguageEnum.EN,
-            )
-        )

@@ -17,6 +17,8 @@ class GroupStatisticRepository(IRepositoryGroupStatistic):
             where_clause.append(GroupMissionModel.status.in_(filter_obj.status__in))
 
         stmt = select(func.count(GroupMissionModel.id)).where(*where_clause)
-        (counter,) = await self.db_context.scalars(statement=stmt)
+        counter = await self.db_context.scalar(statement=stmt)
+
+        assert counter is not None
 
         return GroupMissionCounterDTO(group_id=group_id, counter=counter)

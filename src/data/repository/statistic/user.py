@@ -18,9 +18,11 @@ class UserStatisticRepository(IRepositoryUserStatistic):
             where_clause.append(UserTaskModel.status.in_(filter_obj.status__in))
 
         stmt = select(func.count(UserTaskModel.id)).where(*where_clause)
-        (counter,) = await self.db_context.scalars(statement=stmt)
+        counter = await self.db_context.scalar(statement=stmt)
 
-        return TaskUserCounterDTO(user_id=user_id, counter=counter)
+        assert counter is not None
+
+        return TaskUserCounterDTO(user_id=user_id, counter=counter or 0)
 
     async def mission_counter(self, *, user_id: str, filter_obj: OccupancyStatisticFilter) -> MissionUserCounterDTO:
         where_clause = [UserMissionModel.user_id == user_id]
@@ -28,6 +30,8 @@ class UserStatisticRepository(IRepositoryUserStatistic):
             where_clause.append(UserMissionModel.status.in_(filter_obj.status__in))
 
         stmt = select(func.count(UserMissionModel.id)).where(*where_clause)
-        (counter,) = await self.db_context.scalars(statement=stmt)
+        counter = await self.db_context.scalar(statement=stmt)
 
-        return MissionUserCounterDTO(user_id=user_id, counter=counter)
+        assert counter is not None
+
+        return MissionUserCounterDTO(user_id=user_id, counter=counter or 0)

@@ -220,7 +220,7 @@ class UserContactLoader(EntityLoaderBase[UserContactModel]):
         is_favorite: bool = True,
     ) -> UserContactModel:
         model = UserContactModel(
-            id=id or randint(1, 10000),
+            id=id,
             user_id=user_id or uuid(),
             value=value,
             type=type,

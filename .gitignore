@@ -59,6 +59,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+develop.json
+test.json
+prod.json
 
 # Secret files
 *_secret.json

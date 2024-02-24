@@ -1,11 +1,12 @@
 import os
 
-from pydantic import BaseSettings
+from pydantic import BaseSettings, validator
 
 
 class Settings(BaseSettings):
     APP_NAME: str
     APP_ENV: str
+    CONFIGURE_JSON_PATH: str = ""
 
     DATABASE_USER: str
     DATABASE_PASSWORD: str
@@ -23,18 +24,30 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
 
+    @validator("CONFIGURE_JSON_PATH")
+    def conf_json_path_exist(cls, v: str) -> str:
+        if not os.path.exists(v):
+            raise Exception(f"Please create file {v} for setup app!")
+        return v
+
 
 class SettingsDev(Settings):
+    CONFIGURE_JSON_PATH: str = "develop.json"
+
     class Config:
         env_file = "dev.env"
 
 
 class SettingsTest(Settings):
+    CONFIGURE_JSON_PATH: str = "test.json"
+
     class Config:
         env_file = "test.env"
 
 
 class SettingsProd(Settings):
+    CONFIGURE_JSON_PATH: str = "prod.json"
+
     class Config:
         env_file = "prod.env"
 

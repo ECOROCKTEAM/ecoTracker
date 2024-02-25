@@ -1,13 +1,10 @@
 from dataclasses import dataclass, field
 
 from src.core.dto.m2m.user.contact import ContactUserDTO
+from src.core.dto.utils import SortObj
 from src.core.entity.user import User
-from src.core.exception.user import UserIsNotActivateError
-from src.core.interfaces.repository.user.contact import (
-    UserContactFilter,
-    UserContactOrder,
-    UserContactSorting,
-)
+from src.core.exception.user import UserNotActive
+from src.core.interfaces.repository.user.contact import UserContactFilter
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
@@ -25,15 +22,12 @@ class ContactUserListUsecase:
         *,
         user: User,
         filter_obj: UserContactFilter,
-        sorting_obj: UserContactSorting,
-        order_obj: UserContactOrder,
+        sorting_obj: SortObj,
     ) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(user_id=user.id)
+            raise UserNotActive(id=user.id)
 
         async with self.uow as uow:
-            user_contacts = await uow.user_contact.list(
-                user_id=user.id, filter_obj=filter_obj, sorting_obj=sorting_obj, order_obj=order_obj
-            )
+            user_contacts = await uow.user_contact.lst(user_id=user.id, filter_obj=filter_obj, sorting_obj=sorting_obj)
 
         return Result(items=user_contacts)

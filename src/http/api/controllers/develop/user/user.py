@@ -29,5 +29,5 @@ async def dev_user_list(
     for user_id in user_id_list:
         result = await uc(token=user_id)
         user_list.append(result.item)
-    user_schema_list = [UserSchema.from_entity(user) for user in user_list]
+    user_schema_list = [UserSchema.from_obj(user) for user in user_list]
     return user_schema_list

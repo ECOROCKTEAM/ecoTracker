@@ -7,15 +7,18 @@ from src.http.api.depends import common, develop, prod, stub  # , test
 
 
 def setup_fastapi_prod(app: FastAPI, settings: Settings):
+    app.debug = False
     app.dependency_overrides[stub.get_auth_provider_stub] = prod.get_auth_provider
 
 
 def setup_fastapi_test(app: FastAPI, settings: Settings):
+    app.debug = True
     # app.dependency_overrides[stub.get_user_stub] = test.get_user
     return
 
 
 def setup_fastapi_dev(app: FastAPI, settings: Settings):
+    app.debug = True
     app.dependency_overrides[stub.get_auth_provider_stub] = develop.get_auth_provider
     app.include_router(develop_router)
 

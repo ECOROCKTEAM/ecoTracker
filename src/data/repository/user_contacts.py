@@ -11,13 +11,13 @@ from src.core.dto.m2m.user.contact import (
     ContactUserDTO,
     ContactUserUpdateDTO,
 )
+from src.core.dto.utils import SortObj
 from src.core.exception.base import EntityNotChange, EntityNotCreated, EntityNotFound
 from src.core.interfaces.repository.user.contact import (
     IUserContactRepository,
     UserContactFilter,
-    UserContactOrder,
-    UserContactSorting,
 )
+from src.data.mapper.utils import apply_sorting
 from src.data.models.user.user import UserContactModel
 from src.utils import as_dict_skip_none
 
@@ -107,13 +107,12 @@ class UserContactRepository(IUserContactRepository):
             raise EntityNotFound(msg="")
         return model_to_dto(model=res)
 
-    async def list(
+    async def lst(
         self,
         *,
         user_id: str,
         filter_obj: UserContactFilter,
-        sorting_obj: UserContactSorting,
-        order_obj: UserContactOrder,
+        sorting_obj: SortObj,
     ) -> list[ContactUserDTO]:
         where_clause = [UserContactModel.user_id == user_id]
         stmt = select(UserContactModel)
@@ -124,6 +123,7 @@ class UserContactRepository(IUserContactRepository):
         if filter_obj.type is not None:
             where_clause.append(UserContactModel.type == filter_obj.type)
         stmt = stmt.where(*where_clause)
+        stmt = apply_sorting(stmt=stmt, sorting_obj=sorting_obj)
         res = await self.db_context.scalars(stmt)
         if not res:
             raise EntityNotFound(msg="")

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from src.core.entity.user import User, UserCreateDTO
 from src.core.enum.language import LanguageEnum
 from src.core.exception.base import AuthError, EntityNotFound
-from src.core.exception.user import UserIsNotActivateError
+from src.core.exception.user import UserNotActive
 from src.core.interfaces.repository.auth import IAuthProviderRepository
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
@@ -38,6 +38,6 @@ class UserMeUsecase:
                 await uow.commit()
 
         if not user.active:
-            raise UserIsNotActivateError(user_id=user_identity.id)
+            raise UserNotActive(id=user_identity.id)
 
         return Result(item=user)

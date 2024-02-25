@@ -1,8 +1,6 @@
-import warnings
 from dataclasses import asdict
 
-from sqlalchemy import Integer, case, func, insert, literal, select
-from sqlalchemy.exc import SAWarning
+from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.dto.user.score import (
@@ -11,63 +9,32 @@ from src.core.dto.user.score import (
     UserScoreDTO,
 )
 from src.core.entity.score import ScoreUser
-from src.core.enum.score.operation import ScoreOperationEnum
 from src.core.exception.base import EntityNotFound
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
-from src.data.models.user.user import UserModel, UserScoreModel
-
-_SCORE_RAW_TABLE_SUBQ = (
-    select(
-        UserScoreModel.user_id.label("user_id"),
-        func.sum(
-            case(
-                (
-                    UserScoreModel.operation == ScoreOperationEnum.MINUS,
-                    UserScoreModel.value * -1,
-                ),
-                else_=UserScoreModel.value,
-            ),
-        ).label("score"),
-    )
-    .group_by(UserScoreModel.user_id)
-    .subquery("score_raw_table")
-)
-
-_SCORE_TABLE_SUBQ = (
-    select(
-        UserModel.id.label("user_id"),
-        func.coalesce(_SCORE_RAW_TABLE_SUBQ.c.score, 0).label("score"),
-    )
-    .outerjoin(
-        _SCORE_RAW_TABLE_SUBQ,
-        UserModel.id.label("user_id") == _SCORE_RAW_TABLE_SUBQ.c.user_id,
-    )
-    .order_by(_SCORE_RAW_TABLE_SUBQ.c.score.desc())
-    .subquery("score_table")
-)
-
-_RATING_TABLE_CTE = select(
-    _SCORE_TABLE_SUBQ.c.user_id.label("user_id"),
-    _SCORE_TABLE_SUBQ.c.score.label("score"),
-    func.row_number().over(order_by=_SCORE_TABLE_SUBQ.c.score.desc()).label("position"),
-).cte("rating_table_cte")
-
-
-_WINDOW_CONSTRAINT_CTE = (
-    select(
-        func.max(_RATING_TABLE_CTE.c.position).label("position_max"),
-        func.min(_RATING_TABLE_CTE.c.position).label("position_min"),
-    )
-    .select_from(_RATING_TABLE_CTE)
-    .cte("window_constraint_cte")
+from src.data.models.user.user import UserScoreModel
+from src.data.repository.score.qbuilder import (
+    build_rating_table_stmt,
+    build_score_table_stmt,
 )
 
 
-_RATING_ONE_USER_STMT = select(
-    _RATING_TABLE_CTE.c.user_id.label("user_id"),
-    _RATING_TABLE_CTE.c.score.label("score"),
-    _RATING_TABLE_CTE.c.position.label("position"),
-).select_from(_RATING_TABLE_CTE)
+def calc_bounds(position: int, window_offset: int, max_bound: int, min_bound: int = 1) -> tuple[int, int]:
+    ubound = position + window_offset
+    lbound = position - window_offset
+
+    # check lboud
+    if lbound <= 0:
+        ubound += min_bound - lbound
+        lbound = min_bound
+
+    # check ubound
+    if ubound > max_bound and lbound == min_bound:
+        ubound = max_bound
+    elif ubound > max_bound and lbound - (ubound - max_bound) >= min_bound:
+        lbound = lbound - abs(max_bound - ubound)
+        ubound = max_bound
+
+    return lbound, ubound
 
 
 def score_model_to_entity(model: UserScoreModel) -> ScoreUser:
@@ -90,19 +57,11 @@ class RepositoryUserScore(IRepositoryUserScore):
         return score_model_to_entity(model=result)
 
     async def get_score(self, *, user_id: str) -> UserScoreDTO:
-        stmt = (
-            select(
-                _SCORE_TABLE_SUBQ.c.user_id.label("user_id"),
-                _SCORE_TABLE_SUBQ.c.score.label("score"),
-            )
-            .select_from(_SCORE_TABLE_SUBQ)
-            .where(_SCORE_TABLE_SUBQ.c.user_id == user_id)
-        )
+        stmt = build_score_table_stmt(model=UserScoreModel, target_id=user_id)
         coro = await self.db_context.execute(stmt)
         result = coro.one_or_none()
         if not result:
             raise EntityNotFound(msg=f"User={user_id} not found")
-
         _user_id, score = result
         return UserScoreDTO(user_id=_user_id, score=score)
 
@@ -111,8 +70,7 @@ class RepositoryUserScore(IRepositoryUserScore):
         *,
         user_id: str,
     ) -> UserRatingDTO:
-        stmt = _RATING_ONE_USER_STMT
-        stmt = stmt.where(_RATING_TABLE_CTE.c.user_id == user_id)
+        stmt = build_rating_table_stmt(model=UserScoreModel, target_id=user_id)
         coro = await self.db_context.execute(stmt)
         result = coro.one_or_none()
         if result is None:
@@ -124,63 +82,31 @@ class RepositoryUserScore(IRepositoryUserScore):
     async def get_rating_window(
         self,
         *,
-        size: int,
-        user_id: int | None = None,
+        window_offset: int,
+        user_id: str,
     ) -> list[UserRatingDTO]:
-        half_size = int(size / 2)
-        _all_contraint_cte = (
-            select(
-                _RATING_TABLE_CTE.c.position.label("position"),
-                _WINDOW_CONSTRAINT_CTE.c.position_max.label("position_max"),
-                _WINDOW_CONSTRAINT_CTE.c.position_min.label("position_min"),
-                literal(f"{half_size}").cast(Integer).label("window_size"),
-            )
-            .select_from(_RATING_TABLE_CTE)
-            .where(_RATING_TABLE_CTE.c.user_id == user_id)
-            .add_cte(_WINDOW_CONSTRAINT_CTE)
-            .cte("contraint_all_cte")
-        )
-        _bound_cte = (
-            select(
-                _RATING_TABLE_CTE.c.position.label("position"),
-                func.lag(
-                    _RATING_TABLE_CTE.c.position,
-                    _all_contraint_cte.c.window_size.label("window_size"),
-                    _all_contraint_cte.c.position_min.label("position_min"),
-                )
-                .over()
-                .label("lbound"),
-                func.lead(
-                    _RATING_TABLE_CTE.c.position,
-                    _all_contraint_cte.c.window_size.label("window_size") - 1,
-                    _all_contraint_cte.c.position_max.label("position_max"),
-                )
-                .over()
-                .label("ubound"),
-            )
-            .select_from(_all_contraint_cte)
-            .cte("bound_cte")
-        )
-        stmt = (
-            select(
-                _RATING_TABLE_CTE.c.user_id,
-                _RATING_TABLE_CTE.c.score,
-                _RATING_TABLE_CTE.c.position,
-            )
-            .add_cte(_RATING_TABLE_CTE)
-            .join(_bound_cte, _bound_cte.c.position == _RATING_TABLE_CTE.c.position)
-            .join(
-                _all_contraint_cte,
-                _all_contraint_cte.c.position.between(_bound_cte.c.lbound, _bound_cte.c.ubound),
-            )
-        )
-
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=SAWarning)
-            coro = await self.db_context.execute(stmt)
-        result = coro.all()
-        if len(result) == 0:
+        stmt = build_rating_table_stmt(model=UserScoreModel, target_id=user_id, with_max_bound=True)
+        coro = await self.db_context.execute(stmt)
+        result = coro.one_or_none()
+        if result is None:
             raise EntityNotFound(msg=f"User={user_id} not found")
+        _user_id, _, position, max_position = result
+        assert user_id == _user_id
+        lbound, ubound = calc_bounds(
+            position=position, window_offset=window_offset, max_bound=max_position, min_bound=1
+        )
+        stmt = build_rating_table_stmt(model=UserScoreModel, lbound=lbound, ubound=ubound)
+        coro = await self.db_context.execute(stmt)
+        result = coro.all()
+        items = [
+            UserRatingDTO(user_id=_user_id, score=score, position=position) for _user_id, score, position in result
+        ]
+        return items
+
+    async def get_rating_top(self, *, size: int) -> list[UserRatingDTO]:
+        stmt = build_rating_table_stmt(model=UserScoreModel, limit=size)
+        coro = await self.db_context.execute(stmt)
+        result = coro.all()
         items = [
             UserRatingDTO(user_id=_user_id, score=score, position=position) for _user_id, score, position in result
         ]

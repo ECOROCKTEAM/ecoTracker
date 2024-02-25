@@ -11,17 +11,17 @@ class Result:
     items: list[UserRatingDTO]
 
 
-class UserGetRatingWindowUsecase:
+class UserGetRatingTopUsecase:
     def __init__(self, uow: IUnitOfWork):
         self.uow = uow
 
-    async def __call__(self, *, user: User, window_offset: int) -> Result:
+    async def __call__(self, *, user: User, size: int) -> Result:
         if not user.active:
             raise UserNotActive(id=user.id)
         if not user.is_premium:
             raise UserNotPremium(id=user.id)
 
         async with self.uow as uow:
-            rating = await uow.score_user.get_rating_window(window_offset=window_offset, user_id=user.id)
+            rating = await uow.score_user.get_rating_top(size=size)
 
         return Result(items=rating)

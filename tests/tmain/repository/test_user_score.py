@@ -14,6 +14,7 @@ from src.core.enum.score.operation import ScoreOperationEnum
 from src.core.exception.base import EntityNotFound
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
 from src.data.models.user.user import UserModel, UserScoreModel
+from src.data.repository.score.user_score import calc_bounds
 from tests.dataloader import dataloader
 from tests.utils import catchtime
 
@@ -175,12 +176,40 @@ async def test_get_rating_not_found_user_fail(dl: dataloader, repo_user_score: I
 async def test_get_rating_window(dl: dataloader, repo_user_score: IRepositoryUserScore):
     print()
     # Arrange
-    size = 10
+    window_offset = 10
     async with _arrange_func(dl=dl, user_count=USER_COUNT, user_rows_count=USER_ROWS_COUNT) as user_id:
         # Act
-        result = await repo_user_score.get_rating_window(size=size, user_id=user_id)
+        result = await repo_user_score.get_rating_window(window_offset=window_offset, user_id=user_id)
 
     # Assert
     user_id_set = {item.user_id for item in result}
     assert user_id in user_id_set
+    assert len(result) == window_offset * 2 + 1
+
+
+# pytest tests/tmain/repository/test_user_score.py::test_get_rating_top -v -s
+@pytest.mark.asyncio
+@pytest.mark.parametrize("size", [10, 20, 50])
+async def test_get_rating_top(dl: dataloader, repo_user_score: IRepositoryUserScore, size: int):
+    print()
+    # Arrange
+    async with _arrange_func(dl=dl, user_count=USER_COUNT, user_rows_count=USER_ROWS_COUNT):
+        # Act
+        result = await repo_user_score.get_rating_top(size=size)
     assert len(result) == size
+
+
+# pytest tests/tmain/repository/test_user_score.py::test_calc_bounds -v -s
+@pytest.mark.parametrize(
+    "position, window_offset, max_bound, asrt_lbound, asrt_ubound",
+    (
+        (2, 2, 10, 1, 5),
+        (4, 2, 5, 1, 5),
+        (2, 2, 3, 1, 3),
+        (5, 10, 50, 1, 21),
+    ),
+)
+def test_calc_bounds(position: int, window_offset: int, max_bound: int, asrt_lbound: int, asrt_ubound: int):
+    lbound, ubound = calc_bounds(position, window_offset, max_bound)
+    assert lbound == asrt_lbound
+    assert ubound == asrt_ubound

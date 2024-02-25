@@ -40,8 +40,8 @@ class IRepositoryUserScore(ABC):
     async def get_rating_window(
         self,
         *,
-        size: int,
-        user_id: str | None = None,
+        window_offset: int,
+        user_id: str,
     ) -> list[UserRatingDTO]:
         """_summary_
 
@@ -62,3 +62,7 @@ class IRepositoryUserScore(ABC):
         Returns:
             ScoreUser: User score entity
         """
+
+    @abstractmethod
+    async def get_rating_top(self, *, size: int) -> list[UserRatingDTO]:
+        ...

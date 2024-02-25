@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
 
-from src.core.dto.mock import MockObj
 from src.core.dto.user.score import (
     OperationWithScoreUserDTO,
-    UserBoundOffsetDTO,
     UserRatingDTO,
     UserScoreDTO,
 )
@@ -12,7 +10,7 @@ from src.core.entity.score import ScoreUser
 
 class IRepositoryUserScore(ABC):
     @abstractmethod
-    async def user_get(self, *, user_id: str) -> UserScoreDTO:
+    async def get_score(self, *, user_id: str) -> UserScoreDTO:
         """Get user score
 
         Args:
@@ -23,20 +21,35 @@ class IRepositoryUserScore(ABC):
         """
 
     @abstractmethod
-    async def user_rating(
+    async def get_rating(
         self,
         *,
-        obj: UserBoundOffsetDTO | None = None,
-        order_obj: MockObj,
-    ) -> list[UserRatingDTO]:
+        user_id: str,
+    ) -> UserRatingDTO:
         """Get user rating
 
         Args:
-            obj (UserBoundOffsetDTO, optional): DTO for specific user. Defaults to None. If None -> rating of all users.
+            user_id (int, optional): If None -> rating of all users. Defaults to None.
             order_obj (MockObj): Order for score value
 
         Returns:
-            list[UserRatingDTO]: List of DTO of user score object
+            UserRatingDTO: User score object
+        """  # noqa: E501
+
+    @abstractmethod
+    async def get_rating_window(
+        self,
+        *,
+        size: int,
+        user_id: str | None = None,
+    ) -> list[UserRatingDTO]:
+        """_summary_
+
+        Args:
+            user_id (int, optional): If None -> rating of all users. Defaults to None.
+
+        Returns:
+            list[UserRatingDTO]: List
         """
 
     @abstractmethod

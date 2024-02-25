@@ -26,7 +26,7 @@ from src.data.repository.challenges.task import RepositoryTask
 from src.data.repository.group import RepositoryGroup
 from src.data.repository.notification import NotificationRepository
 from src.data.repository.score.group_score import GroupScoreRepository
-from src.data.repository.score.user_score import UserScoreRepository
+from src.data.repository.score.user_score import RepositoryUserScore
 from src.data.repository.subscription import SubscriptionRepository
 from src.data.repository.user import UserRepository
 from src.data.repository.user_contacts import UserContactRepository
@@ -126,7 +126,7 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self._task = RepositoryTask(self._session)
         self._mission = RepositoryMission(self._session)
         self._occupancy_category = RepositoryOccupancyCategory(self._session)
-        self._score_user = UserScoreRepository(self._session)
+        self._score_user = RepositoryUserScore(self._session)
         self._score_group = GroupScoreRepository(self._session)
         self._user_subscription = UserSubscriptionRepository(self._session)
         self._subscription = SubscriptionRepository(self._session)

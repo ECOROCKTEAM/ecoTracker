@@ -1,13 +1,12 @@
+import warnings
 from dataclasses import asdict
 
-from sqlalchemy import func, insert, select
+from sqlalchemy import Integer, case, func, insert, literal, select
+from sqlalchemy.exc import SAWarning
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import aliased
 
-from src.core.dto.mock import MockObj
 from src.core.dto.user.score import (
     OperationWithScoreUserDTO,
-    UserBoundOffsetDTO,
     UserRatingDTO,
     UserScoreDTO,
 )
@@ -15,7 +14,60 @@ from src.core.entity.score import ScoreUser
 from src.core.enum.score.operation import ScoreOperationEnum
 from src.core.exception.base import EntityNotFound
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
-from src.data.models.user.user import UserScoreModel
+from src.data.models.user.user import UserModel, UserScoreModel
+
+_SCORE_RAW_TABLE_SUBQ = (
+    select(
+        UserScoreModel.user_id.label("user_id"),
+        func.sum(
+            case(
+                (
+                    UserScoreModel.operation == ScoreOperationEnum.MINUS,
+                    UserScoreModel.value * -1,
+                ),
+                else_=UserScoreModel.value,
+            ),
+        ).label("score"),
+    )
+    .group_by(UserScoreModel.user_id)
+    .subquery("score_raw_table")
+)
+
+_SCORE_TABLE_SUBQ = (
+    select(
+        UserModel.id.label("user_id"),
+        func.coalesce(_SCORE_RAW_TABLE_SUBQ.c.score, 0).label("score"),
+    )
+    .outerjoin(
+        _SCORE_RAW_TABLE_SUBQ,
+        UserModel.id.label("user_id") == _SCORE_RAW_TABLE_SUBQ.c.user_id,
+    )
+    .order_by(_SCORE_RAW_TABLE_SUBQ.c.score.desc())
+    .subquery("score_table")
+)
+
+_RATING_TABLE_CTE = select(
+    _SCORE_TABLE_SUBQ.c.user_id.label("user_id"),
+    _SCORE_TABLE_SUBQ.c.score.label("score"),
+    func.row_number().over(order_by=_SCORE_TABLE_SUBQ.c.score.desc()).label("position"),
+).cte("rating_table_cte")
+
+
+_WINDOW_CONSTRAINT_CTE = (
+    select(
+        func.max(_RATING_TABLE_CTE.c.position).label("position_max"),
+        func.min(_RATING_TABLE_CTE.c.position).label("position_min"),
+    )
+    .select_from(_RATING_TABLE_CTE)
+    .cte("window_constraint_cte")
+)
+
+
+_RATING_ONE_USER_STMT = select(
+    _RATING_TABLE_CTE.c.user_id.label("user_id"),
+    _RATING_TABLE_CTE.c.score.label("score"),
+    _RATING_TABLE_CTE.c.position.label("position"),
+).select_from(_RATING_TABLE_CTE)
 
 
 def score_model_to_entity(model: UserScoreModel) -> ScoreUser:
@@ -26,7 +78,7 @@ def score_model_to_entity(model: UserScoreModel) -> ScoreUser:
     )
 
 
-class UserScoreRepository(IRepositoryUserScore):
+class RepositoryUserScore(IRepositoryUserScore):
     def __init__(self, db_context: AsyncSession) -> None:
         self.db_context = db_context
 
@@ -37,69 +89,99 @@ class UserScoreRepository(IRepositoryUserScore):
             raise EntityNotFound(msg=f"User={obj.user_id} not found")
         return score_model_to_entity(model=result)
 
-    async def user_get(self, *, user_id: str) -> UserScoreDTO:
-        stmt = select(UserScoreModel).where(UserScoreModel.user_id == user_id)
-        result = await self.db_context.scalars(stmt)
-        if not result:
-            raise EntityNotFound(msg=f"User={user_id} not found")
-        user_score = UserScoreDTO(
-            user_id=user_id,
-            value=0,
-        )
-        for obj in result:
-            if obj.operation == ScoreOperationEnum.PLUS:
-                user_score.value += obj.value
-            elif obj.operation == ScoreOperationEnum.MINUS:
-                user_score.value -= obj.value
-
-        return user_score
-
-    async def user_rating(self, *, obj: UserBoundOffsetDTO, order_obj: MockObj) -> list[UserRatingDTO]:
-        inner_stmt = select(
-            func.row_number().over(order_by=UserScoreModel.value).label("position"),
-            UserScoreModel.user_id,
-            UserScoreModel.value,
-        ).select_from(UserScoreModel)
-        subquery = inner_stmt.subquery()
-        alias = aliased(UserScoreModel, subquery)
-        user_position_stmt = select(subquery).where(alias.user_id == obj.user_id)
-        ex = await self.db_context.execute(user_position_stmt)
-        result_values = ex.first()
-
-        if not result_values:
-            raise EntityNotFound(msg=f"User={obj.user_id} not found")
-
-        position, user_id, value = result_values
-
-        user_position = UserRatingDTO(
-            user_id=user_id,
-            value=value,
-            position=position,
-        )
-
-        if (user_position.position - obj.bound_offset) <= 0:
-            limit_obj = user_position.position + obj.bound_offset
-            offset_obj = 0
-        else:
-            offset_obj = user_position.position - obj.bound_offset - 1
-            limit_obj = (obj.bound_offset * 2) + 1
-
+    async def get_score(self, *, user_id: str) -> UserScoreDTO:
         stmt = (
             select(
-                func.row_number().over(order_by=UserScoreModel.value).label("position"),
-                UserScoreModel.user_id,
-                UserScoreModel.value,
+                _SCORE_TABLE_SUBQ.c.user_id.label("user_id"),
+                _SCORE_TABLE_SUBQ.c.score.label("score"),
             )
-            .select_from(UserScoreModel)
-            .offset(offset_obj)
-            .limit(limit_obj)
+            .select_from(_SCORE_TABLE_SUBQ)
+            .where(_SCORE_TABLE_SUBQ.c.user_id == user_id)
         )
-        ex = await self.db_context.execute(stmt)
-        result = ex.all()
+        coro = await self.db_context.execute(stmt)
+        result = coro.one_or_none()
+        if not result:
+            raise EntityNotFound(msg=f"User={user_id} not found")
 
-        user_score_list: list[UserRatingDTO] = []
-        for user_score in result:
-            position, user_id, value = user_score
-            user_score_list.append(UserRatingDTO(user_id=user_id, value=value, position=position))
+        _user_id, score = result
+        return UserScoreDTO(user_id=_user_id, score=score)
 
-        return user_score_list
+    async def get_rating(
+        self,
+        *,
+        user_id: str,
+    ) -> UserRatingDTO:
+        stmt = _RATING_ONE_USER_STMT
+        stmt = stmt.where(_RATING_TABLE_CTE.c.user_id == user_id)
+        coro = await self.db_context.execute(stmt)
+        result = coro.one_or_none()
+        if result is None:
+            raise EntityNotFound(msg=f"User={user_id} not found")
+        _user_id, score, position = result
+        assert user_id == _user_id
+        return UserRatingDTO(user_id=_user_id, score=score, position=position)
+
+    async def get_rating_window(
+        self,
+        *,
+        size: int,
+        user_id: int | None = None,
+    ) -> list[UserRatingDTO]:
+        half_size = int(size / 2)
+        _all_contraint_cte = (
+            select(
+                _RATING_TABLE_CTE.c.position.label("position"),
+                _WINDOW_CONSTRAINT_CTE.c.position_max.label("position_max"),
+                _WINDOW_CONSTRAINT_CTE.c.position_min.label("position_min"),
+                literal(f"{half_size}").cast(Integer).label("window_size"),
+            )
+            .select_from(_RATING_TABLE_CTE)
+            .where(_RATING_TABLE_CTE.c.user_id == user_id)
+            .add_cte(_WINDOW_CONSTRAINT_CTE)
+            .cte("contraint_all_cte")
+        )
+        _bound_cte = (
+            select(
+                _RATING_TABLE_CTE.c.position.label("position"),
+                func.lag(
+                    _RATING_TABLE_CTE.c.position,
+                    _all_contraint_cte.c.window_size.label("window_size"),
+                    _all_contraint_cte.c.position_min.label("position_min"),
+                )
+                .over()
+                .label("lbound"),
+                func.lead(
+                    _RATING_TABLE_CTE.c.position,
+                    _all_contraint_cte.c.window_size.label("window_size") - 1,
+                    _all_contraint_cte.c.position_max.label("position_max"),
+                )
+                .over()
+                .label("ubound"),
+            )
+            .select_from(_all_contraint_cte)
+            .cte("bound_cte")
+        )
+        stmt = (
+            select(
+                _RATING_TABLE_CTE.c.user_id,
+                _RATING_TABLE_CTE.c.score,
+                _RATING_TABLE_CTE.c.position,
+            )
+            .add_cte(_RATING_TABLE_CTE)
+            .join(_bound_cte, _bound_cte.c.position == _RATING_TABLE_CTE.c.position)
+            .join(
+                _all_contraint_cte,
+                _all_contraint_cte.c.position.between(_bound_cte.c.lbound, _bound_cte.c.ubound),
+            )
+        )
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=SAWarning)
+            coro = await self.db_context.execute(stmt)
+        result = coro.all()
+        if len(result) == 0:
+            raise EntityNotFound(msg=f"User={user_id} not found")
+        items = [
+            UserRatingDTO(user_id=_user_id, score=score, position=position) for _user_id, score, position in result
+        ]
+        return items

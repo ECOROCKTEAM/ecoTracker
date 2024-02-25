@@ -8,20 +8,20 @@ from src.core.interfaces.unit_of_work import IUnitOfWork
 
 @dataclass
 class Result:
-    items: UserRatingDTO
+    items: list[UserRatingDTO]
 
 
-class UserGetRatingUsecase:
+class UserGetRatingWindowsUsecase:
     def __init__(self, uow: IUnitOfWork):
         self.uow = uow
 
-    async def __call__(self, *, user: User) -> Result:
+    async def __call__(self, *, user: User, size: int) -> Result:
         if not user.active:
             raise UserNotActive(id=user.id)
         if not user.is_premium:
             raise UserNotPremium(id=user.id)
 
         async with self.uow as uow:
-            rating = await uow.score_user.get_rating(user_id=user.id)
+            rating = await uow.score_user.get_rating_window(size=size, user_id=user.id)
 
         return Result(items=rating)

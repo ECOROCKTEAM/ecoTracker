@@ -14,6 +14,7 @@ from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.group.privacy import GroupPrivacyEnum
 from src.core.enum.group.role import GroupRoleEnum
 from src.core.enum.language import LanguageEnum
+from src.core.enum.score.operation import ScoreOperationEnum
 from src.core.enum.user.contact import ContactTypeEnum
 from src.data.models.challenges.mission import (
     GroupMissionModel,
@@ -26,7 +27,12 @@ from src.data.models.challenges.occupancy import (
 )
 from src.data.models.challenges.task import TaskModel, TaskTranslateModel, UserTaskModel
 from src.data.models.group.group import GroupModel
-from src.data.models.user.user import UserContactModel, UserGroupModel, UserModel
+from src.data.models.user.user import (
+    UserContactModel,
+    UserGroupModel,
+    UserModel,
+    UserScoreModel,
+)
 
 T = TypeVar("T")
 
@@ -87,6 +93,21 @@ class EntityLoaderBase(ABC, Generic[T]):
     @abstractmethod
     async def get(self) -> T | None:
         ...
+
+
+class UserScoreLoader(EntityLoaderBase[UserScoreModel]):
+    async def create(
+        self, user: UserModel, operation: ScoreOperationEnum | None = None, value: int | None = None
+    ) -> UserScoreModel:
+        if operation is None:
+            operation = random.choice([ScoreOperationEnum.MINUS, ScoreOperationEnum.PLUS])
+        if value is None:
+            value = random.randint(50, 1000)
+        model = UserScoreModel(user_id=user.id, operation=operation, value=value)
+        return await self._add(model)
+
+    async def get(self) -> UserScoreModel | None:
+        return await super().get()  # type: ignore
 
 
 class OccupancyCategoryTranslateLoader(EntityLoaderBase[OccupancyCategoryTranslateModel]):
@@ -468,6 +489,11 @@ class dataloader:
     @loader_track
     def category_translate_loader(self) -> OccupancyCategoryTranslateLoader:
         return OccupancyCategoryTranslateLoader(session=self.session)
+
+    @property
+    @loader_track
+    def user_score_loader(self) -> UserScoreLoader:
+        return UserScoreLoader(session=self.session)
 
     async def create_category(
         self, name: str | None = None, language_list: list[LanguageEnum] | None = None

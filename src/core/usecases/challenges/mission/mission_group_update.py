@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.dto.challenges.mission import MissionGroupUpdateDTO
-from src.core.dto.group.score import GroupOperationWithScoreDTO
+from src.core.dto.group.score import AddScoreGroupDTO
 from src.core.entity.mission import MissionGroup
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
@@ -41,9 +41,7 @@ class MissionGroupUpdateUsecase:
             if update_obj.status == OccupancyStatusEnum.FINISH:
                 base_mission = await uow.mission.get(id=group_mission.mission_id, lang=user.language)
                 score = await uow.score_group.add(
-                    obj=GroupOperationWithScoreDTO(
-                        group_id=group_id, value=base_mission.score, operation=ScoreOperationEnum.PLUS
-                    )
+                    obj=AddScoreGroupDTO(group_id=group_id, value=base_mission.score, operation=ScoreOperationEnum.PLUS)
                 )
                 if score.group_id != group_id:
                     raise EntityNotChange(msg="")

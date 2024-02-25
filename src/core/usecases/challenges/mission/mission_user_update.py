@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.dto.challenges.mission import MissionUserUpdateDTO
-from src.core.dto.user.score import OperationWithScoreUserDTO
+from src.core.dto.user.score import AddScoreUserDTO
 from src.core.entity.mission import MissionUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
@@ -31,9 +31,7 @@ class MissionUserUpdateUsecase:
             if update_obj.status == OccupancyStatusEnum.FINISH:
                 base_mission = await uow.mission.get(id=user_mission.mission_id, lang=user.language)
                 score = await uow.score_user.add(
-                    obj=OperationWithScoreUserDTO(
-                        user_id=user.id, value=base_mission.score, operation=ScoreOperationEnum.PLUS
-                    )
+                    obj=AddScoreUserDTO(user_id=user.id, value=base_mission.score, operation=ScoreOperationEnum.PLUS)
                 )
                 if score.user_id != user.id:
                     raise EntityNotChange(msg="")

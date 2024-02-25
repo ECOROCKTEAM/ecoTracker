@@ -3,13 +3,12 @@ from dataclasses import asdict
 import pytest
 
 from src.core.dto.m2m.user.contact import ContactUserCreateDTO, ContactUserUpdateDTO
+from src.core.dto.utils import SortObj
 from src.core.enum.user.contact import ContactTypeEnum
 from src.core.exception.base import EntityNotChange, EntityNotCreated, EntityNotFound
 from src.core.interfaces.repository.user.contact import (
     IUserContactRepository,
     UserContactFilter,
-    UserContactOrder,
-    UserContactSorting,
 )
 from tests.dataloader import dataloader
 
@@ -261,8 +260,10 @@ async def test_user_contact_list_ok(dl: dataloader, user_contact_repo: IUserCont
     asrt_user_id, filter_obj = await arrange_func(dl=dl)
     filter_obj: UserContactFilter = filter_obj
 
-    user_contact_list = await user_contact_repo.list(
-        user_id=asrt_user_id, filter_obj=filter_obj, sorting_obj=UserContactSorting(), order_obj=UserContactOrder()
+    user_contact_list = await user_contact_repo.lst(
+        user_id=asrt_user_id,
+        filter_obj=filter_obj,
+        sorting_obj=SortObj(),
     )
 
     user_id_set = set(user_contact.user_id for user_contact in user_contact_list)

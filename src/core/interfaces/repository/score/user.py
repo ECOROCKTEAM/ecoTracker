@@ -1,51 +1,35 @@
 from abc import ABC, abstractmethod
 
-from src.core.dto.mock import MockObj
-from src.core.dto.user.score import (
-    OperationWithScoreUserDTO,
-    UserBoundOffsetDTO,
-    UserRatingDTO,
-    UserScoreDTO,
-)
+from src.core.dto.user.score import AddScoreUserDTO, UserRatingDTO, UserScoreDTO
 from src.core.entity.score import ScoreUser
 
 
 class IRepositoryUserScore(ABC):
     @abstractmethod
-    async def user_get(self, *, user_id: str) -> UserScoreDTO:
-        """Get user score
-
-        Args:
-            user_id (str): user identify
-
-        Returns:
-            UserRating: DTO of user score object
-        """
+    async def get_score(self, *, user_id: str) -> UserScoreDTO:
+        ...
 
     @abstractmethod
-    async def user_rating(
+    async def get_rating(
         self,
         *,
-        obj: UserBoundOffsetDTO | None = None,
-        order_obj: MockObj,
-    ) -> list[UserRatingDTO]:
-        """Get user rating
-
-        Args:
-            obj (UserBoundOffsetDTO, optional): DTO for specific user. Defaults to None. If None -> rating of all users.
-            order_obj (MockObj): Order for score value
-
-        Returns:
-            list[UserRatingDTO]: List of DTO of user score object
-        """
+        user_id: str,
+    ) -> UserRatingDTO:
+        ...
 
     @abstractmethod
-    async def add(self, *, obj: OperationWithScoreUserDTO) -> ScoreUser:
-        """Operation with user score (addiction, subtraction, multiplication, division)
+    async def get_rating_window(
+        self,
+        *,
+        window_offset: int,
+        user_id: str,
+    ) -> list[UserRatingDTO]:
+        ...
 
-        Args:
-            obj (IncrementScoreUserDTO): DTO of user object, value and math operator
+    @abstractmethod
+    async def get_rating_top(self, *, size: int) -> list[UserRatingDTO]:
+        ...
 
-        Returns:
-            ScoreUser: User score entity
-        """
+    @abstractmethod
+    async def add(self, *, obj: AddScoreUserDTO) -> ScoreUser:
+        ...

@@ -10,6 +10,10 @@ class UserNotActive(EntityNotActive):
     msg_template = "User={id} not active"
 
 
+class UserNotPremium(DomainError):
+    msg_template = "User={id} not premium"
+
+
 class UserError(DomainError):
     msg_template = "user_id={user_id} problem"
 

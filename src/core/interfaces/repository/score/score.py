@@ -2,7 +2,7 @@
 
 # from src.core.dto.community.score import CommunityBoundOffsetDTO, CommunityRatingDTO, CommunityOperationWithScoreDTO
 # from src.core.dto.mock import MockObj
-# from src.core.dto.user.score import OperationWithScoreUserDTO, UserBoundOffsetDTO, UserRatingDTO
+# from src.core.dto.user.score import AddScoreUserDTO, UserBoundOffsetDTO, UserRatingDTO
 
 
 # class IRepositoryScore(ABC):
@@ -78,7 +78,7 @@
 #         """
 
 #     @abstractmethod
-#     async def user_change(self, *, obj: OperationWithScoreUserDTO) -> UserRatingDTO:
+#     async def user_change(self, *, obj: AddScoreUserDTO) -> UserRatingDTO:
 #         """Operation with user score (addiction, subtraction, multiplication, division)
 
 #         Args:

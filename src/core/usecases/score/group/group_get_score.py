@@ -2,9 +2,8 @@ from dataclasses import dataclass
 
 from src.core.dto.group.score import GroupScoreDTO
 from src.core.entity.user import User
-from src.core.exception.group import GroupDeactivatedError
-from src.core.exception.user import UserIsNotActivateError, UserIsNotPremiumError
 from src.core.interfaces.unit_of_work import IUnitOfWork
+from src.core.usecases.score.group.access_functions import access_check_target_group
 
 
 @dataclass
@@ -13,7 +12,7 @@ class Result:
 
 
 class GroupGetScoreUsecase:
-    def __init__(self, uow: IUnitOfWork) -> None:
+    def __init__(self, uow: IUnitOfWork):
         self.uow = uow
 
     async def __call__(
@@ -22,19 +21,8 @@ class GroupGetScoreUsecase:
         group_id: int,
         user: User,
     ) -> Result:
-        if not user.active:
-            raise UserIsNotActivateError(user_id=user.id)
-        if not user.is_premium:
-            raise UserIsNotPremiumError(user_id=user.id)
-
         async with self.uow as uow:
-            group = await uow.group.get(id=group_id)
-            if not group.active:
-                raise GroupDeactivatedError(group_id=group.id)
+            await access_check_target_group(uow=uow, user=user, group_id=group_id)
+            result = await uow.score_group.get_score(group_id=group_id)
 
-            group_score = await uow.score_group.group_get(group_id=group.id)
-
-            if group_score.value < 0:
-                group_score.value = 0
-
-        return Result(item=group_score)
+        return Result(item=result)

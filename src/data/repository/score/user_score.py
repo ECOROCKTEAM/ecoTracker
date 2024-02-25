@@ -3,11 +3,7 @@ from dataclasses import asdict
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.dto.user.score import (
-    OperationWithScoreUserDTO,
-    UserRatingDTO,
-    UserScoreDTO,
-)
+from src.core.dto.user.score import AddScoreUserDTO, UserRatingDTO, UserScoreDTO
 from src.core.entity.score import ScoreUser
 from src.core.exception.base import EntityNotFound
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
@@ -16,25 +12,7 @@ from src.data.repository.score.qbuilder import (
     build_rating_table_stmt,
     build_score_table_stmt,
 )
-
-
-def calc_bounds(position: int, window_offset: int, max_bound: int, min_bound: int = 1) -> tuple[int, int]:
-    ubound = position + window_offset
-    lbound = position - window_offset
-
-    # check lboud
-    if lbound <= 0:
-        ubound += min_bound - lbound
-        lbound = min_bound
-
-    # check ubound
-    if ubound > max_bound and lbound == min_bound:
-        ubound = max_bound
-    elif ubound > max_bound and lbound - (ubound - max_bound) >= min_bound:
-        lbound = lbound - abs(max_bound - ubound)
-        ubound = max_bound
-
-    return lbound, ubound
+from src.data.repository.score.utils import calc_bounds
 
 
 def score_model_to_entity(model: UserScoreModel) -> ScoreUser:
@@ -49,7 +27,7 @@ class RepositoryUserScore(IRepositoryUserScore):
     def __init__(self, db_context: AsyncSession) -> None:
         self.db_context = db_context
 
-    async def add(self, *, obj: OperationWithScoreUserDTO) -> ScoreUser:
+    async def add(self, *, obj: AddScoreUserDTO) -> ScoreUser:
         stmt = insert(UserScoreModel).values(**asdict(obj)).returning(UserScoreModel)
         result = await self.db_context.scalar(stmt)
         if not result:
@@ -63,6 +41,7 @@ class RepositoryUserScore(IRepositoryUserScore):
         if not result:
             raise EntityNotFound(msg=f"User={user_id} not found")
         _user_id, score = result
+        assert user_id == _user_id
         return UserScoreDTO(user_id=_user_id, score=score)
 
     async def get_rating(

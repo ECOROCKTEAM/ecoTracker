@@ -2,10 +2,8 @@ import random
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from uuid import uuid4
-from xml.dom.minidom import Entity
 
 import pytest
-from requests import delete
 from sqlalchemy import func, select
 
 from src.core.dto.user.score import UserRatingDTO

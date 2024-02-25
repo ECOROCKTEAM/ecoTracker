@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.dto.challenges.task import TaskUserUpdateDTO
-from src.core.dto.user.score import OperationWithScoreUserDTO
+from src.core.dto.user.score import AddScoreUserDTO
 from src.core.entity.task import TaskUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
@@ -42,7 +42,7 @@ class UserTaskCompleteUsecase:
             #     raise TaskDeactivatedError(task_id=task.id)
 
             _ = await uow.score_user.add(
-                obj=OperationWithScoreUserDTO(user_id=user.id, value=task.score, operation=ScoreOperationEnum.PLUS)
+                obj=AddScoreUserDTO(user_id=user.id, value=task.score, operation=ScoreOperationEnum.PLUS)
             )
 
             result = await uow.task.user_task_update(

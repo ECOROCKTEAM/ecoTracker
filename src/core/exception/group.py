@@ -1,4 +1,8 @@
-from src.core.exception.base import DomainError, RepoError
+from src.core.exception.base import DomainError, EntityNotActive, RepoError
+
+
+class GroupNotActive(EntityNotActive):
+    msg_template = "Group={id} not active"
 
 
 class GroupError(DomainError):

@@ -6,24 +6,18 @@ from src.core.enum.score.operation import ScoreOperationEnum
 @dataclass
 class GroupRatingDTO:
     group_id: int
-    value: int
+    score: int
     position: int
 
 
 @dataclass
 class GroupScoreDTO:
     group_id: int
-    value: int
+    score: int
 
 
 @dataclass
-class GroupBoundOffsetDTO:
-    group_id: int
-    bound_offset: int
-
-
-@dataclass
-class GroupOperationWithScoreDTO:
+class AddScoreGroupDTO:
     group_id: int
     value: int
     operation: ScoreOperationEnum

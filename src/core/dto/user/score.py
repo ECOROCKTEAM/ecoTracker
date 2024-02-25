@@ -17,7 +17,7 @@ class UserScoreDTO:
 
 
 @dataclass
-class OperationWithScoreUserDTO:
+class AddScoreUserDTO:
     user_id: str
     value: int
     operation: ScoreOperationEnum

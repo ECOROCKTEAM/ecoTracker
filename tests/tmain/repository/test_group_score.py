@@ -180,9 +180,6 @@ async def test_get_rating_window(dl: dataloader, repo_group_score: IRepositoryGr
         result = await repo_group_score.get_rating_window(
             window_offset=window_offset, group_id=group_id, group_privacy__in=[]
         )
-        for item in result:
-            print(item)
-        input("www")
     # Assert
     group_id_set = {item.group_id for item in result}
     assert group_id in group_id_set

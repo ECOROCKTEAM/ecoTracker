@@ -12,7 +12,6 @@ from src.data.models.group.group import GroupScoreModel
 from src.data.repository.score.qbuilder import (
     build_rating_table_stmt,
     build_score_table_stmt,
-    showq,
 )
 from src.data.repository.score.utils import calc_bounds
 
@@ -60,7 +59,6 @@ class RepositoryGroupScore(IRepositoryGroupScore):
         self, *, window_offset: int, group_id: int, group_privacy__in: list[GroupPrivacyEnum]
     ) -> list[GroupRatingDTO]:
         stmt = build_rating_table_stmt(model=GroupScoreModel, target_id=group_id, with_max_bound=True)
-        showq(stmt)
         coro = await self.db_context.execute(stmt)
         result = coro.one_or_none()
         if result is None:

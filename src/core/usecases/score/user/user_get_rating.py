@@ -8,7 +8,7 @@ from src.core.interfaces.unit_of_work import IUnitOfWork
 
 @dataclass
 class Result:
-    items: UserRatingDTO
+    item: UserRatingDTO
 
 
 class UserGetRatingUsecase:
@@ -24,4 +24,4 @@ class UserGetRatingUsecase:
         async with self.uow as uow:
             rating = await uow.score_user.get_rating(user_id=user.id)
 
-        return Result(items=rating)
+        return Result(item=rating)

@@ -2,26 +2,30 @@ import random
 from abc import ABC, abstractmethod
 from datetime import datetime
 from functools import wraps
-from nis import cat
 from random import randint
 from typing import Generic, Type, TypeVar, get_args
 from uuid import uuid4
-from venv import create
 
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.inspection import inspect
 
+from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.group.privacy import GroupPrivacyEnum
 from src.core.enum.group.role import GroupRoleEnum
 from src.core.enum.language import LanguageEnum
 from src.core.enum.score.operation import ScoreOperationEnum
 from src.core.enum.user.contact import ContactTypeEnum
+from src.data.models.challenges.mission import (
+    GroupMissionModel,
+    MissionModel,
+    UserMissionModel,
+)
 from src.data.models.challenges.occupancy import (
     OccupancyCategoryModel,
     OccupancyCategoryTranslateModel,
 )
-from src.data.models.challenges.task import TaskModel, TaskTranslateModel
+from src.data.models.challenges.task import TaskModel, TaskTranslateModel, UserTaskModel
 from src.data.models.group.group import GroupModel
 from src.data.models.user.user import (
     UserContactModel,
@@ -235,7 +239,7 @@ class UserContactLoader(EntityLoaderBase[UserContactModel]):
         is_favorite: bool = True,
     ) -> UserContactModel:
         model = UserContactModel(
-            id=id or randint(1, 10000),
+            id=id,
             user_id=user_id or uuid(),
             value=value,
             type=type,
@@ -279,6 +283,109 @@ class UserLoader(EntityLoaderBase[UserModel]):
         if language is not None:
             cond.append(UserModel.language == language)
         return await self._get(UserModel, cond)
+
+
+class UserTaskLoader(EntityLoaderBase[UserTaskModel]):
+    async def create(
+        self,
+        user_id: str,
+        task_id: int,
+        status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE,
+        date_start: datetime = datetime.now(),
+        date_close: datetime | None = None,
+    ) -> UserTaskModel:
+        model = UserTaskModel(
+            user_id=user_id, task_id=task_id, status=status, date_start=date_start, date_close=date_close
+        )
+        return await self._add(model=model)
+
+    async def get(
+        self,
+        user_id: str | None = None,
+        task_id: int | None = None,
+        status: OccupancyStatusEnum | None = None,
+    ) -> UserTaskModel | None:
+        cond = []
+        if user_id is not None:
+            cond.append(UserTaskModel.user_id == user_id)
+        if task_id is not None:
+            cond.append(UserTaskModel.task_id == task_id)
+        if status is not None:
+            cond.append(UserTaskModel.status == status)
+        return await self._get(model=UserTaskModel, cond=cond)
+
+
+class MissionLoader(EntityLoaderBase[MissionModel]):
+    async def create(
+        self, category_id: int, author: str | None = None, active: bool | None = None, score: int | None = None
+    ) -> MissionModel:
+        model = MissionModel(category_id=category_id, author=author or uuid(), active=active or True, score=score or 10)
+        return await self._add(model=model)
+
+    async def get(
+        self, active: bool = True, author: str | None = None, category_id: int | None = None
+    ) -> MissionModel | None:
+        cond = []
+        if active is not None:
+            cond.append(MissionModel.active == active)
+        if author is not None:
+            cond.append(MissionModel.author == author)
+        if category_id is not None:
+            cond.append(MissionModel.category_id == category_id)
+        return await self._get(model=MissionModel, cond=cond)
+
+
+class GroupMissionLoader(EntityLoaderBase[GroupMissionModel]):
+    async def create(
+        self, group_id: int, mission_id: int, author: str, status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
+    ) -> GroupMissionModel:
+        model = GroupMissionModel(mission_id=mission_id, group_id=group_id, author=author, status=status)
+        return await self._add(model=model)
+
+    async def get(
+        self,
+        author: str | None = None,
+        mission_id: int | None = None,
+        group_id: int | None = None,
+        status: OccupancyStatusEnum | None = None,
+    ) -> GroupMissionModel | None:
+        cond = []
+        if author is not None:
+            cond.append(GroupMissionModel.author == author)
+        if mission_id is not None:
+            cond.append(GroupMissionModel.mission_id)
+        if group_id is not None:
+            cond.append(GroupMissionModel.group_id == group_id)
+        if status is not None:
+            cond.append(GroupMissionModel.status == status)
+        return await self._get(model=GroupMissionModel, cond=cond)
+
+
+class UserMissionLoader(EntityLoaderBase[UserMissionModel]):
+    async def create(
+        self,
+        user_id: str,
+        mission_id: int,
+        status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE,
+        date_start: datetime = datetime.now(),
+    ) -> UserMissionModel:
+        model = UserMissionModel(user_id=user_id, mission_id=mission_id, status=status, date_start=date_start)
+        return await self._add(model=model)
+
+    async def get(
+        self,
+        user_id: str | None = None,
+        mission_id: int | None = None,
+        status: OccupancyStatusEnum | None = None,
+    ) -> UserMissionModel | None:
+        cond = []
+        if user_id is not None:
+            cond.append(UserMissionModel.user_id == user_id)
+        if mission_id is not None:
+            cond.append(UserMissionModel.mission_id == mission_id)
+        if status is not None:
+            cond.append(UserMissionModel.status == status)
+        return await self._get(model=UserMissionModel, cond=cond)
 
 
 def loader_track(func):
@@ -347,6 +454,26 @@ class dataloader:
     @loader_track
     def task_loader(self) -> TaskLoader:
         return TaskLoader(session=self.session)
+
+    @property
+    @loader_track
+    def user_task_loader(self) -> UserTaskLoader:
+        return UserTaskLoader(session=self.session)
+
+    @property
+    @loader_track
+    def mission_loader(self) -> MissionLoader:
+        return MissionLoader(session=self.session)
+
+    @property
+    @loader_track
+    def user_mission_loader(self) -> UserMissionLoader:
+        return UserMissionLoader(session=self.session)
+
+    @property
+    @loader_track
+    def group_mission_loader(self) -> GroupMissionLoader:
+        return GroupMissionLoader(session=self.session)
 
     @property
     @loader_track

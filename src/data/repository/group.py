@@ -54,7 +54,7 @@ class RepositoryGroup(IRepositoryGroup):
         stmt = select(GroupModel).where(GroupModel.id == id)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound(msg="")
+            raise EntityNotFound(msg=f"{id=}")
         return model_to_dto(res)
 
     async def create(self, *, obj: GroupCreateDTO) -> Group:
@@ -127,7 +127,7 @@ class RepositoryGroup(IRepositoryGroup):
         stmt = select(UserGroupModel).where(UserGroupModel.user_id == user_id, UserGroupModel.group_id == group_id)
         res = await self.db_context.scalar(stmt)
         if not res:
-            raise EntityNotFound(msg="")
+            raise EntityNotFound(msg=f"{user_id=}, {group_id=}")
         return user_group_model_to_dto(res)
 
     async def user_list(self, *, id: int, filter_obj: GroupUserFilter) -> list[UserGroupDTO]:

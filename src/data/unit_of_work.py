@@ -11,6 +11,8 @@ from src.core.interfaces.repository.notifications.notifications import (
 )
 from src.core.interfaces.repository.score.group import IRepositoryGroupScore
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
+from src.core.interfaces.repository.statistic.group import IRepositoryGroupStatistic
+from src.core.interfaces.repository.statistic.user import IRepositoryUserStatistic
 from src.core.interfaces.repository.subscription.subscription import (
     ISubscriptionRepository,
 )
@@ -27,6 +29,8 @@ from src.data.repository.group import RepositoryGroup
 from src.data.repository.notification import NotificationRepository
 from src.data.repository.score.group_score import GroupScoreRepository
 from src.data.repository.score.user_score import RepositoryUserScore
+from src.data.repository.statistic.group import GroupStatisticRepository
+from src.data.repository.statistic.user import UserStatisticRepository
 from src.data.repository.subscription import SubscriptionRepository
 from src.data.repository.user import UserRepository
 from src.data.repository.user_contacts import UserContactRepository
@@ -46,7 +50,21 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self._user: IUserRepository | None = None
         self._subscription: ISubscriptionRepository | None = None
         self._user_contact: IUserContactRepository | None = None
+        self._user_statistic: IRepositoryUserStatistic | None = None
+        self._group_statistic: IRepositoryGroupStatistic | None = None
         self._notifications: INotificationRepository | None = None
+
+    @property
+    def group_statistic(self) -> IRepositoryGroupStatistic:
+        if self._group_statistic:
+            return self._group_statistic
+        raise ValueError("UoW not in context")
+
+    @property
+    def user_statistic(self) -> IRepositoryUserStatistic:
+        if self._user_statistic:
+            return self._user_statistic
+        raise ValueError("UoW not in context")
 
     @property
     def user_contact(self) -> IUserContactRepository:
@@ -132,6 +150,8 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self._subscription = SubscriptionRepository(self._session)
         self._user = UserRepository(self._session)
         self._user_contact = UserContactRepository(self._session)
+        self._user_statistic = UserStatisticRepository(self._session)
+        self._group_statistic = GroupStatisticRepository(self.__session)
         self._notifications = NotificationRepository(self._session)
         return self
 

@@ -3,11 +3,6 @@ from pydantic import BaseModel
 from src.core.dto.statistic.group import GroupMissionCounterDTO
 
 
-class GroupMissionCounterSchema(BaseModel):
-    group_id: int
-    counter: int
-
-
 class GroupFinishedMissionsSchema(BaseModel):
     group_id: int
     counter: int

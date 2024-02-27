@@ -8,7 +8,7 @@ from src.core.interfaces.repository.statistic.occupancy import OccupancyStatisti
 
 
 class OccupancyStatisticFilterSchema(BaseModel):
-    status__in: Annotated[list[OccupancyStatusEnum] | None, Query()] = [OccupancyStatusEnum.FINISH]
+    status__in: Annotated[list[OccupancyStatusEnum] | None, Query()]
 
     def to_obj(self) -> OccupancyStatisticFilter:
         return OccupancyStatisticFilter(status__in=self.status__in)

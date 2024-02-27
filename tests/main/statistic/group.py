@@ -8,7 +8,7 @@ from src.core.exception.base import PermissionError
 from src.core.interfaces.repository.statistic.occupancy import OccupancyStatisticFilter
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.core.usecases.statistic.group_mission_counter import (
-    GroupMissionFinishedCounterUseCase,
+    GroupMissionCounterStatisticUsecase,
 )
 from tests.fixtures.group.usecase.group import mock_group_get_active_private
 from tests.fixtures.group.usecase.user import mock_group_user_get_default
@@ -25,7 +25,7 @@ async def test_group_mission_counter_private_group_user_in_group_ok(
 ):
     filter_obj = OccupancyStatisticFilter(status__in=[OccupancyStatusEnum.ACTIVE])
 
-    uc = GroupMissionFinishedCounterUseCase(uow=uow)
+    uc = GroupMissionCounterStatisticUsecase(uow=uow)
     await uc(user=fxe_user_default, group_id=mock_group_get_active_private.id, filter_obj=filter_obj)
 
 
@@ -38,7 +38,7 @@ async def test_group_mission_counter_private_group_user_not_in_group_error(
 ):
     filter_obj = OccupancyStatisticFilter(status__in=[OccupancyStatusEnum.FINISH])
 
-    uc = GroupMissionFinishedCounterUseCase(uow=uow)
+    uc = GroupMissionCounterStatisticUsecase(uow=uow)
     with pytest.raises(PermissionError) as e:
         await uc(user=fxe_user_default, group_id=mock_group_get_active_private.id, filter_obj=filter_obj)
     assert "not in PRIVATE" in str(e.value)

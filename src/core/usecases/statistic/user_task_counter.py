@@ -12,7 +12,7 @@ class Result:
     item: TaskUserCounterDTO
 
 
-class UserTasksFinishedCounterUsecase:
+class UserTaskCounterStatisticUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 

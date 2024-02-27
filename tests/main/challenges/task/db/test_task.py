@@ -1,6 +1,7 @@
 import pytest
 
 from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj, SortObj
 from src.core.entity.task import Task
 from src.core.enum.language import LanguageEnum
 from src.core.exception.base import EntityNotFound, TranslateNotFound
@@ -42,12 +43,13 @@ async def test_get_not_translate(repo: IRepositoryTask, fxe_task_default: Task):
 # pytest tests/main/challenges/task/db/test_task.py::test_lst -v -s
 @pytest.mark.asyncio
 async def test_lst(repo: IRepositoryTask, fxe_task_default: Task, fxe_task_en: Task):
-    task_list = await repo.lst(
+    task_list_pagination = await repo.lst(
         filter_obj=TaskFilter(),
-        order_obj=MockObj(),
-        pagination_obj=MockObj(),
+        sorting_obj=SortObj(),
+        iterable_obj=IterableObj(),
         lang=LanguageEnum.RU,
     )
+    task_list = task_list_pagination.items
     assert len(task_list) == 2
     for task_getted in task_list:
         if task_getted.language == LanguageEnum.EN:
@@ -70,13 +72,14 @@ async def test_lst(repo: IRepositoryTask, fxe_task_default: Task, fxe_task_en: T
 @pytest.mark.asyncio
 async def test_lst_filter(repo: IRepositoryTask, fxe_task_default: Task):
     default_kw = dict(order_obj=MockObj(), pagination_obj=MockObj(), lang=LanguageEnum.RU)
-    task_list = await repo.lst(filter_obj=TaskFilter(active=True), **default_kw)  # type: ignore
+    task_list_pagination = await repo.lst(filter_obj=TaskFilter(active=True), **default_kw)  # type: ignore
+    task_list = task_list_pagination.items
     assert len(task_list) == 1
     task = task_list[0]
     assert fxe_task_default.id == task.id
 
-    task_list = await repo.lst(filter_obj=TaskFilter(active=False), **default_kw)  # type: ignore
+    task_list_pagination = await repo.lst(filter_obj=TaskFilter(active=False), **default_kw)  # type: ignore
     assert len(task_list) == 0
 
-    task_list = await repo.lst(filter_obj=TaskFilter(category_id=-1), **default_kw)  # type: ignore
+    task_list_pagination = await repo.lst(filter_obj=TaskFilter(category_id=-1), **default_kw)  # type: ignore
     assert len(task_list) == 0

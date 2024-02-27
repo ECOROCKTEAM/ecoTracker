@@ -1,6 +1,7 @@
 import pytest
 
 from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj, SortObj
 from src.core.entity.task import Task
 from src.core.entity.user import User
 from src.core.interfaces.repository.challenges.task import TaskFilter
@@ -21,9 +22,9 @@ async def test_ok(
     res = await uc(
         user=fxe_user_default,
         filter_obj=TaskFilter(active=False),
-        order_obj=MockObj(),
-        pagination_obj=MockObj(),
+        sorting_obj=SortObj(),
+        iterable_obj=IterableObj(),
     )
     # active filter was changed to true
-    task_list = res.item
+    task_list = res.items
     assert len(task_list) == 0

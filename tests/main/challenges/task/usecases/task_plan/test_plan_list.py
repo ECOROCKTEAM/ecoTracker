@@ -1,6 +1,7 @@
 import pytest
 
 from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj, SortObj
 from src.core.entity.task import TaskUserPlan
 from src.core.entity.user import User
 from src.core.interfaces.repository.challenges.task import TaskUserPlanFilter
@@ -29,10 +30,10 @@ async def test_ok(
     res = await uc(
         user=fxe_user_default,
         filter_obj=TaskUserPlanFilter(task_active=True),
-        order_obj=MockObj(),
-        pagination_obj=MockObj(),
+        sorting_obj=SortObj(),
+        iterable_obj=IterableObj(),
     )
-    plans = res.item
+    plans = res.items
     assert isinstance(plans, list)
     assert len(plans) == 1
     plan = plans[0]

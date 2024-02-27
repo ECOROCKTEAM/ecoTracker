@@ -20,7 +20,7 @@ class SubscriptionListUsecase:
 
     # async def __call__(self, *, user: User, filter_obj: MockObj | None = None) -> Result:
     #     if not user.active:
-    #         raise UserIsNotActivateError(user_id=user.id)
+    #         raise UserNotActive(id=user.id
 
     #     sub_list = await self.repo.lst(filter_obj=filter_obj)
     #     return Result(items=sub_list)

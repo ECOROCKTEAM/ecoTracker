@@ -6,7 +6,7 @@ from src.core.dto.challenges.task import (
     TaskUserPlanCreateDTO,
     TaskUserUpdateDTO,
 )
-from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj, Pagination, SortObj
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
@@ -46,8 +46,8 @@ class IRepositoryTask(ABC):
 
     @abstractmethod
     async def lst(
-        self, *, filter_obj: TaskFilter, order_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
-    ) -> list[Task]:
+        self, *, filter_obj: TaskFilter, sorting_obj: SortObj, iterable_obj: IterableObj, lang: LanguageEnum
+    ) -> Pagination[list[Task]]:
         """List of tasks
 
         Args:
@@ -61,7 +61,7 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def user_task_get(self, *, id: int) -> TaskUser:
+    async def user_task_get(self, *, user_id: str, id: int) -> TaskUser:
         """Получить задание для пользователя
 
         Args:
@@ -84,7 +84,7 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def user_task_update(self, *, id: int, obj: TaskUserUpdateDTO) -> TaskUser:
+    async def user_task_update(self, *, user_id: str, id: int, obj: TaskUserUpdateDTO) -> TaskUser:
         """Обновить задание для пользователя
 
         Args:
@@ -97,13 +97,8 @@ class IRepositoryTask(ABC):
 
     @abstractmethod
     async def user_task_lst(
-        self,
-        *,
-        user_id: str,
-        filter_obj: TaskUserFilter | None = None,
-        order_obj: MockObj | None = None,
-        pagination_obj: MockObj | None = None,
-    ) -> list[TaskUser]:
+        self, *, user_id: str, filter_obj: TaskUserFilter, sorting_obj: SortObj, iterable_obj: IterableObj
+    ) -> Pagination[list[TaskUser]]:
         """Получить список заданий пользователя
 
         Args:
@@ -141,13 +136,8 @@ class IRepositoryTask(ABC):
 
     @abstractmethod
     async def plan_lst(
-        self,
-        *,
-        user_id: str,
-        filter_obj: TaskUserPlanFilter | None = None,
-        order_obj: MockObj | None = None,
-        pagination_obj: MockObj | None = None,
-    ) -> list[TaskUserPlan]:
+        self, *, user_id: str, filter_obj: TaskUserPlanFilter, sorting_obj: SortObj, iterable_obj: IterableObj
+    ) -> Pagination[list[TaskUserPlan]]:
         """Получить список плана задач
 
         Args:

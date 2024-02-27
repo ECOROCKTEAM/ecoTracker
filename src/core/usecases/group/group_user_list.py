@@ -7,8 +7,8 @@ from src.core.enum.group.role import GroupRoleEnum
 from src.core.exception.base import EntityNotActive, EntityNotFound
 from src.core.exception.user import (
     PermissionError,
-    UserIsNotActivateError,
     UserIsNotPremiumError,
+    UserNotActive,
 )
 from src.core.interfaces.repository.group.group import GroupUserFilter
 from src.core.interfaces.unit_of_work import IUnitOfWork
@@ -27,7 +27,7 @@ class GroupUserListUsecase:
 
     async def __call__(self, user: User, group_id: int, filter_obj: GroupUserFilter) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(user_id=user.id)
+            raise UserNotActive(id=user.id)
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
 

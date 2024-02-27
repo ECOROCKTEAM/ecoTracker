@@ -2,12 +2,12 @@ from dataclasses import dataclass
 
 from src.core.const.task import MAX_TASK_AMOUNT_NOT_PREMIUM, MAX_TASK_AMOUNT_PREMIUM
 from src.core.dto.challenges.task import TaskUserCreateDTO
-from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj, SortObj
 from src.core.entity.task import TaskUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.exception.base import EntityAlreadyUsage, EntityNotActive, MaxAmountError
-from src.core.exception.user import UserIsNotActivateError
+from src.core.exception.user import UserNotActive
 from src.core.interfaces.repository.challenges.task import (
     TaskUserFilter,
     TaskUserPlanFilter,
@@ -26,7 +26,7 @@ class UserTaskAddUsecase:
 
     async def __call__(self, *, user: User, task_id: int) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(user_id=user.id)
+            raise UserNotActive(id=user.id)
 
         async with self.uow as uow:
             task = await uow.task.get(id=task_id, lang=user.language)
@@ -37,12 +37,13 @@ class UserTaskAddUsecase:
             if user.is_premium:
                 max_count = MAX_TASK_AMOUNT_PREMIUM
 
-            user_tasks = await uow.task.user_task_lst(
+            user_tasks_pagination = await uow.task.user_task_lst(
                 user_id=user.id,
                 filter_obj=TaskUserFilter(status=OccupancyStatusEnum.ACTIVE),
-                pagination_obj=MockObj(),
-                order_obj=MockObj(),
+                sorting_obj=SortObj(),
+                iterable_obj=IterableObj(),
             )
+            user_tasks = user_tasks_pagination.items
 
             for user_task in user_tasks:
                 if user_task.task_id == task_id:
@@ -51,12 +52,10 @@ class UserTaskAddUsecase:
             if len(user_tasks) > max_count:
                 raise MaxAmountError(msg=f"{user.id=}")
 
-            user_plan_tasks = await uow.task.plan_lst(
-                user_id=user.id,
-                filter_obj=TaskUserPlanFilter(),
-                order_obj=MockObj(),
-                pagination_obj=MockObj(),
+            user_plan_tasks_pagination = await uow.task.plan_lst(
+                user_id=user.id, filter_obj=TaskUserPlanFilter(), sorting_obj=SortObj(), iterable_obj=IterableObj()
             )
+            user_plan_tasks = user_plan_tasks_pagination.items
 
             if len(user_plan_tasks) > max_count:
                 raise MaxAmountError(msg=f"{user.id=}")

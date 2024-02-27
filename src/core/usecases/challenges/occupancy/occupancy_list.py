@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from src.core.entity.occupancy import OccupancyCategory
 from src.core.entity.user import User
-from src.core.exception.user import UserIsNotActivateError
+from src.core.exception.user import UserNotActive
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
@@ -17,7 +17,7 @@ class OccupancyCategoryListUsecase:
 
     async def __call__(self, *, user: User) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(user_id=user.id)
+            raise UserNotActive(id=user.id)
 
         async with self.uow as uow:
             category_list = await uow.occupancy_category.lst(lang=user.language)

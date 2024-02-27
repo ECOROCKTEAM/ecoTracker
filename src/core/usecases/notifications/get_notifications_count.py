@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from src.core.entity.user import User
-from src.core.exception.user import UserIsNotActivateError
+from src.core.exception.user import UserNotActive
 from src.core.interfaces.repository.notifications.notifications import (
     NotificationFilter,
 )
@@ -23,7 +23,7 @@ class GetUnreadNotificationsCountUsecase:
 
     async def __call__(self, *, user: User) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(user_id=user.id)
+            raise UserNotActive(id=user.id)
 
         filter_obj = NotificationFilter(viewed=False)
         async with self.uow as uow:

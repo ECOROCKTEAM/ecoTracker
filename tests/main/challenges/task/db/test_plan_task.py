@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.dto.challenges.task import TaskUserPlanCreateDTO
 from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj, SortObj
 from src.core.entity.task import Task, TaskUserPlan
 from src.core.entity.user import User
 from src.core.enum.language import LanguageEnum
@@ -25,19 +26,21 @@ from tests.fixtures.user.db.model import fxm_user_default
 # pytest tests/main/challenges/task/db/test_plan_task.py::test_plan_list -v -s
 @pytest.mark.asyncio
 async def test_plan_list(repo: IRepositoryTask, fxe_task_plan_default: UserTaskPlanModel):
-    default_kw = dict(order_obj=MockObj(), pagination_obj=MockObj())
-    plan_list = await repo.plan_lst(
-        user_id=fxe_task_plan_default.user_id, filter_obj=TaskUserPlanFilter(task_active=True), **default_kw
+    default_kw = dict(sorting_obj=SortObj(), iterable_obj=IterableObj())
+    plan_list_pagination = await repo.plan_lst(
+        user_id=fxe_task_plan_default.user_id, filter_obj=TaskUserPlanFilter(task_active=True), **default_kw  # type: ignore
     )
+    plan_list = plan_list_pagination.items
     assert len(plan_list) == 1
     plan = plan_list[0]
     assert isinstance(plan, TaskUserPlan)
     assert fxe_task_plan_default.user_id == plan.user_id
     assert fxe_task_plan_default.task_id == plan.task_id
 
-    plan_list = await repo.plan_lst(
-        user_id=fxe_task_plan_default.user_id, filter_obj=TaskUserPlanFilter(task_active=False), **default_kw
+    plan_list_pagination = await repo.plan_lst(
+        user_id=fxe_task_plan_default.user_id, filter_obj=TaskUserPlanFilter(task_active=False), **default_kw  # type: ignore
     )
+    plan_list = plan_list_pagination.items
     assert len(plan_list) == 0
 
 
@@ -59,8 +62,9 @@ async def test_plan_create(
     assert plan.user_id == fxe_user_default.id
     assert plan.task_id == fxe_task_default.id
 
-    default_kw = dict(order_obj=MockObj(), pagination_obj=MockObj())
-    plan_list = await repo.plan_lst(user_id=plan.user_id, filter_obj=TaskUserPlanFilter(task_active=True), **default_kw)
+    default_kw = dict(sorting_obj=SortObj(), iterable_obj=IterableObj())
+    plan_list_pagination = await repo.plan_lst(user_id=plan.user_id, filter_obj=TaskUserPlanFilter(task_active=True), **default_kw)  # type: ignore
+    plan_list = plan_list_pagination.items
     assert len(plan_list) == 1
 
     create_model = await session.get(entity=UserTaskPlanModel, ident={"user_id": plan.user_id, "task_id": plan.task_id})
@@ -77,10 +81,11 @@ async def test_plan_not_created(
     fxe_task_default: Task,
     fxe_user_default: User,
 ):
-    default_kw = dict(order_obj=MockObj(), pagination_obj=MockObj())
-    plan_list = await repo.plan_lst(
-        user_id=fxe_user_default.id, filter_obj=TaskUserPlanFilter(task_active=True), **default_kw
+    default_kw = dict(sorting_obj=SortObj(), iterable_obj=IterableObj())
+    plan_list_pagination = await repo.plan_lst(
+        user_id=fxe_user_default.id, filter_obj=TaskUserPlanFilter(task_active=True), **default_kw  # type: ignore
     )
+    plan_list = plan_list_pagination.items
     assert len(plan_list) == 0
 
     with pytest.raises(EntityNotCreated):
@@ -100,7 +105,8 @@ async def test_plan_not_created(
         )
     await session.rollback()
 
-    plan_list = await repo.plan_lst(user_id=fxe_user_default.id, filter_obj=TaskUserPlanFilter(), **default_kw)
+    plan_list_pagination = await repo.plan_lst(user_id=fxe_user_default.id, filter_obj=TaskUserPlanFilter(), **default_kw)  # type: ignore
+    plan_list = plan_list_pagination.items
     assert len(plan_list) == 0
 
 
@@ -112,7 +118,7 @@ async def test_plan_delete(
     fxe_task_default: Task,
     fxe_user_default: User,
 ):
-    default_kw = dict(order_obj=MockObj(), pagination_obj=MockObj())
+    default_kw = dict(sorting_obj=SortObj(), iterable_obj=IterableObj())
 
     plan = await repo.plan_create(
         obj=TaskUserPlanCreateDTO(
@@ -124,7 +130,8 @@ async def test_plan_delete(
     assert plan.task_id == fxe_task_default.id
     await session.commit()
 
-    plan_list = await repo.plan_lst(user_id=fxe_user_default.id, filter_obj=TaskUserPlanFilter(), **default_kw)
+    plan_list_pagination = await repo.plan_lst(user_id=fxe_user_default.id, filter_obj=TaskUserPlanFilter(), **default_kw)  # type: ignore
+    plan_list = plan_list_pagination.items
     assert len(plan_list) == 1
 
     deleted_plan = await repo.plan_delete(
@@ -134,7 +141,8 @@ async def test_plan_delete(
     assert isinstance(deleted_plan, TaskUserPlan)
     await session.commit()
 
-    plan_list = await repo.plan_lst(user_id=fxe_user_default.id, filter_obj=TaskUserPlanFilter(), **default_kw)
+    plan_list_pagination = await repo.plan_lst(user_id=fxe_user_default.id, filter_obj=TaskUserPlanFilter(), **default_kw)  # type: ignore
+    plan_list = plan_list_pagination.items
     assert len(plan_list) == 0
 
 
@@ -146,10 +154,11 @@ async def test_plan_not_delete(
     fxe_task_default: Task,
     fxe_user_default: User,
 ):
-    default_kw = dict(order_obj=MockObj(), pagination_obj=MockObj())
-    plan_list = await repo.plan_lst(
-        user_id=fxe_user_default.id, filter_obj=TaskUserPlanFilter(task_active=True), **default_kw
+    default_kw = dict(sorting_obj=SortObj(), iterable_obj=IterableObj())
+    plan_list_pagination = await repo.plan_lst(
+        user_id=fxe_user_default.id, filter_obj=TaskUserPlanFilter(task_active=True), **default_kw  # type: ignore
     )
+    plan_list = plan_list_pagination.items
     assert len(plan_list) == 0
 
     with pytest.raises(EntityNotFound):

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from src.core.entity.task import Task
 from src.core.entity.user import User
 from src.core.exception.base import EntityNotActive
-from src.core.exception.user import UserIsNotActivateError
+from src.core.exception.user import UserNotActive
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
@@ -18,7 +18,7 @@ class TaskGetUsecase:
 
     async def __call__(self, *, user: User, id: int) -> Result:
         if not user.active:
-            raise UserIsNotActivateError(user_id=user.id)
+            raise UserNotActive(id=user.id)
 
         async with self.uow as uow:
             task = await uow.task.get(id=id, lang=user.language)

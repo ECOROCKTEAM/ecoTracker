@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.dto.challenges.task import TaskUserCreateDTO, TaskUserUpdateDTO
 from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj, SortObj
 from src.core.entity.task import Task, TaskUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
@@ -25,7 +26,7 @@ from tests.fixtures.user.db.model import fxm_user_default
 # pytest tests/main/challenges/task/db/test_user_task.py::test_get_user_task_ok -v -s
 @pytest.mark.asyncio
 async def test_get_user_task_ok(repo: IRepositoryTask, fxe_user_task_default: TaskUser):
-    task = await repo.user_task_get(id=fxe_user_task_default.id)
+    task = await repo.user_task_get(user_id=fxe_user_task_default.user_id, id=fxe_user_task_default.id)
     assert fxe_user_task_default.id == task.id
     assert fxe_user_task_default.user_id == task.user_id
     assert fxe_user_task_default.task_id == task.task_id
@@ -38,7 +39,7 @@ async def test_get_user_task_ok(repo: IRepositoryTask, fxe_user_task_default: Ta
 @pytest.mark.asyncio
 async def test_get_user_task_not_found(repo: IRepositoryTask):
     with pytest.raises(EntityNotFound):
-        _ = await repo.user_task_get(id=-1)
+        _ = await repo.user_task_get(user_id="null", id=-1)
 
 
 # pytest tests/main/challenges/task/db/test_user_task.py::test_create_user_task_ok -v -s
@@ -46,11 +47,9 @@ async def test_get_user_task_not_found(repo: IRepositoryTask):
 async def test_create_user_task_ok(
     session: AsyncSession, repo: IRepositoryTask, fxe_user_default: User, fxe_task_default: Task
 ):
-    default_kw = dict(
-        order_obj=MockObj(),
-        pagination_obj=MockObj(),
-    )
-    user_task_list = await repo.user_task_lst(user_id=fxe_user_default.id, filter_obj=TaskUserFilter(), **default_kw)
+    default_kw = dict(sorting_obj=SortObj(), iterable_obj=IterableObj())
+    user_task_pagination = await repo.user_task_lst(user_id=fxe_user_default.id, filter_obj=TaskUserFilter(), **default_kw)  # type: ignore
+    user_task_list = user_task_pagination.items
     assert len(user_task_list) == 0
     user_task = await repo.user_task_add(
         user_id=fxe_user_default.id,
@@ -66,7 +65,8 @@ async def test_create_user_task_ok(
     assert user_task.date_close is None
     assert user_task.status == OccupancyStatusEnum.ACTIVE
 
-    user_task_list = await repo.user_task_lst(user_id=fxe_user_default.id, filter_obj=TaskUserFilter(), **default_kw)
+    user_task_pagination = await repo.user_task_lst(user_id=fxe_user_default.id, filter_obj=TaskUserFilter(), **default_kw)  # type: ignore
+    user_task_list = user_task_pagination.items
     assert len(user_task_list) == 1
 
     create_model = await session.get(entity=UserTaskModel, ident={"id": user_task.id})
@@ -84,7 +84,8 @@ async def test_create_user_task_not_created(
         order_obj=MockObj(),
         pagination_obj=MockObj(),
     )
-    user_task_list = await repo.user_task_lst(user_id=fxe_user_default.id, filter_obj=TaskUserFilter(), **default_kw)
+    user_task_pagination = await repo.user_task_lst(user_id=fxe_user_default.id, filter_obj=TaskUserFilter(), **default_kw)  # type: ignore
+    user_task_list = user_task_pagination.items
     assert len(user_task_list) == 0
     with pytest.raises(EntityNotCreated) as e:
         _ = await repo.user_task_add(
@@ -94,7 +95,8 @@ async def test_create_user_task_not_created(
             ),
         )
     await session.rollback()
-    user_task_list = await repo.user_task_lst(user_id=fxe_user_default.id, filter_obj=TaskUserFilter(), **default_kw)
+    user_task_pagination = await repo.user_task_lst(user_id=fxe_user_default.id, filter_obj=TaskUserFilter(), **default_kw)  # type: ignore
+    user_task_list = user_task_pagination.items
     assert len(user_task_list) == 0
 
 
@@ -109,6 +111,7 @@ async def test_update_user_task(
     assert fxe_user_task_default.date_close is None
 
     updated = await repo.user_task_update(
+        user_id=fxe_user_task_default.user_id,
         id=fxe_user_task_default.id,
         obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.FINISH),
     )
@@ -120,6 +123,7 @@ async def test_update_user_task(
     date_after_update = updated.date_close
 
     updated_second = await repo.user_task_update(
+        user_id=fxe_user_task_default.user_id,
         id=fxe_user_task_default.id,
         obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.REJECT),
     )
@@ -137,23 +141,21 @@ async def test_update_user_task_not_found(
     fxe_user_task_default: TaskUser,
 ):
     with pytest.raises(EntityNotFound):
-        _ = await repo.user_task_update(id=-1, obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.FINISH))
+        _ = await repo.user_task_update(user_id="null", id=-1, obj=TaskUserUpdateDTO(status=OccupancyStatusEnum.FINISH))
 
 
 # pytest tests/main/challenges/task/db/test_user_task.py::test_user_task_lst -v -s
 @pytest.mark.asyncio
 async def test_user_task_lst(repo: IRepositoryTask, fxe_user_task_default: TaskUser):
-    default_kw = dict(
-        order_obj=MockObj(),
-        pagination_obj=MockObj(),
-    )
-    user_task_list = await repo.user_task_lst(
+    default_kw = dict(sorting_obj=SortObj(), iterable_obj=IterableObj())
+    user_task_pagination = await repo.user_task_lst(
         user_id=fxe_user_task_default.user_id,
         filter_obj=TaskUserFilter(
             task_id=fxe_user_task_default.task_id, task_active=True, status=OccupancyStatusEnum.ACTIVE
         ),
-        **default_kw,
+        **default_kw,  # type: ignore
     )
+    user_task_list = user_task_pagination.items
     assert len(user_task_list) == 1
 
     user_task = user_task_list[0]
@@ -163,26 +165,30 @@ async def test_user_task_lst(repo: IRepositoryTask, fxe_user_task_default: TaskU
     assert user_task.task_id == fxe_user_task_default.task_id
     assert user_task.status == OccupancyStatusEnum.ACTIVE
 
-    user_task_list = await repo.user_task_lst(
-        user_id=fxe_user_task_default.user_id, filter_obj=TaskUserFilter(), **default_kw
+    user_task_pagination = await repo.user_task_lst(
+        user_id=fxe_user_task_default.user_id, filter_obj=TaskUserFilter(), **default_kw  # type: ignore
     )
+    user_task_list = user_task_pagination.items
     assert len(user_task_list) == 1
 
-    user_task_list = await repo.user_task_lst(
-        user_id=fxe_user_task_default.user_id, filter_obj=TaskUserFilter(task_id=-1), **default_kw
+    user_task_pagination = await repo.user_task_lst(
+        user_id=fxe_user_task_default.user_id, filter_obj=TaskUserFilter(task_id=-1), **default_kw  # type: ignore
     )
+    user_task_list = user_task_pagination.items
     assert len(user_task_list) == 0
 
-    user_task_list = await repo.user_task_lst(
+    user_task_pagination = await repo.user_task_lst(
         user_id=fxe_user_task_default.user_id,
         filter_obj=TaskUserFilter(status=OccupancyStatusEnum.FINISH),
-        **default_kw,
+        **default_kw,  # type: ignore
     )
+    user_task_list = user_task_pagination.items
     assert len(user_task_list) == 0
 
-    user_task_list = await repo.user_task_lst(
+    user_task_pagination = await repo.user_task_lst(
         user_id=fxe_user_task_default.user_id,
         filter_obj=TaskUserFilter(task_active=False),
-        **default_kw,
+        **default_kw,  # type: ignore
     )
+    user_task_list = user_task_pagination.items
     assert len(user_task_list) == 0

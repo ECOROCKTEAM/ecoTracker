@@ -14,8 +14,8 @@ from src.http.api.schemas.statistic.group import GroupMissionCounterSchema
 router = APIRouter()
 
 
-@router.get("/{group_id}/finished_missions")
-async def group_finished_missions(
+@router.get("/{group_id}/mission/counter")
+async def group_mission_counter(
     group_id: int,
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],
     user: Annotated[User, Depends(get_user_stub)],

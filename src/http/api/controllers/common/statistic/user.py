@@ -20,8 +20,8 @@ from src.http.api.schemas.statistic.user import (
 router = APIRouter()
 
 
-@router.get("/tasks_finished")
-async def user_tasks_finished(
+@router.get("/task/counter")
+async def user_task_counter(
     user: Annotated[User, Depends(get_user_stub)],
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],
     fltr: OccupancyStatisticFilterSchema = Depends(),
@@ -33,13 +33,12 @@ async def user_tasks_finished(
     return UserTaskCounterSchema.from_obj(user_tasks_counter=result.item)
 
 
-@router.get("/missions_finished")
-async def user_mission_finished(
+@router.get("/mission/counter")
+async def user_mission_counter(
     user: Annotated[User, Depends(get_user_stub)],
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],
     fltr: OccupancyStatisticFilterSchema = Depends(),
 ) -> UserMissionCounterSchema:
-    """"""
     filter_obj = fltr.to_obj()
 
     uc = UserMissionCounterStatisticUsecase(uow=uow)

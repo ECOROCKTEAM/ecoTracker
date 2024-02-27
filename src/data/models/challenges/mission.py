@@ -15,7 +15,6 @@ class MissionModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     active: Mapped[bool] = mapped_column()
-    author: Mapped[str] = mapped_column()
     score: Mapped[int] = mapped_column()
     category_id: Mapped[int] = mapped_column(ForeignKey("occupancy_category.id"))
 

@@ -20,9 +20,7 @@ async def fxm_mission_default(
     fxm_category_default: tuple[OccupancyCategoryModel, OccupancyCategoryTranslateModel],
 ) -> AsyncGenerator[tuple[MissionModel, MissionTranslateModel], None]:
     category, _ = fxm_category_default
-    model = MissionModel(
-        active=True, author=get_random_str(), category_id=category.id, score=DEFAULT_TEST_CHALLENGE_SCORE
-    )
+    model = MissionModel(active=True, category_id=category.id, score=DEFAULT_TEST_CHALLENGE_SCORE)
     session.add(model)
     await session.flush()
     translate = MissionTranslateModel(
@@ -49,9 +47,7 @@ async def fxm_mission_en(
     fxm_category_default: tuple[OccupancyCategoryModel, OccupancyCategoryTranslateModel],
 ) -> AsyncGenerator[tuple[MissionModel, MissionTranslateModel], None]:
     category, _ = fxm_category_default
-    model = MissionModel(
-        active=True, author=get_random_str(), category_id=category.id, score=DEFAULT_TEST_CHALLENGE_SCORE
-    )
+    model = MissionModel(active=True, category_id=category.id, score=DEFAULT_TEST_CHALLENGE_SCORE)
     session.add(model)
     await session.flush()
     translate = MissionTranslateModel(

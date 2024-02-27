@@ -316,10 +316,8 @@ class UserTaskLoader(EntityLoaderBase[UserTaskModel]):
 
 
 class MissionLoader(EntityLoaderBase[MissionModel]):
-    async def create(
-        self, category_id: int, author: str | None = None, active: bool | None = None, score: int | None = None
-    ) -> MissionModel:
-        model = MissionModel(category_id=category_id, author=author or uuid(), active=active or True, score=score or 10)
+    async def create(self, category_id: int, active: bool | None = None, score: int | None = None) -> MissionModel:
+        model = MissionModel(category_id=category_id, active=active or True, score=score or 10)
         return await self._add(model=model)
 
     async def get(
@@ -328,8 +326,6 @@ class MissionLoader(EntityLoaderBase[MissionModel]):
         cond = []
         if active is not None:
             cond.append(MissionModel.active == active)
-        if author is not None:
-            cond.append(MissionModel.author == author)
         if category_id is not None:
             cond.append(MissionModel.category_id == category_id)
         return await self._get(model=MissionModel, cond=cond)

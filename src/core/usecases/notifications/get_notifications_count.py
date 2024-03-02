@@ -13,7 +13,7 @@ class Result:
     item: int
 
 
-class GetUnreadNotificationsCountUsecase:
+class GetNotificationsCountUsecase:
     """
     Get unread notifications count for user
     """
@@ -21,11 +21,11 @@ class GetUnreadNotificationsCountUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def __call__(self, *, user: User) -> Result:
+    async def __call__(self, *, user: User, viewed: bool = False) -> Result:
         if not user.active:
             raise UserIsNotActivateError(user_id=user.id)
 
-        filter_obj = NotificationFilter(viewed=False)
+        filter_obj = NotificationFilter(viewed=viewed)
         async with self.uow as uow:
             count = await uow.notifications.count(user_id=user.id, filter_obj=filter_obj)
 

@@ -30,7 +30,7 @@ def apply_sorting(stmt: Select, sorting_obj: SortObj) -> Select:
 def recive_total(seq: Sequence, total_idx: int) -> int:
     if len(seq) == 0:
         return 0
-    return seq[total_idx]
+    return seq[0][total_idx]
 
 
 def build_pagination(items: list[T], iterable_obj: IterableObj, total: int) -> Pagination[list[T]]:

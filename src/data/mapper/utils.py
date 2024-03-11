@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from typing import TypeVar
 
-from sqlalchemy import Select, asc, desc
+from sqlalchemy import Select, asc, desc, text
 
 from src.core.dto.utils import IterableObj, Pagination, SortObj
 from src.core.enum.utils import SortType
@@ -23,7 +23,7 @@ def apply_iterable(stmt: Select, iterable_obj: IterableObj) -> Select:
 
 def apply_sorting(stmt: Select, sorting_obj: SortObj) -> Select:
     operator = _SQLALCHEMY_SORT_TYPE_MAP[sorting_obj.type]
-    stmt = stmt.order_by(operator(sorting_obj.field))
+    stmt = stmt.order_by(operator(text(sorting_obj.field)))
     return stmt
 
 

@@ -116,11 +116,12 @@ class RepositoryTask(IRepositoryTask):
         stmt = apply_iterable(stmt, iterable_obj)
         coro = await self.db_context.execute(stmt)
         result = coro.all()
-        total = recive_total(seq=result, total_idx=3)
+        total = recive_total(seq=result, total_idx=2)
         if total == 0:
             return build_pagination(items=[], iterable_obj=iterable_obj, total=total)
         holder = {}
-        for task, task_translate in result:
+        # print(f'{result=}')
+        for task, task_translate, _ in result:
             holder[task.id] = {}
             holder[task.id]["task"] = task
             if task_translate is None:
@@ -170,6 +171,7 @@ class RepositoryTask(IRepositoryTask):
         iterable_obj: IterableObj,
     ) -> Pagination[list[TaskUser]]:
         stmt = select(UserTaskModel, func.count(UserTaskModel.id).over())
+        total_index = 1
         where_clause = []
         where_clause.append(UserTaskModel.user_id == user_id)
         if filter_obj.task_id is not None:
@@ -177,6 +179,7 @@ class RepositoryTask(IRepositoryTask):
         if filter_obj.status is not None:
             where_clause.append(UserTaskModel.status == filter_obj.status)
         if filter_obj.task_active is not None:
+            total_index = 2
             stmt = stmt.join(TaskModel, UserTaskModel.task_id == TaskModel.id)
             where_clause.append(TaskModel.active == filter_obj.task_active)
         stmt = stmt.where(*where_clause)
@@ -184,7 +187,7 @@ class RepositoryTask(IRepositoryTask):
         stmt = apply_iterable(stmt, iterable_obj)
         coro = await self.db_context.execute(stmt)
         result = coro.all()
-        total = recive_total(seq=result, total_idx=2)
+        total = recive_total(seq=result, total_idx=total_index)
         if total == 0:
             return build_pagination(items=[], iterable_obj=iterable_obj, total=total)
         items = [user_task_to_entity(model=model) for model, _ in result]

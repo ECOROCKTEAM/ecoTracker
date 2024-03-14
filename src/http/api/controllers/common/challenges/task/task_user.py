@@ -11,11 +11,12 @@ from src.core.usecases.challenges.task.task_user_list import UserTaskListUsecase
 from src.core.usecases.challenges.task.task_user_reject import UserTaskRejectUsecase
 from src.http.api.depends.stub import get_uow_stub, get_user_stub
 from src.http.api.schemas.challenges.task.task_user import (
+    SortUserTaskSchema,
     TaskUserFilterSchema,
     TaskUserListSchema,
     TaskUserSchema,
 )
-from src.http.api.schemas.utils import IterableSchema, SortSchema
+from src.http.api.schemas.utils import IterableSchema
 
 router = APIRouter()
 
@@ -25,7 +26,7 @@ async def task_user_list(
     user: Annotated[User, Depends(get_user_stub)],
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],
     fltr: TaskUserFilterSchema = Depends(),
-    sorting: SortSchema = Depends(),
+    sorting: SortUserTaskSchema = Depends(),
     iterable: IterableSchema = Depends(),
 ) -> TaskUserListSchema:
     filter_obj = fltr.to_obj()

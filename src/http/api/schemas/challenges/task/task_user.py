@@ -3,9 +3,22 @@ from datetime import datetime
 from fastapi import Query
 from pydantic import BaseModel
 
+from src.core.dto.utils import SortUserTaskObj
 from src.core.entity.task import TaskUser
 from src.core.enum.challenges.status import OccupancyStatusEnum
+from src.core.enum.utils import SortType
 from src.core.interfaces.repository.challenges.task import TaskUserFilter
+
+
+class SortUserTaskSchema(BaseModel):
+    sort_field: str = Query(default="task_id")
+    sort_type: SortType = Query(default=SortType.DESC)
+
+    def to_obj(self) -> SortUserTaskObj:
+        return SortUserTaskObj(
+            field=self.sort_field,
+            type=self.sort_type,
+        )
 
 
 class TaskUserFilterSchema(BaseModel):

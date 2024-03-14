@@ -19,6 +19,11 @@ class SortObj:
 
 
 @dataclass
+class SortUserTaskObj(SortObj):
+    field: str = "task_id"
+
+
+@dataclass
 class Pagination(Generic[T]):
     items: T
     limit: int | None

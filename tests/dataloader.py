@@ -25,7 +25,12 @@ from src.data.models.challenges.occupancy import (
     OccupancyCategoryModel,
     OccupancyCategoryTranslateModel,
 )
-from src.data.models.challenges.task import TaskModel, TaskTranslateModel, UserTaskModel
+from src.data.models.challenges.task import (
+    TaskModel,
+    TaskTranslateModel,
+    UserTaskModel,
+    UserTaskPlanModel,
+)
 from src.data.models.group.group import GroupModel
 from src.data.models.user.user import (
     UserContactModel,
@@ -136,23 +141,40 @@ class OccupancyCategoryLoader(EntityLoaderBase[OccupancyCategoryModel]):
 
 
 class TaskTranslateLoader(EntityLoaderBase[TaskTranslateModel]):
-    async def create(self) -> TaskTranslateModel:
-        return await super().create()  # type: ignore
+    async def create(
+        self,
+        task_id: int,
+        name: str | None = None,
+        description: str | None = None,
+        language: LanguageEnum = LanguageEnum.EN,
+    ) -> TaskTranslateModel:
+        model = TaskTranslateModel(
+            name=name or uuid(), description=description or uuid(), task_id=task_id, language=language
+        )
+        return await self._add(model=model)
 
-    async def get(self) -> TaskTranslateModel | None:
-        return await super().get()  # type: ignore
+    async def get(
+        self, id: int, task_id: int | None = None, language: LanguageEnum | None = None
+    ) -> TaskTranslateModel | None:
+        cond = []
+        if task_id is not None:
+            cond.append(TaskTranslateModel.task_id == task_id)
+        if language is not None:
+            cond.append(TaskTranslateModel.language == language)
+        return await self._get(TaskTranslateModel, cond)
 
 
 class TaskLoader(EntityLoaderBase[TaskModel]):
     async def create(
         self,
         category: OccupancyCategoryModel,
+        id: int | None = None,
         score: int | None = None,
         active: bool = True,
     ) -> TaskModel:
         if score is None:
             score = random.randint(50, 1000)
-        model = TaskModel(score=score, active=active, category_id=category.id)
+        model = TaskModel(id=id, score=score, active=active, category_id=category.id)  # type: ignore
         return await self._add(model)
 
     async def get(
@@ -290,12 +312,13 @@ class UserTaskLoader(EntityLoaderBase[UserTaskModel]):
         self,
         user_id: str,
         task_id: int,
+        id: int | None = None,
         status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE,
         date_start: datetime = datetime.now(),
         date_close: datetime | None = None,
     ) -> UserTaskModel:
         model = UserTaskModel(
-            user_id=user_id, task_id=task_id, status=status, date_start=date_start, date_close=date_close
+            id=id, user_id=user_id, task_id=task_id, status=status, date_start=date_start, date_close=date_close  # type: ignore
         )
         return await self._add(model=model)
 
@@ -355,6 +378,20 @@ class GroupMissionLoader(EntityLoaderBase[GroupMissionModel]):
         if status is not None:
             cond.append(GroupMissionModel.status == status)
         return await self._get(model=GroupMissionModel, cond=cond)
+
+
+class UserTaskPlanLoader(EntityLoaderBase[UserTaskPlanModel]):
+    async def create(self, user_id: str, task_id: int) -> UserTaskPlanModel:
+        model = UserTaskPlanModel(user_id=user_id, task_id=task_id)
+        return await self._add(model=model)
+
+    async def get(self, user_id: str | None = None, task_id: int | None = None) -> UserTaskPlanModel | None:
+        cond_list = []
+        if user_id is not None:
+            cond_list.append(user_id)
+        if task_id is not None:
+            cond_list.append(task_id)
+        return await self._get(model=UserTaskPlanModel, cond=cond_list)
 
 
 class UserMissionLoader(EntityLoaderBase[UserMissionModel]):
@@ -425,6 +462,11 @@ class dataloader:
 
     async def rollback(self):
         await self.session.rollback()
+
+    @property
+    @loader_track
+    def user_task_plan(self) -> UserTaskPlanLoader:
+        return UserTaskPlanLoader(session=self.session)
 
     @property
     @loader_track

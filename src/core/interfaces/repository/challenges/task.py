@@ -6,7 +6,7 @@ from src.core.dto.challenges.task import (
     TaskUserPlanCreateDTO,
     TaskUserUpdateDTO,
 )
-from src.core.dto.utils import IterableObj, Pagination, SortObj
+from src.core.dto.utils import IterableObj, Pagination, SortObj, SortUserTaskObj
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
@@ -97,15 +97,15 @@ class IRepositoryTask(ABC):
 
     @abstractmethod
     async def user_task_lst(
-        self, *, user_id: str, filter_obj: TaskUserFilter, sorting_obj: SortObj, iterable_obj: IterableObj
+        self, *, user_id: str, filter_obj: TaskUserFilter, sorting_obj: SortUserTaskObj, iterable_obj: IterableObj
     ) -> Pagination[list[TaskUser]]:
         """Получить список заданий пользователя
 
         Args:
             user_id (str): ID of user
             filter_obj (TaskUserFilter): Объект фильтрации
-            order_obj (MockObj): Объект порядка
-            pagination_obj (MockObj): Объект пагинации
+            sorting_obj (SortUserTaskObj): Объект порядка
+            iterable_obj (IterableObj): Объект пагинации
 
         Returns:
             List[TaskUser]: Список сущностей заданий пользователя
@@ -136,15 +136,15 @@ class IRepositoryTask(ABC):
 
     @abstractmethod
     async def plan_lst(
-        self, *, user_id: str, filter_obj: TaskUserPlanFilter, sorting_obj: SortObj, iterable_obj: IterableObj
+        self, *, user_id: str, filter_obj: TaskUserPlanFilter, sorting_obj: SortUserTaskObj, iterable_obj: IterableObj
     ) -> Pagination[list[TaskUserPlan]]:
         """Получить список плана задач
 
         Args:
             user_id (str): ID of user
-            filter_obj (MockObj): Объект фильтрации
-            order_obj (MockObj): Объект порядка
-            pagination_obj (MockObj): Объект пагинации
+            filter_obj (TaskUserPlanFilter): Объект фильтрации
+            sorting_obj (SortUserTaskObj): Объект порядка
+            iterable_obj (IterableObj): Объект пагинации
 
         Returns:
             List[TaskUserPlan]: Список плана задач

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from src.core.const.task import MAX_TASK_AMOUNT_NOT_PREMIUM, MAX_TASK_AMOUNT_PREMIUM
 from src.core.dto.challenges.task import TaskUserCreateDTO
-from src.core.dto.utils import IterableObj, SortObj
+from src.core.dto.utils import IterableObj, SortUserTaskObj
 from src.core.entity.task import TaskUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
@@ -40,7 +40,7 @@ class UserTaskAddUsecase:
             user_tasks_pagination = await uow.task.user_task_lst(
                 user_id=user.id,
                 filter_obj=TaskUserFilter(status=OccupancyStatusEnum.ACTIVE),
-                sorting_obj=SortObj(),
+                sorting_obj=SortUserTaskObj(),
                 iterable_obj=IterableObj(),
             )
             user_tasks = user_tasks_pagination.items
@@ -53,7 +53,10 @@ class UserTaskAddUsecase:
                 raise MaxAmountError(msg=f"{user.id=}")
 
             user_plan_tasks_pagination = await uow.task.plan_lst(
-                user_id=user.id, filter_obj=TaskUserPlanFilter(), sorting_obj=SortObj(), iterable_obj=IterableObj()
+                user_id=user.id,
+                filter_obj=TaskUserPlanFilter(),
+                sorting_obj=SortUserTaskObj(),
+                iterable_obj=IterableObj(),
             )
             user_plan_tasks = user_plan_tasks_pagination.items
 

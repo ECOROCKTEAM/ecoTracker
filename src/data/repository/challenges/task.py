@@ -12,7 +12,7 @@ from src.core.dto.challenges.task import (
     TaskUserPlanCreateDTO,
     TaskUserUpdateDTO,
 )
-from src.core.dto.utils import IterableObj, Pagination, SortObj
+from src.core.dto.utils import IterableObj, Pagination, SortUserTaskObj
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
 from src.core.enum.language import LanguageEnum
 from src.core.exception.base import EntityNotCreated, EntityNotFound, TranslateNotFound
@@ -96,7 +96,7 @@ class RepositoryTask(IRepositoryTask):
         return task_model_to_entity(model=task, translated_model=task_translate)
 
     async def lst(
-        self, *, filter_obj: TaskFilter, sorting_obj: SortObj, iterable_obj: IterableObj, lang: LanguageEnum
+        self, *, filter_obj: TaskFilter, sorting_obj: SortUserTaskObj, iterable_obj: IterableObj, lang: LanguageEnum
     ) -> Pagination[list[Task]]:
         where_clause = []
         if filter_obj.category_id is not None:
@@ -167,7 +167,7 @@ class RepositoryTask(IRepositoryTask):
         *,
         user_id: str,
         filter_obj: TaskUserFilter,
-        sorting_obj: SortObj,
+        sorting_obj: SortUserTaskObj,
         iterable_obj: IterableObj,
     ) -> Pagination[list[TaskUser]]:
         stmt = select(UserTaskModel, func.count(UserTaskModel.id).over())
@@ -238,7 +238,7 @@ class RepositoryTask(IRepositoryTask):
         *,
         user_id: str,
         filter_obj: TaskUserPlanFilter,
-        sorting_obj: SortObj,
+        sorting_obj: SortUserTaskObj,
         iterable_obj: IterableObj,
     ) -> Pagination[list[TaskUserPlan]]:
         stmt = select(UserTaskPlanModel, func.count(UserTaskPlanModel.user_id).over())

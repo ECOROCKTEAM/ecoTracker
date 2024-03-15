@@ -64,15 +64,5 @@ class TaskUserListSchema(BaseModel):
     def from_obj(
         cls, task_user_list: list[TaskUser], limit: int | None, offset: int, total: int
     ) -> "TaskUserListSchema":
-        items = [
-            TaskUserSchema(
-                id=item.id,
-                user_id=item.user_id,
-                task_id=item.task_id,
-                status=item.status,
-                date_start=item.date_start,
-                date_close=item.date_close,
-            )
-            for item in task_user_list
-        ]
+        items = [TaskUserSchema.from_obj(item) for item in task_user_list]
         return TaskUserListSchema(items=items, limit=limit, offset=offset, total=total)

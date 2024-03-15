@@ -33,7 +33,7 @@ async def test_user_contact_get_ok(
 ):
     print()
     user = await dl.user_loader.create()
-    user_contact_create = await dl.user_contact_loader.create(user_id=user.id, **asdict(create_data))
+    user_contact_create = await dl.user_contact_loader.create(user=user, **asdict(create_data))
 
     user_contact = await user_contact_repo.get(id=user_contact_create.id, user_id=user.id)
 
@@ -137,7 +137,7 @@ async def test_user_contact_get_favorite_ok(
 ):
     print()
     user = await dl.user_loader.create()
-    user_contact_create = await dl.user_contact_loader.create(user_id=user.id, **asdict(create_data))
+    user_contact_create = await dl.user_contact_loader.create(user=user, **asdict(create_data))
 
     user_contact = await user_contact_repo.get_favorite(user_id=user.id)
 
@@ -152,7 +152,7 @@ async def test_user_contact_get_favorite_ok(
 @pytest.mark.asyncio
 async def test_user_contact_delete_ok(dl: dataloader, user_contact_repo: IUserContactRepository):
     user = await dl.user_loader.create()
-    user_contact_model = await dl.user_contact_loader.create(user_id=user.id)
+    user_contact_model = await dl.user_contact_loader.create(user=user)
 
     user_contact_delete = await user_contact_repo.delete(id=user_contact_model.id, user_id=user.id)
 
@@ -172,7 +172,7 @@ async def test_user_contact_delete_fail(dl: dataloader, user_contact_repo: IUser
 
     # pytest tests/tmain/repository/test_user_contpytest tests/tmain/repository/test_user_contact.py::test_user_contact_delete_fail -v -s: dataloader, user_contact_repo: IUserContactRepository):
     user = await dl.user_loader.create()
-    user_contact_model = await dl.user_contact_loader.create(user_id=user.id, is_favorite=False)
+    user_contact_model = await dl.user_contact_loader.create(user=user, is_favorite=False)
 
     user_contact = await user_contact_repo.set_favorite(id=user_contact_model.id, is_favorite=True)
 
@@ -184,14 +184,15 @@ async def test_user_contact_delete_fail(dl: dataloader, user_contact_repo: IUser
 # pytest tests/tmain/repository/test_user_contact.py::test_user_contact_update_ok -v -s
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "update_obj", [ContactUserUpdateDTO(id=123, value="+12345646794", type=ContactTypeEnum.PHONE, active=True)]
+    "update_obj", [ContactUserUpdateDTO(id=-1, value="+12345646794", type=ContactTypeEnum.PHONE, active=True)]
 )
 async def test_user_contact_update_ok(
     dl: dataloader, user_contact_repo: IUserContactRepository, update_obj: ContactUserUpdateDTO
 ):
     user = await dl.user_loader.create()
-    user_contact_model = await dl.user_contact_loader.create(user_id=user.id, id=update_obj.id)
+    user_contact_model = await dl.user_contact_loader.create(user=user)
 
+    update_obj.id = user_contact_model.id
     user_contact = await user_contact_repo.update(obj=update_obj, user_id=user.id)
 
     assert user_contact.id == user_contact_model.id
@@ -205,9 +206,9 @@ async def test_user_contact_update_ok(
 @pytest.mark.asyncio
 async def test_user_contact_update_unique_fail(dl: dataloader, user_contact_repo: IUserContactRepository):
     user = await dl.user_loader.create()
-    user_contact_model_1 = await dl.user_contact_loader.create(user_id=user.id)
+    user_contact_model_1 = await dl.user_contact_loader.create(user=user)
     user_contact_model_2 = await dl.user_contact_loader.create(
-        user_id=user.id, value="marshall", type=ContactTypeEnum.CUSTOM, is_favorite=False
+        user=user, value="marshall", type=ContactTypeEnum.CUSTOM, is_favorite=False
     )
 
     update_obj = ContactUserUpdateDTO(
@@ -221,27 +222,27 @@ async def test_user_contact_update_unique_fail(dl: dataloader, user_contact_repo
 
 async def _test_user_contact_list_first_variant(dl: dataloader) -> tuple[str, UserContactFilter]:
     user = await dl.user_loader.create()
-    await dl.user_contact_loader.create(user_id=user.id, is_favorite=False)
-    await dl.user_contact_loader.create(user_id=user.id, value="some@gmail.com", is_favorite=False)
-    await dl.user_contact_loader.create(user_id=user.id, value="qwe@gmail.com", is_favorite=False)
+    await dl.user_contact_loader.create(user=user, is_favorite=False)
+    await dl.user_contact_loader.create(user=user, value="some@gmail.com", is_favorite=False)
+    await dl.user_contact_loader.create(user=user, value="qwe@gmail.com", is_favorite=False)
     filter_obj = UserContactFilter(is_favorite=False)
     return user.id, filter_obj
 
 
 async def _test_user_contact_list_second_variant(dl: dataloader) -> tuple[str, UserContactFilter]:
     user = await dl.user_loader.create()
-    await dl.user_contact_loader.create(user_id=user.id, is_favorite=False)
-    await dl.user_contact_loader.create(user_id=user.id, value="some@gmail.com", is_favorite=False)
-    await dl.user_contact_loader.create(user_id=user.id, value="qwe@gmail.com", is_favorite=False)
+    await dl.user_contact_loader.create(user=user, is_favorite=False)
+    await dl.user_contact_loader.create(user=user, value="some@gmail.com", is_favorite=False)
+    await dl.user_contact_loader.create(user=user, value="qwe@gmail.com", is_favorite=False)
     filter_obj = UserContactFilter(active=True)
     return user.id, filter_obj
 
 
 async def _test_user_contact_list_third_variant(dl: dataloader) -> tuple[str, UserContactFilter]:
     user = await dl.user_loader.create()
-    await dl.user_contact_loader.create(user_id=user.id, is_favorite=False)
-    await dl.user_contact_loader.create(user_id=user.id, value="some@gmail.com", is_favorite=False)
-    await dl.user_contact_loader.create(user_id=user.id, value="qwe@gmail.com", is_favorite=False)
+    await dl.user_contact_loader.create(user=user, is_favorite=False)
+    await dl.user_contact_loader.create(user=user, value="some@gmail.com", is_favorite=False)
+    await dl.user_contact_loader.create(user=user, value="qwe@gmail.com", is_favorite=False)
     filter_obj = UserContactFilter(type=ContactTypeEnum.GMAIL)
     return user.id, filter_obj
 

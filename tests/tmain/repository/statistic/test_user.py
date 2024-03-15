@@ -69,7 +69,7 @@ async def test_user_task_counter_ok(dl: dataloader, repo_user_statistic: IReposi
 async def _test_user_mission_list_finished_first(dl: dataloader) -> tuple[str, int]:
     user = await dl.user_loader.create()
     category = await dl.create_category()
-    mission = await dl.mission_loader.create(category_id=category.id)
+    mission = await dl.mission_loader.create(category=category)
     await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
     await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
     await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
@@ -81,7 +81,7 @@ async def _test_user_mission_list_finished_first(dl: dataloader) -> tuple[str, i
 async def _test_user_mission_list_finished_second(dl: dataloader) -> tuple[str, int]:
     user = await dl.user_loader.create()
     category = await dl.create_category()
-    mission = await dl.mission_loader.create(category_id=category.id)
+    mission = await dl.mission_loader.create(category=category)
     await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
     await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
     await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
@@ -93,7 +93,7 @@ async def _test_user_mission_list_finished_second(dl: dataloader) -> tuple[str, 
 async def _test_user_mission_list_finished_third(dl: dataloader) -> tuple[str, int]:
     user = await dl.user_loader.create()
     category = await dl.create_category()
-    mission = await dl.mission_loader.create(category_id=category.id)
+    mission = await dl.mission_loader.create(category=category)
     await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
     await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
     await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)

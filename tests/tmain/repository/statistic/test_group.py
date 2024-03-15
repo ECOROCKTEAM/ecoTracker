@@ -10,18 +10,18 @@ async def _test_group_mission_finished_list_first(dl: dataloader) -> tuple[int, 
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     category = await dl.create_category()
-    mission = await dl.mission_loader.create(category_id=category.id)
+    mission = await dl.mission_loader.create(category=category)
     await dl.group_mission_loader.create(
-        group_id=group.id, mission_id=mission.id, author=user.id, status=OccupancyStatusEnum.FINISH
+        group=group, mission=mission, author=user.id, status=OccupancyStatusEnum.FINISH
     )
     await dl.group_mission_loader.create(
-        group_id=group.id, mission_id=mission.id, author=user.id, status=OccupancyStatusEnum.FINISH
+        group=group, mission=mission, author=user.id, status=OccupancyStatusEnum.FINISH
     )
     await dl.group_mission_loader.create(
-        group_id=group.id, mission_id=mission.id, author=user.id, status=OccupancyStatusEnum.FINISH
+        group=group, mission=mission, author=user.id, status=OccupancyStatusEnum.FINISH
     )
     await dl.group_mission_loader.create(
-        group_id=group.id, mission_id=mission.id, author=user.id, status=OccupancyStatusEnum.FINISH
+        group=group, mission=mission, author=user.id, status=OccupancyStatusEnum.FINISH
     )
     finished_missions = 4
     return group.id, finished_missions
@@ -31,18 +31,18 @@ async def _test_group_mission_finished_list_second(dl: dataloader) -> tuple[int,
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     category = await dl.create_category()
-    mission = await dl.mission_loader.create(category_id=category.id)
+    mission = await dl.mission_loader.create(category=category)
     await dl.group_mission_loader.create(
-        group_id=group.id, mission_id=mission.id, author=user.id, status=OccupancyStatusEnum.FINISH
+        group=group, mission=mission, author=user.id, status=OccupancyStatusEnum.FINISH
     )
     await dl.group_mission_loader.create(
-        group_id=group.id, mission_id=mission.id, author=user.id, status=OccupancyStatusEnum.FINISH
+        group=group, mission=mission, author=user.id, status=OccupancyStatusEnum.FINISH
     )
     await dl.group_mission_loader.create(
-        group_id=group.id, mission_id=mission.id, author=user.id, status=OccupancyStatusEnum.ACTIVE
+        group=group, mission=mission, author=user.id, status=OccupancyStatusEnum.ACTIVE
     )
     await dl.group_mission_loader.create(
-        group_id=group.id, mission_id=mission.id, author=user.id, status=OccupancyStatusEnum.ACTIVE
+        group=group, mission=mission, author=user.id, status=OccupancyStatusEnum.ACTIVE
     )
     finished_missions = 2
     return group.id, finished_missions
@@ -52,18 +52,18 @@ async def _test_group_mission_finished_list_third(dl: dataloader) -> tuple[int, 
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     category = await dl.create_category()
-    mission = await dl.mission_loader.create(category_id=category.id)
+    mission = await dl.mission_loader.create(category=category)
     await dl.group_mission_loader.create(
-        group_id=group.id, mission_id=mission.id, author=user.id, status=OccupancyStatusEnum.ACTIVE
+        group=group, mission=mission, author=user.id, status=OccupancyStatusEnum.ACTIVE
     )
     await dl.group_mission_loader.create(
-        group_id=group.id, mission_id=mission.id, author=user.id, status=OccupancyStatusEnum.ACTIVE
+        group=group, mission=mission, author=user.id, status=OccupancyStatusEnum.ACTIVE
     )
     await dl.group_mission_loader.create(
-        group_id=group.id, mission_id=mission.id, author=user.id, status=OccupancyStatusEnum.ACTIVE
+        group=group, mission=mission, author=user.id, status=OccupancyStatusEnum.ACTIVE
     )
     await dl.group_mission_loader.create(
-        group_id=group.id, mission_id=mission.id, author=user.id, status=OccupancyStatusEnum.ACTIVE
+        group=group, mission=mission, author=user.id, status=OccupancyStatusEnum.ACTIVE
     )
     finished_missions = 0
     return group.id, finished_missions

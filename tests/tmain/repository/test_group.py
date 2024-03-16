@@ -28,26 +28,24 @@ from tests.utils import get_uuid
 # pytest tests/tmain/repository/test_group.py::test_get_ok -v -s
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "create_data, asrt_result",
+    "create_data",
     [
-        (
-            dict(id=1337, name="amogus", description="no desc", active=True, privacy=GroupPrivacyEnum.PUBLIC),
-            Group(id=1337, name="amogus", description="no desc", active=True, privacy=GroupPrivacyEnum.PUBLIC),
-        ),
-        (
-            dict(id=1337, name="amogus", description="no desc", active=True, privacy=GroupPrivacyEnum.PUBLIC),
-            Group(id=1337, name="amogus", description="no desc", active=True, privacy=GroupPrivacyEnum.PUBLIC),
-        ),
+        dict(name="amogus", description="no desc", active=True, privacy=GroupPrivacyEnum.PUBLIC),
+        dict(name="abobus", description="desc", active=False, privacy=GroupPrivacyEnum.PRIVATE),
     ],
 )
-async def test_get_ok(dl: dataloader, repo_group: IRepositoryGroup, create_data: dict, asrt_result: Group):
+async def test_get_ok(dl: dataloader, repo_group: IRepositoryGroup, create_data: dict):
     print()
     # Arrange
-    await dl.group_loader.create(**create_data)
+    group = await dl.group_loader.create(**create_data)
     # Act
-    result = await repo_group.get(id=1337)
+    result = await repo_group.get(id=group.id)
     # Assert
-    assert result == asrt_result
+    assert group.id == result.id
+    assert group.name == create_data["name"] == result.name
+    assert group.description == create_data["description"] == result.description
+    assert group.active == create_data["active"] == result.active
+    assert group.privacy == create_data["privacy"] == result.privacy
 
 
 # pytest tests/tmain/repository/test_group.py::test_get_not_found -v -s
@@ -196,11 +194,11 @@ async def _test_lst_user_id_param_first_variant(dl: dataloader):
     group2 = await dl.group_loader.create()
 
     # user & user2 to group
-    await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=GroupRoleEnum.USER)
-    await dl.user_group_loader.create(user_id=user2.id, group_id=group.id, role=GroupRoleEnum.USER)
+    await dl.user_group_loader.create(user=user, group=group, role=GroupRoleEnum.USER)
+    await dl.user_group_loader.create(user=user2, group=group, role=GroupRoleEnum.USER)
 
     # user2 to group 2
-    await dl.user_group_loader.create(user_id=user2.id, group_id=group2.id, role=GroupRoleEnum.USER)
+    await dl.user_group_loader.create(user=user2, group=group2, role=GroupRoleEnum.USER)
 
     return dict(filter_obj=GroupFilter(user_id=user.id), asrt_group_id_list=[group.id])
 
@@ -213,11 +211,11 @@ async def _test_lst_user_id_param_second_variant(dl: dataloader):
     group2 = await dl.group_loader.create()
 
     # user & user2 to group
-    await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=GroupRoleEnum.USER)
-    await dl.user_group_loader.create(user_id=user2.id, group_id=group.id, role=GroupRoleEnum.USER)
+    await dl.user_group_loader.create(user=user, group=group, role=GroupRoleEnum.USER)
+    await dl.user_group_loader.create(user=user2, group=group, role=GroupRoleEnum.USER)
 
     # user2 to group 2
-    await dl.user_group_loader.create(user_id=user2.id, group_id=group2.id, role=GroupRoleEnum.USER)
+    await dl.user_group_loader.create(user=user2, group=group2, role=GroupRoleEnum.USER)
 
     return dict(filter_obj=GroupFilter(user_id=user2.id), asrt_group_id_list=[group.id, group2.id])
 
@@ -426,7 +424,7 @@ async def test_user_add_uniq_fail(dl: dataloader, repo_group: IRepositoryGroup):
     # Arrange
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
-    await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=GroupRoleEnum.USER)
+    await dl.user_group_loader.create(user=user, group=group, role=GroupRoleEnum.USER)
 
     # Act
     with pytest.raises(EntityNotCreated) as e:
@@ -470,7 +468,7 @@ async def test_user_get_ok(dl: dataloader, repo_group: IRepositoryGroup):
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     role = GroupRoleEnum.USER
-    ug = await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=role)
+    ug = await dl.user_group_loader.create(user=user, group=group, role=role)
 
     # Act
     ug_entity = await repo_group.user_get(group_id=group.id, user_id=user.id)
@@ -485,7 +483,7 @@ async def _test_user_get_not_found_fail_first_variant(dl: dataloader) -> tuple[s
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     role = GroupRoleEnum.USER
-    await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=role)
+    await dl.user_group_loader.create(user=user, group=group, role=role)
     return user.id, 1337
 
 
@@ -493,7 +491,7 @@ async def _test_user_get_not_found_fk_fail_second_variant(dl: dataloader) -> tup
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     role = GroupRoleEnum.USER
-    await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=role)
+    await dl.user_group_loader.create(user=user, group=group, role=role)
     return get_uuid(), 1337
 
 
@@ -519,8 +517,8 @@ async def _test_user_get_list_first_variant(
     user2 = await dl.user_loader.create()
     group = await dl.group_loader.create()
     role = GroupRoleEnum.USER
-    await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=role)
-    await dl.user_group_loader.create(user_id=user2.id, group_id=group.id, role=role)
+    await dl.user_group_loader.create(user=user, group=group, role=role)
+    await dl.user_group_loader.create(user=user2, group=group, role=role)
     filter_obj = GroupUserFilter(user_id__in=[user.id, user2.id], role__in=[role])
     return group.id, filter_obj
 
@@ -531,8 +529,8 @@ async def _test_user_get_list_second_variant(dl: dataloader) -> tuple[int, Group
     group = await dl.group_loader.create()
     role = GroupRoleEnum.USER
     role2 = GroupRoleEnum.ADMIN
-    await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=role)
-    await dl.user_group_loader.create(user_id=user2.id, group_id=group.id, role=role2)
+    await dl.user_group_loader.create(user=user, group=group, role=role)
+    await dl.user_group_loader.create(user=user2, group=group, role=role2)
     filter_obj = GroupUserFilter(role__in=[role, role2])
     return group.id, filter_obj
 
@@ -543,8 +541,8 @@ async def _test_user_get_list_third_variant(dl: dataloader) -> tuple[int, GroupU
     group = await dl.group_loader.create()
     role = GroupRoleEnum.USER
     role2 = GroupRoleEnum.ADMIN
-    await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=role)
-    await dl.user_group_loader.create(user_id=user2.id, group_id=group.id, role=role2)
+    await dl.user_group_loader.create(user=user, group=group, role=role)
+    await dl.user_group_loader.create(user=user2, group=group, role=role2)
     filter_obj = GroupUserFilter(user_id__in=[user.id, user2.id])
     return group.id, filter_obj
 
@@ -583,7 +581,7 @@ async def test_user_role_update_ok(dl: dataloader, repo_group: IRepositoryGroup)
     group = await dl.group_loader.create()
     role = GroupRoleEnum.USER
     new_role = GroupRoleEnum.ADMIN
-    ug = await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=role)
+    ug = await dl.user_group_loader.create(user=user, group=group, role=role)
     ug_role = ug.role
 
     # Act
@@ -602,7 +600,7 @@ async def _test_user_role_update_not_found_fail_first_variant(dl: dataloader) ->
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     role = GroupRoleEnum.USER
-    await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=role)
+    await dl.user_group_loader.create(user=user, group=group, role=role)
     return user.id, 1337
 
 
@@ -610,7 +608,7 @@ async def _test_user_role_update_not_found_fk_fail_second_variant(dl: dataloader
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     role = GroupRoleEnum.USER
-    await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=role)
+    await dl.user_group_loader.create(user=user, group=group, role=role)
     return get_uuid(), 1337
 
 
@@ -638,7 +636,7 @@ async def test_user_remove_ok(dl: dataloader, repo_group: IRepositoryGroup):
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     role = GroupRoleEnum.USER
-    await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=role)
+    await dl.user_group_loader.create(user=user, group=group, role=role)
 
     # Act
     status = await repo_group.user_remove(user_id=user.id, group_id=group.id)
@@ -651,7 +649,7 @@ async def _test_user_remove_not_deleted_first_variant(dl: dataloader) -> tuple[s
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     role = GroupRoleEnum.USER
-    await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=role)
+    await dl.user_group_loader.create(user=user, group=group, role=role)
     return user.id, 1337
 
 
@@ -659,7 +657,7 @@ async def _test_user_remove_not_deleted_second_variant(dl: dataloader) -> tuple[
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     role = GroupRoleEnum.USER
-    await dl.user_group_loader.create(user_id=user.id, group_id=group.id, role=role)
+    await dl.user_group_loader.create(user=user, group=group, role=role)
     return get_uuid(), 1337
 
 

@@ -13,10 +13,10 @@ async def _test_user_task_list_finished_first(dl: dataloader) -> tuple[str, int]
         name="test task category", language_list=[LanguageEnum.EN, LanguageEnum.FR, LanguageEnum.RU]
     )
     task = await dl.task_loader.create(category=task_category)
-    await dl.user_task_loader.create(user_id=user.id, task_id=task.id, status=OccupancyStatusEnum.FINISH)
-    await dl.user_task_loader.create(user_id=user.id, task_id=task.id, status=OccupancyStatusEnum.FINISH)
-    await dl.user_task_loader.create(user_id=user.id, task_id=task.id, status=OccupancyStatusEnum.FINISH)
-    await dl.user_task_loader.create(user_id=user.id, task_id=task.id, status=OccupancyStatusEnum.FINISH)
+    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
+    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
+    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
+    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
     finished_tasks = 4
     return user.id, finished_tasks
 
@@ -27,10 +27,10 @@ async def _test_user_task_list_finished_second(dl: dataloader) -> tuple[str, int
         name="test task category", language_list=[LanguageEnum.EN, LanguageEnum.FR, LanguageEnum.RU]
     )
     task = await dl.task_loader.create(category=task_category)
-    await dl.user_task_loader.create(user_id=user.id, task_id=task.id, status=OccupancyStatusEnum.FINISH)
-    await dl.user_task_loader.create(user_id=user.id, task_id=task.id, status=OccupancyStatusEnum.FINISH)
-    await dl.user_task_loader.create(user_id=user.id, task_id=task.id, status=OccupancyStatusEnum.FINISH)
-    await dl.user_task_loader.create(user_id=user.id, task_id=task.id, status=OccupancyStatusEnum.ACTIVE)
+    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
+    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
+    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
+    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
     finished_tasks = 3
     return user.id, finished_tasks
 
@@ -41,10 +41,10 @@ async def _test_user_task_list_finished_third(dl: dataloader) -> tuple[str, int]
         name="test task category", language_list=[LanguageEnum.EN, LanguageEnum.FR, LanguageEnum.RU]
     )
     task = await dl.task_loader.create(category=task_category)
-    await dl.user_task_loader.create(user_id=user.id, task_id=task.id, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_task_loader.create(user_id=user.id, task_id=task.id, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_task_loader.create(user_id=user.id, task_id=task.id, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_task_loader.create(user_id=user.id, task_id=task.id, status=OccupancyStatusEnum.ACTIVE)
+    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
+    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
+    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
+    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
     finished_tasks = 0
     return user.id, finished_tasks
 
@@ -69,11 +69,11 @@ async def test_user_task_counter_ok(dl: dataloader, repo_user_statistic: IReposi
 async def _test_user_mission_list_finished_first(dl: dataloader) -> tuple[str, int]:
     user = await dl.user_loader.create()
     category = await dl.create_category()
-    mission = await dl.mission_loader.create(category_id=category.id)
-    await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=OccupancyStatusEnum.FINISH)
-    await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=OccupancyStatusEnum.FINISH)
-    await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=OccupancyStatusEnum.FINISH)
-    await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=OccupancyStatusEnum.FINISH)
+    mission = await dl.mission_loader.create(category=category)
+    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
+    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
+    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
+    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
     finished_missions = 4
     return user.id, finished_missions
 
@@ -81,11 +81,11 @@ async def _test_user_mission_list_finished_first(dl: dataloader) -> tuple[str, i
 async def _test_user_mission_list_finished_second(dl: dataloader) -> tuple[str, int]:
     user = await dl.user_loader.create()
     category = await dl.create_category()
-    mission = await dl.mission_loader.create(category_id=category.id)
-    await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=OccupancyStatusEnum.FINISH)
-    await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=OccupancyStatusEnum.FINISH)
-    await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=OccupancyStatusEnum.ACTIVE)
+    mission = await dl.mission_loader.create(category=category)
+    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
+    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
+    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
+    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
     finished_missions = 2
     return user.id, finished_missions
 
@@ -93,11 +93,11 @@ async def _test_user_mission_list_finished_second(dl: dataloader) -> tuple[str, 
 async def _test_user_mission_list_finished_third(dl: dataloader) -> tuple[str, int]:
     user = await dl.user_loader.create()
     category = await dl.create_category()
-    mission = await dl.mission_loader.create(category_id=category.id)
-    await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=OccupancyStatusEnum.ACTIVE)
+    mission = await dl.mission_loader.create(category=category)
+    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
+    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
+    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
+    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
     finished_missions = 0
     return user.id, finished_missions
 

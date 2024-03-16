@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from doctest import FAIL_FAST
 
 import pytest
 
@@ -184,7 +185,11 @@ async def test_user_contact_delete_fail(dl: dataloader, user_contact_repo: IUser
 # pytest tests/tmain/repository/test_user_contact.py::test_user_contact_update_ok -v -s
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "update_obj", [ContactUserUpdateDTO(id=-1, value="+12345646794", type=ContactTypeEnum.PHONE, active=True)]
+    "update_obj",
+    [
+        ContactUserUpdateDTO(value="+12345646794", type=ContactTypeEnum.PHONE, active=True),
+        ContactUserUpdateDTO(value="+5555", type=ContactTypeEnum.WHATSAPP, active=False),
+    ],
 )
 async def test_user_contact_update_ok(
     dl: dataloader, user_contact_repo: IUserContactRepository, update_obj: ContactUserUpdateDTO
@@ -192,8 +197,7 @@ async def test_user_contact_update_ok(
     user = await dl.user_loader.create()
     user_contact_model = await dl.user_contact_loader.create(user=user)
 
-    update_obj.id = user_contact_model.id
-    user_contact = await user_contact_repo.update(obj=update_obj, user_id=user.id)
+    user_contact = await user_contact_repo.update(id=user_contact_model.id, obj=update_obj, user_id=user.id)
 
     assert user_contact.id == user_contact_model.id
     assert user_contact.user_id == user.id
@@ -211,12 +215,10 @@ async def test_user_contact_update_unique_fail(dl: dataloader, user_contact_repo
         user=user, value="marshall", type=ContactTypeEnum.CUSTOM, is_favorite=False
     )
 
-    update_obj = ContactUserUpdateDTO(
-        id=user_contact_model_2.id, value=user_contact_model_1.value, type=user_contact_model_1.type
-    )
+    update_obj = ContactUserUpdateDTO(value=user_contact_model_1.value, type=user_contact_model_1.type)
 
     with pytest.raises(EntityNotChange) as error:
-        await user_contact_repo.update(obj=update_obj, user_id=user.id)
+        await user_contact_repo.update(id=user_contact_model_2.id, obj=update_obj, user_id=user.id)
     assert "Uniq failed" in str(error.value)
 
 

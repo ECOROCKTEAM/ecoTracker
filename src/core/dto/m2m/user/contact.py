@@ -5,7 +5,6 @@ from src.core.enum.user.contact import ContactTypeEnum
 
 @dataclass
 class ContactUserUpdateDTO:
-    id: int
     value: str | None = None
     type: ContactTypeEnum | None = None
     active: bool | None = None

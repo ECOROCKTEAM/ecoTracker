@@ -2,13 +2,14 @@ from dataclasses import dataclass
 
 from src.core.const.task import MAX_TASK_AMOUNT_NOT_PREMIUM, MAX_TASK_AMOUNT_PREMIUM
 from src.core.dto.challenges.task import TaskUserCreateDTO
-from src.core.dto.utils import IterableObj, SortUserTaskObj
+from src.core.dto.utils import IterableObj
 from src.core.entity.task import TaskUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.exception.base import EntityAlreadyUsage, EntityNotActive, MaxAmountError
 from src.core.exception.user import UserNotActive
 from src.core.interfaces.repository.challenges.task import (
+    SortUserTaskObj,
     TaskUserFilter,
     TaskUserPlanFilter,
 )

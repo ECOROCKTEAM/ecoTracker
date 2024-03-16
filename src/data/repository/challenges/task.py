@@ -12,12 +12,13 @@ from src.core.dto.challenges.task import (
     TaskUserPlanCreateDTO,
     TaskUserUpdateDTO,
 )
-from src.core.dto.utils import IterableObj, Pagination, SortUserTaskObj
+from src.core.dto.utils import IterableObj, Pagination
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
 from src.core.enum.language import LanguageEnum
 from src.core.exception.base import EntityNotCreated, EntityNotFound, TranslateNotFound
 from src.core.interfaces.repository.challenges.task import (
     IRepositoryTask,
+    SortUserTaskObj,
     TaskFilter,
     TaskUserFilter,
     TaskUserPlanFilter,

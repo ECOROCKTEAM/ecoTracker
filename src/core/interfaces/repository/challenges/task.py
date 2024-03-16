@@ -6,10 +6,15 @@ from src.core.dto.challenges.task import (
     TaskUserPlanCreateDTO,
     TaskUserUpdateDTO,
 )
-from src.core.dto.utils import IterableObj, Pagination, SortObj, SortUserTaskObj
+from src.core.dto.utils import IterableObj, Pagination, SortObj
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
+
+
+@dataclass
+class SortUserTaskObj(SortObj):
+    field: str = "task_id"
 
 
 @dataclass

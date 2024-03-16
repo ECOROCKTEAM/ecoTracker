@@ -38,14 +38,14 @@ async def task_user_list(
     return TaskUserListSchema.from_obj(task_user_list=res.items, limit=res.limit, offset=res.offset, total=res.total)
 
 
-@router.get("/{task_user_id}")
+@router.get("/{id}")
 async def task_user_get(
-    task_user_id: int,
+    id: int,
     user: Annotated[User, Depends(get_user_stub)],
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],
 ) -> TaskUserSchema:
     uc = UserTaskGetUsecase(uow=uow)
-    res = await uc(user=user, id=task_user_id)
+    res = await uc(user=user, id=id)
     return TaskUserSchema.from_obj(task_user=res.item)
 
 
@@ -58,19 +58,19 @@ async def task_user_add(
     return TaskUserSchema.from_obj(task_user=res.item)
 
 
-@router.patch("/complete/{task_user_id}")
+@router.patch("/complete/{id}")
 async def task_user_complete(
-    task_user_id: int, user: Annotated[User, Depends(get_user_stub)], uow: Annotated[IUnitOfWork, Depends(get_uow_stub)]
+    id: int, user: Annotated[User, Depends(get_user_stub)], uow: Annotated[IUnitOfWork, Depends(get_uow_stub)]
 ) -> TaskUserSchema:
     uc = UserTaskCompleteUsecase(uow=uow)
-    res = await uc(user=user, id=task_user_id)
+    res = await uc(user=user, id=id)
     return TaskUserSchema.from_obj(task_user=res.item)
 
 
-@router.patch("/reject/{task_user_id}")
+@router.patch("/reject/{id}")
 async def task_user_reject(
-    task_user_id: int, user: Annotated[User, Depends(get_user_stub)], uow: Annotated[IUnitOfWork, Depends(get_uow_stub)]
+    id: int, user: Annotated[User, Depends(get_user_stub)], uow: Annotated[IUnitOfWork, Depends(get_uow_stub)]
 ) -> TaskUserSchema:
     uc = UserTaskRejectUsecase(uow=uow)
-    res = await uc(user=user, id=task_user_id)
+    res = await uc(user=user, id=id)
     return TaskUserSchema.from_obj(task_user=res.item)

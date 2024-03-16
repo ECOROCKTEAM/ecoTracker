@@ -44,16 +44,5 @@ class TaskListSchema(BaseModel):
 
     @classmethod
     def from_obj(cls, *, task_list: list[Task], limit: int | None, offset: int, total: int) -> "TaskListSchema":
-        items = [
-            TaskSchema(
-                id=item.id,
-                score=item.score,
-                category_id=item.category_id,
-                name=item.name,
-                active=item.active,
-                description=item.description,
-                language=item.language,
-            )
-            for item in task_list
-        ]
+        items = [TaskSchema.from_obj(task=task) for task in task_list]
         return TaskListSchema(items=items, limit=limit, offset=offset, total=total)

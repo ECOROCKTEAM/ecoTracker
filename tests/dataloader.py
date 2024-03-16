@@ -1,6 +1,6 @@
 import random
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import wraps
 from random import randint
 from typing import Generic, Type, TypeVar, get_args
@@ -310,7 +310,7 @@ class UserTaskLoader(EntityLoaderBase[UserTaskModel]):
         date_close: datetime | None = None,
     ) -> UserTaskModel:
         if date_start is None:
-            date_start = datetime.now()
+            date_start = datetime.now(tz=timezone.utc)
         model = UserTaskModel(
             user_id=user.id, task_id=task.id, status=status, date_start=date_start, date_close=date_close
         )

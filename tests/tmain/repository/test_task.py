@@ -3,6 +3,7 @@ from datetime import datetime
 from random import choice
 
 import pytest
+from pyparsing import Optional
 
 from src import data
 from src.core.const.translate import DEFAULT_LANGUANGE
@@ -15,7 +16,12 @@ from src.core.dto.utils import IterableObj, SortObj
 from src.core.entity.task import Task, TaskUserPlan
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
-from src.core.exception.base import EntityNotCreated, EntityNotFound, TranslateNotFound
+from src.core.exception.base import (
+    EntityNotChange,
+    EntityNotCreated,
+    EntityNotFound,
+    TranslateNotFound,
+)
 from src.core.interfaces.repository.challenges.task import IRepositoryTask, TaskFilter
 from tests.dataloader import dataloader
 
@@ -124,11 +130,65 @@ async def test_lst_fltr(dl: dataloader, repo_task: IRepositoryTask, arrage_func)
 
     # Arrange
     fltr, asrt_count = await arrage_func(dl=dl)
+
+    # Act
     task_list = await repo_task.lst(
         filter_obj=fltr, sorting_obj=SortObj(), iterable_obj=IterableObj(), lang=LanguageEnum.EN
     )
+
+    # Assert
     assert asrt_count == len(task_list.items)
     assert asrt_count == task_list.total
+
+
+async def _arrange_lst_pagination_limit_none_offset_zero(dl: dataloader) -> tuple[int, int, int | None, int]:
+    await dl.create_task_list_random(count=20)
+    return 20, 20, None, 0
+
+
+async def _arrange_lst_pagination_limit_5_offset_zero(dl: dataloader) -> tuple[int, int, int | None, int]:
+    await dl.create_task_list_random(count=20)
+    return 20, 5, 5, 0
+
+
+async def _arrange_lst_pagination_limit_5_offset_5(dl: dataloader) -> tuple[int, int, int | None, int]:
+    await dl.create_task_list_random(count=20)
+    return 20, 5, 5, 5
+
+
+async def _arrange_lst_pagination_limit_none_offset_19(dl: dataloader) -> tuple[int, int, int | None, int]:
+    await dl.create_task_list_random(count=20)
+    return 20, 1, None, 19
+
+
+# pytest tests/tmain/repository/test_task.py::test_lst_pagination -v -s
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "arrage_func",
+    [
+        _arrange_lst_pagination_limit_none_offset_zero,
+        _arrange_lst_pagination_limit_5_offset_zero,
+        _arrange_lst_pagination_limit_5_offset_5,
+        _arrange_lst_pagination_limit_none_offset_19,
+    ],
+)
+async def test_lst_pagination(dl: dataloader, repo_task: IRepositoryTask, arrage_func):
+    # Arrange
+    asrt_total, asrt_count, asrt_limit, asrt_offset = await arrage_func(dl=dl)
+
+    # Act
+    task_list = await repo_task.lst(
+        filter_obj=TaskFilter(),
+        sorting_obj=SortObj(),
+        iterable_obj=IterableObj(limit=asrt_limit, offset=asrt_offset),
+        lang=LanguageEnum.EN,
+    )
+
+    # Assert
+    assert asrt_count == len(task_list.items)
+    assert asrt_total == task_list.total
+    assert asrt_limit == task_list.limit
+    assert asrt_offset == task_list.offset
 
 
 # pytest tests/tmain/repository/test_task.py::test_user_task_add_ok -v -s
@@ -151,120 +211,106 @@ async def test_user_task_add_ok(dl: dataloader, repo_task: IRepositoryTask):
 
 # pytest tests/tmain/repository/test_task.py::test_user_task_add_not_created_error -v -s
 @pytest.mark.asyncio
-@pytest.mark.parametrize("flags", [(True, False), (False, True)])
-async def test_user_task_add_not_created_error(dl: dataloader, repo_task: IRepositoryTask, flags: tuple[bool, bool]):
+async def test_user_task_add_not_created_error(dl: dataloader, repo_task: IRepositoryTask):
     # Arrange
-    user_id, task_id = "-1", -1  # Default not exist id's
-    user_flag, task_flag = flags
-    if user_flag:
-        user = await dl.user_loader.create()
-        user_id = user.id
-    if task_flag:
-        task = await dl.create_task()
-        task_id = task.id
+    user = await dl.user_loader.create()
+    not_exist_id = -1
 
     # Act && Assert
     with pytest.raises(EntityNotCreated) as e:
-        await repo_task.user_task_add(user_id=user_id, obj=TaskUserCreateDTO(task_id=task_id))
+        await repo_task.user_task_add(user_id=user.id, obj=TaskUserCreateDTO(task_id=not_exist_id))
     assert "Not found fk" in str(e.value)
 
 
-# async def _test_user_task_list(
-#     dl: dataloader,
-#     task_id_set: set[int],
-#     user_id: str | None = None,
-#     user_task_id: int | None = None,
-#     user_task_status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE,
-# ) -> tuple[str, set[int], int | None]:
-#     fake_user = await dl.user_loader.create()
-#     user = await dl.user_loader.create(id=user_id)
+# pytest tests/tmain/repository/test_task.py::test_user_task_get_ok -v -s
+@pytest.mark.asyncio
+async def test_user_task_get_ok(dl: dataloader, repo_task: IRepositoryTask):
+    # Arrange
+    user = await dl.user_loader.create()
+    asrt_user_task = await dl.create_user_task(user=user, status=OccupancyStatusEnum.ACTIVE)
+    await dl.create_user_task(user=user)
 
-#     task_id_list = list(task_id_set)
-#     id_counter = 0
-#     target_task_id = None
+    # Act
+    user_task = await repo_task.user_task_get(user_id=user.id, id=asrt_user_task.id)
 
-#     if user_task_id is not None:
-#         task_id = choice(task_id_list)
-#         target_task_id = task_id
-#         if user_task_status == OccupancyStatusEnum.ACTIVE:
-#             task_id_list.remove(task_id)
+    # Assert
 
-#         await dl.user_task_loader.create(id=user_task_id, user_id=user.id, task_id=task_id, status=user_task_status)
-#         id_counter += user_task_id
-
-#     while len(task_id_list) != len(task_id_set) // 2:
-#         enum = choice(list(OccupancyStatusEnum))
-#         task_id = choice(task_id_list)
-#         if enum == OccupancyStatusEnum.ACTIVE:
-#             task_id_list.remove(task_id)
-
-#         id_counter += 1
-#         await dl.user_task_loader.create(id=id_counter, user_id=user.id, task_id=task_id, status=enum)
-
-#     added_task_id_set = task_id_set - set(task_id_list)
-#     return user.id, added_task_id_set, target_task_id
+    assert user_task.id == asrt_user_task.id
+    assert user_task.task_id == asrt_user_task.task_id
+    assert user_task.user_id == asrt_user_task.user_id == user.id
+    assert isinstance(user_task.status, OccupancyStatusEnum)
+    assert user_task.status == asrt_user_task.status == OccupancyStatusEnum.ACTIVE
+    assert user_task.date_start == asrt_user_task.date_start
+    assert isinstance(user_task.date_start, datetime)
+    assert user_task.date_close is None
+    assert user_task.date_close == asrt_user_task.date_close
 
 
-# # pytest tests/tmain/repository/test_task.py::test_user_task_get_ok -v -s
-# @pytest.mark.asyncio
-# @pytest.mark.parametrize("user_task_id", [1, 100, 1984])
-# async def test_user_task_get_ok(dl: dataloader, repo_task: IRepositoryTask, user_task_id: int):
-#     # Arrange
-#     task_id_set = await _test_get_set_of_tasks(dl=dl)
-#     user_id, *_, target_task_id = await _test_user_task_list(dl=dl, task_id_set=task_id_set, user_task_id=user_task_id)
+# pytest tests/tmain/repository/test_task.py::test_user_task_get_not_found_error -v -s
+@pytest.mark.asyncio
+async def test_user_task_get_not_found_error(dl: dataloader, repo_task: IRepositoryTask):
+    # Arrange
+    user = await dl.user_loader.create()
+    await dl.create_user_task(user=user)
+    await dl.create_user_task(user=user)
+    not_exist_id = -1
 
-#     # Act
-#     user_task = await repo_task.user_task_get(user_id=user_id, id=user_task_id)
+    # Act
+    with pytest.raises(EntityNotFound) as e:
+        await repo_task.user_task_get(user_id=user.id, id=not_exist_id)
 
-#     # Assert
-
-#     assert user_task.id == user_task_id
-#     assert user_task.task_id == target_task_id
-#     assert user_task.user_id == user_id
-#     assert isinstance(user_task.status, OccupancyStatusEnum)
+    #     # Assert
+    assert f"UserTask object with id={not_exist_id} not found" in str(e.value)
 
 
-# # pytest tests/tmain/repository/test_task.py::test_user_task_get_not_found_error -v -s
-# @pytest.mark.asyncio
-# @pytest.mark.parametrize("user_task_id", [1000, 100, 1984])
-# async def test_user_task_get_not_found_error(dl: dataloader, repo_task: IRepositoryTask, user_task_id: int):
-#     # Arrange
-#     task_id_set = await _test_get_set_of_tasks(dl=dl)
-#     user_id, *_ = await _test_user_task_list(dl=dl, task_id_set=task_id_set)
+# pytest tests/tmain/repository/test_task.py::test_user_task_update_ok -v -s
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "obj",
+    [
+        TaskUserUpdateDTO(status=OccupancyStatusEnum.FINISH),
+        TaskUserUpdateDTO(status=OccupancyStatusEnum.REJECT),
+        TaskUserUpdateDTO(status=OccupancyStatusEnum.OVERDUE),
+    ],
+)
+async def test_user_task_update_ok(dl: dataloader, repo_task: IRepositoryTask, obj: TaskUserUpdateDTO):
+    keys = [key for key, f in TaskUserUpdateDTO.__dataclass_fields__.items() if f.init is True]
+    assert len(keys) == 1
 
-#     # Act
-#     with pytest.raises(EntityNotFound) as e:
-#         await repo_task.user_task_get(user_id=user_id, id=user_task_id)
+    # Arrange
+    user = await dl.user_loader.create()
+    asrt_user_task = await dl.create_user_task(user=user, status=OccupancyStatusEnum.ACTIVE)
+    created_status = asrt_user_task.status
+    created_date_start = asrt_user_task.date_start
+    created_date_close = asrt_user_task.date_close
 
-#     # Assert
-#     assert f"UserTask object with id={user_task_id} not found" in str(e.value)
+    # Act
+    task_update = await repo_task.user_task_update(user_id=user.id, id=asrt_user_task.id, obj=obj)
+
+    # Assert
+    assert asrt_user_task.id == task_update.id
+    assert asrt_user_task.task_id == task_update.task_id
+    assert created_status != task_update.status
+    assert created_date_start == task_update.date_start
+    assert created_date_close != task_update.date_start
+    assert isinstance(task_update.date_close, datetime)
 
 
-# # pytest tests/tmain/repository/test_task.py::test_user_task_update_ok -v -s
-# @pytest.mark.asyncio
-# @pytest.mark.parametrize(
-#     "user_task_id, user_task_status",
-#     [[1, OccupancyStatusEnum.OVERDUE], [10, OccupancyStatusEnum.FINISH], [100, OccupancyStatusEnum.REJECT]],
-# )
-# async def test_user_task_update_ok(
-#     dl: dataloader, repo_task: IRepositoryTask, user_task_id: int, user_task_status: OccupancyStatusEnum
-# ):
-#     # Arrange
-#     task_id_set = await _test_get_set_of_tasks(dl=dl)
-#     user_id, *_, target_task_id = await _test_user_task_list(dl=dl, task_id_set=task_id_set, user_task_id=user_task_id)
-#     update_obj = TaskUserUpdateDTO(status=user_task_status)
+# pytest tests/tmain/repository/test_task.py::test_user_task_update_empty_fail -v -s
+@pytest.mark.asyncio
+async def test_user_task_update_empty_fail(
+    dl: dataloader,
+    repo_task: IRepositoryTask,  # user_task_id: int, user_task_status: OccupancyStatusEnum
+):
+    # Arrange
+    user = await dl.user_loader.create()
+    asrt_user_task = await dl.create_user_task(user=user, status=OccupancyStatusEnum.ACTIVE)
 
-#     # Act
-#     user_task_complete = await repo_task.user_task_update(user_id=user_id, id=user_task_id, obj=update_obj)
+    # Act && Assert
+    with pytest.raises(EntityNotChange) as e:
+        await repo_task.user_task_update(user_id=user.id, id=asrt_user_task.id, obj=TaskUserUpdateDTO())
 
-#     # Assert
-#     assert user_task_id == user_task_complete.id
-#     assert user_id == user_task_complete.user_id
-#     assert target_task_id == user_task_complete.task_id
-#     assert user_task_complete.status == update_obj.status
-
-#     if user_task_complete.status in [OccupancyStatusEnum.FINISH, OccupancyStatusEnum.REJECT]:
-#         assert user_task_complete.date_close.timestamp() == update_obj.date_close.timestamp()  # type: ignore None type skip
+    assert "Empty data for update" in str(e.value)
 
 
 # # pytest tests/tmain/repository/test_task.py::test_user_task_update_error -v -s

@@ -15,7 +15,12 @@ from src.core.dto.challenges.task import (
 from src.core.dto.utils import IterableObj, Pagination
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
 from src.core.enum.language import LanguageEnum
-from src.core.exception.base import EntityNotCreated, EntityNotFound, TranslateNotFound
+from src.core.exception.base import (
+    EntityNotChange,
+    EntityNotCreated,
+    EntityNotFound,
+    TranslateNotFound,
+)
 from src.core.interfaces.repository.challenges.task import (
     IRepositoryTask,
     SortUserTaskObj,
@@ -195,9 +200,12 @@ class RepositoryTask(IRepositoryTask):
         return build_pagination(items=items, iterable_obj=iterable_obj, total=total)
 
     async def user_task_update(self, *, user_id: str, id: int, obj: TaskUserUpdateDTO) -> TaskUser:
+        update_dict = as_dict_skip_none(obj)
+        if len(update_dict) == 0:
+            raise EntityNotChange(msg="Empty data for update")
         stmt = (
             update(UserTaskModel)
-            .values(as_dict_skip_none(obj))
+            .values(update_dict)
             .where(
                 UserTaskModel.id == id,
                 UserTaskModel.user_id == user_id,
@@ -207,6 +215,7 @@ class RepositoryTask(IRepositoryTask):
         result = await self.db_context.scalar(stmt)
         if result is None:
             raise EntityNotFound(msg=f"UserTask object={id} not found and was not updated")
+        await self.db_context.flush()
         await self.db_context.refresh(result)
         return user_task_to_entity(model=result)
 

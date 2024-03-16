@@ -1,13 +1,13 @@
-from datetime import datetime
-
 from fastapi import Query
 from pydantic import BaseModel
 
-from src.core.dto.utils import SortUserTaskObj
 from src.core.entity.task import TaskUser
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.utils import SortType
-from src.core.interfaces.repository.challenges.task import TaskUserFilter
+from src.core.interfaces.repository.challenges.task import (
+    SortUserTaskObj,
+    TaskUserFilter,
+)
 
 
 class SortUserTaskSchema(BaseModel):
@@ -39,8 +39,8 @@ class TaskUserSchema(BaseModel):
     user_id: str
     task_id: int
     status: OccupancyStatusEnum
-    date_start: datetime
-    date_close: datetime | None
+    date_start: int
+    date_close: int | None
 
     @classmethod
     def from_obj(cls, task_user: TaskUser) -> "TaskUserSchema":
@@ -49,8 +49,8 @@ class TaskUserSchema(BaseModel):
             user_id=task_user.user_id,
             task_id=task_user.task_id,
             status=task_user.status,
-            date_start=task_user.date_start,
-            date_close=task_user.date_close,
+            date_start=int(task_user.date_start.timestamp()),
+            date_close=None if task_user.date_close is None else int(task_user.date_close.timestamp()),
         )
 
 
@@ -64,5 +64,5 @@ class TaskUserListSchema(BaseModel):
     def from_obj(
         cls, task_user_list: list[TaskUser], limit: int | None, offset: int, total: int
     ) -> "TaskUserListSchema":
-        items = [TaskUserSchema.from_obj(item) for item in task_user_list]
+        items = [TaskUserSchema.from_obj(task_user=task_user) for task_user in task_user_list]
         return TaskUserListSchema(items=items, limit=limit, offset=offset, total=total)

@@ -15,12 +15,12 @@ class ContactUserUpdateUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def __call__(self, *, user: User, obj: ContactUserUpdateDTO) -> Result:
+    async def __call__(self, *, user: User, id: int, obj: ContactUserUpdateDTO) -> Result:
         if not user.active:
             raise UserNotActive(id=user.id)
 
         async with self.uow as uow:
-            contact_user_update = await uow.user_contact.update(obj=obj, user_id=user.id)
+            contact_user_update = await uow.user_contact.update(id=id, obj=obj, user_id=user.id)
             await uow.commit()
 
         return Result(item=contact_user_update)

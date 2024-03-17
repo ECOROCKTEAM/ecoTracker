@@ -15,8 +15,8 @@ class UserSubscriptionRepository(IUserSubscriptionRepository):
     async def delete(self, user_id: str, sub_id: int) -> int:
         return await super().delete(user_id, sub_id)
 
-    async def update(self, *, obj: UserSubscriptionUpdateDTO) -> UserSubscription:
-        return await super().update(obj=obj)
+    async def update(self, *, id: int, obj: UserSubscriptionUpdateDTO) -> UserSubscription:
+        return await super().update(id=id, obj=obj)
 
     async def get(self, *, user_id: str, sub_id: int) -> UserSubscription:
         return await super().get(user_id=user_id, sub_id=sub_id)

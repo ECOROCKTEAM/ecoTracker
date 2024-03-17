@@ -12,5 +12,4 @@ class UserTaskCreateDTO:
 
 @dataclass
 class UserTaskUpdateDTO:
-    id: int
     occupancy: OccupancyStatusEnum

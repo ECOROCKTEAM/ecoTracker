@@ -89,10 +89,10 @@ class UserContactRepository(IUserContactRepository):
             raise EntityNotCreated(msg=f"{user_id=}, {obj.value=}")
         return model_to_dto(model=res)
 
-    async def update(self, *, obj: ContactUserUpdateDTO, user_id: str) -> ContactUserDTO:
+    async def update(self, *, id: int, obj: ContactUserUpdateDTO, user_id: str) -> ContactUserDTO:
         stmt = (
             update(UserContactModel)
-            .where(UserContactModel.id == obj.id, UserContactModel.user_id == user_id)
+            .where(UserContactModel.id == id, UserContactModel.user_id == user_id)
             .values(**as_dict_skip_none(obj))
             .returning(UserContactModel)
         )

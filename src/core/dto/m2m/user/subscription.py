@@ -18,6 +18,5 @@ class UserSubscriptionCreateDTO:
 
 @dataclass
 class UserSubscriptionUpdateDTO:
-    id: int
     subscription_id: int
     until_date: int

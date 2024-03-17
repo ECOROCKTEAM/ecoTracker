@@ -78,10 +78,11 @@ class IUserContactRepository(ABC):
         """
 
     @abstractmethod
-    async def update(self, *, obj: ContactUserUpdateDTO, user_id: str) -> ContactUserDTO:
+    async def update(self, *, id: int, obj: ContactUserUpdateDTO, user_id: str) -> ContactUserDTO:
         """Update user contact
 
         Args:
+            id (int): id of user contact object
             obj (ContactUserUpdateDTO): DTO for update
             user_id(str): User ID
 

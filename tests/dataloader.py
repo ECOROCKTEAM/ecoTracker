@@ -595,6 +595,37 @@ class dataloader:
         )
         return user_task
 
+    async def create_user_task_list(
+        self,
+        user: UserModel,
+        count: int = 4,
+        status_list: list[OccupancyStatusEnum] | None = None,
+    ) -> list[UserTaskModel]:
+        user_task_list = []
+        if status_list is None:
+            status_list = [OccupancyStatusEnum.ACTIVE]
+
+        for _ in range(count):
+            for status in status_list:
+                user_task = await self.create_user_task(user=user, status=status)
+                user_task_list.append(user_task)
+        return user_task_list
+
+    async def create_user_task_plan(self, user: UserModel, task: TaskModel | None = None) -> UserTaskPlanModel:
+        if task is None:
+            task = await self.create_task()
+        user_task_plan = await self.user_task_plan.create(user=user, task=task)
+        return user_task_plan
+
+    async def create_user_task_plan_list(self, user: UserModel, count=5) -> list[UserTaskPlanModel]:
+        user_task_plan_list = []
+
+        for _ in range(count):
+            user_task_plan = await self.create_user_task_plan(user=user)
+            user_task_plan_list.append(user_task_plan)
+
+        return user_task_plan_list
+
     def _get_cnt_key(self, d: dict) -> str:
         key_parts = []
         for k, v in d.items():

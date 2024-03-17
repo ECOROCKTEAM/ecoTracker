@@ -59,14 +59,15 @@ async def contact_create(
     return ContactSchema.from_obj(contact=result.item)
 
 
-@router.patch("/")
+@router.patch("/{id}")
 async def contact_update(
+    id: int,
     obj: ContactUserUpdateDTO,
     user: Annotated[User, Depends(get_user_stub)],
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],
 ) -> ContactSchema:
     uc = ContactUserUpdateUsecase(uow=uow)
-    result = await uc(user=user, obj=obj)
+    result = await uc(id=id, user=user, obj=obj)
     return ContactSchema.from_obj(contact=result.item)
 
 

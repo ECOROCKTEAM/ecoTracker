@@ -33,7 +33,7 @@ class TaskUserFilter:
 @dataclass
 class TaskUserPlanFilter:
     task_active: bool | None = None
-    """"""
+    category_id: int | None = None
 
 
 class IRepositoryTask(ABC):

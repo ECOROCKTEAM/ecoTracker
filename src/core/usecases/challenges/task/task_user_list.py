@@ -1,10 +1,13 @@
 from dataclasses import dataclass
 
-from src.core.dto.utils import IterableObj, SortObj
+from src.core.dto.utils import IterableObj
 from src.core.entity.task import TaskUser
 from src.core.entity.user import User
 from src.core.exception.user import UserNotActive
-from src.core.interfaces.repository.challenges.task import TaskUserFilter
+from src.core.interfaces.repository.challenges.task import (
+    SortUserTaskObj,
+    TaskUserFilter,
+)
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
@@ -25,7 +28,7 @@ class UserTaskListUsecase:
         *,
         user: User,
         filter_obj: TaskUserFilter,
-        sorting_obj: SortObj,
+        sorting_obj: SortUserTaskObj,
         iterable_obj: IterableObj,
     ) -> Result:
         if not user.active:

@@ -555,6 +555,7 @@ async def _arrange_user_task_list_filter_status_by_which_date_close_datetime(
     dl: dataloader, user: UserModel
 ) -> tuple[int, TaskUserFilter, TaskModel]:
     task = await dl.create_task()
+    await dl.create_task()
 
     await dl.create_user_task(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
     await dl.create_user_task(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
@@ -587,19 +588,31 @@ async def test_user_task_list_ok(dl: dataloader, repo_task: IRepositoryTask, arr
         user_id=user.id, filter_obj=assrt_filter_obj, sorting_obj=SortUserTaskObj(), iterable_obj=IterableObj()
     )
 
+    user_id_set = {user_task.user_id for user_task in user_task_list.items}
+    task_id_set = {user_task.task_id for user_task in user_task_list.items}
+    status_tasks_set = {user_task.status for user_task in user_task_list.items}
+    status_data_close_list = [OccupancyStatusEnum.FINISH, OccupancyStatusEnum.REJECT, OccupancyStatusEnum.OVERDUE]
+
     # Asser
     assert len(user_task_list.items) == total
+    assert user_id_set == set([user.id])
+    assert task_id_set == set([task.id])
+    assert [isinstance(user_task.date_start, datetime) for user_task in user_task_list.items]
+    assert [
+        isinstance(user_task.date_close, datetime)
+        for user_task in user_task_list.items
+        if user_task.status not in status_data_close_list
+    ]
 
-    for user_task in user_task_list.items:
-        assert user_task.user_id == user.id
-        assert user_task.task_id == task.id
-        assert isinstance(user_task.date_start, datetime)
-
-        if assrt_filter_obj.status is not None:
-            assert assrt_filter_obj.status == user_task.status
-
-        if user_task.date_close is not None:
-            assert isinstance(user_task.date_close, datetime)
+    if assrt_filter_obj.status is not None:
+        assert set([assrt_filter_obj.status]) == status_tasks_set
+    if assrt_filter_obj.task_id is not None:
+        assert set([assrt_filter_obj.task_id]) == task_id_set
+    if assrt_filter_obj.task_active is not None:
+        for id in task_id_set:
+            task = await dl.task_loader.get(id=id)
+            assert isinstance(task, TaskModel)
+            assert assrt_filter_obj.task_active == task.active
 
 
 async def _arrange_user_task_plan_list_filter_task_active(

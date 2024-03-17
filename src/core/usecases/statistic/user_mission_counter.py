@@ -13,7 +13,7 @@ class Result:
     item: MissionUserCounterDTO
 
 
-class UserMissionsFinishedCounterUsecase:
+class UserMissionCounterStatisticUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 

@@ -32,10 +32,11 @@ class IUserSubscriptionRepository(ABC):
         """
 
     @abstractmethod
-    async def update(self, *, obj: UserSubscriptionUpdateDTO) -> UserSubscription:
+    async def update(self, *, id: int, obj: UserSubscriptionUpdateDTO) -> UserSubscription:
         """Update user subscription
 
         Args:
+            id (int): ID of user subscription
             obj (UserSubscriptionUpdateDTO): DTO for update user subsctiprion
 
         Returns:

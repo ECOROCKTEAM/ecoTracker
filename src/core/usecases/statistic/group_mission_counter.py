@@ -14,7 +14,7 @@ class Result:
     item: GroupMissionCounterDTO
 
 
-class GroupMissionFinishedCounterUseCase:
+class GroupMissionCounterStatisticUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 

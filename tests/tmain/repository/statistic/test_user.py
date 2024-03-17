@@ -1,3 +1,5 @@
+from random import randint
+
 import pytest
 
 from src.core.enum.challenges.status import OccupancyStatusEnum
@@ -7,119 +9,91 @@ from src.core.interfaces.repository.statistic.user import IRepositoryUserStatist
 from tests.dataloader import dataloader
 
 
-async def _test_user_task_list_finished_first(dl: dataloader) -> tuple[str, int]:
+async def _arrange_user_task(dl: dataloader) -> tuple[str, dict]:
     user = await dl.user_loader.create()
-    task_category = await dl.create_category(
+    category = await dl.create_category(
         name="test task category", language_list=[LanguageEnum.EN, LanguageEnum.FR, LanguageEnum.RU]
     )
-    task = await dl.task_loader.create(category=task_category)
-    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
-    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
-    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
-    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
-    finished_tasks = 4
-    return user.id, finished_tasks
+    task = await dl.task_loader.create(category=category)
 
+    status_in = []
+    for e in list(OccupancyStatusEnum):
+        status_in.extend([e] * randint(1, 4))
 
-async def _test_user_task_list_finished_second(dl: dataloader) -> tuple[str, int]:
-    user = await dl.user_loader.create()
-    task_category = await dl.create_category(
-        name="test task category", language_list=[LanguageEnum.EN, LanguageEnum.FR, LanguageEnum.RU]
-    )
-    task = await dl.task_loader.create(category=task_category)
-    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
-    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
-    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.FINISH)
-    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
-    finished_tasks = 3
-    return user.id, finished_tasks
+    for status in status_in:
+        await dl.user_task_loader.create(user=user, task=task, status=status)
 
-
-async def _test_user_task_list_finished_third(dl: dataloader) -> tuple[str, int]:
-    user = await dl.user_loader.create()
-    task_category = await dl.create_category(
-        name="test task category", language_list=[LanguageEnum.EN, LanguageEnum.FR, LanguageEnum.RU]
-    )
-    task = await dl.task_loader.create(category=task_category)
-    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_task_loader.create(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
-    finished_tasks = 0
-    return user.id, finished_tasks
+    status_count_dict = {status: status_in.count(status) for status in list(OccupancyStatusEnum)}
+    return user.id, status_count_dict
 
 
 # pytest tests/tmain/repository/statistic/test_user.py::test_user_task_counter_ok -v -s
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "arrange_func",
-    [_test_user_task_list_finished_first, _test_user_task_list_finished_second, _test_user_task_list_finished_third],
+    "filter_list",
+    [
+        [
+            OccupancyStatusEnum.ACTIVE,
+        ],
+        [OccupancyStatusEnum.ACTIVE, OccupancyStatusEnum.FINISH],
+        [*list(OccupancyStatusEnum)],
+        [],
+    ],
 )
-async def test_user_task_counter_ok(dl: dataloader, repo_user_statistic: IRepositoryUserStatistic, arrange_func):
-    user_id, finished_tasks = await arrange_func(dl=dl)
+async def test_user_task_counter_ok(
+    dl: dataloader, repo_user_statistic: IRepositoryUserStatistic, filter_list: list[OccupancyStatusEnum]
+):
+    user_id, status_count_dict = await _arrange_user_task(dl=dl)
+    asrt_count = sum([status_count_dict[status] for status in filter_list])
 
     user_task_counter = await repo_user_statistic.task_counter(
-        user_id=user_id, filter_obj=OccupancyStatisticFilter(status__in=[OccupancyStatusEnum.FINISH])
+        user_id=user_id, filter_obj=OccupancyStatisticFilter(status__in=filter_list)
     )
 
-    assert finished_tasks == user_task_counter.counter
+    assert asrt_count == user_task_counter.counter
     assert user_id == user_task_counter.user_id
 
 
-async def _test_user_mission_list_finished_first(dl: dataloader) -> tuple[str, int]:
+async def _arrange_user_mission(dl: dataloader) -> tuple[str, dict]:
     user = await dl.user_loader.create()
-    category = await dl.create_category()
+    category = await dl.create_category(
+        name="test task category", language_list=[LanguageEnum.EN, LanguageEnum.FR, LanguageEnum.RU]
+    )
     mission = await dl.mission_loader.create(category=category)
-    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
-    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
-    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
-    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
-    finished_missions = 4
-    return user.id, finished_missions
 
+    status_in = []
+    for e in list(OccupancyStatusEnum):
+        status_in.extend([e] * randint(1, 4))
 
-async def _test_user_mission_list_finished_second(dl: dataloader) -> tuple[str, int]:
-    user = await dl.user_loader.create()
-    category = await dl.create_category()
-    mission = await dl.mission_loader.create(category=category)
-    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
-    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.FINISH)
-    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
-    finished_missions = 2
-    return user.id, finished_missions
+    for status in status_in:
+        await dl.user_mission_loader.create(user=user, mission=mission, status=status)
 
-
-async def _test_user_mission_list_finished_third(dl: dataloader) -> tuple[str, int]:
-    user = await dl.user_loader.create()
-    category = await dl.create_category()
-    mission = await dl.mission_loader.create(category=category)
-    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
-    await dl.user_mission_loader.create(user=user, mission=mission, status=OccupancyStatusEnum.ACTIVE)
-    finished_missions = 0
-    return user.id, finished_missions
+    status_count_dict = {status: status_in.count(status) for status in list(OccupancyStatusEnum)}
+    return user.id, status_count_dict
 
 
 # pytest tests/tmain/repository/statistic/test_user.py::test_user_mission_finished_counter_ok -v -s
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "arrange_func",
+    "filter_list",
     [
-        _test_user_mission_list_finished_first,
-        _test_user_mission_list_finished_second,
-        _test_user_mission_list_finished_third,
+        [
+            OccupancyStatusEnum.ACTIVE,
+        ],
+        [OccupancyStatusEnum.ACTIVE, OccupancyStatusEnum.FINISH],
+        [*list(OccupancyStatusEnum)],
+        [],
     ],
 )
 async def test_user_mission_finished_counter_ok(
-    dl: dataloader, repo_user_statistic: IRepositoryUserStatistic, arrange_func
+    dl: dataloader, repo_user_statistic: IRepositoryUserStatistic, filter_list: list[OccupancyStatusEnum]
 ):
-    user_id, finished_missions = await arrange_func(dl=dl)
+    user_id, status_count_dict = await _arrange_user_mission(dl=dl)
+    status_count = sum([status_count_dict[status] for status in filter_list])
 
-    filter_obj = OccupancyStatisticFilter(status__in=[OccupancyStatusEnum.FINISH])
-
-    user_mission_counter = await repo_user_statistic.mission_counter(user_id=user_id, filter_obj=filter_obj)
+    user_mission_counter = await repo_user_statistic.mission_counter(
+        user_id=user_id, filter_obj=OccupancyStatisticFilter(status__in=filter_list)
+    )
 
     assert user_mission_counter.user_id == user_id
-    assert user_mission_counter.counter == finished_missions
+    assert user_mission_counter.counter == status_count

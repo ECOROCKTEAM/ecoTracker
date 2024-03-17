@@ -82,6 +82,7 @@ class IUserContactRepository(ABC):
         """Update user contact
 
         Args:
+            id (int): id of user contact object
             obj (ContactUserUpdateDTO): DTO for update
             user_id(str): User ID
 

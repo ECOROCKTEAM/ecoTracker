@@ -9,7 +9,7 @@ from src.core.dto.auth.firebase import ProviderIdentity, TokenIdentity, UserIden
 from src.core.interfaces.auth.firebase import IFirebaseApplication
 
 
-# pytest tests/main/auth/test_firebase_app.py::test_app_singleton -v -s
+# pytest tests/tmain/firebase/test_firebase_app.py::test_app_singleton -v -s
 def test_app_singleton():
     app = FirebaseApplicationSingleton(name=settings.FIREBASE_APP_NAME, secret_path=settings.FIREBASE_SECRET_PATH)
     app.setup()
@@ -20,7 +20,7 @@ def test_app_singleton():
     assert app_id == app2_id
 
 
-# pytest tests/main/auth/test_firebase_app.py::test_app_default -v -s
+# pytest tests/tmain/firebase/test_firebase_app.py::test_app_default -v -s
 def test_app_default():
     app = FirebaseApplication(name=settings.FIREBASE_APP_NAME, secret_path=settings.FIREBASE_SECRET_PATH)
     app.setup()

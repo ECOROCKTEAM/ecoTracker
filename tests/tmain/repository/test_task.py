@@ -308,7 +308,7 @@ async def test_user_task_update_ok(dl: dataloader, repo_task: IRepositoryTask, o
 @pytest.mark.asyncio
 async def test_user_task_update_empty_fail(
     dl: dataloader,
-    repo_task: IRepositoryTask,  # user_task_id: int, user_task_status: OccupancyStatusEnum
+    repo_task: IRepositoryTask,
 ):
     # Arrange
     user = await dl.user_loader.create()
@@ -430,21 +430,21 @@ async def _arrange_user_task_lst_offset_5_pagination_limit_5(
 async def test_user_task_list_pagination(dl: dataloader, repo_task: IRepositoryTask, arrange_func):
     # Arrange
     user = await dl.user_loader.create()
-    assrt_total, assrt_count, assrt_offset, assrt_limit = await arrange_func(dl=dl, user=user)
+    asrt_total, asrt_count, asrt_offset, asrt_limit = await arrange_func(dl=dl, user=user)
 
     # Act
     user_task_list = await repo_task.user_task_lst(
         user_id=user.id,
         filter_obj=TaskUserFilter(),
         sorting_obj=SortUserTaskObj(),
-        iterable_obj=IterableObj(limit=assrt_limit, offset=assrt_offset),
+        iterable_obj=IterableObj(limit=asrt_limit, offset=asrt_offset),
     )
 
     # Assert
-    assert assrt_count == len(user_task_list.items)
-    assert assrt_total == user_task_list.total
-    assert assrt_limit == user_task_list.limit
-    assert assrt_offset == user_task_list.offset
+    assert asrt_count == len(user_task_list.items)
+    assert asrt_total == user_task_list.total
+    assert asrt_limit == user_task_list.limit
+    assert asrt_offset == user_task_list.offset
 
 
 async def _arrange_user_task_plan_list_offset_5_pagination_limit_3(
@@ -489,21 +489,21 @@ async def _arrange_user_task_plan_list_offset_0_pagination_limit_10(
 async def test_user_plan_list_pagination(dl: dataloader, repo_task: IRepositoryTask, arrange_func):
     # Arrange
     user = await dl.user_loader.create()
-    assrt_total, assrt_count, assrt_offset, assrt_limit = await arrange_func(dl=dl, user=user)
+    asrt_total, asrt_count, asrt_offset, asrt_limit = await arrange_func(dl=dl, user=user)
 
     # Act
     user_task_plan_list = await repo_task.plan_lst(
         user_id=user.id,
         filter_obj=TaskUserPlanFilter(),
         sorting_obj=SortUserTaskObj(),
-        iterable_obj=IterableObj(limit=assrt_limit, offset=assrt_offset),
+        iterable_obj=IterableObj(limit=asrt_limit, offset=asrt_offset),
     )
 
     # Assert
-    assert assrt_total == user_task_plan_list.total
-    assert assrt_count == len(user_task_plan_list.items)
-    assert assrt_limit == user_task_plan_list.limit
-    assert assrt_offset == user_task_plan_list.offset
+    assert asrt_total == user_task_plan_list.total
+    assert asrt_count == len(user_task_plan_list.items)
+    assert asrt_limit == user_task_plan_list.limit
+    assert asrt_offset == user_task_plan_list.offset
 
 
 async def _arrange_user_task_list_filter_task_id(
@@ -564,11 +564,11 @@ async def _arrange_user_task_list_filter_status(
 async def test_user_task_list_ok(dl: dataloader, repo_task: IRepositoryTask, arrange_func):
     # Arrange
     user = await dl.user_loader.create()
-    total, assrt_filter_obj, task = await arrange_func(dl=dl, user=user)
+    total, asrt_filter_obj, task = await arrange_func(dl=dl, user=user)
 
     # Act
     user_task_list = await repo_task.user_task_lst(
-        user_id=user.id, filter_obj=assrt_filter_obj, sorting_obj=SortUserTaskObj(), iterable_obj=IterableObj()
+        user_id=user.id, filter_obj=asrt_filter_obj, sorting_obj=SortUserTaskObj(), iterable_obj=IterableObj()
     )
 
     user_id_set = {user_task.user_id for user_task in user_task_list.items}
@@ -579,17 +579,17 @@ async def test_user_task_list_ok(dl: dataloader, repo_task: IRepositoryTask, arr
     assert len(user_task_list.items) == total
     assert user_id_set == set([user.id])
     assert task_id_set == set([task.id])
-    assert [isinstance(user_task.date_start, datetime) for user_task in user_task_list.items]
+    assert all([isinstance(user_task.date_start, datetime) for user_task in user_task_list.items])
 
-    if assrt_filter_obj.status is not None:
-        assert set([assrt_filter_obj.status]) == user_tasks_status_set
-    if assrt_filter_obj.task_id is not None:
-        assert set([assrt_filter_obj.task_id]) == task_id_set
-    if assrt_filter_obj.task_active is not None:
+    if asrt_filter_obj.status is not None:
+        assert set([asrt_filter_obj.status]) == user_tasks_status_set
+    if asrt_filter_obj.task_id is not None:
+        assert set([asrt_filter_obj.task_id]) == task_id_set
+    if asrt_filter_obj.task_active is not None:
         for id in task_id_set:
             task = await dl.task_loader.get(id=id)
             assert isinstance(task, TaskModel)
-            assert assrt_filter_obj.task_active == task.active
+            assert asrt_filter_obj.task_active == task.active
 
 
 async def _arrange_user_task_plan_list_filter_task_active(
@@ -644,7 +644,7 @@ async def test_user_task_plan_list_ok(dl: dataloader, repo_task: IRepositoryTask
 
     total, filter_obj, filtered_task_list = await arrange_func(dl=dl, user=user)
 
-    assrt_task_set_id = {task.id for task in filtered_task_list}
+    asrt_task_set_id = {task.id for task in filtered_task_list}
 
     # Act
     user_task_plan_list = await repo_task.plan_lst(
@@ -656,21 +656,21 @@ async def test_user_task_plan_list_ok(dl: dataloader, repo_task: IRepositoryTask
 
     # Assert
     assert len(user_task_plan_list.items) == total
-    assert user_task_set_task_id == assrt_task_set_id
+    assert user_task_set_task_id == asrt_task_set_id
     assert user_task_set_user_id == set([user.id])
 
     if filter_obj.task_active is not None:
-        assrt_task_dict_active = {
+        asrt_task_dict_active = {
             task.id: task.active for task in filtered_task_list if task.active == filter_obj.task_active
         }
 
         for task_id in user_task_set_task_id:
-            assert task_id in assrt_task_dict_active
-            assert assrt_task_dict_active[task_id] == filter_obj.task_active
+            assert task_id in asrt_task_dict_active
+            assert asrt_task_dict_active[task_id] == filter_obj.task_active
 
     if filter_obj.category_id is not None:
-        assrt_task_dict_category_id = {task.id: task.category_id for task in filtered_task_list}
+        asrt_task_dict_category_id = {task.id: task.category_id for task in filtered_task_list}
 
         for task_id in user_task_set_task_id:
-            assert task_id in assrt_task_dict_category_id
-            assert assrt_task_dict_category_id[task_id] == filter_obj.category_id
+            assert task_id in asrt_task_dict_category_id
+            assert asrt_task_dict_category_id[task_id] == filter_obj.category_id

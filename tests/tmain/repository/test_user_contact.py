@@ -1,5 +1,4 @@
 from dataclasses import asdict
-from doctest import FAIL_FAST
 
 import pytest
 

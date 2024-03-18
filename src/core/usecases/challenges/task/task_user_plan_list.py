@@ -1,10 +1,13 @@
 from dataclasses import dataclass
 
-from src.core.dto.utils import IterableObj, SortUserTaskObj
+from src.core.dto.utils import IterableObj
 from src.core.entity.task import TaskUserPlan
 from src.core.entity.user import User
 from src.core.exception.user import UserNotActive
-from src.core.interfaces.repository.challenges.task import TaskUserPlanFilter
+from src.core.interfaces.repository.challenges.task import (
+    SortUserTaskObj,
+    TaskUserPlanFilter,
+)
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 

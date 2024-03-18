@@ -509,53 +509,37 @@ async def test_user_plan_list_pagination(dl: dataloader, repo_task: IRepositoryT
 async def _arrange_user_task_list_filter_task_id(
     dl: dataloader, user: UserModel
 ) -> tuple[int, TaskUserFilter, TaskModel]:
-    task_1 = await dl.create_task()
-    task_2 = await dl.create_task()
+    task = await dl.create_task()
+    task_not_in_filter = await dl.create_task()
 
-    await dl.create_user_task(user=user, task=task_1)
-    await dl.create_user_task(user=user, task=task_1)
-    await dl.create_user_task(user=user, task=task_1)
-    await dl.create_user_task(user=user, task=task_2)
-    filter_obj = TaskUserFilter(task_id=task_1.id)
+    await dl.create_user_task(user=user, task=task)
+    await dl.create_user_task(user=user, task=task)
+    await dl.create_user_task(user=user, task=task)
+    await dl.create_user_task(user=user, task=task_not_in_filter)
+    filter_obj = TaskUserFilter(task_id=task.id)
     total = 3
-    return total, filter_obj, task_1
+    return total, filter_obj, task
 
 
 async def _arrange_user_task_list_filter_task_active(
     dl: dataloader, user: UserModel
 ) -> tuple[int, TaskUserFilter, TaskModel]:
-    task_1 = await dl.create_task(active=True)
-    task_2 = await dl.create_task(active=False)
+    task_active = await dl.create_task(active=True)
+    task_not_active = await dl.create_task(active=False)
 
-    await dl.create_user_task(user=user, task=task_1)
-    await dl.create_user_task(user=user, task=task_1)
-    await dl.create_user_task(user=user, task=task_2)
-    await dl.create_user_task(user=user, task=task_2)
+    await dl.create_user_task(user=user, task=task_active)
+    await dl.create_user_task(user=user, task=task_active)
+    await dl.create_user_task(user=user, task=task_not_active)
+    await dl.create_user_task(user=user, task=task_not_active)
     filter_obj = TaskUserFilter(task_active=True)
     total = 2
-    return total, filter_obj, task_1
+    return total, filter_obj, task_active
 
 
-async def _arrange_user_task_list_filter_status_by_which_date_close_none(
+async def _arrange_user_task_list_filter_status(
     dl: dataloader, user: UserModel
 ) -> tuple[int, TaskUserFilter, TaskModel]:
     task = await dl.create_task()
-
-    await dl.create_user_task(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
-    await dl.create_user_task(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
-    await dl.create_user_task(user=user, task=task, status=OccupancyStatusEnum.REJECT)
-    await dl.create_user_task(user=user, task=task, status=OccupancyStatusEnum.FINISH)
-    await dl.create_user_task(user=user, task=task, status=OccupancyStatusEnum.OVERDUE)
-    total = 2
-    filter_obj = TaskUserFilter(status=OccupancyStatusEnum.ACTIVE)
-    return total, filter_obj, task
-
-
-async def _arrange_user_task_list_filter_status_by_which_date_close_datetime(
-    dl: dataloader, user: UserModel
-) -> tuple[int, TaskUserFilter, TaskModel]:
-    task = await dl.create_task()
-    await dl.create_task()
 
     await dl.create_user_task(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
     await dl.create_user_task(user=user, task=task, status=OccupancyStatusEnum.ACTIVE)
@@ -574,8 +558,7 @@ async def _arrange_user_task_list_filter_status_by_which_date_close_datetime(
     [
         _arrange_user_task_list_filter_task_id,
         _arrange_user_task_list_filter_task_active,
-        _arrange_user_task_list_filter_status_by_which_date_close_none,
-        _arrange_user_task_list_filter_status_by_which_date_close_datetime,
+        _arrange_user_task_list_filter_status,
     ],
 )
 async def test_user_task_list_ok(dl: dataloader, repo_task: IRepositoryTask, arrange_func):
@@ -590,22 +573,16 @@ async def test_user_task_list_ok(dl: dataloader, repo_task: IRepositoryTask, arr
 
     user_id_set = {user_task.user_id for user_task in user_task_list.items}
     task_id_set = {user_task.task_id for user_task in user_task_list.items}
-    status_tasks_set = {user_task.status for user_task in user_task_list.items}
-    status_data_close_list = [OccupancyStatusEnum.FINISH, OccupancyStatusEnum.REJECT, OccupancyStatusEnum.OVERDUE]
+    user_tasks_status_set = {user_task.status for user_task in user_task_list.items}
 
     # Asser
     assert len(user_task_list.items) == total
     assert user_id_set == set([user.id])
     assert task_id_set == set([task.id])
     assert [isinstance(user_task.date_start, datetime) for user_task in user_task_list.items]
-    assert [
-        isinstance(user_task.date_close, datetime)
-        for user_task in user_task_list.items
-        if user_task.status not in status_data_close_list
-    ]
 
     if assrt_filter_obj.status is not None:
-        assert set([assrt_filter_obj.status]) == status_tasks_set
+        assert set([assrt_filter_obj.status]) == user_tasks_status_set
     if assrt_filter_obj.task_id is not None:
         assert set([assrt_filter_obj.task_id]) == task_id_set
     if assrt_filter_obj.task_active is not None:
@@ -633,7 +610,9 @@ async def _arrange_user_task_plan_list_filter_task_active(
     return total, filter_obj, filtered_task_list
 
 
-async def _arrange_user_task_plan_list_filter_category_id(dl: dataloader, user: UserModel):
+async def _arrange_user_task_plan_list_filter_category_id(
+    dl: dataloader, user: UserModel
+) -> tuple[int, TaskUserPlanFilter, list[TaskModel]]:
     category = await dl.create_category()
     fake_category = await dl.create_category()
 

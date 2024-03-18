@@ -45,4 +45,24 @@ pre-commit:
 tests:
 	export DOCKER_BUILDKIT=0
 	export COMPOSE_DOCKER_CLI_BUILD=0
-	docker compose -f docker-compose.test.yaml up --force-recreate -V --build --exit-code-from test-runner && echo "TEST IS 100% OK"
+	docker compose -f docker-compose.root.yaml up test_runner_app test_runner_db --force-recreate -V --remove-orphans --build --exit-code-from test_runner_app && echo "TEST IS 100% OK"
+
+.PHONY: devdb
+devdb:
+	export DOCKER_BUILDKIT=0
+	export COMPOSE_DOCKER_CLI_BUILD=0
+	docker compose -f docker-compose.root.yaml up -d dev_db dev_pgadmin -V --build --remove-orphans
+
+.PHONY: devapp
+devapp:
+	export DOCKER_BUILDKIT=0
+	export COMPOSE_DOCKER_CLI_BUILD=0
+	docker compose -f docker-compose.root.yaml up -d dev_app dev_db dev_pgadmin -V --build
+	sleep 5
+	docker compose -f docker-compose.root.yaml exec dev_app alembic upgrade head
+
+.PHONY: devstop
+devstop:
+	export DOCKER_BUILDKIT=0
+	export COMPOSE_DOCKER_CLI_BUILD=0
+	docker compose -f docker-compose.root.yaml stop dev_app dev_db dev_pgadmin

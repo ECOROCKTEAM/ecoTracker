@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  test_runner_app:
+    build:
+      context: .
+      target: test_runner_app
+    depends_on:
+      - test_runner_db
+    env_file:
+      - env/test_runner/testrunner.env
+    environment:
+      - APP_ENV=test
+    entrypoint: pytest tests/tmain -v -x
+
+  test_runner_db:
+    image: postgres:15-alpine
+    volumes:
+      - ./infra/docker/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    env_file:
+      - env/test_runner/db.env
+
+  dev_db:
+    image: postgres:15-alpine
+    volumes:
+      - ./infra/docker/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    ports:
+      - 5432:5432
+    env_file:
+      - env/dev/db.env
+
+  dev_pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 5050:80
+    env_file:
+      - env/dev/pgadmin.env
+
+  dev_app:
+    build:
+      context: .
+      target: web_app
+    depends_on:
+      - dev_db
+    env_file:
+      - env/dev/dev.env
+    environment:
+      - APP_ENV=dev
+    entrypoint: uvicorn --factory src.http.app:create_app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"

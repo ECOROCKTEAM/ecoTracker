@@ -2,7 +2,7 @@ import typing
 from dataclasses import asdict
 
 from asyncpg.exceptions import ForeignKeyViolationError
-from sqlalchemy import and_, delete, insert, select, update
+from sqlalchemy import and_, delete, func, insert, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,15 +12,27 @@ from src.core.dto.challenges.task import (
     TaskUserPlanCreateDTO,
     TaskUserUpdateDTO,
 )
-from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj, Pagination
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
 from src.core.enum.language import LanguageEnum
-from src.core.exception.base import EntityNotCreated, EntityNotFound, TranslateNotFound
+from src.core.exception.base import (
+    EntityNotChange,
+    EntityNotCreated,
+    EntityNotFound,
+    TranslateNotFound,
+)
 from src.core.interfaces.repository.challenges.task import (
     IRepositoryTask,
+    SortUserTaskObj,
     TaskFilter,
     TaskUserFilter,
     TaskUserPlanFilter,
+)
+from src.data.mapper.utils import (
+    apply_iterable,
+    apply_sorting,
+    build_pagination,
+    recive_total,
 )
 from src.data.models.challenges.task import (
     TaskModel,
@@ -90,15 +102,15 @@ class RepositoryTask(IRepositoryTask):
         return task_model_to_entity(model=task, translated_model=task_translate)
 
     async def lst(
-        self, *, filter_obj: TaskFilter, order_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
-    ) -> list[Task]:
+        self, *, filter_obj: TaskFilter, sorting_obj: SortUserTaskObj, iterable_obj: IterableObj, lang: LanguageEnum
+    ) -> Pagination[list[Task]]:
         where_clause = []
         if filter_obj.category_id is not None:
             where_clause.append(TaskModel.category_id == filter_obj.category_id)
         if filter_obj.active is not None:
             where_clause.append(TaskModel.active == filter_obj.active)
         stmt = (
-            select(TaskModel, TaskTranslateModel)
+            select(TaskModel, TaskTranslateModel, func.count(TaskModel.id).over())
             .join(
                 TaskTranslateModel,
                 and_(TaskModel.id == TaskTranslateModel.task_id, TaskTranslateModel.language == lang),
@@ -106,10 +118,16 @@ class RepositoryTask(IRepositoryTask):
             )
             .where(*where_clause)
         )
+        stmt = apply_sorting(stmt, sorting_obj)
+        stmt = apply_iterable(stmt, iterable_obj)
         coro = await self.db_context.execute(stmt)
         result = coro.all()
+        total = recive_total(seq=result, total_idx=2)
+        if total == 0:
+            return build_pagination(items=[], iterable_obj=iterable_obj, total=total)
         holder = {}
-        for task, task_translate in result:
+        # print(f'{result=}')
+        for task, task_translate, _ in result:
             holder[task.id] = {}
             holder[task.id]["task"] = task
             if task_translate is None:
@@ -123,10 +141,11 @@ class RepositoryTask(IRepositoryTask):
             else:
                 holder[task.id]["translate"] = task_translate
 
-        return [
+        items = [
             task_model_to_entity(model=models["task"], translated_model=models["translate"])
             for models in holder.values()
         ]
+        return build_pagination(items=items, iterable_obj=iterable_obj, total=total)
 
     async def user_task_add(self, *, user_id: str, obj: TaskUserCreateDTO) -> TaskUser:
         stmt = insert(UserTaskModel).values(user_id=user_id, **asdict(obj)).returning(UserTaskModel)
@@ -142,8 +161,8 @@ class RepositoryTask(IRepositoryTask):
         await self.db_context.refresh(result)
         return user_task_to_entity(model=result)
 
-    async def user_task_get(self, *, id: int) -> TaskUser:
-        stmt = select(UserTaskModel).where(UserTaskModel.id == id)
+    async def user_task_get(self, *, user_id: str, id: int) -> TaskUser:
+        stmt = select(UserTaskModel).where(UserTaskModel.id == id, UserTaskModel.user_id == user_id)
         result = await self.db_context.scalar(stmt)
         if result is None:
             raise EntityNotFound(msg=f"UserTask object with id={id} not found")
@@ -154,10 +173,10 @@ class RepositoryTask(IRepositoryTask):
         *,
         user_id: str,
         filter_obj: TaskUserFilter,
-        order_obj: MockObj,
-        pagination_obj: MockObj,
-    ) -> list[TaskUser]:
-        stmt = select(UserTaskModel)
+        sorting_obj: SortUserTaskObj,
+        iterable_obj: IterableObj,
+    ) -> Pagination[list[TaskUser]]:
+        stmt = select(UserTaskModel, func.count(UserTaskModel.id).over())
         where_clause = []
         where_clause.append(UserTaskModel.user_id == user_id)
         if filter_obj.task_id is not None:
@@ -168,21 +187,33 @@ class RepositoryTask(IRepositoryTask):
             stmt = stmt.join(TaskModel, UserTaskModel.task_id == TaskModel.id)
             where_clause.append(TaskModel.active == filter_obj.task_active)
         stmt = stmt.where(*where_clause)
-        result = await self.db_context.scalars(stmt)
-        return [user_task_to_entity(model=model) for model in result]
+        stmt = apply_sorting(stmt, sorting_obj)
+        stmt = apply_iterable(stmt, iterable_obj)
+        coro = await self.db_context.execute(stmt)
+        result = coro.all()
+        total = recive_total(seq=result, total_idx=1)
+        if total == 0:
+            return build_pagination(items=[], iterable_obj=iterable_obj, total=total)
+        items = [user_task_to_entity(model=model) for model, _ in result]
+        return build_pagination(items=items, iterable_obj=iterable_obj, total=total)
 
-    async def user_task_update(self, *, id: int, obj: TaskUserUpdateDTO) -> TaskUser:
+    async def user_task_update(self, *, user_id: str, id: int, obj: TaskUserUpdateDTO) -> TaskUser:
+        update_dict = as_dict_skip_none(obj)
+        if len(update_dict) == 0:
+            raise EntityNotChange(msg="Empty data for update")
         stmt = (
             update(UserTaskModel)
-            .values(as_dict_skip_none(obj))
+            .values(update_dict)
             .where(
                 UserTaskModel.id == id,
+                UserTaskModel.user_id == user_id,
             )
             .returning(UserTaskModel)
         )
         result = await self.db_context.scalar(stmt)
         if result is None:
             raise EntityNotFound(msg=f"UserTask object={id} not found and was not updated")
+        await self.db_context.flush()
         await self.db_context.refresh(result)
         return user_task_to_entity(model=result)
 
@@ -211,14 +242,29 @@ class RepositoryTask(IRepositoryTask):
         return plan_model_to_entity(model=result)
 
     async def plan_lst(
-        self, *, user_id: str, filter_obj: TaskUserPlanFilter, order_obj: MockObj, pagination_obj: MockObj
-    ) -> list[TaskUserPlan]:
-        stmt = select(UserTaskPlanModel)
+        self,
+        *,
+        user_id: str,
+        filter_obj: TaskUserPlanFilter,
+        sorting_obj: SortUserTaskObj,
+        iterable_obj: IterableObj,
+    ) -> Pagination[list[TaskUserPlan]]:
+        stmt = select(UserTaskPlanModel, func.count(UserTaskPlanModel.user_id).over())
         where_clause = []
         where_clause.append(UserTaskPlanModel.user_id == user_id)
+        if filter_obj.category_id is not None:
+            stmt = stmt.join(TaskModel, UserTaskPlanModel.task_id == TaskModel.id)
+            where_clause.append(TaskModel.category_id == filter_obj.category_id)
         if filter_obj.task_active is not None:
             stmt = stmt.join(TaskModel, UserTaskPlanModel.task_id == TaskModel.id)
             where_clause.append(TaskModel.active == filter_obj.task_active)
         stmt = stmt.where(*where_clause)
-        result = await self.db_context.scalars(stmt)
-        return [plan_model_to_entity(model=model) for model in result]
+        stmt = apply_sorting(stmt, sorting_obj)
+        stmt = apply_iterable(stmt, iterable_obj)
+        coro = await self.db_context.execute(stmt)
+        result = coro.all()
+        total = recive_total(seq=result, total_idx=1)
+        if total == 0:
+            return build_pagination(items=[], iterable_obj=iterable_obj, total=total)
+        items = [plan_model_to_entity(model=model) for model, _ in result]
+        return build_pagination(items=items, iterable_obj=iterable_obj, total=total)

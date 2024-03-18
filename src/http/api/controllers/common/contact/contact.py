@@ -67,7 +67,7 @@ async def contact_update(
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],
 ) -> ContactSchema:
     uc = ContactUserUpdateUsecase(uow=uow)
-    result = await uc(user=user, id=id, obj=obj)
+    result = await uc(id=id, user=user, obj=obj)
     return ContactSchema.from_obj(contact=result.item)
 
 

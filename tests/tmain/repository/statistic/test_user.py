@@ -21,7 +21,7 @@ async def _arrange_user_task(dl: dataloader) -> tuple[str, dict]:
         status_in.extend([e] * randint(1, 4))
 
     for status in status_in:
-        await dl.user_task_loader.create(user_id=user.id, task_id=task.id, status=status)
+        await dl.user_task_loader.create(user=user, task=task, status=status)
 
     status_count_dict = {status: status_in.count(status) for status in list(OccupancyStatusEnum)}
     return user.id, status_count_dict
@@ -59,14 +59,14 @@ async def _arrange_user_mission(dl: dataloader) -> tuple[str, dict]:
     category = await dl.create_category(
         name="test task category", language_list=[LanguageEnum.EN, LanguageEnum.FR, LanguageEnum.RU]
     )
-    mission = await dl.mission_loader.create(category_id=category.id)
+    mission = await dl.mission_loader.create(category=category)
 
     status_in = []
     for e in list(OccupancyStatusEnum):
         status_in.extend([e] * randint(1, 4))
 
     for status in status_in:
-        await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=status)
+        await dl.user_mission_loader.create(user=user, mission=mission, status=status)
 
     status_count_dict = {status: status_in.count(status) for status in list(OccupancyStatusEnum)}
     return user.id, status_count_dict

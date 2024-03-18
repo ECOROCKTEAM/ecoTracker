@@ -18,14 +18,14 @@ async def _arrange_user_mission(dl: dataloader) -> tuple[User, dict]:
     user = user_model_to_dto(model=user_model)
 
     category = await dl.category_loader.create()
-    mission = await dl.mission_loader.create(category_id=category.id)
+    mission = await dl.mission_loader.create(category=category)
 
     status_in = []
     for e in list(OccupancyStatusEnum):
         status_in.extend([e] * randint(1, 4))
 
     for status in status_in:
-        await dl.user_mission_loader.create(user_id=user.id, mission_id=mission.id, status=status)
+        await dl.user_mission_loader.create(user=user_model, mission=mission, status=status)
 
     status_count_dict = {status: status_in.count(status) for status in list(OccupancyStatusEnum)}
     return user, status_count_dict

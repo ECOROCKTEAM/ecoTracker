@@ -15,9 +15,9 @@ async def test_tracking(dl: dataloader):
     g1 = await dl.group_loader.create()
     g2 = await dl.group_loader.create()
 
-    await dl.user_group_loader.create(user_id=u.id, group_id=g.id, role=GroupRoleEnum.ADMIN)
-    await dl.user_group_loader.create(user_id=u.id, group_id=g1.id, role=GroupRoleEnum.ADMIN)
-    await dl.user_group_loader.create(user_id=u.id, group_id=g2.id, role=GroupRoleEnum.ADMIN)
+    await dl.user_group_loader.create(user=u, group=g, role=GroupRoleEnum.ADMIN)
+    await dl.user_group_loader.create(user=u, group=g1, role=GroupRoleEnum.ADMIN)
+    await dl.user_group_loader.create(user=u, group=g2, role=GroupRoleEnum.ADMIN)
 
-    await dl.user_group_loader.create(user_id=u2.id, group_id=g.id, role=GroupRoleEnum.ADMIN)
-    await dl.user_group_loader.create(user_id=u2.id, group_id=g1.id, role=GroupRoleEnum.ADMIN)
+    await dl.user_group_loader.create(user=u2, group=g, role=GroupRoleEnum.ADMIN)
+    await dl.user_group_loader.create(user=u2, group=g1, role=GroupRoleEnum.ADMIN)

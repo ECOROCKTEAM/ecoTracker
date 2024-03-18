@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 
 from src.core.enum.challenges.status import OccupancyStatusEnum
 
@@ -22,5 +22,5 @@ class TaskUserUpdateDTO:
     status: OccupancyStatusEnum | None = None
 
     def __post_init__(self):
-        if self.status in [OccupancyStatusEnum.FINISH, OccupancyStatusEnum.REJECT]:
-            self.date_close = datetime.now()
+        if self.status in [OccupancyStatusEnum.FINISH, OccupancyStatusEnum.REJECT, OccupancyStatusEnum.OVERDUE]:
+            self.date_close = datetime.now(tz=timezone.utc)

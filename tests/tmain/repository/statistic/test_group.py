@@ -12,7 +12,7 @@ async def _arrange_group_mission_count(dl: dataloader) -> tuple[int, dict]:
     user = await dl.user_loader.create()
     group = await dl.group_loader.create()
     category = await dl.create_category()
-    mission = await dl.mission_loader.create(category_id=category.id)
+    mission = await dl.mission_loader.create(category=category)
     status_list = []
     # We iterate over each value of OccupancyStatusEnum
     for e in list(OccupancyStatusEnum):
@@ -24,7 +24,7 @@ async def _arrange_group_mission_count(dl: dataloader) -> tuple[int, dict]:
 
     # Create missions with generated list of status
     for status in status_list:
-        await dl.group_mission_loader.create(group_id=group.id, mission_id=mission.id, author=user.id, status=status)
+        await dl.group_mission_loader.create(group=group, mission=mission, author=user.id, status=status)
 
     # Calculate count of each unique value OccupancyStatusEnum
     # For example:

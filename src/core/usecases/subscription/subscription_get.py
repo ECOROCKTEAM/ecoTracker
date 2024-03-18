@@ -19,7 +19,7 @@ class SubscriptionGetUsecase:
 
     # async def __call__(self, *, user: User, id: int) -> Result:
     #     if not user.active:
-    #         raise UserIsNotActivateError(user_id=user.id)
+    #         raise UserNotActive(id=user.id
 
     #     sub = await self.repo.get(id=id)
     #     return Result(item=sub)

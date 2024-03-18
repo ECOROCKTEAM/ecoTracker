@@ -1,6 +1,6 @@
 import random
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import wraps
 from random import randint
 from typing import Generic, Type, TypeVar, get_args
@@ -25,7 +25,12 @@ from src.data.models.challenges.occupancy import (
     OccupancyCategoryModel,
     OccupancyCategoryTranslateModel,
 )
-from src.data.models.challenges.task import TaskModel, TaskTranslateModel, UserTaskModel
+from src.data.models.challenges.task import (
+    TaskModel,
+    TaskTranslateModel,
+    UserTaskModel,
+    UserTaskPlanModel,
+)
 from src.data.models.group.group import GroupModel
 from src.data.models.user.user import (
     UserContactModel,
@@ -33,6 +38,7 @@ from src.data.models.user.user import (
     UserModel,
     UserScoreModel,
 )
+from tests.utils import permutation_by_dict_values
 
 T = TypeVar("T")
 
@@ -136,11 +142,25 @@ class OccupancyCategoryLoader(EntityLoaderBase[OccupancyCategoryModel]):
 
 
 class TaskTranslateLoader(EntityLoaderBase[TaskTranslateModel]):
-    async def create(self) -> TaskTranslateModel:
-        return await super().create()  # type: ignore
+    async def create(
+        self,
+        task: TaskModel,
+        name: str | None = None,
+        description: str | None = None,
+        language: LanguageEnum = LanguageEnum.EN,
+    ) -> TaskTranslateModel:
+        model = TaskTranslateModel(
+            name=name or uuid(), description=description or uuid(), task_id=task.id, language=language
+        )
+        return await self._add(model=model)
 
-    async def get(self) -> TaskTranslateModel | None:
-        return await super().get()  # type: ignore
+    async def get(self, id: int | None = None, language: LanguageEnum | None = None) -> TaskTranslateModel | None:
+        cond = []
+        if id is not None:
+            cond.append(TaskTranslateModel.task_id == id)
+        if language is not None:
+            cond.append(TaskTranslateModel.language == language)
+        return await self._get(TaskTranslateModel, cond)
 
 
 class TaskLoader(EntityLoaderBase[TaskModel]):
@@ -171,7 +191,6 @@ class TaskLoader(EntityLoaderBase[TaskModel]):
 class GroupLoader(EntityLoaderBase[GroupModel]):
     async def create(
         self,
-        id: int | None = None,
         name: str | None = None,
         description: str = "",
         active: bool = True,
@@ -180,7 +199,6 @@ class GroupLoader(EntityLoaderBase[GroupModel]):
         code_expire_time: datetime | None = None,
     ) -> GroupModel:
         model = GroupModel(
-            id=id,  # type: ignore
             name=name or uuid(),
             description=description,
             active=active,
@@ -213,8 +231,8 @@ class GroupLoader(EntityLoaderBase[GroupModel]):
 
 
 class UserGroupLoader(EntityLoaderBase[UserGroupModel]):
-    async def create(self, user_id: str, group_id: int, role: GroupRoleEnum) -> UserGroupModel:
-        model = UserGroupModel(user_id=user_id, group_id=group_id, role=role)
+    async def create(self, user: UserModel, group: GroupModel, role: GroupRoleEnum) -> UserGroupModel:
+        model = UserGroupModel(user_id=user.id, group_id=group.id, role=role)
         return await self._add(model)
 
     async def get(self, user_id: str, group_id: int, role: GroupRoleEnum) -> UserGroupModel | None:
@@ -231,16 +249,14 @@ class UserGroupLoader(EntityLoaderBase[UserGroupModel]):
 class UserContactLoader(EntityLoaderBase[UserContactModel]):
     async def create(
         self,
-        id: int | None = None,
-        user_id: str | None = None,
+        user: UserModel,
         value: str = "test@gmail.com",
         type: ContactTypeEnum = ContactTypeEnum.GMAIL,
         active: bool = True,
         is_favorite: bool = True,
     ) -> UserContactModel:
         model = UserContactModel(
-            id=id,
-            user_id=user_id or uuid(),
+            user_id=user.id,
             value=value,
             type=type,
             active=active,
@@ -258,12 +274,11 @@ class UserContactLoader(EntityLoaderBase[UserContactModel]):
 class UserLoader(EntityLoaderBase[UserModel]):
     async def create(
         self,
-        id: str | None = None,
         username: str | None = None,
         active: bool = True,
         language: LanguageEnum = LanguageEnum.EN,
     ) -> UserModel:
-        model = UserModel(id=id or uuid(), username=username or uuid(), active=active, language=language)
+        model = UserModel(id=uuid(), username=username or uuid(), active=active, language=language)
         return await self._add(model)
 
     async def get(
@@ -288,14 +303,16 @@ class UserLoader(EntityLoaderBase[UserModel]):
 class UserTaskLoader(EntityLoaderBase[UserTaskModel]):
     async def create(
         self,
-        user_id: str,
-        task_id: int,
+        user: UserModel,
+        task: TaskModel,
         status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE,
-        date_start: datetime = datetime.now(),
+        date_start: datetime | None = None,
         date_close: datetime | None = None,
     ) -> UserTaskModel:
+        if date_start is None:
+            date_start = datetime.now(tz=timezone.utc)
         model = UserTaskModel(
-            user_id=user_id, task_id=task_id, status=status, date_start=date_start, date_close=date_close
+            user_id=user.id, task_id=task.id, status=status, date_start=date_start, date_close=date_close
         )
         return await self._add(model=model)
 
@@ -316,12 +333,14 @@ class UserTaskLoader(EntityLoaderBase[UserTaskModel]):
 
 
 class MissionLoader(EntityLoaderBase[MissionModel]):
-    async def create(self, category_id: int, active: bool | None = None, score: int | None = None) -> MissionModel:
-        model = MissionModel(category_id=category_id, active=active or True, score=score or 10)
+    async def create(
+        self, category: OccupancyCategoryModel, active: bool | None = None, score: int | None = None
+    ) -> MissionModel:
+        model = MissionModel(category_id=category.id, active=active or True, score=score or 10)
         return await self._add(model=model)
 
     async def get(
-        self, active: bool = True, author: str | None = None, category_id: int | None = None
+        self, active: bool = True, author: str | None = None, category_id: OccupancyCategoryModel | None = None
     ) -> MissionModel | None:
         cond = []
         if active is not None:
@@ -333,9 +352,13 @@ class MissionLoader(EntityLoaderBase[MissionModel]):
 
 class GroupMissionLoader(EntityLoaderBase[GroupMissionModel]):
     async def create(
-        self, group_id: int, mission_id: int, author: str, status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE
+        self,
+        group: GroupModel,
+        mission: MissionModel,
+        author: str,
+        status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE,
     ) -> GroupMissionModel:
-        model = GroupMissionModel(mission_id=mission_id, group_id=group_id, author=author, status=status)
+        model = GroupMissionModel(mission_id=mission.id, group_id=group.id, author=author, status=status)
         return await self._add(model=model)
 
     async def get(
@@ -357,15 +380,29 @@ class GroupMissionLoader(EntityLoaderBase[GroupMissionModel]):
         return await self._get(model=GroupMissionModel, cond=cond)
 
 
+class UserTaskPlanLoader(EntityLoaderBase[UserTaskPlanModel]):
+    async def create(self, user: UserModel, task: TaskModel) -> UserTaskPlanModel:
+        model = UserTaskPlanModel(user_id=user.id, task_id=task.id)
+        return await self._add(model=model)
+
+    async def get(self, user_id: str | None = None, task_id: int | None = None) -> UserTaskPlanModel | None:
+        cond_list = []
+        if user_id is not None:
+            cond_list.append(UserTaskPlanModel.user_id == user_id)
+        if task_id is not None:
+            cond_list.append(UserTaskPlanModel.task_id == task_id)
+        return await self._get(model=UserTaskPlanModel, cond=cond_list)
+
+
 class UserMissionLoader(EntityLoaderBase[UserMissionModel]):
     async def create(
         self,
-        user_id: str,
-        mission_id: int,
+        user: UserModel,
+        mission: MissionModel,
         status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE,
         date_start: datetime = datetime.now(),
     ) -> UserMissionModel:
-        model = UserMissionModel(user_id=user_id, mission_id=mission_id, status=status, date_start=date_start)
+        model = UserMissionModel(user_id=user.id, mission_id=mission.id, status=status, date_start=date_start)
         return await self._add(model=model)
 
     async def get(
@@ -425,6 +462,11 @@ class dataloader:
 
     async def rollback(self):
         await self.session.rollback()
+
+    @property
+    @loader_track
+    def user_task_plan(self) -> UserTaskPlanLoader:
+        return UserTaskPlanLoader(session=self.session)
 
     @property
     @loader_track
@@ -500,3 +542,92 @@ class dataloader:
         for lang in language_list:
             await self.category_translate_loader.create(category=category, name=name, language=lang)
         return category
+
+    async def create_category_list_random(self, count: int = 5) -> list[OccupancyCategoryModel]:
+        category_list = []
+        for _ in range(count):
+            category = await self.create_category()
+            category_list.append(category)
+        return category_list
+
+    async def create_task(
+        self,
+        language_list: list[LanguageEnum] | None = None,
+        category: OccupancyCategoryModel | None = None,
+        active: bool = True,
+    ) -> TaskModel:
+        if category is None:
+            category = await self.create_category()
+        task = await self.task_loader.create(category=category, active=active)
+        if language_list is None:
+            language_list = [LanguageEnum.EN]
+        for lang in language_list:
+            await self.task_translate_loader.create(task=task, language=lang)
+        return task
+
+    async def create_task_list_random(
+        self,
+        count: int = 5,
+        category_list: list[OccupancyCategoryModel] | None = None,
+    ) -> list[TaskModel]:
+        task_list = []
+        if category_list is None:
+            category_list = await self.create_category_list_random()
+        for _ in range(count):
+            category = random.choice(category_list)
+            active_rnd = random.choice([True, False])
+            task = await self.create_task(category=category, active=active_rnd)
+            task_list.append(task)
+        return task_list
+
+    async def create_user_task(
+        self,
+        user: UserModel,
+        status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE,
+        task: TaskModel | None = None,
+        date_start: datetime | None = None,
+        date_close: datetime | None = None,
+    ) -> UserTaskModel:
+        if task is None:
+            task = await self.create_task()
+        user_task = await self.user_task_loader.create(
+            user=user, task=task, status=status, date_start=date_start, date_close=date_close
+        )
+        return user_task
+
+    async def create_user_task_list(
+        self,
+        user: UserModel,
+        count: int = 4,
+        status_list: list[OccupancyStatusEnum] | None = None,
+    ) -> list[UserTaskModel]:
+        user_task_list = []
+        if status_list is None:
+            status_list = [OccupancyStatusEnum.ACTIVE]
+
+        for _ in range(count):
+            for status in status_list:
+                user_task = await self.create_user_task(user=user, status=status)
+                user_task_list.append(user_task)
+        return user_task_list
+
+    async def create_user_task_plan(self, user: UserModel, task: TaskModel | None = None) -> UserTaskPlanModel:
+        if task is None:
+            task = await self.create_task()
+        user_task_plan = await self.user_task_plan.create(user=user, task=task)
+        return user_task_plan
+
+    async def create_user_task_plan_list(self, user: UserModel, count=5) -> list[UserTaskPlanModel]:
+        user_task_plan_list = []
+
+        for _ in range(count):
+            user_task_plan = await self.create_user_task_plan(user=user)
+            user_task_plan_list.append(user_task_plan)
+
+        return user_task_plan_list
+
+    def _get_cnt_key(self, d: dict) -> str:
+        key_parts = []
+        for k, v in d.items():
+            key_parts.append(f"{k}_{v}")
+        return "_".join(key_parts)

@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+from typing import Generic, TypeVar
 
 from src.core.enum.utils import SortType
+
+T = TypeVar("T")
 
 
 @dataclass
@@ -13,3 +16,11 @@ class IterableObj:
 class SortObj:
     field: str = "id"
     type: SortType = SortType.DESC
+
+
+@dataclass
+class Pagination(Generic[T]):
+    items: T
+    limit: int | None
+    offset: int
+    total: int

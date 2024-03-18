@@ -1,6 +1,7 @@
 import pytest
 
 from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj, SortObj
 from src.core.entity.task import TaskUser
 from src.core.entity.user import User
 from src.core.enum.challenges.status import OccupancyStatusEnum
@@ -24,10 +25,10 @@ async def test_ok(
     res = await uc(
         user=fxe_user_default,
         filter_obj=TaskUserFilter(task_id=1, task_active=True, status=OccupancyStatusEnum.ACTIVE),
-        order_obj=MockObj(),
-        pagination_obj=MockObj(),
+        sorting_obj=SortObj(),
+        iterable_obj=IterableObj(),
     )
-    tasks = res.item
+    tasks = res.items
     assert isinstance(tasks, list)
     assert len(tasks) == 1
     task = tasks[0]

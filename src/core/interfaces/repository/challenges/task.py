@@ -6,10 +6,15 @@ from src.core.dto.challenges.task import (
     TaskUserPlanCreateDTO,
     TaskUserUpdateDTO,
 )
-from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj, Pagination, SortObj
 from src.core.entity.task import Task, TaskUser, TaskUserPlan
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
+
+
+@dataclass
+class SortUserTaskObj(SortObj):
+    field: str = "task_id"
 
 
 @dataclass
@@ -28,7 +33,7 @@ class TaskUserFilter:
 @dataclass
 class TaskUserPlanFilter:
     task_active: bool | None = None
-    """"""
+    category_id: int | None = None
 
 
 class IRepositoryTask(ABC):
@@ -46,8 +51,8 @@ class IRepositoryTask(ABC):
 
     @abstractmethod
     async def lst(
-        self, *, filter_obj: TaskFilter, order_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
-    ) -> list[Task]:
+        self, *, filter_obj: TaskFilter, sorting_obj: SortObj, iterable_obj: IterableObj, lang: LanguageEnum
+    ) -> Pagination[list[Task]]:
         """List of tasks
 
         Args:
@@ -61,7 +66,7 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def user_task_get(self, *, id: int) -> TaskUser:
+    async def user_task_get(self, *, user_id: str, id: int) -> TaskUser:
         """Получить задание для пользователя
 
         Args:
@@ -84,7 +89,7 @@ class IRepositoryTask(ABC):
         """
 
     @abstractmethod
-    async def user_task_update(self, *, id: int, obj: TaskUserUpdateDTO) -> TaskUser:
+    async def user_task_update(self, *, user_id: str, id: int, obj: TaskUserUpdateDTO) -> TaskUser:
         """Обновить задание для пользователя
 
         Args:
@@ -97,20 +102,15 @@ class IRepositoryTask(ABC):
 
     @abstractmethod
     async def user_task_lst(
-        self,
-        *,
-        user_id: str,
-        filter_obj: TaskUserFilter | None = None,
-        order_obj: MockObj | None = None,
-        pagination_obj: MockObj | None = None,
-    ) -> list[TaskUser]:
+        self, *, user_id: str, filter_obj: TaskUserFilter, sorting_obj: SortUserTaskObj, iterable_obj: IterableObj
+    ) -> Pagination[list[TaskUser]]:
         """Получить список заданий пользователя
 
         Args:
             user_id (str): ID of user
             filter_obj (TaskUserFilter): Объект фильтрации
-            order_obj (MockObj): Объект порядка
-            pagination_obj (MockObj): Объект пагинации
+            sorting_obj (SortUserTaskObj): Объект порядка
+            iterable_obj (IterableObj): Объект пагинации
 
         Returns:
             List[TaskUser]: Список сущностей заданий пользователя
@@ -141,20 +141,15 @@ class IRepositoryTask(ABC):
 
     @abstractmethod
     async def plan_lst(
-        self,
-        *,
-        user_id: str,
-        filter_obj: TaskUserPlanFilter | None = None,
-        order_obj: MockObj | None = None,
-        pagination_obj: MockObj | None = None,
-    ) -> list[TaskUserPlan]:
+        self, *, user_id: str, filter_obj: TaskUserPlanFilter, sorting_obj: SortUserTaskObj, iterable_obj: IterableObj
+    ) -> Pagination[list[TaskUserPlan]]:
         """Получить список плана задач
 
         Args:
             user_id (str): ID of user
-            filter_obj (MockObj): Объект фильтрации
-            order_obj (MockObj): Объект порядка
-            pagination_obj (MockObj): Объект пагинации
+            filter_obj (TaskUserPlanFilter): Объект фильтрации
+            sorting_obj (SortUserTaskObj): Объект порядка
+            iterable_obj (IterableObj): Объект пагинации
 
         Returns:
             List[TaskUserPlan]: Список плана задач

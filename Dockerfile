@@ -11,7 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY ./src ./src
 
 
-FROM python:3.10-alpine as test_runner
+FROM python:3.10-alpine as test_runner_app
 WORKDIR /app
 COPY --from=builder /venv /venv
 COPY --from=builder /app .
@@ -21,4 +21,12 @@ COPY requirements.txt ./
 RUN pip install -r requirements.txt
 COPY . .
 
-ENTRYPOINT pytest tests/main -v -x
+FROM python:3.10-alpine as web_app
+WORKDIR /app
+COPY --from=builder /venv /venv
+COPY --from=builder /app .
+ENV PATH="/venv/bin:$PATH"
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
+COPY . .
+CMD alembic upgrade head

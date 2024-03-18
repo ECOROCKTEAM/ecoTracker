@@ -1,3 +1,0 @@
-#!/usr/bin/bash
-
-docker run --name localpsql -d -p 5432:5432 --env-file=./localpsql/localpsql.env postgres:15-alpine

@@ -457,6 +457,12 @@ class dataloader:
             await instance._delete_created()
             # print(f"{instance.__class__.__name__} -> deleted count {len(instance._create_stack)}")
 
+    async def _delete(self, model, attr, pk):
+        model_attr = getattr(model, attr)
+        stmt = delete(model).where(model_attr == pk)
+        await self.session.execute(stmt)
+        await self.session.commit()
+
     async def commit(self):
         await self.session.commit()
 

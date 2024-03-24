@@ -23,6 +23,7 @@ from src.core.exception.base import (
 )
 from src.core.interfaces.repository.challenges.task import (
     IRepositoryTask,
+    SortTaskObj,
     SortUserTaskObj,
     TaskFilter,
     TaskUserFilter,
@@ -102,7 +103,7 @@ class RepositoryTask(IRepositoryTask):
         return task_model_to_entity(model=task, translated_model=task_translate)
 
     async def lst(
-        self, *, filter_obj: TaskFilter, sorting_obj: SortUserTaskObj, iterable_obj: IterableObj, lang: LanguageEnum
+        self, *, filter_obj: TaskFilter, sorting_obj: SortTaskObj, iterable_obj: IterableObj, lang: LanguageEnum
     ) -> Pagination[list[Task]]:
         where_clause = []
         if filter_obj.category_id is not None:

@@ -13,6 +13,11 @@ from src.core.enum.language import LanguageEnum
 
 
 @dataclass
+class SortTaskObj(SortObj):
+    field: str = "task_id"
+
+
+@dataclass
 class SortUserTaskObj(SortObj):
     field: str = "task_id"
 
@@ -62,7 +67,7 @@ class IRepositoryTask(ABC):
             lang (LanguageEnum): Необходимый язык
 
         Returns:
-            list[Task]: list of Task entities
+            Pagination[list[Task]]: list of Task entities
         """
 
     @abstractmethod
@@ -113,7 +118,7 @@ class IRepositoryTask(ABC):
             iterable_obj (IterableObj): Объект пагинации
 
         Returns:
-            List[TaskUser]: Список сущностей заданий пользователя
+            Pagination[list[TaskUser]]: Список сущностей заданий пользователя
         """
 
     @abstractmethod
@@ -152,5 +157,5 @@ class IRepositoryTask(ABC):
             iterable_obj (IterableObj): Объект пагинации
 
         Returns:
-            List[TaskUserPlan]: Список плана задач
+            Pagination[list[TaskUserPlan]]: Список плана задач
         """

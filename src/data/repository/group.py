@@ -13,7 +13,7 @@ from src.core.dto.m2m.user.group import (
     UserGroupDTO,
     UserGroupUpdateDTO,
 )
-from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj, Pagination
 from src.core.entity.group import Group
 from src.core.enum.group.role import GroupRoleEnum
 from src.core.exception.base import (
@@ -26,6 +26,13 @@ from src.core.interfaces.repository.group.group import (
     GroupFilter,
     GroupUserFilter,
     IRepositoryGroup,
+    SortingGroupObj,
+)
+from src.data.mapper.utils import (
+    apply_iterable,
+    apply_sorting,
+    build_pagination,
+    recive_total,
 )
 from src.data.models.group.group import GroupModel
 from src.data.models.user.user import UserGroupModel
@@ -83,8 +90,10 @@ class RepositoryGroup(IRepositoryGroup):
             raise EntityNotFound(msg="")
         return model_to_dto(res)
 
-    async def lst(self, *, filter_obj: GroupFilter, order_obj: MockObj, pagination_obj: MockObj) -> list[Group]:
-        stmt = select(GroupModel)
+    async def lst(
+        self, *, filter_obj: GroupFilter, sorting_obj: SortingGroupObj, iterable_obj: IterableObj
+    ) -> Pagination[list[Group]]:
+        stmt = select(GroupModel, func.count(GroupModel).over())
         where_clause = []
         if filter_obj.user_id is not None:
             stmt = stmt.join(UserGroupModel)
@@ -92,9 +101,14 @@ class RepositoryGroup(IRepositoryGroup):
             where_clause.append(UserGroupModel.role != GroupRoleEnum.BLOCKED)
         if filter_obj.active is not None:
             where_clause.append(GroupModel.active == filter_obj.active)
-        stmt = stmt.where(*where_clause)  # todo .order_by().limit().offset()
-        res = await self.db_context.scalars(stmt)
-        return [model_to_dto(model) for model in res]
+        stmt = stmt.where(*where_clause)
+        stmt = apply_sorting(stmt, sorting_obj)
+        stmt = apply_iterable(stmt, iterable_obj)
+        coro = await self.db_context.execute(stmt)
+        res = coro.all()
+        total = recive_total(seq=res, total_idx=1)
+        items = [group for group, _ in res]
+        return build_pagination(items=items, iterable_obj=iterable_obj, total=total)
 
     async def deactivate(self, *, id: int) -> int:
         stmt = update(GroupModel).where(GroupModel.id == id).values(active=False).returning(GroupModel.id)

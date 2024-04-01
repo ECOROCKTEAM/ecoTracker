@@ -1,17 +1,24 @@
 from dataclasses import dataclass
 
 from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj
 from src.core.entity.mission import MissionGroup
 from src.core.entity.user import User
 from src.core.exception.user import UserIsNotPremiumError
-from src.core.interfaces.repository.challenges.mission import MissionGroupFilter
+from src.core.interfaces.repository.challenges.mission import (
+    MissionGroupFilter,
+    SortGroupMissionObj,
+)
 from src.core.interfaces.repository.group.group import GroupFilter
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
 @dataclass
 class Result:
-    item: list[MissionGroup]
+    items: list[MissionGroup]
+    limit: int | None
+    offset: int
+    total: int
 
 
 class MissionGroupListUsecase:
@@ -19,7 +26,12 @@ class MissionGroupListUsecase:
         self.uow = uow
 
     async def __call__(
-        self, *, user: User, filter_obj: MissionGroupFilter, order_obj: MockObj, pagination_obj: MockObj
+        self,
+        *,
+        user: User,
+        filter_obj: MissionGroupFilter,
+        sorting_obj: SortGroupMissionObj,
+        iterable_obj: IterableObj,
     ) -> Result:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
@@ -28,7 +40,7 @@ class MissionGroupListUsecase:
                 filter_obj=GroupFilter(user_id=user.id, active=True), order_obj=MockObj(), pagination_obj=MockObj()
             )
             filter_obj.group_id_list = [c.id for c in group_list]
-            mission_list = await uow.mission.group_mission_lst(
-                filter_obj=filter_obj, order_obj=order_obj, pagination_obj=pagination_obj
+            res = await uow.mission.group_mission_lst(
+                filter_obj=filter_obj, sorting_obj=sorting_obj, iterable_obj=iterable_obj
             )
-        return Result(item=mission_list)
+        return Result(items=res.items, limit=res.limit, offset=res.offset, total=res.total)

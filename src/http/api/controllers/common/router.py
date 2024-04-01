@@ -1,5 +1,8 @@
 from fastapi import APIRouter
 
+from .challenges.mission.mission import router as mission_router
+from .challenges.mission.mission_group import router as mission_group_router
+from .challenges.mission.mission_user import router as mission_user_router
 from .challenges.task.task import router as task_router
 from .challenges.task.task_user import router as task_user_router
 from .contact.contact import router as contact_router
@@ -19,3 +22,7 @@ common_router.include_router(task_user_router, tags=["User task"], prefix="/user
 
 common_router.include_router(statistic_group_router, tags=["Group statistic"], prefix="/statistic/group")
 common_router.include_router(statistic_user_router, tags=["User statistic"], prefix="/statistic/user")
+
+common_router.include_router(mission_router, tags=["Mission"], prefix="/mission")
+common_router.include_router(mission_user_router, tags=["Mission user"], prefix="/mission_user")
+common_router.include_router(mission_group_router, tags=["Mission group"], prefix="")

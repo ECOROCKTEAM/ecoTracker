@@ -61,7 +61,7 @@ async def mission_group_get(
     return MissionGroupSchema.from_obj(mission_group=res.item)
 
 
-@router.post("/mission/group/{id}")
+@router.post("/mission/group")
 async def mission_group_create(
     id: int,
     in_obj: MissionGroupCreateSchema,
@@ -74,7 +74,7 @@ async def mission_group_create(
     return MissionGroupSchema.from_obj(mission_group=res.item)
 
 
-@router.patch("/mission/{mission_id}/group/{group_id}")
+@router.patch("/mission/group")
 async def mission_group_update(
     mission_id: int,
     group_id: int,

@@ -43,11 +43,10 @@ class GroupChangeUserRoleUsecase:
                 raise EntityNotFound(msg=f"Not found current user user_id={user.id}")
             if target_user is None:
                 raise EntityNotFound(msg=f"Not found target user user_id={user_id}")
-            if current_user.role not in (GroupRoleEnum.SUPERUSER, GroupRoleEnum.ADMIN):
-                raise PermissionError(msg=f"current user is not administrator: user_id={user.id}, {group_id=}")
-
             if target_user.role == GroupRoleEnum.SUPERUSER and current_user.role != GroupRoleEnum.SUPERUSER:
                 raise PermissionError(msg=f"current user is not superuser: user_id={user.id}, {group_id=}")
+            if current_user.role not in (GroupRoleEnum.SUPERUSER, GroupRoleEnum.ADMIN):
+                raise PermissionError(msg=f"current user is not administrator: user_id={user.id}, {group_id=}")
             link = await uow.group.user_role_update(obj=update_obj, group_id=group_id, user_id=user_id)
             await uow.commit()
         return Result(item=link)

@@ -93,7 +93,7 @@ class RepositoryGroup(IRepositoryGroup):
     async def lst(
         self, *, filter_obj: GroupFilter, sorting_obj: SortingGroupObj, iterable_obj: IterableObj
     ) -> Pagination[list[Group]]:
-        stmt = select(GroupModel, func.count(GroupModel).over())
+        stmt = select(GroupModel, func.count(GroupModel.id).over())
         where_clause = []
         if filter_obj.user_id is not None:
             stmt = stmt.join(UserGroupModel)

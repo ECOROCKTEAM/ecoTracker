@@ -7,6 +7,7 @@ from src.core.dto.group.group import GroupCreateDTO, GroupUpdateDTO
 from src.core.dto.group.invite import GroupInviteUpdateDTO
 from src.core.dto.m2m.user.group import UserGroupCreateDTO, UserGroupUpdateDTO
 from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj
 from src.core.entity.group import Group
 from src.core.enum.group.privacy import GroupPrivacyEnum
 from src.core.enum.group.role import GroupRoleEnum
@@ -20,6 +21,7 @@ from src.core.interfaces.repository.group.group import (
     GroupFilter,
     GroupUserFilter,
     IRepositoryGroup,
+    SortingGroupObj,
 )
 from tests.dataloader import dataloader
 from tests.utils import get_uuid
@@ -247,12 +249,12 @@ async def test_lst_user_id(dl: dataloader, repo_group: IRepositoryGroup, arrange
     # Act
     group_list = await repo_group.lst(
         filter_obj=filter_obj,
-        order_obj=MockObj(),
-        pagination_obj=MockObj(),
+        sorting_obj=SortingGroupObj(),
+        iterable_obj=IterableObj(),
     )
 
     # Assert
-    group_id_list = [g.id for g in group_list]
+    group_id_list = [g.id for g in group_list.items]
     assert set(group_id_list) == set(asrt_group_id_list)
 
 

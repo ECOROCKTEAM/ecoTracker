@@ -458,6 +458,12 @@ class dataloader:
         self._loader_call_stack = []
         self._loader_instance_holder = {}
 
+    async def _delete(self, model, attr, pk):
+        model_attr = getattr(model, attr)
+        stmt = delete(model).where(model_attr == pk)
+        await self.session.execute(stmt)
+        await self.session.commit()
+
     async def __aenter__(self):
         print()
         return self
@@ -696,6 +702,34 @@ class dataloader:
                 user_mission_list.append(user_mission)
         return user_mission_list
 
+    async def create_group(
+        self,
+        active: bool = True,
+        privacy: GroupPrivacyEnum = GroupPrivacyEnum.PUBLIC,
+        user: UserModel | None = None,
+        role: GroupRoleEnum = GroupRoleEnum.SUPERUSER,
+    ) -> GroupModel:
+        group_model = await self.group_loader.create(name="name", description="desc", active=active, privacy=privacy)
+        if user is not None:
+            await self.user_group_loader.create(user=user, group=group_model, role=role)
+        return group_model
+
+    async def create_group_list(
+        self,
+        count: int = 5,
+        privacy: GroupPrivacyEnum | None = None,
+        active: bool | None = None,
+    ) -> list[GroupModel]:
+        group_list = []
+        for _ in range(count):
+            if privacy is None:
+                privacy = random.choice([GroupPrivacyEnum.PRIVATE, GroupPrivacyEnum.PUBLIC])
+            if active is None:
+                active = random.choice([True, False])
+            group = await self.group_loader.create(active=active, privacy=privacy)
+            group_list.append(group)
+        return group_list
+
     async def create_group_mission(
         self,
         user: UserModel,
@@ -729,6 +763,21 @@ class dataloader:
                 group_mission = await self.create_group_mission(group=group, user=user, status=status)
                 group_mission_list.append(group_mission)
         return group_mission_list
+
+    async def create_group_user_list_random(self, group: GroupModel, count: int = 5) -> list[UserGroupModel]:
+        group_user_list = []
+        for _ in range(count):
+            user = await self.user_loader.create()
+            group_user = await self.user_group_loader.create(
+                user=user,
+                group=group,
+                role=random.choice(
+                    [GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER, GroupRoleEnum.BLOCKED, GroupRoleEnum.USER]
+                ),
+            )
+            group_user_list.append(group_user)
+
+        return group_user_list
 
     def _get_cnt_key(self, d: dict) -> str:
         key_parts = []

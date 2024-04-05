@@ -101,9 +101,9 @@ async def test_public_group_get_user_not_in_group_ok(uow: IUnitOfWork, dl: datal
     assert res.item.privacy == group.privacy
 
 
-# pytest tests/tmain/usecase/test_group.py::test_group_get_group_not_active_error -v -s
+# pytest tests/tmain/usecase/test_group.py::test_not_active_group_get_error -v -s
 @pytest.mark.asyncio
-async def test_group_get_group_not_active_error(uow: IUnitOfWork, dl: dataloader):
+async def test_not_active_group_get_error(uow: IUnitOfWork, dl: dataloader):
     # Arrange
     user_model = await dl.user_loader.create()
     user = user_model_to_dto(user_model)
@@ -219,9 +219,9 @@ async def test_group_delete_permission_error(uow: IUnitOfWork, dl: dataloader, a
     assert f"{user.username=}, group_id={group.id}" in str(e.value)
 
 
-# pytest tests/tmain/usecase/test_group.py::test_group_delete_user_not_in_group -v -s
+# pytest tests/tmain/usecase/test_group.py::test_group_delete_user_not_in_group_error -v -s
 @pytest.mark.asyncio
-async def test_group_delete_user_not_in_group(uow: IUnitOfWork, dl: dataloader):
+async def test_group_delete_user_not_in_group_error(uow: IUnitOfWork, dl: dataloader):
     # Arrange
     user_model = await dl.user_loader.create()
     user = user_model_to_dto(user_model)
@@ -254,9 +254,9 @@ async def test_group_get_invite_link_ok(uow: IUnitOfWork, dl: dataloader, arrang
     assert res.item.group_id == group.id
 
 
-# pytest tests/tmain/usecase/test_group.py::test_group_get_invite_link_group_not_active_error -v -s
+# pytest tests/tmain/usecase/test_group.py::test_not_active_group_get_invite_link_error -v -s
 @pytest.mark.asyncio
-async def test_group_get_invite_link_group_not_active_error(uow: IUnitOfWork, dl: dataloader):
+async def test_not_active_group_get_invite_link_error(uow: IUnitOfWork, dl: dataloader):
     # Arrange
     user_model = await dl.user_loader.create()
     user = user_model_to_dto(user_model)
@@ -310,9 +310,9 @@ async def test_group_change_user_role_group_not_active_error(uow: IUnitOfWork, d
     assert f"{group.id=}" in str(e.value)
 
 
-# pytest tests/tmain/usecase/test_group.py::test_group_change_user_role_current_user_not_in_group -v -s
+# pytest tests/tmain/usecase/test_group.py::test_group_change_user_role_current_user_not_in_group_error -v -s
 @pytest.mark.asyncio
-async def test_group_change_user_role_current_user_not_in_group(uow: IUnitOfWork, dl: dataloader):
+async def test_group_change_user_role_current_user_not_in_group_error(uow: IUnitOfWork, dl: dataloader):
     # Arrange
     current_user_model = await dl.user_loader.create()
     current_user = user_model_to_dto(current_user_model)
@@ -332,9 +332,9 @@ async def test_group_change_user_role_current_user_not_in_group(uow: IUnitOfWork
     assert f"Not found current user user_id={current_user.id}" in str(e.value)
 
 
-# pytest tests/tmain/usecase/test_group.py::test_group_change_user_role_target_user_not_in_group -v -s
+# pytest tests/tmain/usecase/test_group.py::test_group_change_user_role_target_user_not_in_group_error -v -s
 @pytest.mark.asyncio
-async def test_group_change_user_role_target_user_not_in_group(uow: IUnitOfWork, dl: dataloader):
+async def test_group_change_user_role_target_user_not_in_group_error(uow: IUnitOfWork, dl: dataloader):
     # Arrange
     current_user_model = await dl.user_loader.create()
     current_user = user_model_to_dto(current_user_model)

@@ -6,6 +6,8 @@ from .challenges.mission.mission_user import router as mission_user_router
 from .challenges.task.task import router as task_router
 from .challenges.task.task_user import router as task_user_router
 from .contact.contact import router as contact_router
+from .group.group import router as group_router
+from .group.group_user import router as group_user_router
 from .score.user_rating import router as user_rating_router
 from .score.user_score import router as user_score_router
 from .statistic.group import router as statistic_group_router
@@ -26,3 +28,6 @@ common_router.include_router(statistic_user_router, tags=["User statistic"], pre
 common_router.include_router(mission_router, tags=["Mission"], prefix="/mission")
 common_router.include_router(mission_user_router, tags=["Mission user"], prefix="/mission_user")
 common_router.include_router(mission_group_router, tags=["Mission group"], prefix="")
+
+common_router.include_router(group_router, tags=["Group"], prefix="/group")
+common_router.include_router(group_user_router, tags=["Group User"], prefix="/group_user")

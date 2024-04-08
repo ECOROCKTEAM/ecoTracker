@@ -1,5 +1,7 @@
 from datetime import datetime
+from typing import Annotated
 
+from fastapi import Query
 from pydantic import BaseModel
 
 from src.core.dto.challenges.mission import MissionGroupCreateDTO, MissionGroupUpdateDTO
@@ -14,7 +16,7 @@ from src.core.interfaces.repository.challenges.mission import (
 
 class MissionGroupFilterSchema(BaseModel):
     group_id: int | None = None
-    group_id_list: list[int] | None = None
+    group_id_list: Annotated[list[int] | None, Query()]
     mission_id: int | None = None
     status: OccupancyStatusEnum | None = None
 

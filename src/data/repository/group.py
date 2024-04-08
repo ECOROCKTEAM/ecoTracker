@@ -107,7 +107,7 @@ class RepositoryGroup(IRepositoryGroup):
         coro = await self.db_context.execute(stmt)
         res = coro.all()
         total = recive_total(seq=res, total_idx=1)
-        items = [group for group, _ in res]
+        items = [model_to_dto(model=group) for group, _ in res]
         return build_pagination(items=items, iterable_obj=iterable_obj, total=total)
 
     async def deactivate(self, *, id: int) -> int:

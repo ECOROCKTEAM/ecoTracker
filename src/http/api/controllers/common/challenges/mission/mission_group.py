@@ -61,16 +61,16 @@ async def mission_group_get(
     return MissionGroupSchema.from_obj(mission_group=res.item)
 
 
-@router.post("/mission/group/{id}")
+@router.post("/mission/group/{group_id}")
 async def mission_group_create(
-    id: int,
+    group_id: int,
     in_obj: MissionGroupCreateSchema,
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],
     user: Annotated[User, Depends(get_user_stub)],
 ) -> MissionGroupSchema:
     obj = in_obj.to_obj()
     uc = MissionGroupCreateUsecase(uow=uow)
-    res = await uc(user=user, group_id=id, create_obj=obj)
+    res = await uc(user=user, group_id=group_id, create_obj=obj)
     return MissionGroupSchema.from_obj(mission_group=res.item)
 
 

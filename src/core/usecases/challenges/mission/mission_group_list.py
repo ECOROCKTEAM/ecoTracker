@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-from src.core.dto.mock import MockObj
 from src.core.dto.utils import IterableObj
 from src.core.entity.mission import MissionGroup
 from src.core.entity.user import User
@@ -9,7 +8,7 @@ from src.core.interfaces.repository.challenges.mission import (
     MissionGroupFilter,
     SortGroupMissionObj,
 )
-from src.core.interfaces.repository.group.group import GroupFilter
+from src.core.interfaces.repository.group.group import GroupFilter, SortingGroupObj
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
@@ -37,9 +36,11 @@ class MissionGroupListUsecase:
             raise UserIsNotPremiumError(user_id=user.id)
         async with self.uow as uow:
             group_list = await uow.group.lst(
-                filter_obj=GroupFilter(user_id=user.id, active=True), order_obj=MockObj(), pagination_obj=MockObj()
+                filter_obj=GroupFilter(user_id=user.id, active=True),
+                sorting_obj=SortingGroupObj(),
+                iterable_obj=iterable_obj,
             )
-            filter_obj.group_id_list = [c.id for c in group_list]
+            filter_obj.group_id_list = [c.id for c in group_list.items]
             res = await uow.mission.group_mission_lst(
                 filter_obj=filter_obj, sorting_obj=sorting_obj, iterable_obj=iterable_obj
             )

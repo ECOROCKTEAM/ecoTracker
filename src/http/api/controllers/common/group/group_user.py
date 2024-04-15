@@ -23,7 +23,7 @@ from src.http.api.schemas.group.group_user import (
 router = APIRouter()
 
 
-@router.get("/list")
+@router.get("/group/user/list")
 async def group_user_list(
     group_id: int,
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],
@@ -37,7 +37,7 @@ async def group_user_list(
     return GroupUserListSchema.from_obj(group_user_list=res.items)
 
 
-@router.get("/{group_id}/invite_link")
+@router.get("/group/{group_id}/invite_link")
 async def group_get_invite_link(
     group_id: int,
     invite_expire_sec: int,
@@ -49,7 +49,7 @@ async def group_get_invite_link(
     return GroupInviteLinkSchema.from_obj(group_invite=res.item)
 
 
-@router.post("/add")
+@router.post("/group/user/join")
 async def public_group_add_user(
     group_id: int, uow: Annotated[IUnitOfWork, Depends(get_uow_stub)], user: Annotated[User, Depends(get_user_stub)]
 ) -> GroupUserSchema:
@@ -58,7 +58,7 @@ async def public_group_add_user(
     return GroupUserSchema.from_obj(group_user=res.item)
 
 
-@router.post("/join_by_code")
+@router.post("/group/user/code")
 async def group_user_join_by_code(
     code: str,
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],
@@ -69,7 +69,7 @@ async def group_user_join_by_code(
     return GroupUserSchema.from_obj(group_user=res.item)
 
 
-@router.patch("/role_update")
+@router.patch("/group/{group_id}/user/{user_id}")
 async def group_user_role_update(
     user_id: str,
     group_id: int,
@@ -83,7 +83,7 @@ async def group_user_role_update(
     return GroupUserSchema.from_obj(group_user=res.item)
 
 
-@router.delete("/")
+@router.delete("/group/user/leave")
 async def group_user_leave(
     group_id: int,
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],

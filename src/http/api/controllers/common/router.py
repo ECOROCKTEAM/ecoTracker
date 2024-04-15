@@ -30,4 +30,4 @@ common_router.include_router(mission_user_router, tags=["Mission user"], prefix=
 common_router.include_router(mission_group_router, tags=["Mission group"], prefix="")
 
 common_router.include_router(group_router, tags=["Group"], prefix="/group")
-common_router.include_router(group_user_router, tags=["Group User"], prefix="/group_user")
+common_router.include_router(group_user_router, tags=["Group User"], prefix="")

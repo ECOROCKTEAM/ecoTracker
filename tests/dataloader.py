@@ -113,8 +113,10 @@ class UserScoreLoader(EntityLoaderBase[UserScoreModel]):
         model = UserScoreModel(user_id=user.id, operation=operation, value=value)
         return await self._add(model)
 
-    async def get(self) -> UserScoreModel | None:
-        return await super().get()  # type: ignore
+    async def get(self, user_id: str) -> UserScoreModel | None:
+        cond = []
+        cond.append(UserScoreModel.user_id == user_id)
+        return await self._get(model=UserScoreModel, cond=cond)  # type: ignore
 
 
 class OccupancyCategoryTranslateLoader(EntityLoaderBase[OccupancyCategoryTranslateModel]):
@@ -478,6 +480,12 @@ class dataloader:
             instance = self._loader_instance_holder[loader_name]
             await instance._delete_created()
             # print(f"{instance.__class__.__name__} -> deleted count {len(instance._create_stack)}")
+
+    async def _delete(self, model, attr, pk):
+        model_attr = getattr(model, attr)
+        stmt = delete(model).where(model_attr == pk)
+        await self.session.execute(stmt)
+        await self.session.commit()
 
     async def commit(self):
         await self.session.commit()

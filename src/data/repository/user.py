@@ -13,13 +13,14 @@ from src.core.interfaces.repository.user.user import IUserRepository
 from src.data.models.user.user import UserModel
 
 
-def model_to_dto(model: UserModel) -> User:
+def model_to_dto(model: UserModel, premium: bool = True) -> User:
     return User(
         id=model.id,
         username=model.username,
         subscription=Subscription(),
         active=model.active,
         language=model.language,
+        premium=premium,
     )
 
 

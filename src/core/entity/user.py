@@ -13,16 +13,12 @@ class User:
     active: bool
     subscription: Subscription
     language: LanguageEnum
-    premium: bool = True
+    premium: bool
 
     @property
     def is_premium(self) -> bool:
         # TODO implement!
         return self.premium
-
-    @is_premium.setter
-    def is_premium(self, set_premium: bool):
-        self.premium = set_premium
 
 
 @dataclass

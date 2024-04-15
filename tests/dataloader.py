@@ -112,8 +112,10 @@ class UserScoreLoader(EntityLoaderBase[UserScoreModel]):
         model = UserScoreModel(user_id=user.id, operation=operation, value=value)
         return await self._add(model)
 
-    async def get(self) -> UserScoreModel | None:
-        return await super().get()  # type: ignore
+    async def get(self, user_id: str) -> UserScoreModel | None:
+        cond = []
+        cond.append(UserScoreModel.user_id == user_id)
+        return await self._get(model=UserScoreModel, cond=cond)  # type: ignore
 
 
 class OccupancyCategoryTranslateLoader(EntityLoaderBase[OccupancyCategoryTranslateModel]):

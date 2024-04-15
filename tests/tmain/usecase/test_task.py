@@ -69,7 +69,6 @@ async def test_task_get_task_not_active_error(dl: dataloader, uow: IUnitOfWork):
     user = user_model_to_dto(model=user_model)
 
     task = await dl.create_task(active=False)
-    await dl.create_task(active=True)
 
     # Act
     uc = TaskGetUsecase(uow=uow)
@@ -146,8 +145,7 @@ async def test_user_task_add_task_already_usage_error(dl: dataloader, uow: IUnit
 
 async def _arrange_user_not_premium(dl: dataloader) -> User:
     user_model = await dl.user_loader.create()
-    user = user_model_to_dto(model=user_model)
-    user.is_premium = False
+    user = user_model_to_dto(model=user_model, premium=False)
     await dl.create_user_task_plan_list(user=user_model, count=MAX_TASK_AMOUNT_NOT_PREMIUM)
     return user
 
@@ -188,9 +186,7 @@ async def _arrange_premium_user_task_active_list(dl: dataloader) -> User:
 
 async def _arrange_not_premium_user_task_active_list(dl: dataloader) -> User:
     user_model = await dl.user_loader.create()
-    user = user_model_to_dto(model=user_model)
-    user.is_premium = False
-
+    user = user_model_to_dto(model=user_model, premium=False)
     await dl.create_user_task_list(
         user=user_model, count=MAX_TASK_AMOUNT_NOT_PREMIUM, status_list=[OccupancyStatusEnum.ACTIVE]
     )
@@ -246,22 +242,24 @@ async def test_user_task_complete_ok(dl: dataloader, uow: IUnitOfWork):
     user_model = await dl.user_loader.create()
     user = user_model_to_dto(model=user_model)
 
-    user_task = await dl.create_user_task(user=user_model, status=OccupancyStatusEnum.ACTIVE)
+    task = await dl.create_task()
+
+    user_task = await dl.create_user_task(user=user_model, task=task, status=OccupancyStatusEnum.ACTIVE)
     await dl.create_user_task_list(user=user_model)
 
     # Act
     uc = UserTaskCompleteUsecase(uow=uow)
     res = await uc(user=user, id=user_task.id)
+    user_score = await dl.user_score_loader.get(user_id=user.id)
 
     # Assert
+    assert user_score.value == task.score  # type: ignore user_score.value != None
     assert res.item.id == user_task.id
     assert res.item.status == OccupancyStatusEnum.FINISH
     assert res.item.task_id == user_task.task_id
     assert res.item.user_id == user.id
     assert isinstance(res.item.date_close, datetime)
     assert isinstance(res.item.date_start, datetime)
-
-    # Нужно ли проверять работу метода зачисления очков юзеру в нашем uc? (uow.score_user.add)
 
     await dl._delete(model=UserTaskModel, attr="id", pk=user_task.id)
     await dl._delete(model=UserScoreModel, attr="user_id", pk=user_model.id)

@@ -70,7 +70,7 @@ async def mission_user_create(
     return MissionUserSchema.from_obj(mission_user=res.item)
 
 
-@router.patch("/{id}")
+@router.patch("/")
 async def mission_user_update(
     id: int,
     in_obj: MissionUserUpdateSchema,

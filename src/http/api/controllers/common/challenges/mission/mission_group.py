@@ -30,7 +30,7 @@ from src.http.api.schemas.utils import IterableSchema
 router = APIRouter()
 
 
-@router.get("/mission/group/list")
+@router.get("/group/mission/list")
 async def mission_group_list(
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],
     user: Annotated[User, Depends(get_user_stub)],
@@ -49,7 +49,7 @@ async def mission_group_list(
     )
 
 
-@router.get("/mission/{mission_id}/group/{group_id}")
+@router.get("/group/{group_id}/mission/{mission_id}")
 async def mission_group_get(
     mission_id: int,
     group_id: int,
@@ -61,7 +61,7 @@ async def mission_group_get(
     return MissionGroupSchema.from_obj(mission_group=res.item)
 
 
-@router.post("/mission/group/{group_id}")
+@router.post("/group/mission")
 async def mission_group_create(
     group_id: int,
     in_obj: MissionGroupCreateSchema,
@@ -74,7 +74,7 @@ async def mission_group_create(
     return MissionGroupSchema.from_obj(mission_group=res.item)
 
 
-@router.patch("/mission/{mission_id}/group/{group_id}")
+@router.patch("/group/mission")
 async def mission_group_update(
     mission_id: int,
     group_id: int,

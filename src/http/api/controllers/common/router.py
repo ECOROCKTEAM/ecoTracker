@@ -26,7 +26,7 @@ common_router.include_router(statistic_group_router, tags=["Group statistic"], p
 common_router.include_router(statistic_user_router, tags=["User statistic"], prefix="/statistic/user")
 
 common_router.include_router(mission_router, tags=["Mission"], prefix="/mission")
-common_router.include_router(mission_user_router, tags=["Mission user"], prefix="/mission_user")
+common_router.include_router(mission_user_router, tags=["Mission user"], prefix="/user/mission")
 common_router.include_router(mission_group_router, tags=["Mission group"], prefix="")
 
 common_router.include_router(group_router, tags=["Group"], prefix="/group")

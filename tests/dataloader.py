@@ -19,6 +19,7 @@ from src.core.enum.user.contact import ContactTypeEnum
 from src.data.models.challenges.mission import (
     GroupMissionModel,
     MissionModel,
+    MissionTranslateModel,
     UserMissionModel,
 )
 from src.data.models.challenges.occupancy import (
@@ -421,6 +422,21 @@ class UserMissionLoader(EntityLoaderBase[UserMissionModel]):
         return await self._get(model=UserMissionModel, cond=cond)
 
 
+class MissionTranslateLoader(EntityLoaderBase[MissionTranslateModel]):
+    async def create(self, mission: MissionModel, language: LanguageEnum = LanguageEnum.EN) -> MissionTranslateModel:
+        model = MissionTranslateModel(
+            name="Mission translate name",
+            description="desc",
+            instruction="follow",
+            mission_id=mission.id,
+            language=language,
+        )
+        return await self._add(model=model)
+
+    async def get(self) -> MissionTranslateModel | None:
+        ...
+
+
 def loader_track(func):
     @wraps(func)
     def wrapper(self):
@@ -441,6 +457,12 @@ class dataloader:
         self.session = session
         self._loader_call_stack = []
         self._loader_instance_holder = {}
+
+    async def _delete(self, model, attr, pk):
+        model_attr = getattr(model, attr)
+        stmt = delete(model).where(model_attr == pk)
+        await self.session.execute(stmt)
+        await self.session.commit()
 
     async def __aenter__(self):
         print()
@@ -502,6 +524,11 @@ class dataloader:
     @loader_track
     def mission_loader(self) -> MissionLoader:
         return MissionLoader(session=self.session)
+
+    @property
+    @loader_track
+    def mission_translate_loader(self) -> MissionTranslateLoader:
+        return MissionTranslateLoader(session=self.session)
 
     @property
     @loader_track
@@ -625,6 +652,132 @@ class dataloader:
             user_task_plan_list.append(user_task_plan)
 
         return user_task_plan_list
+
+    async def create_mission(
+        self,
+        active: bool = True,
+        category: OccupancyCategoryModel | None = None,
+        language_list: list[LanguageEnum] | None = None,
+    ) -> MissionModel:
+        if category is None:
+            category = await self.create_category()
+        if language_list is None:
+            language_list = [LanguageEnum.EN]
+        mission = await self.mission_loader.create(category=category, active=active, score=10)
+        for lang in language_list:
+            await self.mission_translate_loader.create(mission=mission, language=lang)
+        return mission
+
+    async def create_mission_list_random(
+        self, count: int = 5, category: OccupancyCategoryModel | None = None
+    ) -> list[MissionModel]:
+        if category is None:
+            category = await self.category_loader.create()
+        mission_list = []
+        for _ in range(count):
+            mission = await self.create_mission(category=category, active=random.choice([True, False]))
+            mission_list.append(mission)
+        return mission_list
+
+    async def create_user_mission(
+        self,
+        user: UserModel,
+        mission: MissionModel | None = None,
+        status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE,
+    ) -> UserMissionModel:
+        if mission is None:
+            mission = await self.create_mission()
+        user_mission = await self.user_mission_loader.create(user=user, mission=mission, status=status)
+        return user_mission
+
+    async def create_user_mission_list_random(
+        self, user: UserModel, count: int = 5, status_list: list[OccupancyStatusEnum] | None = None
+    ) -> list[UserMissionModel]:
+        if status_list is None:
+            status_list = [OccupancyStatusEnum.ACTIVE]
+        user_mission_list = []
+        for _ in range(count):
+            for status in status_list:
+                user_mission = await self.create_user_mission(user=user, status=status)
+                user_mission_list.append(user_mission)
+        return user_mission_list
+
+    async def create_group(
+        self,
+        active: bool = True,
+        privacy: GroupPrivacyEnum = GroupPrivacyEnum.PUBLIC,
+        user: UserModel | None = None,
+        role: GroupRoleEnum = GroupRoleEnum.SUPERUSER,
+    ) -> GroupModel:
+        group_model = await self.group_loader.create(name="name", description="desc", active=active, privacy=privacy)
+        if user is not None:
+            await self.user_group_loader.create(user=user, group=group_model, role=role)
+        return group_model
+
+    async def create_group_list(
+        self,
+        count: int = 5,
+        privacy: GroupPrivacyEnum | None = None,
+        active: bool | None = None,
+    ) -> list[GroupModel]:
+        group_list = []
+        for _ in range(count):
+            if privacy is None:
+                privacy = random.choice([GroupPrivacyEnum.PRIVATE, GroupPrivacyEnum.PUBLIC])
+            if active is None:
+                active = random.choice([True, False])
+            group = await self.group_loader.create(active=active, privacy=privacy)
+            group_list.append(group)
+        return group_list
+
+    async def create_group_mission(
+        self,
+        user: UserModel,
+        group: GroupModel,
+        mission: MissionModel | None = None,
+        status: OccupancyStatusEnum = OccupancyStatusEnum.ACTIVE,
+    ) -> GroupMissionModel:
+        if mission is None:
+            mission = await self.create_mission()
+        group_mission = await self.group_mission_loader.create(
+            group=group, mission=mission, author=user.id, status=status
+        )
+        return group_mission
+
+    async def create_group_mission_list_random(
+        self,
+        user: UserModel | None = None,
+        group: GroupModel | None = None,
+        status_list: list[OccupancyStatusEnum] | None = None,
+        count: int = 4,
+    ) -> list[GroupMissionModel]:
+        group_mission_list = []
+        if user is None:
+            user = await self.user_loader.create()
+        if group is None:
+            group = await self.group_loader.create()
+        if status_list is None:
+            status_list = [OccupancyStatusEnum.ACTIVE]
+        for status in status_list:
+            for _ in range(count):
+                group_mission = await self.create_group_mission(group=group, user=user, status=status)
+                group_mission_list.append(group_mission)
+        return group_mission_list
+
+    async def create_group_user_list_random(self, group: GroupModel, count: int = 5) -> list[UserGroupModel]:
+        group_user_list = []
+        for _ in range(count):
+            user = await self.user_loader.create()
+            group_user = await self.user_group_loader.create(
+                user=user,
+                group=group,
+                role=random.choice(
+                    [GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER, GroupRoleEnum.BLOCKED, GroupRoleEnum.USER]
+                ),
+            )
+            group_user_list.append(group_user)
+
+        return group_user_list
 
     def _get_cnt_key(self, d: dict) -> str:
         key_parts = []

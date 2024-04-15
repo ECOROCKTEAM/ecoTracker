@@ -8,7 +8,7 @@ from src.core.dto.m2m.user.group import (
     UserGroupDTO,
     UserGroupUpdateDTO,
 )
-from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj, Pagination, SortObj
 from src.core.entity.group import Group
 from src.core.enum.group.role import GroupRoleEnum
 
@@ -17,6 +17,11 @@ from src.core.enum.group.role import GroupRoleEnum
 class GroupFilter:
     active: bool | None = None
     user_id: str | None = None
+
+
+@dataclass
+class SortingGroupObj(SortObj):
+    ...
 
 
 @dataclass
@@ -75,16 +80,18 @@ class IRepositoryGroup(ABC):
         """
 
     @abstractmethod
-    async def lst(self, *, filter_obj: GroupFilter, order_obj: MockObj, pagination_obj: MockObj) -> list[Group]:
+    async def lst(
+        self, *, filter_obj: GroupFilter, sorting_obj: SortingGroupObj, iterable_obj: IterableObj
+    ) -> Pagination[list[Group]]:
         """Получить список сообществ
 
         Args:
             filter_obj (GroupFilter): Объект фильтрации
-            order_obj (MockObj): Объект порядка
-            pagination_obj (MockObj): Объект пагинации
+            sorting_obj (SortingGroupObj): Объект сортировки
+            iterable_obj (IterableObj): Объект пагинации
 
         Returns:
-            List[Group]: Список сущностей сообщества
+            Pagination[list[Group]]: Список сущностей сообщества
 
         Raises:
             RepoError: Ошибка операции

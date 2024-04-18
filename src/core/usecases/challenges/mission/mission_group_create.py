@@ -22,12 +22,12 @@ class MissionGroupCreateUsecase:
         if not user.is_premium:
             raise UserIsNotPremiumError(user_id=user.id)
         async with self.uow as uow:
-            user_group = await uow.group.user_get(group_id=group_id, user_id=user.id)
-            if user_group.role not in [GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER]:
-                raise PermissionError("")
             group = await uow.group.get(id=group_id)
             if not group.active:
                 raise EntityNotActive(msg=f"{group.id=}")
+            user_group = await uow.group.user_get(group_id=group_id, user_id=user.id)
+            if user_group.role not in [GroupRoleEnum.ADMIN, GroupRoleEnum.SUPERUSER]:
+                raise PermissionError("")
             mission = await uow.mission.get(id=create_obj.mission_id, lang=user.language)
             if not mission.active:
                 raise EntityNotActive(msg=f"{mission.id=}")

@@ -10,6 +10,7 @@ from src.core.entity.user import User
 from src.core.enum.group.privacy import GroupPrivacyEnum
 from src.core.enum.group.role import GroupRoleEnum
 from src.core.exception.base import (
+    DomainError,
     EntityNotActive,
     EntityNotFound,
     LogicError,
@@ -101,22 +102,53 @@ async def test_public_group_get_user_not_in_group_ok(uow: IUnitOfWork, dl: datal
     assert res.item.privacy == group.privacy
 
 
-# pytest tests/tmain/usecase/test_group.py::test_not_active_group_get_error -v -s
-@pytest.mark.asyncio
-async def test_not_active_group_get_error(uow: IUnitOfWork, dl: dataloader):
-    # Arrange
+async def _arrange_user_group_user_role(dl: dataloader) -> tuple[User, int]:
     user_model = await dl.user_loader.create()
     user = user_model_to_dto(user_model)
     group = await dl.group_loader.create(active=False)
-    await dl.group_loader.create()
+    await dl.user_group_loader.create(user=user_model, group=group, role=GroupRoleEnum.USER)
+    return user, group.id
+
+
+async def _arrange_user_group_user_not_in_group(dl: dataloader) -> tuple[User, int]:
+    user_model = await dl.user_loader.create()
+    user = user_model_to_dto(user_model)
+    group = await dl.group_loader.create(active=False)
+    return user, group.id
+
+
+# pytest tests/tmain/usecase/test_group.py::test_not_active_group_get_error -v -s
+@pytest.mark.asyncio
+@pytest.mark.parametrize("arrange_func", [_arrange_user_group_user_not_in_group, _arrange_user_group_user_role])
+async def test_not_active_group_get_error(uow: IUnitOfWork, dl: dataloader, arrange_func):
+    # Arrange
+    user, group_id = await arrange_func(dl=dl)
 
     # Act
     uc = GroupGetUsecase(uow=uow)
     with pytest.raises(EntityNotActive) as e:
+        await uc(user=user, group_id=group_id)
+
+    # Assert
+    assert f"{group_id}" in str(e.value)
+
+
+# pytest tests/tmain/usecase/test_group.py::test_group_get_user_blocker_error -v -s
+@pytest.mark.asyncio
+async def test_group_get_user_blocker_error(uow: IUnitOfWork, dl: dataloader):
+    # Arrange
+    user_model = await dl.user_loader.create()
+    user = user_model_to_dto(user_model)
+    group = await dl.group_loader.create()
+    await dl.user_group_loader.create(user=user_model, group=group, role=GroupRoleEnum.BLOCKED)
+
+    # Act
+    uc = GroupGetUsecase(uow=uow)
+    with pytest.raises(PermissionError) as e:
         await uc(user=user, group_id=group.id)
 
     # Assert
-    assert f"{group.id}" in str(e.value)
+    assert f"{user.id}" in str(e.value)
 
 
 # pytest tests/tmain/usecase/test_group.py::test_group_get_privacy_error -v -s
@@ -135,26 +167,6 @@ async def test_group_get_privacy_error(uow: IUnitOfWork, dl: dataloader):
 
     # Assert
     assert f"{group.id}" in str(e.value)
-
-
-# pytest tests/tmain/usecase/test_group.py::test_group_get_permission_error -v -s
-@pytest.mark.asyncio
-@pytest.mark.parametrize("arrange_role", [GroupRoleEnum.ADMIN, GroupRoleEnum.BLOCKED, GroupRoleEnum.USER])
-async def test_group_get_permission_error(uow: IUnitOfWork, dl: dataloader, arrange_role):
-    # Arrange
-    user_model = await dl.user_loader.create()
-    user = user_model_to_dto(user_model)
-    group = await dl.group_loader.create(privacy=GroupPrivacyEnum.PRIVATE, active=False)
-
-    await dl.user_group_loader.create(user=user_model, group=group, role=arrange_role)
-    await dl.group_loader.create()
-
-    # Act
-    uc = GroupGetUsecase(uow=uow)
-    with pytest.raises(PermissionError) as e:
-        await uc(user=user, group_id=group.id)
-    # Assert
-    assert f"{user.id}" in str(e.value)
 
 
 # pytest tests/tmain/usecase/test_group.py::test_group_create_ok -v -s

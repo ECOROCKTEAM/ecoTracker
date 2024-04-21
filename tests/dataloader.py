@@ -460,12 +460,6 @@ class dataloader:
         self._loader_call_stack = []
         self._loader_instance_holder = {}
 
-    async def _delete(self, model, attr, pk):
-        model_attr = getattr(model, attr)
-        stmt = delete(model).where(model_attr == pk)
-        await self.session.execute(stmt)
-        await self.session.commit()
-
     async def __aenter__(self):
         print()
         return self

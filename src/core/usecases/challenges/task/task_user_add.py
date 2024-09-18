@@ -34,9 +34,7 @@ class UserTaskAddUsecase:
             if not task.active:
                 raise EntityNotActive(msg=f"task.id={task_id}")
 
-            max_count = MAX_TASK_AMOUNT_NOT_PREMIUM
-            if user.is_premium:
-                max_count = MAX_TASK_AMOUNT_PREMIUM
+            max_count = MAX_TASK_AMOUNT_NOT_PREMIUM if not user.is_premium else MAX_TASK_AMOUNT_PREMIUM
 
             user_tasks_pagination = await uow.task.user_task_lst(
                 user_id=user.id,

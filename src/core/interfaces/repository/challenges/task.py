@@ -61,9 +61,9 @@ class IRepositoryTask(ABC):
         """List of tasks
 
         Args:
-            sorting_obj (str): sorting object
-            paggination_obj (str): paggination object
-            filter_obj (str): filter object
+            sorting_obj (SortObj): sorting object
+            iterable_obj (IterableObj): Itaretion object
+            filter_obj (TaskFilter): filter object
             lang (LanguageEnum): Необходимый язык
 
         Returns:
@@ -76,7 +76,7 @@ class IRepositoryTask(ABC):
 
         Args:
             id (int): User task object identify
-
+            user_id (str): User ID
         Returns:
             TaskUser: Сущность задачи пользователя
         """
@@ -98,8 +98,9 @@ class IRepositoryTask(ABC):
         """Обновить задание для пользователя
 
         Args:
+            user_id (str): User ID
             id (int): User task object identify
-            obj (TaskUserCreateDTO): Объект обновления
+            obj (TaskUserUpdateDTO): Объект обновления
 
         Returns:
             TaskUser: Сущность задачи пользователя

@@ -1,22 +1,49 @@
 # EcoTracker
 
-## How to start
+## DEVELOP
 
 1. Git clone
-2. Check on exist db containers in docker and delete them:
+2. Checkout to develop branch
 
-    ```bash
-    docker rm -f localpsql
-    docker rm -f pgadmin
-    ```
+    `git checkout origin/develop`
 
-3. Create db containers in docker:
+3. Unpack `EcoTrackerEnv.zip` to root of project
+4. Run tests
 
-    ```bash
-    make db
-    ```
+    `make tests`
 
-4. ```make setup```
-5. Activate venv: ```source .venv/bin/activate```
-6. ```make tests```
-7. Go to code: ```code .```
+5. Run application, database, pgadmin
+
+    `make devapp`
+
+6. Go to browser
+
+    `localhost:5050` - pgadmin
+
+    `localhost:8000/docs` - swagger
+
+7. Connect pgadmin to database
+
+    Login to pgadmin usage credentials from `env/dev/pgadmin.env`
+
+    Add server usage credentials from `env/dev/dev.env`, see `DATABASE_*` env
+
+8. Done!
+
+9. For stop use cmd `make devstop`
+
+10. For drop all containers use cmd `make devclear`
+
+### Develop backend
+
+1. Same steps ^
+
+2. But copy `dev.env` rom `env/dev/dev.env` to root of project
+
+3. Clear already running containers with `make devclear`
+
+4. Run `make devdb`
+
+5. Run `alembic upgrade head`
+
+6. Run uvicorn `uvicorn src.http.app:create_app --factory`

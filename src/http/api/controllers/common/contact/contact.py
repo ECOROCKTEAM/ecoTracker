@@ -71,7 +71,7 @@ async def contact_update(
     return ContactSchema.from_obj(contact=result.item)
 
 
-@router.post("/{id}/favorite/")
+@router.patch("/{id}/favorite/")
 async def contact_set_favorite(
     id: int,
     user: Annotated[User, Depends(get_user_stub)],

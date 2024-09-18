@@ -34,9 +34,7 @@ class UserTaskAddUsecase:
             if not task.active:
                 raise EntityNotActive(msg=f"task.id={task_id}")
 
-            max_count = MAX_TASK_AMOUNT_NOT_PREMIUM
-            if user.is_premium:
-                max_count = MAX_TASK_AMOUNT_PREMIUM
+            max_count = MAX_TASK_AMOUNT_NOT_PREMIUM if not user.is_premium else MAX_TASK_AMOUNT_PREMIUM
 
             user_tasks_pagination = await uow.task.user_task_lst(
                 user_id=user.id,
@@ -50,8 +48,8 @@ class UserTaskAddUsecase:
                 if user_task.task_id == task_id:
                     raise EntityAlreadyUsage(msg=f"{user.id=}, task.id={task_id}")
 
-            if len(user_tasks) > max_count:
-                raise MaxAmountError(msg=f"{user.id=}")
+            if len(user_tasks) >= max_count:
+                raise MaxAmountError(msg=f"User={user.id=} has max active tasks")
 
             user_plan_tasks_pagination = await uow.task.plan_lst(
                 user_id=user.id,
@@ -61,8 +59,8 @@ class UserTaskAddUsecase:
             )
             user_plan_tasks = user_plan_tasks_pagination.items
 
-            if len(user_plan_tasks) > max_count:
-                raise MaxAmountError(msg=f"{user.id=}")
+            if len(user_plan_tasks) >= max_count:
+                raise MaxAmountError(msg=f"User={user.id=} has max plan tasks")
 
             user_task_add = await uow.task.user_task_add(
                 user_id=user.id,

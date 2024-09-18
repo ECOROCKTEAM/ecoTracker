@@ -3,12 +3,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.interfaces.auth.firebase import IFirebaseApplication
 from src.core.interfaces.repository.auth import IAuthProviderRepository
+from src.core.interfaces.repository.challenges.mission import IRepositoryMission
 from src.core.interfaces.repository.score.group import IRepositoryGroupScore
 from src.core.interfaces.repository.score.user import IRepositoryUserScore
 from src.core.interfaces.repository.statistic.group import IRepositoryGroupStatistic
 from src.core.interfaces.repository.statistic.user import IRepositoryUserStatistic
 from src.core.interfaces.repository.user.contact import IUserContactRepository
 from src.data.repository.auth import AuthProviderRepository
+from src.data.repository.challenges.mission import RepositoryMission
 from src.data.repository.challenges.occupancy_category import (
     IRepositoryOccupancyCategory,
     RepositoryOccupancyCategory,
@@ -23,6 +25,11 @@ from src.data.repository.user import IUserRepository, UserRepository
 from src.data.repository.user_contacts import UserContactRepository
 
 # Repository
+
+
+@pytest.fixture(scope="function")
+def repo_mission(session: AsyncSession) -> IRepositoryMission:
+    return RepositoryMission(db_context=session)
 
 
 @pytest.fixture(scope="function")

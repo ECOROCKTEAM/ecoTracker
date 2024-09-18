@@ -151,7 +151,7 @@ class SqlAlchemyUnitOfWork(IUnitOfWork):
         self._user = UserRepository(self._session)
         self._user_contact = UserContactRepository(self._session)
         self._user_statistic = UserStatisticRepository(self._session)
-        self._group_statistic = GroupStatisticRepository(self.__session)
+        self._group_statistic = GroupStatisticRepository(self._session)
         self._notifications = NotificationRepository(self._session)
         return self
 

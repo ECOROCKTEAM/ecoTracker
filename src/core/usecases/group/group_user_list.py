@@ -48,7 +48,7 @@ class GroupUserListUsecase:
             elif group.privacy == GroupPrivacyEnum.PRIVATE:
                 filter_obj = await self._resolve_filter_private(user_group=user_group, filter_obj=filter_obj)
 
-        result = await self.uow.group.user_list(id=group_id, filter_obj=filter_obj)
+            result = await self.uow.group.user_list(id=group_id, filter_obj=filter_obj)
         return Result(items=result)
 
     async def _resolve_filter_public(

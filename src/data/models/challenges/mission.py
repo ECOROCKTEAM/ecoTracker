@@ -59,7 +59,7 @@ class GroupMissionModel(Base):
     group_id: Mapped[int] = mapped_column(ForeignKey("group.id"))
     mission_id: Mapped[int] = mapped_column(ForeignKey("mission.id"))
     author: Mapped[str] = mapped_column()
-    meeting_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=False))
+    meeting_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     people_required: Mapped[int | None] = mapped_column()
     people_max: Mapped[int | None] = mapped_column()
     place: Mapped[str | None] = mapped_column()

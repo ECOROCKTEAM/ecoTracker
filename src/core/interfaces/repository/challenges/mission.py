@@ -7,10 +7,25 @@ from src.core.dto.challenges.mission import (
     MissionUserCreateDTO,
     MissionUserUpdateDTO,
 )
-from src.core.dto.mock import MockObj
+from src.core.dto.utils import IterableObj, Pagination, SortObj
 from src.core.entity.mission import Mission, MissionGroup, MissionUser
 from src.core.enum.challenges.status import OccupancyStatusEnum
 from src.core.enum.language import LanguageEnum
+
+
+@dataclass
+class SortMissionObj(SortObj):
+    ...
+
+
+@dataclass
+class SortUserMissionObj(SortObj):
+    field: str = "mission_id"
+
+
+@dataclass
+class SortGroupMissionObj(SortObj):
+    field: str = "mission_id"
 
 
 @dataclass
@@ -51,18 +66,18 @@ class IRepositoryMission(ABC):
 
     @abstractmethod
     async def lst(
-        self, *, filter_obj: MissionFilter, order_obj: MockObj, pagination_obj: MockObj, lang: LanguageEnum
-    ) -> list[Mission]:
+        self, *, filter_obj: MissionFilter, sorting_obj: SortMissionObj, iterable_obj: IterableObj, lang: LanguageEnum
+    ) -> Pagination[list[Mission]]:
         """Получить список базовых миссий
 
         Args:
             filter_obj (MissionFilter): Объект фильтрации
-            order_obj (MockObj): Объект порядка
-            pagination_obj (MockObj): Объект пагинации
+            sorting_obj (SortMissionObj): Объект сортировки
+            iterable_obj (IterableObj): Объект пагинации
             lang (LanguageEnum): Необходимый язык
 
         Returns:
-            List[MissionBase]: Список базовых миссий
+            Pagination[list[Mission]]: list of Mission entities
         """
 
     @abstractmethod
@@ -71,6 +86,7 @@ class IRepositoryMission(ABC):
 
         Args:
             id (int): ID Сущности миссии пользователя
+            user_id (str): User ID
 
         Returns:
             MissionUser: Сущность миссии пользователя
@@ -81,6 +97,7 @@ class IRepositoryMission(ABC):
         """Создать миссию для пользователя
 
         Args:
+            user_id (str): User ID
             obj (MissionUserCreateDTO): Объект создания
 
         Returns:
@@ -93,6 +110,8 @@ class IRepositoryMission(ABC):
 
         Args:
             id (int): ID Сущности миссии пользователя
+            user_id (str): User ID
+            obj (MissionUserUpdateDTO): Update object
 
         Returns:
             MissionUser: Сущность миссии пользователя
@@ -104,25 +123,26 @@ class IRepositoryMission(ABC):
         *,
         user_id: str,
         filter_obj: MissionUserFilter,
-        order_obj: MockObj,
-        pagination_obj: MockObj,
-    ) -> list[MissionUser]:
+        sorting_obj: SortUserMissionObj,
+        iterable_obj: IterableObj,
+    ) -> Pagination[list[MissionUser]]:
         """Получить список миссий пользователя
 
         Args:
             filter_obj (MissionUserFilter): Объект фильтрации
-            order_obj (MockObj): Объект порядка
-            pagination_obj (MockObj): Объект пагинации
+            sorting_obj (SortUserMissionObj): Объект сортировки
+            iterable_obj (IterableObj): Объект пагинации
 
         Returns:
-            List[MissionUser]: Список сущностей миссии пользователя
+            Pagination[list[MissionUser]]: Список сущностей миссии пользователя
         """
 
     @abstractmethod
     async def group_mission_create(self, *, group_id: int, obj: MissionGroupCreateDTO) -> MissionGroup:
-        """Создать миссию для сообщест ва
+        """Создать миссию для сообщества
 
         Args:
+            group_id (int): Group ID for which a mission is being created
             obj (MissionGroupCreateDTO): Объект создания
 
         Returns:
@@ -147,6 +167,7 @@ class IRepositoryMission(ABC):
 
         Args:
             id (int): ID Сущности миссии сообщества
+            group_id (int): Group ID
             obj (MissionGroupUpdateDTO): Объект обновления
 
         Returns:
@@ -158,16 +179,16 @@ class IRepositoryMission(ABC):
         self,
         *,
         filter_obj: MissionGroupFilter,
-        order_obj: MockObj,
-        pagination_obj: MockObj,
-    ) -> list[MissionGroup]:
+        sorting_obj: SortGroupMissionObj,
+        iterable_obj: IterableObj,
+    ) -> Pagination[list[MissionGroup]]:
         """Получить список миссий сообщества
 
         Args:
-            filter_obj (MockObj): Объект фильтрации
-            order_obj (MockObj): Объект порядка
-            pagination_obj (MockObj): Объект пагинации
+            filter_obj (MissionGroupFilter): Объект фильтрации
+            sorting_obj (SortGroupMissionObj): Объект порядка
+            iterable_obj (IterableObj): Объект пагинации
 
         Returns:
-            List[MissionGroup]: Список сущностей миссии сообщества
+            Pagination[list[MissionGroup]]: Список сущностей миссии сообщества
         """

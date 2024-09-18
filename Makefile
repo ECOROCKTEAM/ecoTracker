@@ -66,3 +66,9 @@ devstop:
 	export DOCKER_BUILDKIT=0
 	export COMPOSE_DOCKER_CLI_BUILD=0
 	docker compose -f docker-compose.root.yaml stop dev_app dev_db dev_pgadmin
+
+.PHONY: devclear
+devclear:
+	export DOCKER_BUILDKIT=0
+	export COMPOSE_DOCKER_CLI_BUILD=0
+	docker compose -f docker-compose.root.yaml down dev_app dev_db dev_pgadmin -v

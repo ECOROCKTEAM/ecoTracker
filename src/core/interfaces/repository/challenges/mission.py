@@ -86,6 +86,7 @@ class IRepositoryMission(ABC):
 
         Args:
             id (int): ID Сущности миссии пользователя
+            user_id (str): User ID
 
         Returns:
             MissionUser: Сущность миссии пользователя
@@ -96,6 +97,7 @@ class IRepositoryMission(ABC):
         """Создать миссию для пользователя
 
         Args:
+            user_id (str): User ID
             obj (MissionUserCreateDTO): Объект создания
 
         Returns:
@@ -108,6 +110,8 @@ class IRepositoryMission(ABC):
 
         Args:
             id (int): ID Сущности миссии пользователя
+            user_id (str): User ID
+            obj (MissionUserUpdateDTO): Update object
 
         Returns:
             MissionUser: Сущность миссии пользователя
@@ -135,9 +139,10 @@ class IRepositoryMission(ABC):
 
     @abstractmethod
     async def group_mission_create(self, *, group_id: int, obj: MissionGroupCreateDTO) -> MissionGroup:
-        """Создать миссию для сообщест ва
+        """Создать миссию для сообщества
 
         Args:
+            group_id (int): Group ID for which a mission is being created
             obj (MissionGroupCreateDTO): Объект создания
 
         Returns:
@@ -162,6 +167,7 @@ class IRepositoryMission(ABC):
 
         Args:
             id (int): ID Сущности миссии сообщества
+            group_id (int): Group ID
             obj (MissionGroupUpdateDTO): Объект обновления
 
         Returns:

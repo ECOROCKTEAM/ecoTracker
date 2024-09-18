@@ -40,7 +40,7 @@ class MissionGroupListUsecase:
                 sorting_obj=SortingGroupObj(),
                 iterable_obj=iterable_obj,
             )
-            filter_obj.group_id_list = [c.id for c in group_list.items]
+            filter_obj.group_id_list = [item.id for item in group_list.items]
             res = await uow.mission.group_mission_lst(
                 filter_obj=filter_obj, sorting_obj=sorting_obj, iterable_obj=iterable_obj
             )

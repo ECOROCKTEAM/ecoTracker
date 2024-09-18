@@ -71,9 +71,6 @@ class UserContactRepository(IUserContactRepository):
             .values(is_favorite=is_favorite)
             .returning(UserContactModel)
         )
-        print()
-        print(f"{id=}")
-        print()
         res = await self.db_context.scalar(stmt)
         if not res:
             raise EntityNotFound(msg="")

@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from .challenges.mission.mission import router as mission_router
 from .challenges.mission.mission_group import router as mission_group_router
 from .challenges.mission.mission_user import router as mission_user_router
+from .challenges.occupancy.occupancy import router as occupancy_router
 from .challenges.task.task import router as task_router
 from .challenges.task.task_user import router as task_user_router
 from .contact.contact import router as contact_router
@@ -31,3 +32,5 @@ common_router.include_router(mission_group_router, tags=["Mission group"], prefi
 
 common_router.include_router(group_router, tags=["Group"], prefix="/group")
 common_router.include_router(group_user_router, tags=["Group User"], prefix="")
+
+common_router.include_router(occupancy_router, tags=["Occupancy"], prefix="/occupancy")

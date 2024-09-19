@@ -1,7 +1,13 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 from src.core.entity.occupancy import OccupancyCategory
 from src.core.enum.language import LanguageEnum
+
+
+@dataclass
+class OccupancyFilter:
+    id_in: list[int] | None = None
 
 
 class IRepositoryOccupancyCategory(ABC):
@@ -17,11 +23,12 @@ class IRepositoryOccupancyCategory(ABC):
         """
 
     @abstractmethod
-    async def lst(self, lang: LanguageEnum) -> list[OccupancyCategory]:
+    async def lst(self, lang: LanguageEnum, fltr: OccupancyFilter) -> list[OccupancyCategory]:
         """Get list of occupancy category
 
         Args:
             lang (LanguageEnum): Target of language
+            fltr (OccupancyFilter): Occupancy filter
 
         Returns:
             list[OccupancyCategory]: list of occupancy category entity object

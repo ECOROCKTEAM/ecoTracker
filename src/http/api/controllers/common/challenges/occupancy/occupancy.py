@@ -18,9 +18,9 @@ router = APIRouter()
 
 @router.get("/list")
 async def occupancy_list(
-    fltr: OccupancyFilterSchema,
     user: Annotated[User, Depends(get_user_stub)],
     uow: Annotated[IUnitOfWork, Depends(get_uow_stub)],
+    fltr: OccupancyFilterSchema = Depends(),
 ) -> OccupancyListSchema:
     fltr_obj = fltr.to_obj()
 

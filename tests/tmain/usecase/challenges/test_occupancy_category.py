@@ -1,5 +1,6 @@
 import pytest
 
+from src.core.interfaces.repository.challenges.occupancy import OccupancyFilter
 from src.core.interfaces.unit_of_work import IUnitOfWork
 from src.core.usecases.challenges.occupancy.occupancy_get import (
     OccupancyCategoryGetUsecase,
@@ -37,10 +38,10 @@ async def test_category_list_ok(dl: dataloader, uow: IUnitOfWork):
     category_list = await dl.create_category_list_random()
 
     arrange_category_id_set = {category.id for category in category_list}
-
+    fltr = OccupancyFilter()
     # Act
     uc = OccupancyCategoryListUsecase(uow=uow)
-    res = await uc(user=user)
+    res = await uc(user=user, fltr=fltr)
     res_category_id_set = {category.id for category in res.item}
 
     # Assert

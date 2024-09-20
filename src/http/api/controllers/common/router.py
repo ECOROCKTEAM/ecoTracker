@@ -16,6 +16,7 @@ from .statistic.user import router as statistic_user_router
 from .user.user import router as user_router
 
 common_router = APIRouter()
+common_router.include_router(occupancy_router, tags=["Occupancy"], prefix="/occupancy")
 common_router.include_router(user_router, tags=["User"], prefix="/user")
 common_router.include_router(contact_router, tags=["Contact"], prefix="/user/contact")
 common_router.include_router(user_score_router, tags=["User score"], prefix="/user/score")
@@ -32,5 +33,3 @@ common_router.include_router(mission_group_router, tags=["Mission group"], prefi
 
 common_router.include_router(group_router, tags=["Group"], prefix="/group")
 common_router.include_router(group_user_router, tags=["Group User"], prefix="")
-
-common_router.include_router(occupancy_router, tags=["Occupancy"], prefix="/occupancy")

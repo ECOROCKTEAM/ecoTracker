@@ -154,7 +154,7 @@ async def _arrange_occupancy_filter_not_empty(dl: dataloader):
     category_model = await dl.create_category()
     _ = await dl.create_category()
 
-    fltr = OccupancyFilter(id_in=[category_model.id])
+    fltr = OccupancyFilter(id__in=[category_model.id])
     arrange_category_id_set = {
         category_model.id,
     }

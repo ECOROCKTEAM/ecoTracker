@@ -7,7 +7,7 @@ from src.core.enum.language import LanguageEnum
 
 @dataclass
 class OccupancyFilter:
-    id_in: list[int] | None = None
+    id__in: list[int] | None = None
 
 
 class IRepositoryOccupancyCategory(ABC):

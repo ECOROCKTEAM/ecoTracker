@@ -61,8 +61,8 @@ class RepositoryOccupancyCategory(IRepositoryOccupancyCategory):
 
     async def lst(self, *, lang: LanguageEnum, fltr: OccupancyFilter) -> list[OccupancyCategory]:
         where_clause = []
-        if fltr.id_in is not None:
-            where_clause.append(OccupancyCategoryModel.id.in_(fltr.id_in))
+        if fltr.id__in is not None:
+            where_clause.append(OccupancyCategoryModel.id.in_(fltr.id__in))
 
         stmt = (
             select(OccupancyCategoryModel, OccupancyCategoryTranslateModel)

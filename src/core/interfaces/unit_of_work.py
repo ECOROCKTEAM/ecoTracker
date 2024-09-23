@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 
-from src.core.interfaces.repository.challenges.mission import IRepositoryMission
-from src.core.interfaces.repository.challenges.occupancy import (
+from src.core.interfaces.repository.challenges.category import (
     IRepositoryOccupancyCategory,
 )
+from src.core.interfaces.repository.challenges.mission import IRepositoryMission
 from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.interfaces.repository.group.group import IRepositoryGroup
 from src.core.interfaces.repository.notifications.notifications import (

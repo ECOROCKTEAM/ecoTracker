@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.interfaces.repository.challenges.mission import IRepositoryMission
-from src.core.interfaces.repository.challenges.occupancy import (
+from src.core.interfaces.repository.challenges.category import (
     IRepositoryOccupancyCategory,
 )
+from src.core.interfaces.repository.challenges.mission import IRepositoryMission
 from src.core.interfaces.repository.challenges.task import IRepositoryTask
 from src.core.interfaces.repository.group.group import IRepositoryGroup
 from src.core.interfaces.repository.notifications.notifications import (
@@ -20,10 +20,8 @@ from src.core.interfaces.repository.user.contact import IUserContactRepository
 from src.core.interfaces.repository.user.subscription import IUserSubscriptionRepository
 from src.core.interfaces.repository.user.user import IUserRepository
 from src.core.interfaces.unit_of_work import IUnitOfWork
+from src.data.repository.challenges.category import RepositoryOccupancyCategory
 from src.data.repository.challenges.mission import RepositoryMission
-from src.data.repository.challenges.occupancy_category import (
-    RepositoryOccupancyCategory,
-)
 from src.data.repository.challenges.task import RepositoryTask
 from src.data.repository.group import RepositoryGroup
 from src.data.repository.notification import NotificationRepository

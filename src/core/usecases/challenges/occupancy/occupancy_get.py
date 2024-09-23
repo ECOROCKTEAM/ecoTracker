@@ -11,7 +11,7 @@ class Result:
     item: OccupancyCategory
 
 
-class OccupancyCategoryGetUsecase:
+class CategoryGetUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 

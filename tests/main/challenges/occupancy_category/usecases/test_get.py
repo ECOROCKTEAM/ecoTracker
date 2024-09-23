@@ -3,9 +3,7 @@ import pytest
 from src.core.entity.occupancy import OccupancyCategory
 from src.core.entity.user import User
 from src.core.interfaces.unit_of_work import IUnitOfWork
-from src.core.usecases.challenges.occupancy.occupancy_get import (
-    OccupancyCategoryGetUsecase,
-)
+from src.core.usecases.challenges.occupancy.occupancy_get import CategoryGetUsecase
 from tests.fixtures.challenges.category.usecase.category import (
     mock_category_get_default,
 )
@@ -19,7 +17,7 @@ async def test_ok(
     fxe_user_default: User,
     mock_category_get_default: OccupancyCategory,
 ):
-    uc = OccupancyCategoryGetUsecase(uow=uow)
+    uc = CategoryGetUsecase(uow=uow)
     res = await uc(user=fxe_user_default, id=1)
     oc = res.item
     assert isinstance(oc, OccupancyCategory)

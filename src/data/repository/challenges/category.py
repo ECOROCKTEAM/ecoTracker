@@ -5,8 +5,9 @@ from src.core.const.translate import DEFAULT_LANGUANGE
 from src.core.entity.occupancy import OccupancyCategory
 from src.core.enum.language import LanguageEnum
 from src.core.exception.base import EntityNotFound, TranslateNotFound
-from src.core.interfaces.repository.challenges.occupancy import (
+from src.core.interfaces.repository.challenges.category import (
     IRepositoryOccupancyCategory,
+    OccupancyFilter,
 )
 from src.data.models.challenges.occupancy import (
     OccupancyCategoryModel,
@@ -58,14 +59,22 @@ class RepositoryOccupancyCategory(IRepositoryOccupancyCategory):
                 raise TranslateNotFound(msg=f"OccupancyCategory={oc.id} with lang={lang.name} not found")
         return occupancy_model_to_entity(model=oc, translated_model=oc_translate)
 
-    async def lst(self, *, lang: LanguageEnum) -> list[OccupancyCategory]:
-        stmt = select(OccupancyCategoryModel, OccupancyCategoryTranslateModel).join(
-            OccupancyCategoryTranslateModel,
-            and_(
-                OccupancyCategoryModel.id == OccupancyCategoryTranslateModel.category_id,
-                OccupancyCategoryTranslateModel.language == lang,
-            ),
-            isouter=True,
+    async def lst(self, *, lang: LanguageEnum, fltr: OccupancyFilter) -> list[OccupancyCategory]:
+        where_clause = []
+        if fltr.id__in is not None:
+            where_clause.append(OccupancyCategoryModel.id.in_(fltr.id__in))
+
+        stmt = (
+            select(OccupancyCategoryModel, OccupancyCategoryTranslateModel)
+            .join(
+                OccupancyCategoryTranslateModel,
+                and_(
+                    OccupancyCategoryModel.id == OccupancyCategoryTranslateModel.category_id,
+                    OccupancyCategoryTranslateModel.language == lang,
+                ),
+                isouter=True,
+            )
+            .where(*where_clause)
         )
         coro = await self.db_context.execute(stmt)
         result = coro.all()

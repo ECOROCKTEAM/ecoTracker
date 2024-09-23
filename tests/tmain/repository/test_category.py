@@ -3,8 +3,9 @@ import pytest
 from src.core.const.translate import DEFAULT_LANGUANGE
 from src.core.enum.language import LanguageEnum
 from src.core.exception.base import EntityNotFound, TranslateNotFound
-from src.core.interfaces.repository.challenges.occupancy import (
+from src.core.interfaces.repository.challenges.category import (
     IRepositoryOccupancyCategory,
+    OccupancyFilter,
 )
 from tests.dataloader import dataloader
 
@@ -111,8 +112,9 @@ async def test_lst_ok(
     # Arrange
     category_model = await dl.create_category(language_list=language_list)
     category_model2 = await dl.create_category(language_list=language_list)
+    fltr = OccupancyFilter()
     # Act
-    category_list = await repo_category.lst(lang=language_target)
+    category_list = await repo_category.lst(lang=language_target, fltr=fltr)
     # Assert
     category_language_set = set([c.language for c in category_list])
     language_asrt_set = set(language_list_asrt)
@@ -141,7 +143,42 @@ async def test_lst_not_found_translate(
     # Arrange
     await dl.create_category(language_list=language_list)
     await dl.create_category(language_list=language_list)
+    fltr = OccupancyFilter()
     # Act & Assert
     with pytest.raises(TranslateNotFound) as e:
-        await repo_category.lst(lang=language_target)
+        await repo_category.lst(lang=language_target, fltr=fltr)
     assert f"OccupancyCategory translate for lang={language_target.name} not found" == str(e.value)
+
+
+async def _arrange_occupancy_filter_not_empty(dl: dataloader):
+    category_model = await dl.create_category()
+    _ = await dl.create_category()
+
+    fltr = OccupancyFilter(id__in=[category_model.id])
+    arrange_category_id_set = {
+        category_model.id,
+    }
+    return fltr, arrange_category_id_set
+
+
+async def _arrange_occupancy_filter_empty(dl: dataloader):
+    category_model_1 = await dl.create_category()
+    category_model_2 = await dl.create_category()
+
+    fltr = OccupancyFilter()
+    arrange_category_id_set = {category_model_1.id, category_model_2.id}
+    return fltr, arrange_category_id_set
+
+
+# pytest tests/tmain/repository/test_occupancy_category.py::test_lst_fltr_ok -v -s
+@pytest.mark.asyncio
+@pytest.mark.parametrize("arrange_func", [_arrange_occupancy_filter_empty, _arrange_occupancy_filter_not_empty])
+async def test_lst_fltr_ok(dl: dataloader, repo_category: IRepositoryOccupancyCategory, arrange_func):
+    print()
+    # Arrange
+    fltr, arrange_occupancy_id_set = await arrange_func(dl=dl)
+    # Act
+    category_list = await repo_category.lst(lang=LanguageEnum.EN, fltr=fltr)
+    # Assert
+    id_set = set([c.id for c in category_list])
+    assert id_set == arrange_occupancy_id_set

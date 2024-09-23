@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from .challenges.category.category import router as occupancy_router
 from .challenges.mission.mission import router as mission_router
 from .challenges.mission.mission_group import router as mission_group_router
 from .challenges.mission.mission_user import router as mission_user_router
@@ -15,6 +16,7 @@ from .statistic.user import router as statistic_user_router
 from .user.user import router as user_router
 
 common_router = APIRouter()
+common_router.include_router(occupancy_router, tags=["Occupancy"], prefix="/occupancy")
 common_router.include_router(user_router, tags=["User"], prefix="/user")
 common_router.include_router(contact_router, tags=["Contact"], prefix="/user/contact")
 common_router.include_router(user_score_router, tags=["User score"], prefix="/user/score")

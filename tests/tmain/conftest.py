@@ -10,11 +10,11 @@ from src.core.interfaces.repository.statistic.group import IRepositoryGroupStati
 from src.core.interfaces.repository.statistic.user import IRepositoryUserStatistic
 from src.core.interfaces.repository.user.contact import IUserContactRepository
 from src.data.repository.auth import AuthProviderRepository
-from src.data.repository.challenges.mission import RepositoryMission
-from src.data.repository.challenges.occupancy_category import (
+from src.data.repository.challenges.category import (
     IRepositoryOccupancyCategory,
     RepositoryOccupancyCategory,
 )
+from src.data.repository.challenges.mission import RepositoryMission
 from src.data.repository.challenges.task import IRepositoryTask, RepositoryTask
 from src.data.repository.group import IRepositoryGroup, RepositoryGroup
 from src.data.repository.score.group_score import RepositoryGroupScore

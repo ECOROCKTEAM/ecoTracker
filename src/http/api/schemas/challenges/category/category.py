@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from src.core.entity.occupancy import OccupancyCategory
 from src.core.enum.language import LanguageEnum
-from src.core.interfaces.repository.challenges.occupancy import OccupancyFilter
+from src.core.interfaces.repository.challenges.category import OccupancyFilter
 
 
 class OccupancySchema(BaseModel):

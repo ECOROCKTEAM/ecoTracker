@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from src.core.entity.occupancy import OccupancyCategory
 from src.core.entity.user import User
 from src.core.exception.user import UserNotActive
-from src.core.interfaces.repository.challenges.occupancy import OccupancyFilter
+from src.core.interfaces.repository.challenges.category import OccupancyFilter
 from src.core.interfaces.unit_of_work import IUnitOfWork
 
 
@@ -12,7 +12,7 @@ class Result:
     item: list[OccupancyCategory]
 
 
-class OccupancyCategoryListUsecase:
+class CategoryListUsecase:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 

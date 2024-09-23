@@ -7,7 +7,7 @@ from src.data.models.challenges.occupancy import (
     OccupancyCategoryModel,
     OccupancyCategoryTranslateModel,
 )
-from src.data.repository.challenges.occupancy_category import occupancy_model_to_entity
+from src.data.repository.challenges.category import occupancy_model_to_entity
 from tests.fixtures.challenges.category.db.model import (
     fxm_category_default,
     fxm_category_en,

@@ -2,10 +2,9 @@ import pytest
 
 from src.core.entity.occupancy import OccupancyCategory
 from src.core.entity.user import User
+from src.core.interfaces.repository.challenges.category import OccupancyFilter
 from src.core.interfaces.unit_of_work import IUnitOfWork
-from src.core.usecases.challenges.occupancy.occupancy_list import (
-    OccupancyCategoryListUsecase,
-)
+from src.core.usecases.challenges.occupancy.occupancy_list import CategoryListUsecase
 from tests.fixtures.challenges.category.usecase.category import (
     mock_category_lst_ret_one,
 )
@@ -19,8 +18,9 @@ async def test_ok(
     fxe_user_default: User,
     mock_category_lst_ret_one: list[OccupancyCategory],
 ):
-    uc = OccupancyCategoryListUsecase(uow=uow)
-    res = await uc(user=fxe_user_default)
+    uc = CategoryListUsecase(uow=uow)
+    fltr = OccupancyFilter()
+    res = await uc(user=fxe_user_default, fltr=fltr)
     oc_list = res.item
     assert isinstance(oc_list, list)
     assert len(oc_list) == 1

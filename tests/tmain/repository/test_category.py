@@ -3,7 +3,7 @@ import pytest
 from src.core.const.translate import DEFAULT_LANGUANGE
 from src.core.enum.language import LanguageEnum
 from src.core.exception.base import EntityNotFound, TranslateNotFound
-from src.core.interfaces.repository.challenges.occupancy import (
+from src.core.interfaces.repository.challenges.category import (
     IRepositoryOccupancyCategory,
     OccupancyFilter,
 )
